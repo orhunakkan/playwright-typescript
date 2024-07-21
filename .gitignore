@@ -1,0 +1,38 @@
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+# General
+.env
+*.log
+.DS_Store
+Thumbs.db
+.cache
+dist/
+build/
+.vscode/
+npm-debug.log
+.idea/
+target
+
+# JavaScript/Node.js
+coverage/
+.nyc_output
+*.tmp
+*.temp
+*.swp
+
+# Frontend
+/public/assets/
+.parcel-cache/
+.next/
+.nuxt/
+/dist/
+
+# Databases
+*.db
+
+# Security
+*.cert
+*.key
