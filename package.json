@@ -2,7 +2,10 @@
   "name": "playwright-typescript-framework",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc",
+    "test": "playwright test"
+  },
   "keywords": [],
   "author": "Orhun Akkan",
   "license": "ISC",
@@ -10,5 +13,10 @@
   "devDependencies": {
     "@playwright/test": "^1.45.2",
     "@types/node": "^20.14.11"
+  },
+  "dependencies": {
+    "@types/jest": "^29.5.12",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.5.3"
   }
 }

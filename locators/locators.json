@@ -1,0 +1,11 @@
+{
+  "homePage": {
+    "getUserName": "[tabindex='0'] > .MuiTypography-root",
+    "getUser": ".MuiToolbar-root > :nth-child(6)",
+    "getOtherActions": "[data-testid='ArrowDropDownIcon']",
+    "createNewBucket": "[tabindex='0'] > .MuiTypography-root",
+    "noInternetWarning": ":nth-child(3) > .Toastify__toast-container",
+    "compassIDLoadingSkeleton": ".MuiSkeleton-root"
+  }
+
+  }
