@@ -3,12 +3,22 @@
     "target": "ES6",
     "module": "commonjs",
     "strict": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest", "playwright"],
+    "types": [
+      "node",
+      "jest",
+      "playwright"
+    ],
     "outDir": "./dist"
   },
-  "include": ["tests/**/*.ts", "support/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "tests/**/*.ts",
+    "support/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

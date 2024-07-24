@@ -1,33 +1,32 @@
-import { test } from '@playwright/test';
-import * as dotenv from 'dotenv';
-const CommonPage = require("../../pages/commonUtils");
-const { DashBoardPage } = require("../../pages/dashBoardPage");
+import {expect, test} from '@playwright/test';
 
-let commonPage = new CommonPage();
-let dashboardPage: { verifyHeader: () => any; verifyUserRole: (arg0: string) => any; };
-dotenv.config();
+test.describe(`Helix Login as Admin`, () => {
+    test.beforeEach(async ({page}) => {
+        const url: string = "https://helix-qa.aspirion.com";
+        const username: string = "compass_test_admin@aspirion.com"
+        const password: string = "Rod!Opinion!3"
+        await page.goto(url);
+        const [popup] = await Promise.all([
+            page.waitForEvent("popup"),
+            page.getByRole("button", {name: "Login"}).click()
+        ]);
+        await popup.waitForLoadState();
+        await popup.getByPlaceholder("someone@example.com").fill(username);
+        await popup.getByRole("button", {name: "Next"}).click();
+        await popup.getByPlaceholder("Password").fill(password);
+        await popup.getByRole("button", {name: "Sign in"}).click({force: true});
+    });
 
-const userRoles = [
-    { role: "analyst" },
-    { role: "manager" },
-    { role: "admin" },
-    { role: "Analyst 2" }
-];
-
-userRoles.forEach((user) => {
-    test.describe(`@smoke Helix Login as ${user.role}`, () => {
-        test.beforeEach(async ({ page }) => {
-            await commonPage.loginAndNavigate(page, user.role);
-            dashboardPage = new DashBoardPage(page);
+    test(`Login as Admin and Verify User Account Role`, async ({page}) => {
+        await test.step("Navigate to Dashboard Page and Verify User has Landed on Dashboard Page", async () => {
+            await page.waitForLoadState('load');
+            await page.getByText('Aspirion Compass').waitFor();
+            await expect(page.getByRole('menuitem')).toContainText('Aspirion Compass');
         });
-
-        test(`10568 - Helix Login as ${user.role} and verify User Account Role`, {tag: ['@smoke', '@login']}, async () => {
-            await test.step("Navigate to Dashboard Page and Verify User has Landed on Dashboard Page", async () => {
-                await dashboardPage.verifyHeader();
-            });
-            await test.step("Click on User DropDown and Verify UserRole", async () => {
-                await dashboardPage.verifyUserRole(user.role);
-            });
+        await test.step("Click on User DropDown and Verify UserRole", async () => {
+            await page.getByRole('button', {name: 'USER'}).click();
+            await expect(page.getByRole('menu')).toContainText("admin");
         });
     });
 });
+

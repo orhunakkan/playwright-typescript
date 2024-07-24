@@ -10,11 +10,9 @@
   "author": "Orhun Akkan",
   "license": "ISC",
   "description": "",
-  "devDependencies": {
-    "@playwright/test": "^1.45.2",
-    "@types/node": "^20.14.11"
-  },
   "dependencies": {
+    "@playwright/test": "^1.45.2",
+    "@types/node": "^20.14.11",
     "@types/jest": "^29.5.12",
     "dotenv": "^16.4.5",
     "typescript": "^5.5.3"
