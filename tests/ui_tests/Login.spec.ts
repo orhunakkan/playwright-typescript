@@ -1,20 +1,11 @@
 import {expect, test} from '@playwright/test';
+import {LoginPage} from '../../pages/LoginPage';
+
+let loginPage = new LoginPage();
 
 test.describe(`Helix Login as Admin`, () => {
     test.beforeEach(async ({page}) => {
-        const url: string = "https://helix-qa.aspirion.com";
-        const username: string = "compass_test_admin@aspirion.com"
-        const password: string = "Rod!Opinion!3"
-        await page.goto(url);
-        const [popup] = await Promise.all([
-            page.waitForEvent("popup"),
-            page.getByRole("button", {name: "Login"}).click()
-        ]);
-        await popup.waitForLoadState();
-        await popup.getByPlaceholder("someone@example.com").fill(username);
-        await popup.getByRole("button", {name: "Next"}).click();
-        await popup.getByPlaceholder("Password").fill(password);
-        await popup.getByRole("button", {name: "Sign in"}).click({force: true});
+        await loginPage.login(page);
     });
 
     test(`Login as Admin and Verify User Account Role`, async ({page}) => {
@@ -29,4 +20,3 @@ test.describe(`Helix Login as Admin`, () => {
         });
     });
 });
-
