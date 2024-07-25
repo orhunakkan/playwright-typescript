@@ -3,12 +3,12 @@ import {LoginPage} from '../../pages/LoginPage';
 
 let loginPage = new LoginPage();
 
-test.describe(`Helix Login as Admin`, () => {
+test.describe("Helix Login as Admin", () => {
     test.beforeEach(async ({page}) => {
         await loginPage.login(page);
     });
 
-    test(`Login as Admin and Verify User Account Role`, async ({page}) => {
+    test("Login as Admin and Verify User Account Role", async ({page}) => {
         await test.step("Navigate to Dashboard Page and Verify User has Landed on Dashboard Page", async () => {
             await page.waitForLoadState('load');
             await page.getByText('Aspirion Compass').waitFor();
