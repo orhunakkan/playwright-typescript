@@ -1,7 +1,9 @@
 import {Page} from '@playwright/test';
 import dotenv from 'dotenv';
+import {LoginPageLocators} from "../locators/LoginPageLocators";
 
 dotenv.config();
+
 
 export class LoginPage {
 
@@ -14,7 +16,7 @@ export class LoginPage {
         await page.goto(url);
         const [popup] = await Promise.all([
             page.waitForEvent("popup"),
-            page.getByRole("button", {name: "Login"}).click()
+            LoginPageLocators.getLoginButton(page).click()
         ]);
         await popup.waitForLoadState();
         await popup.getByPlaceholder("someone@example.com").fill(username);
