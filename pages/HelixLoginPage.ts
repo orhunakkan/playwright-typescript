@@ -1,11 +1,10 @@
 import {Page} from '@playwright/test';
 import dotenv from 'dotenv';
-import {LoginPageLocators} from "../locators/LoginPageLocators";
+import {HelixLoginPageLocators} from "../locators/HelixLoginPageLocators";
 
 dotenv.config();
 
-
-export class LoginPage {
+export class HelixLoginPage {
 
     async login(page: Page) {
 
@@ -16,7 +15,7 @@ export class LoginPage {
         await page.goto(url);
         const [popup] = await Promise.all([
             page.waitForEvent("popup"),
-            LoginPageLocators.getLoginButton(page).click()
+            HelixLoginPageLocators.getLoginButton(page).click()
         ]);
         await popup.waitForLoadState();
         await popup.getByPlaceholder("someone@example.com").fill(username);

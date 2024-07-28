@@ -1,8 +1,8 @@
 import {test} from '@playwright/test';
-import {LoginPage} from '../../pages/LoginPage';
-import {generateUniqueString} from '../../helpers/HelperFunctions';
+import {HelixLoginPage} from '../../pages/HelixLoginPage';
+import {generateUniqueString} from '../../helpers/HelixHelperFunctions';
 
-let loginPage = new LoginPage();
+let loginPage = new HelixLoginPage();
 
 test.describe("Create Bucket Feature", () => {
     test.beforeEach(async ({page}) => {

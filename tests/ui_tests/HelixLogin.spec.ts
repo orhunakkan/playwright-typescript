@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/test';
-import {LoginPage} from '../../pages/LoginPage';
+import {HelixLoginPage} from '../../pages/HelixLoginPage';
 
-let loginPage = new LoginPage();
+let loginPage = new HelixLoginPage();
 
 test.describe("Helix Login as Admin", () => {
     test.beforeEach(async ({page}) => {

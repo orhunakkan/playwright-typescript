@@ -1,6 +1,6 @@
 import {expect, test} from '@playwright/test';
 import {BASE_URL, ENDPOINTS} from '../../support/ReqresConfig';
-import {del, get, patch, post, put} from '../../helpers/ReqresHelper';
+import {del, get, patch, post, put} from '../../helpers/ReqresHelperFunctions';
 import {PAYLOADS} from '../../payloads/ReqresPayloads';
 
 test.describe('Reqres API Tests', () => {
