@@ -36,3 +36,4 @@ coverage/
 # Security
 *.cert
 *.key
+/my-image.png
