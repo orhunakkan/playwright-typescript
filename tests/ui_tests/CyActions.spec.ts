@@ -1,49 +1,3 @@
-// context('Actions', () => {
-//
-//     beforeEach(() => {
-//         cy.visit('https://example.cypress.io/commands/actions')
-//     })
-//
-//     it('.type() - type into a DOM element', () => {
-//         cy.get('.action-email').type('fake@email.com')
-//         cy.get('.action-email').should('have.value', 'fake@email.com')
-//         cy.get('.action-email').type('{leftarrow}{rightarrow}{uparrow}{downarrow}')
-//         cy.get('.action-email').type('{del}{selectall}{backspace}')
-//         cy.get('.action-email').type('{alt}{option}')
-//         cy.get('.action-email').type('{ctrl}{control}')
-//         cy.get('.action-email').type('{meta}{command}{cmd}')
-//         cy.get('.action-email').type('{shift}')
-//         cy.get('.action-email').type('slow.typing@email.com', {delay: 100})
-//         cy.get('.action-email').should('have.value', 'slow.typing@email.com')
-//         cy.get('.action-disabled').type('disabled error checking', {force: true})
-//         cy.get('.action-disabled').should('have.value', 'disabled error checking')
-//     })
-
-// it('.focus() - focus on a DOM element', () => {
-//     cy.get('.action-focus').focus()
-//     cy.get('.action-focus').should('have.class', 'focus').prev().should('have.attr', 'style', 'color: orange;')
-// })
-
-// it('.blur() - blur off a DOM element', () => {
-//     cy.get('.action-blur').type('About to blur')
-//     cy.get('.action-blur').blur()
-//     cy.get('.action-blur').should('have.class', 'error').prev().should('have.attr', 'style', 'color: red;')
-// })
-
-// it('.clear() - clears an input or textarea element', () => {
-//     cy.get('.action-clear').type('Clear this text')
-//     cy.get('.action-clear').should('have.value', 'Clear this text')
-//     cy.get('.action-clear').clear()
-//     cy.get('.action-clear').should('have.value', '')
-// })
-
-// it('.submit() - submit a form', () => {
-//     cy.get('.action-form').find('[type="text"]').type('HALFOFF')
-//     cy.get('.action-form').submit()
-//     cy.get('.action-form').next().should('contain', 'Your form has been submitted!')
-// })
-// })
-
 import {expect, test} from '@playwright/test';
 import {fillWithDelay} from "../../helpers/CyHelperFunctions";
 
@@ -100,5 +54,57 @@ test.describe('Actions', () => {
     });
 
     test('submit a form', async ({page}) => {
+    });
+
+    test('click on a DOM element', async ({page}) => {
+    });
+
+    test('double click on a DOM element', async ({page}) => {
+        const div = page.locator('.action-div');
+        await div.dblclick();
+        expect(await div.isVisible()).toBe(false);
+        const hiddenInput = page.locator('.action-input-hidden');
+        expect(await hiddenInput.isVisible()).toBe(true);
+    });
+
+    test('right click on a DOM element', async ({page}) => {
+        const div = page.locator('.rightclick-action-div');
+        await div.click({button: 'right'});
+        expect(await div.isVisible()).toBe(false);
+        const hiddenInput = page.locator('.rightclick-action-input-hidden');
+        expect(await hiddenInput.isVisible()).toBe(true);
+    });
+
+    test('check a checkbox or radio element', async ({page}) => {
+    });
+
+    test('uncheck a checkbox element', async ({page}) => {
+    });
+
+    test('select an option in an <select> element', async ({page}) => {
+    });
+
+    test('scroll an element into view', async ({page}) => {
+    });
+
+    test('trigger an event on a DOM element', async ({page}) => {
+    });
+
+    test('scroll the window or element to a position', async ({page}) => {
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        const scrollableHorizontal = page.locator('#scrollable-horizontal');
+        await scrollableHorizontal.evaluate((el) => el.scrollLeft = el.scrollWidth);
+        const scrollableVertical = page.locator('#scrollable-vertical');
+        await scrollableVertical.evaluate((el) => {
+            el.scrollTop = 250;
+            el.scrollLeft = 250;
+        });
+        const scrollableBoth = page.locator('#scrollable-both');
+        await scrollableBoth.evaluate((el) => {
+            el.scrollTop = el.scrollHeight * 0.25;
+            el.scrollLeft = el.scrollWidth * 0.75;
+        });
+        await scrollableVertical.evaluate((el) => el.scrollIntoView({block: 'center', behavior: 'smooth'}));
+        await scrollableBoth.evaluate((el) => el.scrollIntoView({block: 'center', behavior: 'smooth'}));
     });
 });
