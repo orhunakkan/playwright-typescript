@@ -54,9 +54,33 @@ test.describe('Actions', () => {
     });
 
     test('submit a form', async ({page}) => {
+        const submitCouponCode = page.locator('#couponCode1');
+        await submitCouponCode.fill('HALFOFF');
+        const submitButton = page.locator("button[type='submit']");
+        await submitButton.click();
+        const verifyText = page.locator("//div[@class='well'][.//*[@id='couponCode1']]");
+        expect(await verifyText.textContent()).toContain('Your form has been submitted!');
     });
 
     test('click on a DOM element', async ({page}) => {
+        await page.locator('.action-btn').click();
+        await page.locator('#action-canvas').click();
+        await page.locator('#action-canvas').click({ position: { x: 0, y: 0 } }); // topLeft
+        await page.locator('#action-canvas').click({ position: { x: 0.5, y: 0 } }); // top
+        await page.locator('#action-canvas').click({ position: { x: 1, y: 0 } }); // topRight
+        await page.locator('#action-canvas').click({ position: { x: 0, y: 0.5 } }); // left
+        await page.locator('#action-canvas').click({ position: { x: 1, y: 0.5 } }); // right
+        await page.locator('#action-canvas').click({ position: { x: 0, y: 1 } }); // bottomLeft
+        await page.locator('#action-canvas').click({ position: { x: 0.5, y: 1 } }); // bottom
+        await page.locator('#action-canvas').click({ position: { x: 1, y: 1 } }); // bottomRight
+        await page.locator('#action-canvas').click({ position: { x: 80, y: 75 } });
+        await page.locator('#action-canvas').click({ position: { x: 170, y: 75 } });
+        await page.locator('#action-canvas').click({ position: { x: 80, y: 165 } });
+        await page.locator('#action-canvas').click({ position: { x: 100, y: 185 } });
+        await page.locator('#action-canvas').click({ position: { x: 125, y: 190 } });
+        await page.locator('#action-canvas').click({ position: { x: 150, y: 185 } });
+        await page.locator('#action-canvas').click({ position: { x: 170, y: 165 } });
+        await page.locator('.action-opacity > .btn').click({ force: true });
     });
 
     test('double click on a DOM element', async ({page}) => {
