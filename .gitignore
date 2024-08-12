@@ -4,7 +4,6 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 # General
-.env
 *.log
 .DS_Store
 Thumbs.db
@@ -36,4 +35,3 @@ coverage/
 # Security
 *.cert
 *.key
-/my-image.png

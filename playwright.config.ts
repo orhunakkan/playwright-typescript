@@ -26,7 +26,7 @@ const config: PlaywrightTestConfig = {
             },
         },
     ],
-    testDir: './tests/ui_tests',
+    testDir: './tests',
     retries: 0,
     timeout: 20000,
     reporter: [['list'], ['html', {outputFolder: 'test-results'}]],
