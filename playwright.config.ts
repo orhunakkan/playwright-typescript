@@ -1,7 +1,4 @@
 import {devices, PlaywrightTestConfig} from '@playwright/test';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const config: PlaywrightTestConfig = {
     use: {
@@ -31,6 +28,3 @@ const config: PlaywrightTestConfig = {
     timeout: 10000,
     reporter: [['list'], ['html', {outputFolder: 'test-results'}]],
 };
-
-export default config;
-
