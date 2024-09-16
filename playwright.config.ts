@@ -3,7 +3,7 @@ import {devices, PlaywrightTestConfig} from '@playwright/test';
 const config: PlaywrightTestConfig = {
     use: {
         baseURL: process.env.BASE_URL,
-        headless: true,
+        headless: false,
         ignoreHTTPSErrors: true,
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
@@ -28,3 +28,5 @@ const config: PlaywrightTestConfig = {
     timeout: 10000,
     reporter: [['list'], ['html', {outputFolder: 'test-results'}]],
 };
+
+export default config;
