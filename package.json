@@ -11,8 +11,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@playwright/test": "^1.45.2",
-    "@types/node": "^20.14.11",
-    "typescript": "^5.5.3"
+    "@playwright/test": "^1.47.0",
+    "@types/node": "^22.5.4",
+    "typescript": "^5.6.2"
   }
 }
