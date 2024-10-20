@@ -1,12 +1,8 @@
 import {devices, PlaywrightTestConfig} from '@playwright/test';
-import * as dotenv from 'dotenv';
-import envConfig from "./envConfig";
-
-dotenv.config();
 
 const config: PlaywrightTestConfig = {
     use: {
-        baseURL: envConfig.uiBaseUrl,
+        baseURL: process.env.ENV,
         headless: false,
         ignoreHTTPSErrors: true,
         screenshot: 'only-on-failure',
