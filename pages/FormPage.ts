@@ -1,4 +1,3 @@
-// pages/FormPage.ts
 import {Page, Locator, expect} from '@playwright/test';
 
 export class FormPage {
