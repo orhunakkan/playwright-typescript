@@ -1,0 +1,15 @@
+#name: Playwright UAT-Corporate Tests
+#on:
+#  push:
+#    branches: [main, master]
+#  pull_request:
+#    branches: [main, master]
+#
+#env:
+#  HOME: /root
+#
+#jobs:
+#  uat-corporate:
+#    uses: ./.github/workflows/playwright-reusable.yml
+#    with:
+#      environment: https://northerntrust.com

@@ -1,6 +1,6 @@
-import {Page, Locator, expect} from '@playwright/test';
+import {expect, Locator, Page} from '@playwright/test';
 
-export class FormPage {
+export class SamplePage {
     private page: Page;
     private textInput: Locator;
     private passwordInput: Locator;
@@ -13,8 +13,8 @@ export class FormPage {
         this.textInput = this.page.getByLabel('Text input');
         this.passwordInput = this.page.getByLabel('Password');
         this.textareaInput = this.page.getByLabel('Textarea');
-        this.submitButton = this.page.getByRole('button', { name: 'Submit' });
-        this.formSubmittedHeading = this.page.getByRole('heading', { name: 'Form submitted' });
+        this.submitButton = this.page.getByRole('button', {name: 'Submit'});
+        this.formSubmittedHeading = this.page.getByRole('heading', {name: 'Form submitted'});
     }
 
     async navigate() {
