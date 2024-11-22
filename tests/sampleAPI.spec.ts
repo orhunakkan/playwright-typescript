@@ -97,7 +97,7 @@ test.describe('Reqres API Tests', () => {
         expect(responseBody).toHaveProperty('error');
     });
 
-    // Test to login a user successfully
+    // Test to log in a user successfully
     test('should login a user successfully', async ({request}) => {
         const user = {
             email: 'eve.holt@reqres.in',
