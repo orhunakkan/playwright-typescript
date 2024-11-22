@@ -1,0 +1,28 @@
+{
+  "newUser": {
+    "name": "morpheus",
+    "job": "leader"
+  },
+  "updatedUserPut": {
+    "name": "morpheus",
+    "job": "zion resident"
+  },
+  "updatedUserPatch": {
+    "name": "morpheus",
+    "job": "zion resident"
+  },
+  "newUserRegister": {
+    "email": "eve.holt@reqres.in",
+    "password": "pistol"
+  },
+  "failedUserRegister": {
+    "email": "sydney@fife"
+  },
+  "userLogin": {
+    "email": "eve.holt@reqres.in",
+    "password": "cityslicka"
+  },
+  "failedUserLogin": {
+    "email": "peter@klaven"
+  }
+}
