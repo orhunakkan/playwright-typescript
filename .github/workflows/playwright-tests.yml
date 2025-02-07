@@ -45,31 +45,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
-
-      - name: Send notification to Microsoft Teams
-        if: always()
-        uses: aliencube/microsoft-teams-actions@v0.8.0
-        with:
-          webhook_uri: ${{ secrets.MS_TEAMS_WEBHOOK_URL }}
-          title: "Playwright Test Results"
-          summary: "Test execution completed"
-          sections: |
-            {
-              "activityTitle": "Test Results for ${{ github.repository }}",
-              "activitySubtitle": "Workflow: ${{ github.workflow }}",
-              "facts": [
-                {
-                  "name": "Status",
-                  "value": "${{ job.status }}"
-                },
-                {
-                  "name": "Triggered by",
-                  "value": "${{ github.actor }}"
-                },
-                {
-                  "name": "Report URL",
-                  "value": "https://orhunakkan.github.io/playwright-typescript/"
-                }
-              ],
-              "themeColor": "${{ job.status == 'success' && '00ff00' || 'ff0000' }}"
-            }
