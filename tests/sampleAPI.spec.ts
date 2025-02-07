@@ -5,12 +5,35 @@ const baseURL = "https://reqres.in/api";
 
 test.describe("Reqres API Tests", () => {
   // Test to fetch a list of users
-  test("should fetch a list of users", async ({ request }) => {
-    const response = await request.get(`${baseURL}/users?page=2`);
-    expect(response.status()).toBe(200);
-    const responseBody = await response.json();
-    expect(responseBody).toHaveProperty("data");
-    expect(Array.isArray(responseBody.data)).toBe(true);
+  test("should fetch a list of users", async ({ request }, testInfo) => {
+    // Add test metadata
+    testInfo.annotations.push({ type: "severity", description: "critical" });
+    testInfo.annotations.push({ type: "issue", description: "TEST-1" });
+
+    // Add test description
+    test.info().annotations.push({
+      type: "description",
+      description:
+        "This test verifies the retrieval of user list from Reqres API",
+    });
+
+    // Add test tags
+    test.info().annotations.push({ type: "tag", description: "api" });
+    test.info().annotations.push({ type: "tag", description: "smoke" });
+
+    await test.step("Send GET request to /users endpoint", async () => {
+      const response = await request.get(`${baseURL}/users?page=2`);
+
+      await test.step("Verify response status is 200", async () => {
+        expect(response.status()).toBe(200);
+      });
+
+      const responseBody = await response.json();
+      await test.step("Verify response contains data array", async () => {
+        expect(responseBody).toHaveProperty("data");
+        expect(Array.isArray(responseBody.data)).toBe(true);
+      });
+    });
   });
 
   // Test to fetch a single user
