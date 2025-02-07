@@ -10,54 +10,56 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Install Playwright browsers
-      run: npx playwright install
+      - name: Install Playwright browsers
+        run: npx playwright install
 
-    - name: Run Playwright tests
-      run: npx playwright test
+      - name: Run Playwright tests
+        run: npx playwright test
 
-    - name: Install Allure commandline
-      run: npm install -g allure-commandline --save-dev
+      - name: Install Allure commandline
+        run: npm install -g allure-commandline --save-dev
 
-    - name: Generate Allure report
-      run: allure generate allure-results --clean -o allure-report
+      - name: Generate Allure report
+        run: allure generate allure-results --clean -o allure-report
 
-    - name: Upload Allure report
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-report
-        path: allure-report
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
 
-    - name: Deploy Allure report to GitHub Pages
-      if: success()
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./allure-report
+      - name: Deploy Allure report to GitHub Pages
+        if: success()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
 
-    - name: Send email notifications
-      if: always()
-      uses: dawidd6/action-send-mail@v3
-      with:
-        server_address: smtp.mail.yahoo.com
-        server_port: 587
-        username: ${{ secrets.SMTP_USERNAME }}
-        password: ${{ secrets.SMTP_PASSWORD }}
-        subject: Playwright Test Results
-        to: recipient@example.com
-        from: sender@example.com
-        body: |
-          <h1>Playwright Test Results</h1>
-          <p>The Playwright tests have completed. Please find the results below:</p>
-          <p><a href="https://orhunakkan.github.io/playwright-typescript/">View Allure Report</a></p>
+      - name: Send email notifications
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: Playwright Test Results - ${{ github.repository }}
+          to: ${{ secrets.SMTP_USERNAME }}
+          from: ${{ secrets.SMTP_USERNAME }}
+          body: |
+            <h1>Playwright Test Results</h1>
+            <p>Repository: ${{ github.repository }}</p>
+            <p>Workflow: ${{ github.workflow }}</p>
+            <p>Status: ${{ job.status }}</p>
+            <p><a href="https://orhunakkan.github.io/playwright-typescript/">View Allure Report</a></p>
