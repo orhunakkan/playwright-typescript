@@ -51,13 +51,14 @@ jobs:
 
       - name: Store Allure report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated from v3 to v4
         with:
           name: allure-report
           path: allure-report
+          retention-days: 30  # Added retention period for consistency
 
       - name: Upload Allure report
-        if: always() # This ensures the step runs even if previous steps fail
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
