@@ -7,7 +7,7 @@ test.describe("Reqres API Tests", () => {
   // Test to fetch a list of users
   test("should fetch a list of users", async ({ request }) => {
     const response = await request.get(`${baseURL}/users?page=2`);
-    expect(response.status()).toBe(200);
+    expect(response.status()).toBe(900);
     const responseBody = await response.json();
     expect(responseBody).toHaveProperty("data");
     expect(Array.isArray(responseBody.data)).toBe(true);
