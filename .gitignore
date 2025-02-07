@@ -35,3 +35,4 @@ coverage/
 # Security
 *.cert
 *.key
+allure-results/

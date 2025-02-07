@@ -8,7 +8,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@playwright/test": "^1.50.0",
     "@types/node": "^22.10.10"
+  },
+  "devDependencies": {
+    "allure-playwright": "^3.1.0"
   }
 }
