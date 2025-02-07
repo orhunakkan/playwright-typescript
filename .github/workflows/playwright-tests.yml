@@ -34,7 +34,7 @@ jobs:
       run: allure generate allure-results --clean -o allure-report
 
     - name: Upload Allure report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v2
       with:
         name: allure-report
         path: allure-report
@@ -45,4 +45,19 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./allure-report
-        cname: 'orhunakkan.github.io/playwright-typescript'
+
+    - name: Send email notifications
+      if: always()
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.example.com
+        server_port: 587
+        username: ${{ secrets.SMTP_USERNAME }}
+        password: ${{ secrets.SMTP_PASSWORD }}
+        subject: Playwright Test Results
+        to: recipient@example.com
+        from: sender@example.com
+        body: |
+          <h1>Playwright Test Results</h1>
+          <p>The Playwright tests have completed. Please find the results below:</p>
+          <p><a href="https://orhunakkan.github.io/playwright-typescript/">View Allure Report</a></p>
