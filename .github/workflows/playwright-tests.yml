@@ -46,20 +46,30 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
 
-      - name: Send email notifications
+      - name: Send notification to Microsoft Teams
         if: always()
-        uses: dawidd6/action-send-mail@v3
+        uses: aliencube/microsoft-teams-actions@v0.8.0
         with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: Playwright Test Results - ${{ github.repository }}
-          to: ${{ secrets.SMTP_USERNAME }}
-          from: ${{ secrets.SMTP_USERNAME }}
-          body: |
-            <h1>Playwright Test Results</h1>
-            <p>Repository: ${{ github.repository }}</p>
-            <p>Workflow: ${{ github.workflow }}</p>
-            <p>Status: ${{ job.status }}</p>
-            <p><a href="https://orhunakkan.github.io/playwright-typescript/">View Allure Report</a></p>
+          webhook_uri: ${{ secrets.MS_TEAMS_WEBHOOK_URL }}
+          title: "Playwright Test Results"
+          summary: "Test execution completed"
+          sections: |
+            {
+              "activityTitle": "Test Results for ${{ github.repository }}",
+              "activitySubtitle": "Workflow: ${{ github.workflow }}",
+              "facts": [
+                {
+                  "name": "Status",
+                  "value": "${{ job.status }}"
+                },
+                {
+                  "name": "Triggered by",
+                  "value": "${{ github.actor }}"
+                },
+                {
+                  "name": "Report URL",
+                  "value": "https://orhunakkan.github.io/playwright-typescript/"
+                }
+              ],
+              "themeColor": "${{ job.status == 'success' && '00ff00' || 'ff0000' }}"
+            }
