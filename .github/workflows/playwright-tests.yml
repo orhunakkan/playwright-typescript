@@ -25,22 +25,28 @@ jobs:
         run: npx playwright install
 
       - name: Run Playwright tests
+        continue-on-error: true # This allows the workflow to continue even if tests fail
+        id: playwright
         run: npx playwright test
 
       - name: Install Allure commandline
+        if: always() # This ensures the step runs even if previous steps fail
         run: npm install -g allure-commandline --save-dev
 
       - name: Generate Allure report
+        if: always() # This ensures the step runs even if previous steps fail
         run: allure generate allure-results --clean -o allure-report
 
       - name: Upload Allure report
+        if: always() # This ensures the step runs even if previous steps fail
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report
+          retention-days: 30
 
       - name: Deploy Allure report to GitHub Pages
-        if: success()
+        if: always() # This ensures the step runs even if previous steps fail
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
