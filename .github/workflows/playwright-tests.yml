@@ -50,7 +50,7 @@ jobs:
       if: always()
       uses: dawidd6/action-send-mail@v3
       with:
-        server_address: smtp.yahoo.com
+        server_address: smtp.mail.yahoo.com
         server_port: 587
         username: ${{ secrets.SMTP_USERNAME }}
         password: ${{ secrets.SMTP_PASSWORD }}
