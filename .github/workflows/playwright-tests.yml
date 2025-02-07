@@ -25,7 +25,7 @@ jobs:
         run: npx playwright install
 
       - name: Run Playwright tests
-        continue-on-error: true # This allows the workflow to continue even if tests fail
+        continue-on-error: true
         id: playwright
         run: npx playwright test
 
