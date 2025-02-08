@@ -4,15 +4,8 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "target": "es6",
-    "lib": [
-      "es6",
-      "dom"
-    ],
-    "types": [
-      "playwright"
-    ]
+    "lib": ["es6", "dom"],
+    "types": ["playwright", "node"]
   },
-  "include": [
-    "**/*.ts"
-  ]
+  "include": ["**/*.ts"]
 }

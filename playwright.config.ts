@@ -1,5 +1,4 @@
 import { defineConfig, devices } from '@playwright/test';
-import { AllureReporter } from 'allure-playwright';
 
 export default defineConfig({
   testDir: './tests',
@@ -9,7 +8,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [ ['line'], ['allure-playwright'] ],
+  reporter: [],
   use: {
     baseURL: process.env.ENV,
     trace: 'on-first-retry',

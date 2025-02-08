@@ -2,18 +2,16 @@
   "name": "playwright-typescript-framework",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "allure:open": "allure serve allure-results",
-    "test": "npx playwright test"
-  },
+  "scripts": {},
   "keywords": [],
   "author": "Orhun Akkan",
   "license": "ISC",
   "description": "Playwright-Typescript Framework",
   "dependencies": {
-    "@types/node": "^22.10.10"
+    "@playwright/test": "^1.50.1",
+    "playwright": "^1.50.1"
   },
   "devDependencies": {
-    "allure-playwright": "^3.1.0"
+    "@types/node": "^22.13.1"
   }
 }
