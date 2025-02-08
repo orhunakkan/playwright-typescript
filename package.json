@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "Orhun Akkan",
   "license": "ISC",
-  "description": "",
+  "description": "Playwright-Typescript Framework",
   "dependencies": {
     "@types/node": "^22.10.10"
   },

@@ -21,15 +21,5 @@ export default defineConfig({
       testDir: './tests',
       use: { ...devices['Desktop Chrome'] },
     },
-    // {
-    //     name: 'Desktop Firefox',
-    //     testDir: './tests',
-    //     use: {...devices['Desktop Firefox']},
-    // },
-    // {
-    //     name: 'Desktop Webkit',
-    //     testDir: './tests',
-    //     use: {...devices['Desktop Safari']},
-    // },
   ],
 });
