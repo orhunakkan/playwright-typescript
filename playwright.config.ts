@@ -6,7 +6,7 @@ export default defineConfig({
   timeout: 30000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 3 : 0,
+  retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [],
   use: {
@@ -19,6 +19,21 @@ export default defineConfig({
       name: 'Desktop Chromium',
       testDir: './tests',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Desktop Firefox',
+      testDir: './tests',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'Desktop Safari',
+      testDir: './tests',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'Desktop Edge',
+      testDir: './tests',
+      use: { ...devices['Desktop Edge'] },
     },
   ],
 });
