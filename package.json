@@ -6,7 +6,8 @@
     "format": "prettier --write \"**/*.{ts,js,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
     "test": "playwright test",
-    "test:ui-mode": "playwright test --ui"
+    "test:ui-mode": "playwright test --ui",
+    "test:ci": "playwright test"
   },
   "author": "Orhun Akkan",
   "license": "ISC",
