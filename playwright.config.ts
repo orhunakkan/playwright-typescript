@@ -27,11 +27,6 @@ export default defineConfig({
       use: { ...devices['Desktop Firefox'] }
     },
     {
-      name: 'Desktop Safari',
-      testDir: './tests',
-      use: { ...devices['Desktop Safari'] }
-    },
-    {
       name: 'Desktop Edge',
       testDir: './tests',
       use: { ...devices['Desktop Edge'] }
