@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  snapshotPathTemplate: '{testDir}/{testFileDir}/snapshots/{testFileName}-{projectName}{ext}',
+  snapshotPathTemplate:
+    '{testDir}/{testFileDir}/snapshots/{testFileName}-{projectName}{ext}',
   timeout: 30000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -12,28 +13,28 @@ export default defineConfig({
   use: {
     baseURL: process.env.ENV,
     trace: 'on-first-retry',
-    ignoreHTTPSErrors: true,
+    ignoreHTTPSErrors: true
   },
   projects: [
     {
       name: 'Desktop Chromium',
       testDir: './tests',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'] }
     },
     {
       name: 'Desktop Firefox',
       testDir: './tests',
-      use: { ...devices['Desktop Firefox'] },
+      use: { ...devices['Desktop Firefox'] }
     },
     {
       name: 'Desktop Safari',
       testDir: './tests',
-      use: { ...devices['Desktop Safari'] },
+      use: { ...devices['Desktop Safari'] }
     },
     {
       name: 'Desktop Edge',
       testDir: './tests',
-      use: { ...devices['Desktop Edge'] },
-    },
-  ],
+      use: { ...devices['Desktop Edge'] }
+    }
+  ]
 });

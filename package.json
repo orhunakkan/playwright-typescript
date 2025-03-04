@@ -2,7 +2,10 @@
   "name": "playwright-typescript-framework",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md}\""
+  },
   "keywords": [],
   "author": "Orhun Akkan",
   "license": "ISC",
@@ -12,6 +15,7 @@
     "playwright": "^1.50.1"
   },
   "devDependencies": {
+    "prettier": "^3.5.0",
     "@types/node": "^22.13.1"
   }
 }

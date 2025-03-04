@@ -1,0 +1,11 @@
+node_modules/
+test-results/
+reports/
+playwright-report/
+blob-report/
+dist/
+build/
+.next/
+.nuxt/
+.cache/
+coverage/
