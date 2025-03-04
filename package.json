@@ -17,7 +17,8 @@
     "playwright": "^1.50.1"
   },
   "devDependencies": {
-    "prettier": "^3.5.0",
-    "@types/node": "^22.13.1"
+    "@faker-js/faker": "^9.5.1",
+    "@types/node": "^22.13.1",
+    "prettier": "^3.5.0"
   }
 }
