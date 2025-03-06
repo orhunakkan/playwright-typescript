@@ -1,9 +1,10 @@
 // pages/RegistrationFormPage.ts
 import { Page, Locator, expect } from '@playwright/test';
+import { EnvConfig } from '../utilities/env-config';
 
 export class RegistrationFormPage {
   // Page URL
-  private readonly url = 'https://practice.cydeo.com/registration_form';
+  private readonly url = `${EnvConfig.getBaseUrl()}/registration_form`;
 
   // Locators
   readonly firstNameInput: Locator;

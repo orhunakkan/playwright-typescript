@@ -37,3 +37,6 @@ coverage/
 *.cert
 *.key
 allure-results/
+
+# Environment variables
+.env

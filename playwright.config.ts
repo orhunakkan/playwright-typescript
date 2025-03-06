@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { EnvConfig } from './utilities/env-config';
 
 export default defineConfig({
   testDir: './tests',
@@ -10,7 +11,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html'], ['list']],
   use: {
-    baseURL: process.env.ENV,
+    baseURL: EnvConfig.getBaseUrl(),
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true
   },
