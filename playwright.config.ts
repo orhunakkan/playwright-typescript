@@ -13,23 +13,30 @@ export default defineConfig({
   use: {
     baseURL: EnvConfig.getBaseUrl(),
     trace: 'on-first-retry',
-    ignoreHTTPSErrors: true
+    ignoreHTTPSErrors: true,
   },
   projects: [
+    // API tests - run only once in Chromium
+    {
+      name: 'API Tests',
+      testMatch: /.*api\/.*\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] }
+    },
+    // E2E tests - run in all browsers
     {
       name: 'Desktop Chromium',
-      testDir: './tests',
+      testMatch: /.*e2e\/.*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] }
     },
     {
       name: 'Desktop Firefox',
-      testDir: './tests',
+      testMatch: /.*e2e\/.*\.spec\.ts/,
       use: { ...devices['Desktop Firefox'] }
     },
     {
       name: 'Desktop Edge',
-      testDir: './tests',
+      testMatch: /.*e2e\/.*\.spec\.ts/,
       use: { ...devices['Desktop Edge'] }
-    }
+      }
   ]
 });

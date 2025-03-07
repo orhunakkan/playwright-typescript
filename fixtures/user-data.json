@@ -1,0 +1,23 @@
+{
+  "validUser": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "username": "johndoe123",
+    "email": "john.doe@example.com",
+    "password": "Password123",
+    "phone": "571-123-4567",
+    "gender": "male",
+    "birthday": "01/15/1990",
+    "department": "DE",
+    "jobTitle": "SDET",
+    "programmingLanguages": ["javascript", "java"]
+  },
+  "invalidUser": {
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "username": "jane",
+    "email": "invalid-email",
+    "password": "pass",
+    "phone": "123-456"
+  }
+}

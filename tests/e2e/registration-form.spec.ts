@@ -1,11 +1,12 @@
 import { test } from '@playwright/test';
-import { RegistrationFormPage } from '../../pages/registration-page';
+import { RegistrationPage } from '../../pages/registration-page';
+import userData from '../../fixtures/user-data.json';
 
 test.describe('Registration Form Tests', () => {
-  let registrationPage: RegistrationFormPage;
+  let registrationPage: RegistrationPage;
 
   test.beforeEach(async ({ page }) => {
-    registrationPage = new RegistrationFormPage(page);
+    registrationPage = new RegistrationPage(page);
     await registrationPage.goto();
   });
 
@@ -21,14 +22,14 @@ test.describe('Registration Form Tests', () => {
   });
 
   test('should display validation errors for invalid form submission', async () => {
-    // Fill form with invalid data
-    await registrationPage.fillFirstName('Jane');
-    await registrationPage.fillLastName('Smith');
-    await registrationPage.fillUsername('jane'); // Too short username
-    await registrationPage.fillEmail('invalid-email'); // Invalid email
-    await registrationPage.fillPassword('pass'); // Too short password
-    await registrationPage.fillPhone('123-456'); // Invalid phone format
-
+    // Fill form with invalid data from JSON file
+    await registrationPage.fillFirstName(userData.invalidUser.firstName);
+    await registrationPage.fillLastName(userData.invalidUser.lastName);
+    await registrationPage.fillUsername(userData.invalidUser.username);
+    await registrationPage.fillEmail(userData.invalidUser.email);
+    await registrationPage.fillPassword(userData.invalidUser.password);
+    await registrationPage.fillPhone(userData.invalidUser.phone);
+    
     // Verify validation errors
     await registrationPage.verifyValidationErrors();
 

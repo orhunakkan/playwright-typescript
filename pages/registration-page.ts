@@ -1,8 +1,9 @@
 // pages/RegistrationFormPage.ts
 import { Page, Locator, expect } from '@playwright/test';
 import { EnvConfig } from '../utilities/env-config';
+import userData from '../fixtures/user-data.json';
 
-export class RegistrationFormPage {
+export class RegistrationPage {
   // Page URL
   private readonly url = `${EnvConfig.getBaseUrl()}/registration_form`;
 
@@ -86,7 +87,7 @@ export class RegistrationFormPage {
     await this.phoneInput.fill(phone);
   }
 
-  async selectGender(gender: 'male' | 'female') {
+  async selectGender(gender: string) {
     if (gender === 'male') {
       await this.maleGenderRadio.check();
     } else {
@@ -106,7 +107,7 @@ export class RegistrationFormPage {
     await this.jobTitleSelect.selectOption({ label: jobTitle });
   }
 
-  async selectProgrammingLanguages(languages: ('Java' | 'JavaScript' | 'C++')[]) {
+  async selectProgrammingLanguages(languages: string[]) {
     for (const language of languages) {
       switch (language) {
         case 'Java':
@@ -127,30 +128,21 @@ export class RegistrationFormPage {
   }
 
   // Helper methods for full form submission
-  async fillFormWithValidData({
-    firstName = 'John',
-    lastName = 'Doe',
-    username = 'johndoe123',
-    email = 'john.doe@example.com',
-    password = 'Password123',
-    phone = '571-123-4567',
-    gender = 'male',
-    birthDate = '01/15/1990',
-    department = 'DE',
-    jobTitle = 'SDET',
-    programmingLanguages = ['Java', 'JavaScript']
-  } = {}) {
-    await this.fillFirstName(firstName);
-    await this.fillLastName(lastName);
-    await this.fillUsername(username);
-    await this.fillEmail(email);
-    await this.fillPassword(password);
-    await this.fillPhone(phone);
-    await this.selectGender(gender as 'male' | 'female');
-    await this.fillBirthDate(birthDate);
-    await this.selectDepartment(department);
-    await this.selectJobTitle(jobTitle);
-    await this.selectProgrammingLanguages(programmingLanguages as ('Java' | 'JavaScript' | 'C++')[]);
+  async fillFormWithValidData() {
+    await this.fillFirstName(userData.validUser.firstName);
+    await this.fillLastName(userData.validUser.lastName);
+    await this.fillUsername(userData.validUser.username);
+    await this.fillEmail(userData.validUser.email);
+    await this.fillPassword(userData.validUser.password);
+    await this.fillPhone(userData.validUser.phone);
+    await this.selectGender(userData.validUser.gender);
+    await this.fillBirthDate(userData.validUser.birthday);
+    await this.selectDepartment(userData.validUser.department);
+    await this.selectJobTitle(userData.validUser.jobTitle);
+    
+    if (userData.validUser.programmingLanguages) {
+      await this.selectProgrammingLanguages(userData.validUser.programmingLanguages);
+    }
   }
 
   // Verification methods
