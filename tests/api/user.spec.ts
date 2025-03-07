@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { UserFactory } from '../../fixtures/user-factory';
 
 // Base URL
 const baseUrl = 'https://reqres.in/api';
@@ -42,10 +43,8 @@ test.describe('Reqres API Tests', () => {
     });
 
     test('Create User', async ({ request }) => {
-      const userData = {
-        name: 'morpheus',
-        job: 'leader'
-      };
+      // Use UserFactory to create test data
+      const userData = UserFactory.createUser();
 
       const response = await request.post(`${baseUrl}/users`, {
         data: userData
@@ -58,13 +57,13 @@ test.describe('Reqres API Tests', () => {
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty('id');
       expect(responseBody).toHaveProperty('createdAt');
+      expect(responseBody).toHaveProperty('name', userData.name);
+      expect(responseBody).toHaveProperty('job', userData.job);
     });
 
     test('Update User - PUT', async ({ request }) => {
-      const userData = {
-        name: 'morpheus',
-        job: 'zion resident'
-      };
+      // Use UserFactory to create test data
+      const userData = UserFactory.createUser();
 
       const response = await request.put(`${baseUrl}/users/2`, {
         data: userData
@@ -76,13 +75,13 @@ test.describe('Reqres API Tests', () => {
       // Response has updatedAt
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty('updatedAt');
+      expect(responseBody).toHaveProperty('name', userData.name);
+      expect(responseBody).toHaveProperty('job', userData.job);
     });
 
     test('Update User - PATCH', async ({ request }) => {
-      const userData = {
-        name: 'morpheus',
-        job: 'zion resident'
-      };
+      // Use UserFactory to create test data
+      const userData = UserFactory.createUser();
 
       const response = await request.patch(`${baseUrl}/users/2`, {
         data: userData
@@ -94,6 +93,8 @@ test.describe('Reqres API Tests', () => {
       // Response has updatedAt
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty('updatedAt');
+      expect(responseBody).toHaveProperty('name', userData.name);
+      expect(responseBody).toHaveProperty('job', userData.job);
     });
 
     test('Delete User', async ({ request }) => {
@@ -138,10 +139,8 @@ test.describe('Reqres API Tests', () => {
   // Authentication Endpoints
   test.describe('Authentication', () => {
     test('Register - Successful', async ({ request }) => {
-      const userData = {
-        email: 'eve.holt@reqres.in',
-        password: 'pistol'
-      };
+      // Use UserFactory for registration data
+      const userData = UserFactory.registerSuccessful();
 
       const response = await request.post(`${baseUrl}/register`, {
         data: userData
@@ -157,9 +156,8 @@ test.describe('Reqres API Tests', () => {
     });
 
     test('Register - Unsuccessful', async ({ request }) => {
-      const userData = {
-        email: 'sydney@fife'
-      };
+      // Use UserFactory for unsuccessful registration
+      const userData = UserFactory.registerUnsuccessful();
 
       const response = await request.post(`${baseUrl}/register`, {
         data: userData
@@ -174,10 +172,8 @@ test.describe('Reqres API Tests', () => {
     });
 
     test('Login - Successful', async ({ request }) => {
-      const userData = {
-        email: 'eve.holt@reqres.in',
-        password: 'cityslicka'
-      };
+      // Use UserFactory for login data
+      const userData = UserFactory.loginSuccessful();
 
       const response = await request.post(`${baseUrl}/login`, {
         data: userData
@@ -192,9 +188,8 @@ test.describe('Reqres API Tests', () => {
     });
 
     test('Login - Unsuccessful', async ({ request }) => {
-      const userData = {
-        email: 'peter@klaven'
-      };
+      // Use UserFactory for unsuccessful login
+      const userData = UserFactory.loginUnsuccessful();
 
       const response = await request.post(`${baseUrl}/login`, {
         data: userData
