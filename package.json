@@ -16,6 +16,7 @@
   "license": "ISC",
   "description": "Playwright-Typescript Framework",
   "dependencies": {
+    "@playwright/mcp": "^0.0.7",
     "@playwright/test": "^1.50.1",
     "dotenv": "^16.3.1",
     "playwright": "^1.50.1"
