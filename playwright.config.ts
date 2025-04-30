@@ -13,7 +13,7 @@ export default defineConfig({
   use: {
     baseURL: EnvConfig.getBaseUrl(),
     trace: 'on-first-retry',
-    ignoreHTTPSErrors: true,
+    ignoreHTTPSErrors: true
   },
   projects: [
     // API tests - run only once in Chromium
@@ -37,6 +37,6 @@ export default defineConfig({
       name: 'Desktop Edge',
       testMatch: /.*e2e\/.*\.spec\.ts/,
       use: { ...devices['Desktop Edge'] }
-      }
+    }
   ]
 });
