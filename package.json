@@ -13,13 +13,11 @@
   "description": "Playwright-Typescript Framework",
   "dependencies": {
     "@playwright/test": "^1.50.1",
-    "dotenv": "^16.3.1",
     "playwright": "^1.50.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.5.1",
     "@types/node": "^22.13.1",
-    "cross-env": "^7.0.3",
     "prettier": "^3.5.0"
   }
 }
