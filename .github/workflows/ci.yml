@@ -28,7 +28,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
-        run: npm run test:qa
+        run: npx playwright test
         env:
           QA_URL: https://practice.cydeo.com
           STAGING_URL: https://staging.practice.cydeo.com
