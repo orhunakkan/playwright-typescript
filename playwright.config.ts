@@ -1,5 +1,4 @@
 import { defineConfig, devices } from '@playwright/test';
-import { EnvConfig } from './utilities/env-config';
 
 export default defineConfig({
   testDir: './tests',
@@ -11,18 +10,16 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html'], ['list']],
   use: {
-    baseURL: EnvConfig.getBaseUrl(),
+    baseURL: process.env.ENV,
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true
   },
   projects: [
-    // API tests - run only once in Chromium
     {
       name: 'API Tests',
       testMatch: /.*api\/.*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] }
     },
-    // E2E tests - run in all browsers
     {
       name: 'Desktop Chromium',
       testMatch: /.*e2e\/.*\.spec\.ts/,
