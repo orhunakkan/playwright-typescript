@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
+import { RegisterPage } from '../../pages/task-manager-register';
+import { LoginPage } from '../../pages/task-manager-login';
 
 test.describe('Registration functionality', () => {
   // Define base URL for consistent testing
@@ -13,32 +15,28 @@ test.describe('Registration functionality', () => {
       password: faker.internet.password({ length: 10, memorable: true })
     };
 
+    // Initialize the RegisterPage
+    const registerPage = new RegisterPage(page);
+
     // Navigate to the registration page
-    await page.goto(`${baseUrl}/register`);
+    await registerPage.goto(baseUrl);
 
     // Verify we're on the register page
-    await expect(page.getByTestId('register-page')).toBeVisible();
-    await expect(page.getByTestId('register-title')).toHaveText('Register');
+    await expect(registerPage.pageContainer).toBeVisible();
+    await expect(registerPage.pageTitle).toHaveText('Register');
 
-    // Fill out the registration form
-    await page.getByTestId('register-name').fill(userData.name);
-    await page.getByTestId('register-email').fill(userData.email);
-    await page.getByTestId('register-password').fill(userData.password);
+    // Register with the generated user data
+    await registerPage.register(userData.name, userData.email, userData.password);
 
-    // Submit the form
-    await page.getByTestId('register-submit').click();
-
-    // Wait for success message
-    await expect(page.getByTestId('register-success')).toBeVisible();
-    await expect(page.getByTestId('register-success')).toContainText('Registration successful');
+    // Verify success message
+    await registerPage.expectSuccessMessage();
 
     // Verify redirection to login page (happens after timeout)
     await page.waitForURL(`${baseUrl}/login`, { timeout: 5000 });
 
     // Bonus: Try logging in with the newly created account
-    await page.getByTestId('login-email').fill(userData.email);
-    await page.getByTestId('login-password').fill(userData.password);
-    await page.getByTestId('login-submit').click();
+    const loginPage = new LoginPage(page);
+    await loginPage.login(userData.email, userData.password);
 
     // Verify successful login with redirect to dashboard
     await page.waitForURL(`${baseUrl}/dashboard`);
@@ -53,90 +51,83 @@ test.describe('Registration functionality', () => {
       password: faker.internet.password({ length: 10 })
     };
 
+    const registerPage = new RegisterPage(page);
+
     // Register first time
-    await page.goto(`${baseUrl}/register`);
-    await page.getByTestId('register-name').fill(userData.name);
-    await page.getByTestId('register-email').fill(userData.email);
-    await page.getByTestId('register-password').fill(userData.password);
-    await page.getByTestId('register-submit').click();
+    await registerPage.goto(baseUrl);
+    await registerPage.register(userData.name, userData.email, userData.password);
 
     // Wait for success and redirection
-    await expect(page.getByTestId('register-success')).toBeVisible();
+    await registerPage.expectSuccessMessage();
     await page.waitForURL(`${baseUrl}/login`, { timeout: 5000 });
 
     // Try to register again with same email
-    await page.goto(`${baseUrl}/register`);
-    await page.getByTestId('register-name').fill(faker.person.fullName());
-    await page.getByTestId('register-email').fill(userData.email); // Same email
-    await page.getByTestId('register-password').fill(faker.internet.password({ length: 10 }));
-    await page.getByTestId('register-submit').click();
+    await registerPage.goto(baseUrl);
+    await registerPage.register(
+      faker.person.fullName(),
+      userData.email, // Same email
+      faker.internet.password({ length: 10 })
+    );
 
     // Verify error message
-    await expect(page.getByTestId('register-error')).toBeVisible();
-    await expect(page.getByTestId('register-error')).toContainText('Email already registered');
+    await registerPage.expectErrorMessage('Email already registered');
   });
 
   test('validates form inputs before submission', async ({ page }) => {
-    await page.goto(`${baseUrl}/register`);
+    const registerPage = new RegisterPage(page);
+    await registerPage.goto(baseUrl);
 
     // Test empty form submission
-    await page.getByTestId('register-submit').click();
+    await registerPage.submitRegistration();
 
     // HTML validation should prevent form submission
     // Check we're still on register page
     await expect(page.url()).toBe(`${baseUrl}/register`);
 
     // Test invalid email format
-    await page.getByTestId('register-name').fill(faker.person.fullName());
-    await page.getByTestId('register-email').fill('invalid-email');
-    await page.getByTestId('register-password').fill(faker.internet.password());
-    await page.getByTestId('register-submit').click();
+    await registerPage.fillRegistrationForm(faker.person.fullName(), 'invalid-email', faker.internet.password());
+    await registerPage.submitRegistration();
 
     // HTML validation should catch this
     await expect(page.url()).toBe(`${baseUrl}/register`);
 
     // Test very short password
-    await page.getByTestId('register-email').fill(faker.internet.email());
-    await page.getByTestId('register-password').fill('12345');
-    await page.getByTestId('register-submit').click();
+    await registerPage.emailInput.fill(faker.internet.email());
+    await registerPage.passwordInput.fill('12345');
+    await registerPage.submitRegistration();
 
     // Check we stay on register page (assuming minimum 6 chars)
     await expect(page.url()).toBe(`${baseUrl}/register`);
   });
 
   test('has proper UI elements and styling', async ({ page }) => {
-    await page.goto(`${baseUrl}/register`);
+    const registerPage = new RegisterPage(page);
+    await registerPage.goto(baseUrl);
 
     // Check form elements existence
-    await expect(page.getByTestId('register-name')).toBeVisible();
-    await expect(page.getByTestId('register-email')).toBeVisible();
-    await expect(page.getByTestId('register-password')).toBeVisible();
-    await expect(page.getByTestId('register-submit')).toBeVisible();
+    await expect(registerPage.nameInput).toBeVisible();
+    await expect(registerPage.emailInput).toBeVisible();
+    await expect(registerPage.passwordInput).toBeVisible();
+    await expect(registerPage.submitButton).toBeVisible();
 
-    // Check UI styling (just basic checks)
-    const submitButton = page.getByTestId('register-submit');
-    await expect(submitButton).toHaveCSS('background-color', 'rgb(59, 130, 246)'); // blue-500 in Tailwind
-
-    // Check form container styling
-    const formContainer = page.getByTestId('register-page');
-    await expect(formContainer).toHaveCSS('border-radius', '8px'); // rounded-lg in Tailwind
+    // Check UI styling
+    await registerPage.checkPageStyling();
   });
 
   test('navigates between register and login pages', async ({ page }) => {
-    // While this isn't directly related to registration functionality,
-    // it's good to test navigation between authentication pages
+    const registerPage = new RegisterPage(page);
+    const loginPage = new LoginPage(page);
 
     // Start at register page
-    await page.goto(`${baseUrl}/register`);
+    await registerPage.goto(baseUrl);
 
     // Navigate to login through the app navigation
-    await page.getByRole('link', { name: 'Login' }).click();
-    await expect(page.url()).toBe(`${baseUrl}/login`);
-    await expect(page.getByTestId('login-page')).toBeVisible();
+    await registerPage.navigateToLogin();
+    await loginPage.verifyOnLoginPage(baseUrl);
 
     // Go back to register page
-    await page.getByRole('link', { name: 'Register' }).click();
+    await loginPage.navigateToRegister();
     await expect(page.url()).toBe(`${baseUrl}/register`);
-    await expect(page.getByTestId('register-page')).toBeVisible();
+    await expect(registerPage.pageContainer).toBeVisible();
   });
 });
