@@ -23,7 +23,7 @@ jobs:
         run: npm ci
       
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps edge
+        run: npx playwright install --with-deps
       
       - name: Run smoke tests
         run: npm run test:smoke
