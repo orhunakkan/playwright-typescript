@@ -3,7 +3,7 @@ import { test, expect } from "playwright/test";
 test.describe("Heroku App - Smoke Suite @smoke", () => {
 
   test.beforeEach(async ({ page }) => {
-    await page.goto("https://the-internet.herokuapp.com/");
+    await page.goto("/");
   });
 
   test("should load the homepage and validate title and basic elements", async ({ page }) => {

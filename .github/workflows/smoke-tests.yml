@@ -2,8 +2,8 @@ name: Smoke Tests
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # Run at 3 AM UTC every day
-  workflow_dispatch:      # Allow manual triggering
+    - cron: '0 3 * * *'
+  workflow_dispatch:
 
 jobs:
   smoke-tests:
@@ -27,13 +27,4 @@ jobs:
       
       - name: Run smoke tests
         run: npm run test:smoke
-        env:
-          ENV: https://the-internet.herokuapp.com/
-      
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 7
+
