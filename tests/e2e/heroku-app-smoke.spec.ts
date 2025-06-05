@@ -1,6 +1,6 @@
 import { test, expect } from "playwright/test";
 
-test.describe("Heroku App - Smoke Suite", () => {
+test.describe("Heroku App - Smoke Suite @smoke", () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto("https://the-internet.herokuapp.com/");

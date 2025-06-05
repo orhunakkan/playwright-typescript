@@ -9,7 +9,9 @@ export default defineConfig({
   use: {
     baseURL: process.env.ENV,
     trace: 'on-first-retry',
-    ignoreHTTPSErrors: true
+    ignoreHTTPSErrors: true,
+    screenshot: 'off',
+    video: 'off',
   },
   projects: [
     {
