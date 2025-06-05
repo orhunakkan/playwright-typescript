@@ -1,23 +1,18 @@
 {
-  "name": "playwright-typescript-framework",
+  "name": "playwright-typescript",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
-    "test": "playwright test",
-    "test:ui-mode": "playwright test --ui"
+    "test": "playwright test"
   },
   "author": "Orhun Akkan",
   "license": "ISC",
   "description": "Playwright-Typescript Framework",
   "dependencies": {
-    "@playwright/test": "^1.50.1",
-    "playwright": "^1.50.1"
+    "playwright": "^1.52.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.5.1",
-    "@types/node": "^22.13.1",
-    "prettier": "^3.5.0"
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.15.29"
   }
 }
