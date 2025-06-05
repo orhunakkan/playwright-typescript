@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 4 : undefined,
   reporter: [['html']],
   use: {
-    baseURL: process.env.ENV,
+    baseURL: 'https://the-internet.herokuapp.com/',
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true,
     screenshot: 'off',
