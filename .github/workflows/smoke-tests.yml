@@ -27,4 +27,3 @@ jobs:
       
       - name: Run smoke tests
         run: npm run test:smoke
-
