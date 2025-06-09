@@ -2,10 +2,7 @@
   "name": "playwright-typescript",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "test": "playwright test",
-    "test:smoke": "playwright test --grep @smoke"
-  },
+  "scripts": {},
   "author": "Orhun Akkan",
   "license": "ISC",
   "description": "Playwright-Typescript Framework",
