@@ -28,7 +28,7 @@ jobs:
       - name: Run smoke tests
         run: npx playwright test tests/e2e/heroku-app-smoke.spec.ts
       
-      - name: Upload HTML report
+      - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
