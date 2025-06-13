@@ -1,4 +1,5 @@
 import { test, expect } from "playwright/test";
+import { HerokuAppHomePage } from "../../pages/heroku-app-home-page";
 
 test.describe("Heroku App - Smoke Suite", () => {
 
@@ -7,8 +8,9 @@ test.describe("Heroku App - Smoke Suite", () => {
   });
 
   test("should load the homepage and validate title and basic elements", async ({ page }) => {
-    expect(await page.title()).toBe("The Internet");
-    expect(await page.locator("h1").textContent()).toBe("Welcome to the-internet");
-    expect(await page.locator("h2").textContent()).toBe("Available Examples");
+    const homePage = new HerokuAppHomePage(page);
+    expect(await homePage.getTitle()).toBe("The Internet");
+    expect(await homePage.getHeader1Text()).toBe("Welcome to the-internet");
+    expect(await homePage.getHeader2Text()).toBe("Available Examples");
   });
 });
