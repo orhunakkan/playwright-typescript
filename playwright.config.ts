@@ -6,6 +6,10 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 4 : undefined,
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }]
+  ],
   use: {
     baseURL: 'https://the-internet.herokuapp.com/',
     trace: 'on-first-retry',
