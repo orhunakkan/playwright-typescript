@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import { getEnvironment } from './utilities/environments';
+
+const env = process.env.env || 'dev';
+const environment = getEnvironment(env);
 
 export default defineConfig({
   testDir: './tests',
@@ -11,7 +15,7 @@ export default defineConfig({
     ['html', { open: 'never' }]
   ],
   use: {
-    baseURL: 'https://the-internet.herokuapp.com/',
+    baseURL: environment.baseURL,
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true,
     screenshot: 'off',
