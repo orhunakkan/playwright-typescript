@@ -18,8 +18,8 @@ export default defineConfig({
     baseURL: environment.baseURL,
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true,
-    screenshot: 'off',
-    video: 'off',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
   projects: [
     {
