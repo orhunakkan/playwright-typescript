@@ -1,8 +1,4 @@
-export interface Environment {
-  baseURL: string;
-}
-
-export const environments: Record<string, Environment> = {
+export const environments = {
   dev: {
     baseURL: 'https://the-internet.herokuapp.com/'
   },
@@ -17,10 +13,10 @@ export const environments: Record<string, Environment> = {
   }
 };
 
-export function getEnvironment(env: string = 'dev'): Environment {
+export function getEnvironment(env = 'dev') {
   const environment = environments[env];
   if (!environment) {
-    throw new Error(`Environment '${env}' not found. Available environments: ${Object.keys(environments).join(', ')}`);
+    throw new Error(`Environment '${env}' not found.`);
   }
   return environment;
 }
