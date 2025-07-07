@@ -10,40 +10,40 @@ jobs:
     working_directory: ~/project
     steps:
       - checkout
-      
+
       - node/install-packages:
           pkg-manager: npm
-          
+
       - run:
           name: Install Playwright Browsers
           command: npx playwright install --with-deps
-          
+
       - run:
           name: Run Smoke Tests
           command: npx playwright test tests/e2e/heroku-app-smoke.spec.ts
-          
+
       - store_test_results:
           path: test-results
-          
+
       - store_artifacts:
           path: test-results
           destination: test-results
-          
+
       - store_artifacts:
           path: playwright-report
           destination: playwright-report
 
 workflows:
   version: 2
-  
+
   test:
     jobs:
       - smoke-tests
-  
+
   nightly-smoke-tests:
     triggers:
       - schedule:
-          cron: "0 3 * * *"
+          cron: '0 3 * * *'
           filters:
             branches:
               only:

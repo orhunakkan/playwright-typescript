@@ -10,10 +10,7 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 4 : undefined,
-  reporter: [
-    ['list'],
-    ['html']
-  ],
+  reporter: [['list'], ['html']],
   use: {
     baseURL: environment.baseURL,
     trace: 'on-first-retry',
@@ -24,7 +21,7 @@ export default defineConfig({
   projects: [
     {
       name: 'Desktop Edge',
-      use: { ...devices['Desktop Edge'] }
-    }
-  ]
+      use: { ...devices['Desktop Edge'] },
+    },
+  ],
 });
