@@ -11,7 +11,7 @@ test.describe('Hands on App - Web Form', () => {
     webFormPage = new WebFormPage(page);
   });
 
-  test('should fill out the form and submit', async ({ page }) => {
+  test('should fill out the form and submit', async () => {
     await webFormPage.headingPracticeSite.isVisible();
     await webFormPage.headingWebForm.isVisible();
     await webFormPage.textInput.fill('QQQQQQQQQQ');
