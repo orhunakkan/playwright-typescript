@@ -22,9 +22,7 @@ export async function logConsoleErrors(page: Page): Promise<void> {
  */
 export async function logNetworkErrors(page: Page): Promise<void> {
   page.on('requestfailed', request => {
-    console.log(
-      `[NETWORK ERROR] ${request.method()} ${request.url()} - ${request.failure()?.errorText}`
-    );
+    console.log(`[NETWORK ERROR] ${request.method()} ${request.url()} - ${request.failure()?.errorText}`);
   });
 }
 
