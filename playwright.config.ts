@@ -10,6 +10,7 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 4 : undefined,
+  snapshotPathTemplate: './screenshots/{testFileName}-snapshots/{arg}{ext}',
   reporter: [['list'], ['html']],
   use: {
     baseURL: environment.baseURL,
