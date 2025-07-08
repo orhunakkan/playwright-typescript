@@ -8,7 +8,8 @@
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "regression": "npx playwright test --grep @regression"
+    "regression": "npx playwright test --grep @regression",
+    "smoke": "npx playwright test tests/e2e/heroku-app-smoke.spec.ts"
   },
   "author": "Orhun Akkan",
   "license": "ISC",

@@ -33,11 +33,45 @@ jobs:
           path: playwright-report
           destination: playwright-report
 
+  regression-tests:
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.41.0-jammy
+    working_directory: ~/project
+    steps:
+      - checkout
+
+      - node/install-packages:
+          pkg-manager: npm
+
+      - run:
+          name: Install Playwright Browsers
+          command: npx playwright install --with-deps
+
+      - run:
+          name: Run Regression Tests
+          command: npm run regression
+
+      - store_test_results:
+          path: test-results
+
+      - store_artifacts:
+          path: test-results
+          destination: test-results
+
+      - store_artifacts:
+          path: playwright-report
+          destination: playwright-report
+
 workflows:
   version: 2
 
   test:
     jobs:
+      - regression-tests:
+          filters:
+            branches:
+              only:
+                - main
       - smoke-tests
 
   nightly-smoke-tests:
