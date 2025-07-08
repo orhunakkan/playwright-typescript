@@ -3,15 +3,15 @@ import { Page } from '@playwright/test';
 export class HerokuAppHomePage {
   constructor(private page: Page) {}
 
-  async getTitle() {
+  get Title() {
     return this.page.title();
   }
 
-  async getHeader1Text() {
-    return this.page.locator('h1').textContent();
+  get header1() {
+    return this.page.locator('h1');
   }
 
-  async getHeader2Text() {
-    return this.page.locator('h2').textContent();
+  get header2() {
+    return this.page.locator('h2');
   }
 }
