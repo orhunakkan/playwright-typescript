@@ -16,12 +16,15 @@ A comprehensive test automation framework built with **Playwright** and **TypeSc
 - **Error Logging**: Comprehensive error tracking for console, network, and page errors
 - **Multi-Environment Support**: Easy configuration for different environments (dev, qa, uat, prod)
 - **Code Quality**: ESLint + Prettier integration for consistent code formatting
-- **CI/CD Ready**: Optimized for continuous integration pipelines
+- **CI/CD Ready**: CircleCI configuration with smoke tests, regression tests, and nightly scheduled runs
 
 ## 📁 Project Structure
 
 ```
 playwright-typescript/
+├── .circleci/                    # CircleCI configuration
+│   └── config.yml                # CI/CD pipeline with smoke & regression workflows
+├── .prettierrc                   # Prettier formatting configuration
 ├── eslint.config.js              # ESLint configuration
 ├── package.json                  # Dependencies and scripts
 ├── playwright.config.ts          # Playwright configuration
@@ -31,6 +34,7 @@ playwright-typescript/
 │   └── heroku-app-home-page.ts   # Home page objects
 ├── playwright-report/            # HTML test reports
 ├── screenshots/                  # Visual regression screenshots
+├── test-results/                 # Test execution results
 ├── tests/                        # Test files
 │   ├── api/                      # API tests
 │   │   ├── authentication/       # Auth API tests
@@ -75,11 +79,12 @@ npm install
 
 This will install all required dependencies including:
 
-- Playwright browsers
-- TypeScript
-- Testing framework
-- Code quality tools (ESLint, Prettier)
-- Faker.js for test data generation
+- Playwright browsers and test framework (v1.52.0)
+- TypeScript and Node.js type definitions
+- Testing framework (@playwright/test v1.52.0)
+- Code quality tools (ESLint v9.30.1, Prettier v3.6.2)
+- Faker.js (v9.8.0) for test data generation
+- Environment configuration (dotenv v17.1.0)
 
 ### 3. Install Playwright Browsers
 
@@ -295,6 +300,23 @@ npx playwright test --debug
 
 ## 🎨 Code Quality
 
+### Code Formatting Configuration
+
+The project uses Prettier with the following configuration (`.prettierrc`):
+
+```json
+{
+  "semi": true,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "printWidth": 150,
+  "tabWidth": 2,
+  "useTabs": false,
+  "bracketSpacing": true,
+  "arrowParens": "avoid"
+}
+```
+
 ### Linting & Formatting
 
 ```powershell
@@ -313,10 +335,11 @@ npm run lint:fix
 
 ### Code Quality Standards
 
-- **ESLint**: Code quality and consistency
-- **Prettier**: Code formatting
-- **TypeScript**: Type safety
+- **ESLint**: Code quality and consistency with TypeScript support
+- **Prettier**: Automatic code formatting with consistent style
+- **TypeScript**: Type safety and better development experience
 - **Consistent naming**: CamelCase for variables/functions, PascalCase for classes
+- **Modern ES modules**: Using `"type": "module"` in package.json
 
 ## 🔧 Advanced Usage
 
@@ -368,7 +391,40 @@ test.setTimeout(60000); // 60 second timeout for specific test
 
 ## 🚀 CI/CD Integration
 
-### GitHub Actions Example
+### CircleCI Configuration (Active)
+
+The project includes a comprehensive CircleCI configuration with multiple workflows:
+
+#### Jobs Available:
+
+- **smoke-tests**: Quick validation of critical functionality
+- **regression-tests**: Full regression test suite with @regression tag filtering
+- **nightly-smoke-tests**: Scheduled nightly runs at 3 AM UTC
+
+#### Workflows:
+
+- **test**: Runs on all branches (smoke tests) and main branch (regression tests)
+- **nightly-smoke-tests**: Scheduled daily smoke tests on main branch
+
+```yaml
+# Example from .circleci/config.yml
+version: 2.1
+orbs:
+  node: circleci/node@7.1.0
+
+jobs:
+  smoke-tests:
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.41.0-jammy
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run: npx playwright install --with-deps
+      - run: npx playwright test tests/e2e/heroku-app-smoke.spec.ts
+```
+
+### GitHub Actions Example (Alternative)
 
 ```yaml
 name: Playwright Tests
@@ -414,9 +470,15 @@ jobs:
    - Check for environment differences
 
 4. **API Test Failures**
-   - Verify API server is running on `localhost:3000`
-   - Check API endpoint availability
-   - Validate test data and authentication
+   - Verify API server is running on the configured endpoint
+   - Check API endpoint availability and network connectivity
+   - Validate test data and authentication credentials
+   - Review environment configuration in `utilities/environments.ts`
+
+5. **CircleCI Integration Issues**
+   - Ensure CircleCI environment variables are properly configured
+   - Check Docker image compatibility (mcr.microsoft.com/playwright:v1.41.0-jammy)
+   - Verify artifact storage permissions
 
 ### Debug Commands
 
@@ -438,6 +500,7 @@ npx playwright show-report
 - [Faker.js Documentation](https://fakerjs.dev/)
 - [ESLint Documentation](https://eslint.org/)
 - [Prettier Documentation](https://prettier.io/)
+- [CircleCI Documentation](https://circleci.com/docs/)
 
 ## 🤝 Contributing
 
@@ -448,6 +511,7 @@ npx playwright show-report
    ```powershell
    npm run lint:fix && npm run format
    ```
+5. Ensure all CI/CD pipelines pass (CircleCI smoke and regression tests)
 
 ## 📄 License
 
