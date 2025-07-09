@@ -63,7 +63,6 @@ jobs:
           destination: playwright-report
 
 workflows:
-  
   test:
     jobs:
       - regression-tests:

@@ -1,15 +1,19 @@
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 export const environments = {
   dev: {
-    baseURL: 'https://the-internet.herokuapp.com/',
+    baseURL: process.env.DEV_BASE_URL || 'https://the-internet.herokuapp.com/',
   },
   qa: {
-    baseURL: 'https://the-internet.herokuapp.com/',
+    baseURL: process.env.QA_BASE_URL || 'https://the-internet.herokuapp.com/',
   },
   uat: {
-    baseURL: 'https://the-internet.herokuapp.com/',
+    baseURL: process.env.UAT_BASE_URL || 'https://the-internet.herokuapp.com/',
   },
   prod: {
-    baseURL: 'https://the-internet.herokuapp.com/',
+    baseURL: process.env.PROD_BASE_URL || 'https://the-internet.herokuapp.com/',
   },
 };
 

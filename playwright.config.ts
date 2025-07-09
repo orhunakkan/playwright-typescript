@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import { getEnvironment } from './utilities/environments';
 
-const env = process.env.env || 'dev';
+const env = process.env.ENV || 'dev';
 const environment = getEnvironment(env);
 
 export default defineConfig({

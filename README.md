@@ -74,6 +74,7 @@ npm install
 ```
 
 This will install all required dependencies including:
+
 - Playwright browsers
 - TypeScript
 - Testing framework
@@ -93,7 +94,7 @@ npx playwright install
 The framework supports multiple environments configured in `utilities/environments.ts`:
 
 - **dev**: Development environment
-- **qa**: Quality Assurance environment  
+- **qa**: Quality Assurance environment
 - **uat**: User Acceptance Testing environment
 - **prod**: Production environment
 
@@ -119,6 +120,7 @@ Key configuration options in `playwright.config.ts`:
 ### E2E (End-to-End) Tests
 
 #### Smoke Tests
+
 Quick validation of critical user journeys:
 
 ```powershell
@@ -126,6 +128,7 @@ npm run smoke
 ```
 
 #### Regression Tests
+
 Comprehensive feature testing:
 
 ```powershell
@@ -133,6 +136,7 @@ npm run regression
 ```
 
 #### Visual Regression Tests
+
 Screenshot comparison testing:
 
 ```powershell
@@ -154,16 +158,18 @@ npx playwright test tests/e2e/heroku-app-regression.spec.ts
 The framework includes comprehensive API testing for a Todo application:
 
 #### Authentication Tests
+
 ```powershell
 npx playwright test tests/api/authentication/
 ```
 
 #### Feature API Tests
+
 ```powershell
 # Categories management
 npx playwright test tests/api/categories/
 
-# Todo items management  
+# Todo items management
 npx playwright test tests/api/todos/
 
 # User management
@@ -177,6 +183,7 @@ npx playwright test tests/api/health/
 ```
 
 #### Run All API Tests
+
 ```powershell
 npx playwright test tests/api/
 ```
@@ -198,6 +205,7 @@ npx playwright show-report
 ```
 
 Reports include:
+
 - Test execution summary
 - Screenshots and videos for failures
 - Detailed error logs
@@ -206,6 +214,7 @@ Reports include:
 ### Visual Regression Reports
 
 Visual comparison reports are generated automatically and stored in:
+
 - `screenshots/` - Baseline screenshots
 - `playwright-report/` - Comparison results
 
@@ -238,7 +247,7 @@ export class WebFormPage {
 ```typescript
 test('should fill out the form and submit', async ({ page }) => {
   const webFormPage = new WebFormPage(page);
-  
+
   await webFormPage.textInput.fill(generateDynamicTextInput());
   await webFormPage.submitButton.click();
   await expect(webFormPage.headingFormSubmitted).toBeVisible();
@@ -251,9 +260,9 @@ The framework generates realistic test data using Faker.js:
 
 ```typescript
 // Generate dynamic content
-const textInput = generateDynamicTextInput();     // "LOREM IPSUM DOLOR"
-const password = generateDynamicPasswordInput();  // "aB3$mK9#vL2@"
-const textArea = generateDynamicTextArea();       // Multi-paragraph text
+const textInput = generateDynamicTextInput(); // "LOREM IPSUM DOLOR"
+const password = generateDynamicPasswordInput(); // "aB3$mK9#vL2@"
+const textArea = generateDynamicTextArea(); // Multi-paragraph text
 ```
 
 ## 🔍 Error Logging & Debugging
@@ -354,7 +363,7 @@ fullyParallel: true,                       // Enable parallel execution
 Configure timeouts for different scenarios:
 
 ```typescript
-test.setTimeout(60000);  // 60 second timeout for specific test
+test.setTimeout(60000); // 60 second timeout for specific test
 ```
 
 ## 🚀 CI/CD Integration
@@ -368,21 +377,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npm test
-    - uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npm test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
 ```
 
 ## 🐛 Troubleshooting
@@ -390,6 +399,7 @@ jobs:
 ### Common Issues
 
 1. **Browser Installation Issues**
+
    ```powershell
    npx playwright install --with-deps
    ```
