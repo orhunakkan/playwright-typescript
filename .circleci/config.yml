@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@6.1.0
+  node: circleci/node@7.1.0
 
 jobs:
   smoke-tests:
@@ -63,8 +63,7 @@ jobs:
           destination: playwright-report
 
 workflows:
-  version: 2
-
+  
   test:
     jobs:
       - regression-tests:
