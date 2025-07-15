@@ -1,5 +1,33 @@
 import { faker } from '@faker-js/faker';
 
+// Utility for login payload
+export function generateLoginPayload(user: any) {
+  return {
+    username: user.username,
+    password: user.password,
+  };
+}
+
+// Utility for authorization headers
+export function generateAuthHeaders(token: string) {
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+export function getInvalidToken() {
+  return {
+    Authorization: 'Bearer invalid_token',
+  };
+}
+
+export function getInvalidCredentials() {
+  return {
+    username: 'nonexistent',
+    password: 'wrong',
+  };
+}
+
 // Generate a realistic user payload
 export function generateUserPayload() {
   const firstName = faker.person.firstName();

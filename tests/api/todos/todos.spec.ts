@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { generateUserPayload, generateCategoryPayload, generateTodoPayload } from '../../../utilities/api-dynamic-content';
+import {
+  generateUserPayload,
+  generateCategoryPayload,
+  generateTodoPayload,
+  generateLoginPayload,
+  generateAuthHeaders,
+} from '../../../utilities/api-dynamic-content';
 
 const baseURL = 'http://localhost:3000';
 
@@ -20,51 +26,26 @@ test.describe('Todos API Tests', () => {
     testCategory = generateCategoryPayload();
     testTodo = generateTodoPayload();
     // Register user
-    const registerResponse = await request.post(`${baseURL}/api/auth/register`, {
-      data: testUser,
-    });
+    const registerResponse = await request.post(`${baseURL}/api/auth/register`, { data: testUser });
     expect(registerResponse.status()).toBe(201);
     const registerBody = await registerResponse.json();
     userId = registerBody.user.id;
-
     // Login to get token
-    const loginResponse = await request.post(`${baseURL}/api/auth/login`, {
-      data: {
-        username: testUser.username,
-        password: testUser.password,
-      },
-    });
+    const loginResponse = await request.post(`${baseURL}/api/auth/login`, { data: generateLoginPayload(testUser) });
     expect(loginResponse.status()).toBe(200);
     const loginBody = await loginResponse.json();
     authToken = loginBody.token;
-
     // Create category
-    const categoryResponse = await request.post(`${baseURL}/api/categories`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-      data: testCategory,
-    });
+    const categoryResponse = await request.post(`${baseURL}/api/categories`, { headers: generateAuthHeaders(authToken), data: testCategory });
     expect(categoryResponse.status()).toBe(201);
     const categoryBody = await categoryResponse.json();
     categoryId = categoryBody.category.id;
   });
 
   test('Create Todo', async ({ request }) => {
-    const todoData = {
-      ...testTodo,
-      category_id: categoryId,
-    };
-
-    const response = await request.post(`${baseURL}/api/todos`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-      data: todoData,
-    });
-
+    const todoData = { ...testTodo, category_id: categoryId };
+    const response = await request.post(`${baseURL}/api/todos`, { headers: generateAuthHeaders(authToken), data: todoData });
     expect(response.status()).toBe(201);
-
     const responseBody = await response.json();
     expect(responseBody).toHaveProperty('todo');
     expect(responseBody.todo).toHaveProperty('id');
@@ -72,14 +53,12 @@ test.describe('Todos API Tests', () => {
     expect(responseBody.todo.description).toBe(testTodo.description);
     expect(responseBody.todo.priority).toBe(testTodo.priority);
     expect(responseBody.todo.category_id).toBe(categoryId);
-
     todoId = responseBody.todo.id;
   });
 
   test('Get All Todos', async ({ request }) => {
     const response = await request.get(`${baseURL}/api/todos`);
     expect(response.status()).toBe(200);
-
     const responseBody = await response.json();
     expect(responseBody).toHaveProperty('todos');
     expect(Array.isArray(responseBody.todos)).toBe(true);
@@ -90,19 +69,15 @@ test.describe('Todos API Tests', () => {
     // Test priority filter
     const priorityResponse = await request.get(`${baseURL}/api/todos?priority=high`);
     expect(priorityResponse.status()).toBe(200);
-
     // Test completion filter
     const completionResponse = await request.get(`${baseURL}/api/todos?completed=false`);
     expect(completionResponse.status()).toBe(200);
-
     // Test category filter
     const categoryResponse = await request.get(`${baseURL}/api/todos?category_id=${categoryId}`);
     expect(categoryResponse.status()).toBe(200);
-
     // Test user filter
     const userResponse = await request.get(`${baseURL}/api/todos?user_id=${userId}`);
     expect(userResponse.status()).toBe(200);
-
     // Test pagination
     const paginationResponse = await request.get(`${baseURL}/api/todos?limit=5&offset=0`);
     expect(paginationResponse.status()).toBe(200);
@@ -111,7 +86,6 @@ test.describe('Todos API Tests', () => {
   test('Get Todo by ID', async ({ request }) => {
     const response = await request.get(`${baseURL}/api/todos/${todoId}`);
     expect(response.status()).toBe(200);
-
     const responseBody = await response.json();
     expect(responseBody).toHaveProperty('todo');
     expect(responseBody.todo).toHaveProperty('id', todoId);
@@ -127,9 +101,7 @@ test.describe('Todos API Tests', () => {
     };
 
     const response = await request.put(`${baseURL}/api/todos/${todoId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
       data: updateData,
     });
 
@@ -145,9 +117,7 @@ test.describe('Todos API Tests', () => {
 
   test('Mark Todo Complete', async ({ request }) => {
     const response = await request.patch(`${baseURL}/api/todos/${todoId}/complete`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
     });
 
     expect(response.status()).toBe(200);
@@ -159,9 +129,7 @@ test.describe('Todos API Tests', () => {
 
   test('Mark Todo Incomplete', async ({ request }) => {
     const response = await request.patch(`${baseURL}/api/todos/${todoId}/incomplete`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
     });
 
     expect(response.status()).toBe(200);
@@ -180,9 +148,7 @@ test.describe('Todos API Tests', () => {
 
   test('Missing Required Fields', async ({ request }) => {
     const response = await request.post(`${baseURL}/api/todos`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
       data: {
         description: 'Missing title',
       },
@@ -197,9 +163,7 @@ test.describe('Todos API Tests', () => {
 
   test('Delete Todo', async ({ request }) => {
     const response = await request.delete(`${baseURL}/api/todos/${todoId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
     });
 
     expect(response.status()).toBe(200);
@@ -214,16 +178,12 @@ test.describe('Todos API Tests', () => {
   test.afterAll(async ({ request }) => {
     // Delete category
     await request.delete(`${baseURL}/api/categories/${categoryId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
     });
 
     // Delete user
     await request.delete(`${baseURL}/api/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
     });
   });
 });

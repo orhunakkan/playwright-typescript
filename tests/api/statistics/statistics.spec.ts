@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { generateUserPayload, generateCategoryPayload, generateTodoPayload } from '../../../utilities/api-dynamic-content';
+import {
+  generateUserPayload,
+  generateCategoryPayload,
+  generateTodoPayload,
+  generateLoginPayload,
+  generateAuthHeaders,
+} from '../../../utilities/api-dynamic-content';
 
 const baseURL = 'http://localhost:3000';
 
@@ -29,10 +35,7 @@ test.describe('Statistics API Tests', () => {
 
     // Login to get token
     const loginResponse = await request.post(`${baseURL}/api/auth/login`, {
-      data: {
-        username: testUser.username,
-        password: testUser.password,
-      },
+      data: generateLoginPayload(testUser),
     });
     expect(loginResponse.status()).toBe(200);
     const loginBody = await loginResponse.json();
@@ -40,9 +43,7 @@ test.describe('Statistics API Tests', () => {
 
     // Create category
     const categoryResponse = await request.post(`${baseURL}/api/categories`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
       data: testCategory,
     });
     expect(categoryResponse.status()).toBe(201);
@@ -55,9 +56,7 @@ test.describe('Statistics API Tests', () => {
       category_id: categoryId,
     };
     const todoResponse = await request.post(`${baseURL}/api/todos`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
       data: todoData,
     });
     expect(todoResponse.status()).toBe(201);
@@ -142,23 +141,17 @@ test.describe('Statistics API Tests', () => {
   test.afterAll(async ({ request }) => {
     // Delete todo
     await request.delete(`${baseURL}/api/todos/${todoId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
     });
 
     // Delete category
     await request.delete(`${baseURL}/api/categories/${categoryId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
     });
 
     // Delete user
     await request.delete(`${baseURL}/api/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
     });
   });
 });

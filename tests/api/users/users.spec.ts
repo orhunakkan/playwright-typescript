@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { generateUserPayload } from '../../../utilities/api-dynamic-content';
+import { generateUserPayload, generateLoginPayload, generateAuthHeaders } from '../../../utilities/api-dynamic-content';
 
 const baseURL = 'http://localhost:3000';
 
@@ -23,10 +23,7 @@ test.describe('User Management API Tests', () => {
 
     // Login to get token
     const loginResponse = await request.post(`${baseURL}/api/auth/login`, {
-      data: {
-        username: testUser.username,
-        password: testUser.password,
-      },
+      data: generateLoginPayload(testUser),
     });
     expect(loginResponse.status()).toBe(200);
     const loginBody = await loginResponse.json();
@@ -70,9 +67,7 @@ test.describe('User Management API Tests', () => {
     };
 
     const response = await request.put(`${baseURL}/api/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
       data: updateData,
     });
 
@@ -92,9 +87,7 @@ test.describe('User Management API Tests', () => {
 
   test('Delete User', async ({ request }) => {
     const response = await request.delete(`${baseURL}/api/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+      headers: generateAuthHeaders(authToken),
     });
 
     expect(response.status()).toBe(200);
