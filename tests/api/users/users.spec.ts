@@ -1,17 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { generateUserPayload } from '../../../utilities/api-dynamic-content';
 
 const baseURL = 'http://localhost:3000';
 
-// Test data
-const testUser = {
-  username: `testuser_${Date.now()}`,
-  email: `test_${Date.now()}@example.com`,
-  password: 'password123',
-  first_name: 'Test',
-  last_name: 'User',
-};
-
-// Global variables to store data across tests
+let testUser: any;
 let authToken: string;
 let userId: number;
 
@@ -20,6 +12,7 @@ test.describe('User Management API Tests', () => {
 
   // Setup: Create user and get auth token
   test.beforeAll(async ({ request }) => {
+    testUser = generateUserPayload();
     // Register user
     const registerResponse = await request.post(`${baseURL}/api/auth/register`, {
       data: testUser,

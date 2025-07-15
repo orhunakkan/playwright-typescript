@@ -1,20 +1,18 @@
 import { test, expect } from '@playwright/test';
+import { generateUserPayload } from '../../../utilities/api-dynamic-content';
 
 const baseURL = 'http://localhost:3000';
 
-const testUser = {
-  username: `testuser_${Date.now()}`,
-  email: `test_${Date.now()}@example.com`,
-  password: 'password123',
-  first_name: 'Test',
-  last_name: 'User',
-};
-
+let testUser: any;
 let authToken: string;
 let userId: number;
 
 test.describe('Authentication API Tests', () => {
   test.describe.configure({ mode: 'serial' });
+
+  test.beforeAll(() => {
+    testUser = generateUserPayload();
+  });
 
   test('Register User', async ({ request }) => {
     const response = await request.post(`${baseURL}/api/auth/register`, { data: testUser });

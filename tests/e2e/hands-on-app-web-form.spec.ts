@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { WebFormPage } from '../../pages/hands-on-app-web-form';
-import { generateDynamicPasswordInput, generateDynamicTextArea, generateDynamicTextInput } from '../../utilities/dynamic-content';
+import { generateDynamicPasswordInput, generateDynamicTextArea, generateDynamicTextInput } from '../../utilities/e2e-dynamic-content';
 
 const pagePath = 'https://bonigarcia.dev/selenium-webdriver-java/web-form.html';
 
