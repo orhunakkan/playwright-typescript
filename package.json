@@ -16,12 +16,12 @@
   "description": "Playwright-Typescript Framework",
   "dependencies": {
     "dotenv": "^17.1.0",
-    "playwright": "^1.52.0"
+    "playwright": "^1.54.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
     "@faker-js/faker": "^9.8.0",
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.54.1",
     "@types/node": "^22.15.29",
     "@typescript-eslint/eslint-plugin": "^8.35.1",
     "@typescript-eslint/parser": "^8.35.1",
