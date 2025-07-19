@@ -17,10 +17,15 @@ export const environments = {
   },
 };
 
-export function getEnvironment(env = 'dev') {
-  const environment = environments[env];
-  if (!environment) {
-    throw new Error(`Environment '${env}' not found.`);
+export type EnvironmentName = keyof typeof environments;
+
+export function isEnvironmentName(env: string): env is EnvironmentName {
+  return ['dev', 'qa', 'uat', 'prod'].includes(env);
+}
+
+export function getEnvironment(env: string = 'dev') {
+  if (!isEnvironmentName(env)) {
+    throw new Error(`Environment '${env}' is not valid.`);
   }
-  return environment;
+  return environments[env];
 }
