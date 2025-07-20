@@ -9,9 +9,9 @@ import {
 
 const baseURL = 'http://localhost:3000';
 
-let testUser: any;
-let testCategory: any;
-let testTodo: any;
+let testUser: { username: string; password: string; email: string };
+let testCategory: { name: string; description: string; color: string };
+let testTodo: { title: string; description: string; priority: string };
 let authToken: string;
 let userId: number;
 let categoryId: number;

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
 // Utility for login payload
-export function generateLoginPayload(user: any) {
+export function generateLoginPayload(user: { username: string; password: string }) {
   return {
     username: user.username,
     password: user.password,

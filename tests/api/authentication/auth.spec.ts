@@ -9,7 +9,7 @@ import {
 
 const baseURL = 'http://localhost:3000';
 
-let testUser: any;
+let testUser: { username: string; password: string; email: string };
 let authToken: string;
 let userId: number;
 

@@ -11,7 +11,7 @@ test.describe('Heroku App - Regression Suite', { tag: '@regression' }, () => {
 
   test('should load the homepage and validate title and basic elements', async () => {
     expect(await homePage.Title).toBe('The Internet');
-    expect(homePage.header1).toHaveText('Welcome to the-internet');
-    expect(homePage.header2).toHaveText('Available Examples');
+    await expect(homePage.header1).toHaveText('Welcome to the-internet');
+    await expect(homePage.header2).toHaveText('Available Examples');
   });
 });

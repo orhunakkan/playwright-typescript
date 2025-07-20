@@ -3,8 +3,8 @@ import { generateUserPayload, generateCategoryPayload, generateLoginPayload, gen
 
 const baseURL = 'http://localhost:3000';
 
-let testUser: any;
-let testCategory: any;
+let testUser: { username: string; password: string; email: string };
+let testCategory: { name: string; description: string; color: string };
 let authToken: string;
 let userId: number;
 let categoryId: number;
