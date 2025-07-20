@@ -1,6 +1,3 @@
 {
-  "recommendations": [
-    "ms-playwright.playwright"
-  ]
+  "recommendations": ["ms-playwright.playwright"]
 }
-

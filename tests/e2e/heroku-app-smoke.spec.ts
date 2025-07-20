@@ -15,7 +15,7 @@ test.describe('Heroku App - Smoke Suite', () => {
 
   test('should load the homepage and validate title and basic elements', async () => {
     expect(await homePage.Title).toBe('The Internet');
-    expect(await homePage.header1.textContent()).toBe('Welcome to the-internet');
-    expect(await homePage.header2.textContent()).toBe('Available Examples');
+    expect(await homePage.header1).toHaveText('Welcome to the-internet');
+    expect(await homePage.header2).toHaveText('Available Examples');
   });
 });

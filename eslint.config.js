@@ -3,8 +3,16 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import prettierConfig from 'eslint-config-prettier';
 import prettierPlugin from 'eslint-plugin-prettier';
+import playwright from 'eslint-plugin-playwright';
 
 export default [
+  {
+    ...playwright.configs['flat/recommended'],
+    files: ['tests/**'],
+    rules: {
+      ...playwright.configs['flat/recommended'].rules,
+    },
+  },
   js.configs.recommended,
   {
     files: ['**/*.{js,ts}'],
