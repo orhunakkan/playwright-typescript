@@ -3,14 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
-  "scripts": {
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "regression": "npx playwright test --grep @regression",
-    "smoke": "npx playwright test tests/e2e/heroku-app-smoke.spec.ts"
-  },
+  "scripts": {},
   "author": "Orhun Akkan",
   "license": "ISC",
   "description": "Playwright-Typescript Framework",
