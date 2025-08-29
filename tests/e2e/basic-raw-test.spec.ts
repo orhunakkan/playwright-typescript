@@ -1,4 +1,4 @@
-import {expect, test} from 'playwright/test';
+import {expect, test} from '@playwright/test';
 
 test.describe('Homepage URL validation', () => {
   test('should go to homepage and verify its URL', async ({page}) => {
