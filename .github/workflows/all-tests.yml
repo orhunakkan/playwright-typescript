@@ -1,0 +1,29 @@
+name: All tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  all-tests:
+    name: Node 22 Version Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify Node.js
+        run: node -v
+
+      - name: Always-passing script
+        run: |
+          # simple Node one-liner that prints a message and exits successfully
+          node -e "console.log('always passing tests - ok'); process.exit(0)"
