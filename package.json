@@ -1,12 +1,12 @@
 {
   "name": "playwright-typescript",
   "version": "1.0.0",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {},
-  "author": "Orhun Akkan",
-  "license": "ISC",
   "description": "Playwright-Typescript Framework",
+  "license": "ISC",
+  "author": "Orhun Akkan",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {},
   "dependencies": {
     "dotenv": "^17.2.1",
     "playwright": "^1.55.0"
