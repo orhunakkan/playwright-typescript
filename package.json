@@ -8,20 +8,13 @@
   "license": "ISC",
   "description": "Playwright-Typescript Framework",
   "dependencies": {
-    "dotenv": "^17.1.0",
-    "playwright": "^1.54.1"
+    "dotenv": "^17.2.1",
+    "playwright": "^1.55.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.30.1",
-    "@faker-js/faker": "^9.8.0",
-    "@playwright/test": "^1.54.1",
-    "@types/node": "^22.15.29",
-    "@typescript-eslint/eslint-plugin": "^8.35.1",
-    "@typescript-eslint/parser": "^8.35.1",
-    "eslint": "^9.30.1",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-playwright": "^2.2.0",
-    "eslint-plugin-prettier": "^5.5.1",
+    "@faker-js/faker": "^10.0.0",
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.0",
     "prettier": "^3.6.2"
   }
 }
