@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-
-let sessionToken;
 const baseURL = 'https://restful-booker.herokuapp.com';
 
 test.describe('restful-booker APIs', () => {
