@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules
+
+# Playwright output
+playwright-report
+test-results
+.snapshots
+
+# VCS and CI
+.git
+.github
+.gitlab
+
+# IDE/editor
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+**/*.Dockerfile
+**/*.dockerfile
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

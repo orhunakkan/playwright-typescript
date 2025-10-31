@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  tests:
+    build: .
+    # Increase shared memory for Chromium stability (equivalent to --shm-size)
+    shm_size: 1gb
+    # Use host IPC to avoid Chrome crashes in Docker
+    ipc: host
+    environment:
+      # Optional: base URL consumed in playwright.config.ts if your tests use it
+      # Set your own value or remove
+      - ENV=https://bonigarcia.dev/selenium-webdriver-java
+    volumes:
+      # Persist reports to host for inspection
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
+    # Default command can be overridden via `docker compose run tests ...`
+    command: npx playwright test
