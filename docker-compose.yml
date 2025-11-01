@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  tests:
+    build:
+      context: .
+      args:
+        PLAYWRIGHT_VERSION: '1.56.1'
+    image: playwright-tests:1.56.1
+    working_dir: /work
+    environment:
+      # Your Playwright config reads ENV for baseURL
+      ENV: ${ENV:-https://bonigarcia.dev/selenium-webdriver-java}
+      CI: '1'
+    ipc: host
+    volumes:
+      - ./playwright-report:/work/playwright-report
+      - ./test-results:/work/test-results
+      - ./snapshots:/work/snapshots
+    command: ['npm', 'test']
