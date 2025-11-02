@@ -14,5 +14,5 @@ services:
     volumes:
       - ./playwright-report:/work/playwright-report
       - ./test-results:/work/test-results
-      - ./snapshots:/work/snapshots
+      - ./tests:/work/tests
     command: ['npm', 'test']
