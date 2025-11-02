@@ -32,14 +32,14 @@ jobs:
         env:
           ENV: https://bonigarcia.dev/selenium-webdriver-java
         run: |
-          mkdir -p playwright-report test-results snapshots
+          mkdir -p playwright-report test-results tests
           docker run --rm \
             --ipc=host \
             -e CI=1 \
             -e ENV="${ENV}" \
             -v "$PWD/playwright-report:/work/playwright-report" \
             -v "$PWD/test-results:/work/test-results" \
-            -v "$PWD/snapshots:/work/snapshots" \
+            -v "$PWD/tests:/work/tests" \
             playwright-tests:1.56.1
 
       - name: Upload HTML report
