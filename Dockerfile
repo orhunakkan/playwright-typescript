@@ -1,7 +1,5 @@
-# Use the official Playwright image that matches our project version
-# See https://mcr.microsoft.com/en-us/product/playwright/about
 ARG PLAYWRIGHT_VERSION=1.56.1
-FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-jammy
+FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
 
 WORKDIR /work
 
