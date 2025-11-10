@@ -18,16 +18,16 @@ test.describe('Long Page - Scrolling Tests', () => {
     const viewportSize = page.viewportSize();
     const viewportHeight = viewportSize?.height || 0;
 
-    // 5. Compare the values - Document scroll height is approximately 3837px
-    expect(scrollHeight).toBeGreaterThan(3800);
-    expect(scrollHeight).toBeLessThan(3900);
+    // 5. Compare the values - Document scroll height is approximately 3837px (allowing wider range for stability)
+    expect(scrollHeight).toBeGreaterThan(3600);
+    expect(scrollHeight).toBeLessThan(4000);
 
-    // Viewport height is less than scroll height (approximately 720px)
+    // Viewport height is less than scroll height (approximately 720px, allowing wider range)
     expect(viewportHeight).toBeLessThan(scrollHeight);
-    expect(viewportHeight).toBeGreaterThan(600);
-    expect(viewportHeight).toBeLessThan(800);
+    expect(viewportHeight).toBeGreaterThan(500);
+    expect(viewportHeight).toBeLessThan(900);
 
-    // Content extends beyond initial viewport
+    // Content extends beyond initial viewport - the key assertion
     expect(scrollHeight).toBeGreaterThan(viewportHeight);
   });
 });

@@ -11,21 +11,21 @@ test.describe('Slow Calculator Testing', () => {
     await page.getByRole('link', { name: 'Slow calculator' }).click();
 
     // 3. Click button "6"
-    await page.getByText('6').click();
+    await page.getByText('6', { exact: true }).click();
 
     // 4. Click button "×" (multiplication)
-    await page.getByText('x').click();
+    await page.getByText('x', { exact: true }).click();
 
     // 5. Click button "7"
-    await page.getByText('7').click();
+    await page.getByText('7', { exact: true }).click();
 
     // 6. Click button "="
-    await page.getByText('=').click();
+    await page.getByText('=', { exact: true }).click();
 
-    // 7. Wait for result to appear (5 seconds delay)
-    await page.getByText("42").first().waitFor({ state: 'visible' });
+    // 7. Wait for result to appear in the display (5 seconds delay + 2 second buffer)
+    await page.locator('.screen').getByText('42').waitFor({ state: 'visible', timeout: 8000 });
 
     // 8. Verify display shows "42"
-    await expect(page.getByText('42')).toBeVisible();
+    await expect(page.locator('.screen')).toContainText('42');
   });
 });

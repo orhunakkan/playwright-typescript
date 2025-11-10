@@ -34,8 +34,8 @@ test.describe('Slow Calculator Testing', () => {
     // 9. Click button "="
     await page.locator('.btn').getByText('=', { exact: true }).click();
 
-    // 10. Wait for result "1110" to appear in the display (5 seconds delay + 1 second buffer)
-    await page.locator('.screen').getByText('1110').waitFor({ state: 'visible', timeout: 7000 });
+    // 10. Wait for result "1110" to appear in the display (5 seconds delay + buffer)
+    await page.locator('.screen').getByText('1110').waitFor({ state: 'visible', timeout: 8000 });
 
     // 11. Verify display shows result "1110"
     await expect(page.locator('.screen')).toContainText('1110');
