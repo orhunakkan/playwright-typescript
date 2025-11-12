@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Slow Calculator Testing', () => {
-  test('Test Clear Function', async ({ page }) => {
+  test('Clear Function', async ({ page }) => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/index.html');
 
     // 2. Click on "Slow calculator" link

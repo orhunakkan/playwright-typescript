@@ -18,7 +18,9 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     expect(initialCount).toBe(20);
 
     // 3. Note the initial page height
-    const viewportHeight = page.viewportSize()?.height || 0;
+    const viewportSize = page.viewportSize();
+    expect(viewportSize).toBeTruthy();
+    const viewportHeight = viewportSize!.height;
 
     // Content fills more than one viewport height
     expect(viewportHeight).toBeGreaterThan(0);

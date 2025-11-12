@@ -33,6 +33,6 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     expect(newCount).toBeLessThanOrEqual(initialCount + 25);
 
     // No error messages appear
-    await expect(page.getByText('Error')).not.toBeVisible();
+    await expect(page.getByText('Error')).toBeHidden();
   });
 });

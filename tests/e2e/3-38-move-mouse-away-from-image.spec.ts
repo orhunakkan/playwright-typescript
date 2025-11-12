@@ -18,6 +18,6 @@ test.describe('Mouse Over Testing', () => {
     await page.getByRole('heading', { name: 'Mouse over' }).hover();
 
     // Verify caption disappears (implementation specific - caption should not be visible)
-    await expect(page.getByText('Compass')).not.toBeVisible();
+    await expect(page.getByText('Compass')).toBeHidden();
   });
 });

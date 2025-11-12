@@ -18,7 +18,7 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     await expect(page).toHaveURL('https://bonigarcia.dev/selenium-webdriver-java/index.html');
 
     // No content from infinite scroll persists
-    await expect(page.getByRole('heading', { name: 'Infinite scroll' })).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Infinite scroll' })).toBeHidden();
 
     // Index page loads normally
     await expect(page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java' })).toBeVisible();

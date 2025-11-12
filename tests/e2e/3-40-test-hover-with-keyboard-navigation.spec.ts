@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Mouse Over Testing', () => {
-  test('Test Hover with Keyboard Navigation', async ({ page }) => {
+  test('Hover with Keyboard Navigation', async ({ page }) => {
     // 1. Navigate to mouse-over.html
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/mouse-over.html');
 
@@ -16,10 +16,10 @@ test.describe('Mouse Over Testing', () => {
 
     // 3. Verify if caption appears with keyboard focus
     // Images are not keyboard-focusable and captions don't appear with Tab navigation
-    await expect(page.getByText('Compass')).not.toBeVisible();
-    await expect(page.getByText('Calendar')).not.toBeVisible();
-    await expect(page.getByText('Award')).not.toBeVisible();
-    await expect(page.getByText('Landscape')).not.toBeVisible();
+    await expect(page.getByText('Compass')).toBeHidden();
+    await expect(page.getByText('Calendar')).toBeHidden();
+    await expect(page.getByText('Award')).toBeHidden();
+    await expect(page.getByText('Landscape')).toBeHidden();
 
     // 4. Test accessibility compliance - Verify captions only appear on mouse hover
     await page.getByRole('img').nth(1).hover();

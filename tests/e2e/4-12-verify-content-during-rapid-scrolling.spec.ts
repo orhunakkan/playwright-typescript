@@ -37,8 +37,6 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     await expect(paragraphs.first()).toBeVisible();
 
     // Content doesn't overlap or corrupt - check that paragraphs have proper text
-    const firstText = await paragraphs.first().textContent();
-    expect(firstText).toBeTruthy();
-    expect(firstText).toContain('Lorem ipsum');
+    await expect(paragraphs.first()).toHaveText(/Lorem ipsum/);
   });
 });

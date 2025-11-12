@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Dropdown Menu Testing', () => {
-  test('Test Left-Click Dropdown', async ({ page }) => {
+  test('Left-Click Dropdown', async ({ page }) => {
     // 1. Navigate to dropdown-menu.html
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/dropdown-menu.html');
 

@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Draw in Canvas Testing', () => {
-  test('Test Rapid Clicking on Canvas', async ({ page }) => {
+  test('Rapid Clicking on Canvas', async ({ page }) => {
     // 1. Navigate to draw-in-canvas.html
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/draw-in-canvas.html');
 

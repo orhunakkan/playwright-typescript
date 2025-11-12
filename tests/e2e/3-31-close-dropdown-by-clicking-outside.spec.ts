@@ -18,6 +18,6 @@ test.describe('Dropdown Menu Testing', () => {
     await page.getByRole('heading', { name: 'Dropdown menu' }).click();
 
     // 5. Verify dropdown is no longer visible
-    await expect(page.getByRole('link', { name: 'Action', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'Action', exact: true })).toBeHidden();
   });
 });

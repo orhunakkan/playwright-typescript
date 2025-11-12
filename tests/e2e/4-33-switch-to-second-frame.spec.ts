@@ -27,6 +27,6 @@ test.describe('Frames - HTML Frameset', () => {
     // 4. Verify it's different from first frame
     // Second frame contains Lorem ipsum content, not header content
     const heading = secondFrame!.locator('h1');
-    await expect(heading).not.toBeVisible();
+    await expect(heading).toBeHidden();
   });
 });

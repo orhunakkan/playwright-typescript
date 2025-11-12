@@ -10,7 +10,7 @@ test.describe('IFrames - Inline Frames', () => {
 
     // 2. Attempt to access iframe content without switching context
     const loremTextInMain = page.getByText('Lorem ipsum dolor sit amet', { exact: false });
-    await expect(loremTextInMain).not.toBeVisible();
+    await expect(loremTextInMain).toBeHidden();
 
     // 3. Verify content is not accessible from main page
     const mainParagraphs = page.locator('main > p');

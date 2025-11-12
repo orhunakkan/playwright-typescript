@@ -23,6 +23,6 @@ test.describe('IFrames - Inline Frames', () => {
 
     // Verify no iframe content persists
     const iframe = page.locator('iframe');
-    await expect(iframe).not.toBeVisible();
+    await expect(iframe).toBeHidden();
   });
 });

@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Dropdown Menu Testing', () => {
-  test('Test Multiple Dropdowns Simultaneously', async ({ page }) => {
+  test('Multiple Dropdowns Simultaneously', async ({ page }) => {
     // 1. Navigate to dropdown-menu.html
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/dropdown-menu.html');
 
@@ -15,7 +15,9 @@ test.describe('Dropdown Menu Testing', () => {
     await page.getByRole('button', { name: 'Use right-click here' }).click({ button: 'right' });
 
     // 4. Verify both dropdowns are visible simultaneously
-    // Note: The page snapshot shows both list elements [ref=e31] and [ref=e42] are present
-    // representing both dropdowns being visible at the same time
+    const leftMenu = page.locator('#my-dropdown-1 ~ .dropdown-menu');
+    const rightMenu = page.locator('#context-menu-2');
+    await expect(leftMenu).toBeVisible();
+    await expect(rightMenu).toBeVisible();
   });
 });

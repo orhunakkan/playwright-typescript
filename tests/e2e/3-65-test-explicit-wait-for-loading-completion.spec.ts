@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Loading Images Testing', () => {
-  test('Test Explicit Wait for Loading Completion', async ({ page }) => {
+  test('Explicit Wait for Loading Completion', async ({ page }) => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/index.html');
 
     // 1. Click on "Loading images" link

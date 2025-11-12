@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Drag and Drop Testing', () => {
-  test('Test Rapid Drag and Release', async ({ page }) => {
+  test('Rapid Drag and Release', async ({ page }) => {
     // 1. Navigate to drag-and-drop.html
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/drag-and-drop.html');
 

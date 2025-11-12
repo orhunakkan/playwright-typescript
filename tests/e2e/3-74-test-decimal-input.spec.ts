@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Slow Calculator Testing', () => {
-  test('Test Decimal Input (3.5 + 2.5 = 6)', async ({ page }) => {
+  test('Decimal Input (3.5 + 2.5 = 6)', async ({ page }) => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/index.html');
 
     // 2. Click on "Slow calculator" link

@@ -19,7 +19,7 @@ test.describe('Frames - HTML Frameset', () => {
     // 3. Attempt to access elements from second frame while in first frame context
     // Elements from second frame (Lorem ipsum paragraphs) should NOT be accessible in first frame
     const paragraphsInFirstFrame = firstFrame!.locator('p:has-text("Lorem ipsum")');
-    await expect(paragraphsInFirstFrame).not.toBeVisible();
+    await expect(paragraphsInFirstFrame).toBeHidden();
 
     // 4. Verify elements are not accessible - must explicitly switch context
     const secondFrame = page.frame({ name: 'frame-body' });
@@ -32,7 +32,7 @@ test.describe('Frames - HTML Frameset', () => {
 
     // But header h1 from first frame is NOT accessible in second frame
     const headingInSecondFrame = secondFrame!.locator('h1:has-text("Hands-On Selenium WebDriver")');
-    await expect(headingInSecondFrame).not.toBeVisible();
+    await expect(headingInSecondFrame).toBeHidden();
 
     // Each frame maintains proper isolation
     expect(firstFrame!.url()).toContain('header.html');

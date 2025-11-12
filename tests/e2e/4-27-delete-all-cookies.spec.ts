@@ -22,8 +22,8 @@ test.describe('Cookies - Browser Cookie Management', () => {
     await page.getByRole('button', { name: 'Display cookies' }).click();
 
     // 5. Verify no cookies displayed
-    await expect(page.getByText('username=John Doe')).not.toBeVisible();
-    await expect(page.getByText('date=10/07/2018')).not.toBeVisible();
+    await expect(page.getByText('username=John Doe')).toBeHidden();
+    await expect(page.getByText('date=10/07/2018')).toBeHidden();
 
     // Verify via API that all cookies are deleted
     const cookies = await context.cookies();

@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Loading Images Testing', () => {
-  test('Test Page Refresh During Loading', async ({ page }) => {
+  test('Page Refresh During Loading', async ({ page }) => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/index.html');
 
     // 2. Click on "Loading images" link

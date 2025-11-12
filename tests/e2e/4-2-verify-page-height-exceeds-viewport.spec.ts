@@ -16,7 +16,8 @@ test.describe('Long Page - Scrolling Tests', () => {
 
     // 4. Get viewport height
     const viewportSize = page.viewportSize();
-    const viewportHeight = viewportSize?.height || 0;
+    expect(viewportSize).toBeTruthy();
+    const viewportHeight = viewportSize!.height;
 
     // 5. Compare the values - Document scroll height is roughly 3800–4200px, so keep wider band for flaky CI layouts
     expect(scrollHeight).toBeGreaterThan(3600);

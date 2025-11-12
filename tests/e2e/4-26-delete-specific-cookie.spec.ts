@@ -18,16 +18,17 @@ test.describe('Cookies - Browser Cookie Management', () => {
     // 3. Use browser API to delete "username" cookie
     const cookies = await context.cookies();
     const usernameCookie = cookies.find(cookie => cookie.name === 'username');
-    if (usernameCookie) {
-      await context.clearCookies({ name: 'username' });
-    }
+    expect(usernameCookie).toBeTruthy();
+    await page.evaluate(() => {
+      document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    });
 
     // 4. Click "Display cookies" button again
     await page.getByRole('button', { name: 'Display cookies' }).click();
 
     // 5. Verify cookie is removed
     // "username" cookie should not be visible
-    await expect(page.getByText('username=John Doe')).not.toBeVisible();
+    await expect(page.getByText('username=John Doe')).toBeHidden();
 
     // "date" cookie should still be present
     await expect(page.getByText('date=10/07/2018')).toBeVisible();
