@@ -17,14 +17,10 @@ test.describe('Frames - HTML Frameset', () => {
 
     // Verify successfully returned to index page
     await expect(page).toHaveURL(/.*index\.html/);
-    await expect(
-      page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java', level: 1 })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java', level: 1 })).toBeVisible();
 
     // Verify Chapter 4 section is visible
-    await expect(
-      page.getByRole('heading', { name: 'Chapter 4. Browser-Agnostic Features' })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Chapter 4. Browser-Agnostic Features' })).toBeVisible();
 
     // Verify Frames link is visible (can navigate back if needed)
     await expect(page.getByRole('link', { name: 'Frames', exact: true })).toBeVisible();
@@ -34,8 +30,6 @@ test.describe('Frames - HTML Frameset', () => {
     expect(frameCount).toBe(0);
 
     // Verify standard body content is visible
-    await expect(
-      page.getByText('This site contains a collection of sample web pages')
-    ).toBeVisible();
+    await expect(page.getByText('This site contains a collection of sample web pages')).toBeVisible();
   });
 });

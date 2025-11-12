@@ -23,7 +23,7 @@ test.describe('Slow Calculator Testing', () => {
     await page.getByText('=').click();
 
     // 7. Wait for result to appear (5 seconds delay)
-    await page.getByText("4").first().waitFor({ state: 'visible' });
+    await page.getByText('4').first().waitFor({ state: 'visible' });
 
     // 8. Verify display shows "4"
     await expect(page.getByText('4')).toBeVisible();

@@ -7,7 +7,7 @@ test.describe('Dropdown Menu Testing', () => {
   test('Verify Dropdown Menu Page Load', async ({ page }) => {
     // 1. Navigate to index page and click on "Dropdown menu" link
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/index.html');
-    
+
     // 2. Click on "Dropdown menu" link in Chapter 3 section
     await page.getByRole('link', { name: 'Dropdown menu' }).click();
 

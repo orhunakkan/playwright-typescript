@@ -11,7 +11,7 @@ test.describe('Loading Images Testing', () => {
     await page.getByRole('link', { name: 'Loading images' }).click();
 
     // 3. Wait for "Done!" text to appear
-    await page.getByText("Done!").first().waitFor({ state: 'visible' });
+    await page.getByText('Done!').first().waitFor({ state: 'visible' });
 
     // 4. Count the number of images on the page
     const images = page.locator('img[alt="compass"], img[alt="calendar"], img[alt="award"], img[alt="landscape"]');

@@ -26,7 +26,7 @@ test.describe('Slow Calculator Testing', () => {
     await page.getByText('=').click();
 
     // 7. Wait for result "10" to appear (10 second delay + buffer)
-    await page.getByText("10").first().waitFor({ state: 'visible', timeout: 15000 });
+    await page.getByText('10').first().waitFor({ state: 'visible', timeout: 15000 });
 
     // 8. Verify result "10" is visible
     await expect(page.getByText('10')).toBeVisible();

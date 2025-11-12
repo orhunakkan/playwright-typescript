@@ -13,7 +13,7 @@ test.describe('Draw in Canvas Testing', () => {
 
     // 3. Verify canvas dimensions and initial state
     await expect(canvas).toBeVisible();
-    
+
     const boundingBox = await canvas.boundingBox();
     expect(boundingBox).not.toBeNull();
     expect(boundingBox!.width).toBeGreaterThan(0);

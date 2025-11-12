@@ -18,10 +18,10 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
     // Verify successfully returned to index page
     await expect(page).toHaveURL(/.*index\.html/);
     await expect(page.getByRole('heading', { name: 'Chapter 4. Browser-Agnostic Features' })).toBeVisible();
-    
+
     // No shadow DOM content persists
     await expect(page.getByRole('link', { name: 'Shadow DOM' })).toBeVisible();
-    
+
     // Index page loads normally
     await expect(page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java' })).toBeVisible();
   });

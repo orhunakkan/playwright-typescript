@@ -19,7 +19,7 @@ test.describe('Draw in Canvas Testing', () => {
     // 3. Scroll page up and down (if scrollable)
     const footerLink = page.getByRole('link', { name: 'Boni García' });
     await footerLink.scrollIntoViewIfNeeded();
-    
+
     const heading = page.getByRole('heading', { name: 'Drawing in canvas' });
     await heading.scrollIntoViewIfNeeded();
 

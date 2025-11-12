@@ -11,7 +11,7 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     // 2. Count the number of paragraph elements initially loaded
     const paragraphs = page.locator('p');
     await paragraphs.first().waitFor({ state: 'visible' });
-    
+
     const initialCount = await paragraphs.count();
 
     // Initial paragraph count is 20 paragraphs
@@ -19,7 +19,7 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
 
     // 3. Note the initial page height
     const viewportHeight = page.viewportSize()?.height || 0;
-    
+
     // Content fills more than one viewport height
     expect(viewportHeight).toBeGreaterThan(0);
     expect(viewportHeight).toBeLessThan(1000); // Typical viewport

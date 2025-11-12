@@ -11,19 +11,19 @@ test.describe('Frames - HTML Frameset', () => {
     // 2. Switch context to the second frame (index 1 / name 'frame-body')
     const secondFrame = page.frame({ name: 'frame-body' });
     expect(secondFrame).not.toBeNull();
-    
+
     // 3. Verify content within second frame
     const paragraphs = secondFrame!.locator('p');
     await expect(paragraphs.first()).toBeVisible();
     await expect(paragraphs.first()).toContainText('Lorem ipsum');
-    
+
     // Verify frame has multiple paragraphs (approximately 20)
     const paragraphCount = await paragraphs.count();
     expect(paragraphCount).toBe(20);
-    
+
     // Verify frame URL is different from first frame
     expect(secondFrame!.url()).toContain('content.html');
-    
+
     // 4. Verify it's different from first frame
     // Second frame contains Lorem ipsum content, not header content
     const heading = secondFrame!.locator('h1');

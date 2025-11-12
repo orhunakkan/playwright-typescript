@@ -9,7 +9,9 @@ test.describe('Web Storage', () => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/web-storage.html');
 
     // 2. Add item "username=testuser" to local storage
-    await page.evaluate(() => { localStorage.setItem('username', 'testuser'); });
+    await page.evaluate(() => {
+      localStorage.setItem('username', 'testuser');
+    });
 
     // 3. Click "Display local storage" button and verify item
     await page.getByRole('button', { name: 'Display local storage' }).click();

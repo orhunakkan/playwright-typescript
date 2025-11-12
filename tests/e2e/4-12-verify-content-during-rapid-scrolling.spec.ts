@@ -14,10 +14,10 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     // 2. Perform rapid scroll to bottom multiple times
     // First rapid scroll
     await paragraphs.last().scrollIntoViewIfNeeded();
-    
+
     // Second rapid scroll
     await paragraphs.last().scrollIntoViewIfNeeded();
-    
+
     // Third rapid scroll
     await paragraphs.last().scrollIntoViewIfNeeded();
 
@@ -26,16 +26,16 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
 
     // 3. Verify content loading behavior
     const finalCount = await paragraphs.count();
-    
+
     // Content loads appropriately
     expect(finalCount).toBeGreaterThanOrEqual(20);
 
     // Page remains responsive
     await expect(page.getByRole('heading', { name: 'Infinite scroll' })).toBeVisible();
-    
+
     // Verify first and last paragraphs are accessible
     await expect(paragraphs.first()).toBeVisible();
-    
+
     // Content doesn't overlap or corrupt - check that paragraphs have proper text
     const firstText = await paragraphs.first().textContent();
     expect(firstText).toBeTruthy();

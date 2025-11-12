@@ -11,7 +11,7 @@ test.describe('Loading Images Testing', () => {
     await page.getByRole('link', { name: 'Loading images' }).click();
 
     // 3. Wait explicitly for "Done!" text to appear (with timeout)
-    await page.getByText("Done!").first().waitFor({ state: 'visible' });
+    await page.getByText('Done!').first().waitFor({ state: 'visible' });
 
     // Verify "Done!" text is visible
     await expect(page.getByText('Done!')).toBeVisible();

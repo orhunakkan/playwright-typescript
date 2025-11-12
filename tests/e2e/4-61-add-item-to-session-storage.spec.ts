@@ -9,7 +9,9 @@ test.describe('Web Storage', () => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/web-storage.html');
 
     // 2. Add item "email=test@example.com" to session storage
-    await page.evaluate(() => { sessionStorage.setItem('email', 'test@example.com'); });
+    await page.evaluate(() => {
+      sessionStorage.setItem('email', 'test@example.com');
+    });
 
     // 3. Click "Display session storage" button
     await page.getByRole('button', { name: 'Display session storage' }).click();

@@ -27,9 +27,7 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
 
     // Wait for index page to load
     await expect(page).toHaveURL(/.*index\.html/);
-    await expect(
-      page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java' })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java' })).toBeVisible();
 
     // 6. Use browser back button
     await page.goBack();

@@ -7,9 +7,11 @@ test.describe('Web Storage', () => {
   test('Add Item to Local Storage', async ({ page }) => {
     // Navigate to index first to set localStorage on the domain
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/index.html');
-    
+
     // 2. Add item "username=testuser" to local storage
-    await page.evaluate(() => { localStorage.setItem('username', 'testuser'); });
+    await page.evaluate(() => {
+      localStorage.setItem('username', 'testuser');
+    });
 
     // 1. Navigate to web storage page
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/web-storage.html');

@@ -10,11 +10,11 @@ test.describe('IFrames - Inline Frames', () => {
 
     // 2. Switch to iframe
     const iframe = page.frameLocator('iframe');
-    
+
     // 3. Count paragraph elements within iframe
     const paragraphs = iframe.locator('p');
     await expect(paragraphs).toHaveCount(20);
-    
+
     // 4. Verify text content
     const firstParagraph = paragraphs.first();
     await expect(firstParagraph).toContainText('Lorem ipsum');

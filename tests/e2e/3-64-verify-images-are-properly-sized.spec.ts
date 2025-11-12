@@ -11,7 +11,7 @@ test.describe('Loading Images Testing', () => {
     await page.getByRole('link', { name: 'Loading images' }).click();
 
     // 2. Wait for images to load completely (Done! message)
-    await page.getByText("Done!").first().waitFor({ state: 'visible' });
+    await page.getByText('Done!').first().waitFor({ state: 'visible' });
 
     // 3. Verify each image has proper dimensions
     const dimensions = await page.getByRole('img', { name: 'compass' }).evaluate(() => {
@@ -21,7 +21,7 @@ test.describe('Loading Images Testing', () => {
         width: img.width,
         height: img.height,
         naturalWidth: img.naturalWidth,
-        naturalHeight: img.naturalHeight
+        naturalHeight: img.naturalHeight,
       }));
     });
 

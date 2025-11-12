@@ -13,7 +13,7 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
 
     // 3. Verify text is visible in the viewport
     await expect(shadowDomText).toBeVisible();
-    
+
     // Verify text appears below the main heading
     await expect(page.getByRole('heading', { name: 'Shadow DOM' })).toBeVisible();
   });

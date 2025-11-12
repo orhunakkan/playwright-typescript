@@ -14,7 +14,7 @@ test.describe('Loading Images Testing', () => {
     const startTime = Date.now();
 
     // 4. Wait for "Done!" text to appear
-    await page.getByText("Done!").first().waitFor({ state: 'visible' });
+    await page.getByText('Done!').first().waitFor({ state: 'visible' });
 
     // 5. Record end time after loading completes
     const endTime = Date.now();

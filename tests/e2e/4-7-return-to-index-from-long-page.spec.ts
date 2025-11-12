@@ -18,14 +18,10 @@ test.describe('Long Page - Scrolling Tests', () => {
     await expect(page).toHaveURL(/.*index\.html/);
 
     // Main index page with all chapters is displayed
-    await expect(
-      page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java' })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java' })).toBeVisible();
 
     // Chapter 4 section is visible with all its links
-    await expect(
-      page.getByRole('heading', { name: 'Chapter 4. Browser-Agnostic Features' })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Chapter 4. Browser-Agnostic Features' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Long page' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Infinite scroll' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Shadow DOM' })).toBeVisible();

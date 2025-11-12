@@ -22,14 +22,14 @@ test.describe('Long Page - Scrolling Tests', () => {
 
     // 4. Verify new scroll position increases by approximately 500 pixels
     const newScrollY = await page.evaluate(() => window.scrollY);
-    
+
     // Verify scroll position increased
     expect(newScrollY).toBeGreaterThan(400);
     expect(newScrollY).toBeLessThan(800);
-    
+
     // Verify the paragraph is now visible in viewport
     await expect(fifthParagraph).toBeVisible();
-    
+
     // Verify content shifted - check that initial paragraphs are still accessible
     const firstParagraph = page.locator('p').first();
     await expect(firstParagraph).toBeVisible();

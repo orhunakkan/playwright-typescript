@@ -13,7 +13,7 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
     await expect(shadowHost).toBeAttached();
 
     // 3. Query for elements within shadow DOM
-    const shadowContent = await shadowHost.evaluate((el) => {
+    const shadowContent = await shadowHost.evaluate(el => {
       if (!el.shadowRoot) return { found: false };
       const shadowRoot = el.shadowRoot;
       const paragraph = shadowRoot.querySelector('p');
@@ -21,7 +21,7 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
         found: true,
         elementFound: !!paragraph,
         text: paragraph ? paragraph.textContent : null,
-        tagName: paragraph ? paragraph.tagName : null
+        tagName: paragraph ? paragraph.tagName : null,
       };
     });
 

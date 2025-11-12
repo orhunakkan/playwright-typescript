@@ -12,7 +12,7 @@ test.describe('IFrames - Inline Frames', () => {
     await expect(page).toHaveURL('https://bonigarcia.dev/selenium-webdriver-java/iframes.html');
     await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
     await expect(page.getByRole('heading', { name: 'IFrame', exact: true })).toBeVisible();
-    
+
     const iframe = page.locator('iframe');
     await expect(iframe).toBeVisible();
     await expect(iframe).toHaveAttribute('src', /content\.html/);

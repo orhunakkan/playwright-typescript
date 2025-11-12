@@ -11,7 +11,7 @@ test.describe('Loading Images Testing', () => {
     await page.getByRole('link', { name: 'Loading images' }).click();
 
     // 3. Wait for "Done!" text to appear
-    await page.getByText("Done!").first().waitFor({ state: 'visible' });
+    await page.getByText('Done!').first().waitFor({ state: 'visible' });
 
     // 4. Verify compass image has correct alt text
     await expect(page.getByRole('img', { name: 'compass' })).toBeVisible();

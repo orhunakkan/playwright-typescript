@@ -13,7 +13,7 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
       const paragraph = document.querySelector('p');
       return {
         directQuerySucceeded: !!paragraph,
-        result: paragraph ? 'found' : 'null'
+        result: paragraph ? 'found' : 'null',
       };
     });
 
@@ -23,13 +23,13 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
 
     // 4. Access via shadow root and verify success
     const shadowHost = page.locator('#content');
-    const shadowQuery = await shadowHost.evaluate((el) => {
+    const shadowQuery = await shadowHost.evaluate(el => {
       if (!el.shadowRoot) return { success: false };
       const paragraph = el.shadowRoot.querySelector('p');
       return {
         success: true,
         found: !!paragraph,
-        text: paragraph ? paragraph.textContent : null
+        text: paragraph ? paragraph.textContent : null,
       };
     });
 

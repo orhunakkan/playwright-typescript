@@ -10,11 +10,11 @@ test.describe('IFrames - Inline Frames', () => {
 
     // 2. Switch to iframe context
     const iframe = page.frameLocator('iframe');
-    
+
     // 3. Perform actions within iframe
     const iframeParagraph = iframe.locator('p').first();
     await expect(iframeParagraph).toBeVisible();
-    
+
     // 4. Switch back to default/parent content (automatic in Playwright - page locators work on main page)
     // 5. Verify main page elements are accessible
     await expect(page.getByRole('heading', { name: 'IFrame', exact: true })).toBeVisible();

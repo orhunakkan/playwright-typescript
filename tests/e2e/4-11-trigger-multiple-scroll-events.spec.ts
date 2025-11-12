@@ -11,7 +11,7 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     // 2. Record initial paragraph count
     const paragraphs = page.locator('p');
     await paragraphs.first().waitFor({ state: 'visible' });
-    
+
     const initialCount = await paragraphs.count();
 
     // 3. Scroll to bottom
@@ -19,7 +19,7 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
 
     // 4. Wait for content to load
     await page.waitForFunction(() => document.querySelectorAll('p').length > 20);
-    
+
     const firstLoadCount = await paragraphs.count();
     expect(firstLoadCount).toBeGreaterThan(initialCount);
 
@@ -27,14 +27,14 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     await paragraphs.last().scrollIntoViewIfNeeded();
 
     // 6. Wait for additional content to load
-    await page.waitForFunction((prevCount) => document.querySelectorAll('p').length > prevCount, firstLoadCount);
+    await page.waitForFunction(prevCount => document.querySelectorAll('p').length > prevCount, firstLoadCount);
 
     // 7. Verify content continues to increase
     const secondLoadCount = await paragraphs.count();
-    
+
     // Content loads after each scroll to bottom event
     expect(secondLoadCount).toBeGreaterThan(firstLoadCount);
-    
+
     // Page continues to extend vertically
     expect(secondLoadCount).toBeGreaterThan(initialCount + 30);
 

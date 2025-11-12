@@ -14,7 +14,7 @@ test.describe('Loading Images Testing', () => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/loading-images.html');
 
     // 4. Wait for "Done!" text to appear after refresh
-    await page.getByText("Done!").first().waitFor({ state: 'visible' });
+    await page.getByText('Done!').first().waitFor({ state: 'visible' });
 
     // Verify "Done!" text is visible
     await expect(page.getByText('Done!')).toBeVisible();

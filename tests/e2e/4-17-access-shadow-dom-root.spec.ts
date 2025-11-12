@@ -13,14 +13,14 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
     await expect(shadowHost).toBeAttached();
 
     // 3. Access shadowRoot property and verify shadow root exists
-    const shadowRootInfo = await shadowHost.evaluate((el) => {
+    const shadowRootInfo = await shadowHost.evaluate(el => {
       if (!el.shadowRoot) return { found: false };
       return {
         found: true,
         hasShadowRoot: true,
         mode: el.shadowRoot.mode,
         content: el.shadowRoot.textContent,
-        childrenCount: el.shadowRoot.children.length
+        childrenCount: el.shadowRoot.children.length,
       };
     });
 

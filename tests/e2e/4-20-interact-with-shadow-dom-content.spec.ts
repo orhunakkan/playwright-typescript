@@ -13,7 +13,7 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
     await expect(shadowHost).toBeAttached();
 
     // 3. Locate interactive elements within shadow DOM (if any)
-    const interactiveCheck = await shadowHost.evaluate((el) => {
+    const interactiveCheck = await shadowHost.evaluate(el => {
       if (!el.shadowRoot) return { found: false };
       const shadowRoot = el.shadowRoot;
       const allElements = shadowRoot.querySelectorAll('*');
@@ -22,7 +22,7 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
         if (elem.tagName === 'BUTTON' || elem.tagName === 'INPUT' || elem.tagName === 'A' || elem.tagName === 'SELECT') {
           interactiveElements.push({
             tag: elem.tagName,
-            text: elem.textContent || elem.value || ''
+            text: elem.textContent || elem.value || '',
           });
         }
       });
@@ -30,14 +30,14 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
         found: true,
         totalElements: allElements.length,
         interactiveElements: interactiveElements,
-        hasInteractiveElements: interactiveElements.length > 0
+        hasInteractiveElements: interactiveElements.length > 0,
       };
     });
 
     expect(interactiveCheck.found).toBe(true);
-    
+
     // 4. Verify we can access elements and their properties within shadow DOM
-    const elementAccess = await shadowHost.evaluate((el) => {
+    const elementAccess = await shadowHost.evaluate(el => {
       if (!el.shadowRoot) return { found: false };
       const shadowRoot = el.shadowRoot;
       const paragraph = shadowRoot.querySelector('p');
@@ -46,7 +46,7 @@ test.describe('Shadow DOM - Encapsulated Content', () => {
         found: true,
         elementText: paragraph.textContent,
         elementTag: paragraph.tagName,
-        canAccessElement: true
+        canAccessElement: true,
       };
     });
 

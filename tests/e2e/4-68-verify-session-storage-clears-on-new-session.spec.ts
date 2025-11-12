@@ -12,7 +12,9 @@ test.describe('Web Storage', () => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/web-storage.html');
 
     // 2. Add custom item "testkey=testvalue" to sessionStorage
-    await page.evaluate(() => { sessionStorage.setItem('testkey', 'testvalue'); });
+    await page.evaluate(() => {
+      sessionStorage.setItem('testkey', 'testvalue');
+    });
 
     // 3. Click "Display session storage" button
     await page.getByRole('button', { name: 'Display session storage' }).click();

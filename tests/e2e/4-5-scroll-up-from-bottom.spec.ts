@@ -35,8 +35,6 @@ test.describe('Long Page - Scrolling Tests', () => {
     await expect(page.getByRole('heading', { name: 'This is a long page' })).toBeVisible();
 
     // Header remains at top of page
-    await expect(
-      page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java' })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Hands-On Selenium WebDriver with Java' })).toBeVisible();
   });
 });

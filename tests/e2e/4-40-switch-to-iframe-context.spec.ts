@@ -10,12 +10,12 @@ test.describe('IFrames - Inline Frames', () => {
 
     // 2. Switch automation context to the iframe
     const iframe = page.frameLocator('iframe');
-    
+
     // 3. Verify content is accessible within iframe
     const firstParagraph = iframe.locator('p').first();
     await expect(firstParagraph).toBeVisible();
     await expect(firstParagraph).toContainText('Lorem ipsum dolor sit amet');
-    
+
     const paragraphs = iframe.locator('p');
     await expect(paragraphs).toHaveCount(20);
   });

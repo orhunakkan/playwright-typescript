@@ -9,10 +9,14 @@ test.describe('Web Storage', () => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/web-storage.html');
 
     // 2. Add item "local_item=local_value" to localStorage
-    await page.evaluate(() => { localStorage.setItem('local_item', 'local_value'); });
+    await page.evaluate(() => {
+      localStorage.setItem('local_item', 'local_value');
+    });
 
     // 3. Add item "session_item=session_value" to sessionStorage
-    await page.evaluate(() => { sessionStorage.setItem('session_item', 'session_value'); });
+    await page.evaluate(() => {
+      sessionStorage.setItem('session_item', 'session_value');
+    });
 
     // 4. Click "Display local storage" button and verify only localStorage item
     await page.getByRole('button', { name: 'Display local storage' }).click();

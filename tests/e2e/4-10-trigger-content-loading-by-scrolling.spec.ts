@@ -11,7 +11,7 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     // 2. Count initial paragraphs
     const paragraphs = page.locator('p');
     await paragraphs.first().waitFor({ state: 'visible' });
-    
+
     const initialCount = await paragraphs.count();
     expect(initialCount).toBe(20);
 
@@ -27,7 +27,7 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
 
     // 6. Verify page height increased - New paragraphs are added
     expect(newCount).toBeGreaterThan(initialCount);
-    
+
     // Paragraph count increases (adds approximately 20 more paragraphs)
     expect(newCount).toBeGreaterThanOrEqual(initialCount + 15);
     expect(newCount).toBeLessThanOrEqual(initialCount + 25);

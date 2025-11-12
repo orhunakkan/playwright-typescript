@@ -15,7 +15,9 @@ test.describe('Web Storage', () => {
     await expect(page.getByText('{"lastname":"Doe","name":"John"}')).toBeVisible();
 
     // 4. Clear all session storage
-    await page.evaluate(() => { sessionStorage.clear(); });
+    await page.evaluate(() => {
+      sessionStorage.clear();
+    });
 
     // 5. Click "Display session storage" button again
     await page.getByRole('button', { name: 'Display session storage' }).click();

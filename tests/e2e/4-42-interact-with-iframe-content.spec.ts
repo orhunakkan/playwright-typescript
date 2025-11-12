@@ -10,10 +10,10 @@ test.describe('IFrames - Inline Frames', () => {
 
     // 2. Switch to iframe
     const iframe = page.frameLocator('iframe');
-    
+
     // 3. Locate a specific paragraph element
     const fifthParagraph = iframe.locator('p').nth(4);
-    
+
     // 4. Verify element properties and text
     await expect(fifthParagraph).toBeVisible();
     await expect(fifthParagraph).toContainText('Lobortis luctus');

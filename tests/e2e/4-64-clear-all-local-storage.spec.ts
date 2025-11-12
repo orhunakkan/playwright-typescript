@@ -9,7 +9,7 @@ test.describe('Web Storage', () => {
     await page.goto('https://bonigarcia.dev/selenium-webdriver-java/web-storage.html');
 
     // 2. Add multiple items to local storage (username, email, role)
-    await page.evaluate(() => { 
+    await page.evaluate(() => {
       localStorage.setItem('username', 'testuser');
       localStorage.setItem('email', 'test@example.com');
       localStorage.setItem('role', 'admin');
@@ -20,7 +20,9 @@ test.describe('Web Storage', () => {
     await expect(page.getByText('{"role":"admin","username":"testuser","email":"test@example.com"}')).toBeVisible();
 
     // 4. Clear all local storage
-    await page.evaluate(() => { localStorage.clear(); });
+    await page.evaluate(() => {
+      localStorage.clear();
+    });
 
     // 5. Click "Display local storage" button again
     await page.getByRole('button', { name: 'Display local storage' }).click();

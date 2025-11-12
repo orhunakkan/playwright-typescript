@@ -20,7 +20,7 @@ test.describe('Infinite Scroll - Dynamic Content Loading', () => {
     // Initial set of Lorem ipsum paragraphs is loaded
     const paragraphs = page.locator('p');
     await expect(paragraphs.first()).toBeVisible();
-    
+
     // Verify multiple paragraphs are loaded (at least 10)
     const count = await paragraphs.count();
     expect(count).toBeGreaterThanOrEqual(10);
