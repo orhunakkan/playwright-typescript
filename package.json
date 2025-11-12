@@ -10,7 +10,9 @@
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:report": "playwright show-report",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lint": "eslint \"tests/**/*.ts\" --max-warnings=0",
+    "lint:fix": "eslint \"tests/**/*.ts\" --max-warnings=0 --fix"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
@@ -20,6 +22,8 @@
     "@faker-js/faker": "^10.1.0",
     "@playwright/test": "^1.56.1",
     "@types/node": "^24.3.0",
+    "@typescript-eslint/parser": "^8.11.0",
+    "eslint": "^9.12.0",
     "eslint-plugin-playwright": "^2.3.0",
     "prettier": "^3.6.2"
   }
