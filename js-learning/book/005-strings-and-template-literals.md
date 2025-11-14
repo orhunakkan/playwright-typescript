@@ -1,6 +1,7 @@
 # Strings and Template Literals
 
 ## Introduction to Strings and Template Literals
+
 Strings are a very important part of programming. In this lecture, we will learn about an easy way to build strings using something called template literals.
 
 Let's start by creating some new variables about a person, in this case, about me, so that we can then concatenate them into one big string.
@@ -28,6 +29,7 @@ Finally, we add an exclamation mark to finish the sentence and log the result to
 However, managing spaces and concatenation with plus signs can be cumbersome and error-prone, especially for complex strings.
 
 ## Template Literals: A Better Way to Build Strings
+
 Starting with ES6, we have a much better tool for building strings called template literals.
 
 With template literals, we can write a string in a more natural way and insert variables directly into the string, which will be replaced automatically.
@@ -47,6 +49,7 @@ If you encounter bugs, such as using a variable name incorrectly, reading the er
 Template literals are one of the most used ES6 features because they are amazing and useful in many situations.
 
 ## Using Backticks for All Strings
+
 We can also use backticks to write strings that do not include any placeholders. This means backticks can be used for any string, not just template literals.
 
 Many developers prefer to use backticks for all strings because it removes the need to decide between single or double quotes and makes inserting variables easier when needed.
@@ -54,6 +57,7 @@ Many developers prefer to use backticks for all strings because it removes the n
 Although this is a matter of personal preference, it is a valid and common practice.
 
 ## Multiline Strings with Template Literals
+
 Another great use case of template literals is creating multiline strings.
 
 Before template literals, writing multiline strings was cumbersome. You had to use the newline character \n and concatenate strings across lines.
@@ -69,11 +73,13 @@ This feature is immensely useful, especially when building HTML from JavaScript,
 Whenever you need a multiline string, make sure to use template literals because they are much cleaner.
 
 ## Conclusion
+
 In this lecture, we learned how template literals work in JavaScript, particularly in ES6. They provide a much easier and more readable way to build strings, embed variables and expressions, and create multiline strings.
 
 In the next lecture, we will make our code more fun and take it to the next level by introducing decision-making.
 
 ## Key Takeaways
+
 - Strings are fundamental in programming, and concatenation can be done using the plus sign.
 - Template literals, introduced in ES6, allow embedding variables and expressions directly within strings using backticks and \${} syntax.
 - Template literals simplify string construction, including handling spaces and multiline strings, making code more readable and maintainable.

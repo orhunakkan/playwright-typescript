@@ -1,6 +1,7 @@
 # Taking Decisions: if / else Statements
 
 ## Taking Decisions: if / else Statements
+
 Let's now make coding more interactive by enabling our code to make decisions, making it appear more realistic.
 
 Suppose we want to write a program that checks whether a person is allowed to start taking a driver's license or not. If the person is eligible, the program will print a confirmation message to the console. Otherwise, it will print how many years remain until the person can start the process.
@@ -48,6 +49,7 @@ When birthYear is 1998, the output is 20, indicating the 20th century. When birt
 Understanding the logic of the if, else statement is essential, even if the variable declaration details are not yet fully clear.
 
 ## Recap
+
 - Use if followed by a condition in parentheses to execute code only when the condition is true.
 - The condition must evaluate to a Boolean value (true or false).
 - If the condition is true, the code block inside the if executes.
@@ -58,6 +60,7 @@ Understanding the logic of the if, else statement is essential, even if the vari
 Mastering if, else statements is powerful and fundamental in programming. Once you understand this concept, you can proceed to more advanced topics and challenges.
 
 ## Key Takeaways
+
 - The if statement executes a block of code only when a specified condition evaluates to true.
 - The else block executes when the if condition is false, providing an alternative code path.
 - Conditions in if statements must evaluate to Boolean values (true or false).
