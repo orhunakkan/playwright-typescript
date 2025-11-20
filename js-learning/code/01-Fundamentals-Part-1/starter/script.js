@@ -68,3 +68,68 @@ console.log(ageOrhun > ageRabia); // >, <, >=, <=
 // Template Literals
 const orhun = `My name is ${myFirstName} and my last name is ${myLastName}`;
 console.log(orhun);
+
+// Decision-Making
+const myAge = 15;
+const isOldEnough = myAge >= 18;
+
+if (isOldEnough) {
+  console.log(`Orhun can start driving`);
+} else {
+  console.log(`Nope, not yet`);
+}
+
+let century;
+const yourBirthYear = 1990;
+
+if (yourBirthYear <= 2000) {
+  century = 20;
+} else {
+  century = 21;
+}
+
+console.log(century);
+
+// Type Conversion
+
+const inputYear = '1990';
+console.log(Number(inputYear) + 10);
+
+console.log(Number('ORHUN')); // This gives NaN: Not a Number
+console.log(String(35)); // This converts 35 to string
+
+// Type Coercion
+
+console.log('I am ' + 35 + ' years old');
+console.log('35' - '10' - 10); // 15
+
+let n = '1' + 1; // 11
+n = n - 1; // 10
+console.log(n);
+
+// 5 falsy values: 0, '', undefined, null, NaN
+
+console.log(Boolean(0));
+console.log(Boolean(''));
+console.log(Boolean(undefined));
+console.log(Boolean(null));
+console.log(Boolean(NaN));
+
+console.log(Boolean('ORHUN'));
+console.log(Boolean(35));
+
+const money = 100;
+
+if (money) {
+  console.log('DO NOT SPEND');
+} else {
+  console.log('GET A JOB');
+}
+
+let height;
+
+if (height) {
+  console.log('IT IS DEFINED!');
+} else {
+  console.log('IT IS NOT DEFINED!');
+}
