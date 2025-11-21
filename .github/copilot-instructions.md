@@ -5,8 +5,8 @@ This repository is a Playwright + TypeScript test suite that exercises a demo si
 ## Big picture
 
 - Tests live under `tests/`:
-  - `tests/e2e/` contains numbered, self-contained UI specs for the “Chapter 3” pages of https://bonigarcia.dev/selenium-webdriver-java/
-  - `tests/api/` has API specs (e.g., `restful-booker-api-flow.spec.js`)
+  - `tests/e2e/` contains numbered, self-contained UI specs for end-to-end testing
+  - `tests/api/` has API specs for testing REST APIs
   - `tests/seed.spec.ts` is a simple seed page visit used in planning/test notes
 - Central config is `playwright.config.ts`:
   - `testDir: ./tests`, `fullyParallel: true`, `retries: CI? 1 : 0`, `workers: CI? 4 : default`
@@ -28,15 +28,12 @@ This repository is a Playwright + TypeScript test suite that exercises a demo si
 
 ## Conventions and patterns in this repo
 
-- File naming: UI specs are numbered (`1-1-...`, `2-1-...`) for human ordering; don’t rely on order at runtime—each test/spec must be independent.
-- At top of many UI specs you’ll see comments like:
-  - `// spec: tests/chapter3-webdriver-fundamentals-test-plan.md`
-  - `// seed: tests/seed.spec.ts`
-    Keep these when adding new specs for traceability.
+- File naming: UI specs are numbered (`1-1-...`, `2-1-...`) for human ordering; don't rely on order at runtime—each test/spec must be independent.
+- At top of many UI specs you'll see comments linking to test plan documents and seed files for traceability. Keep these when adding new specs.
 - Selectors: Prefer role-based locators (`page.getByRole(...)`) and semantic queries (`getByText`, `getByLabelText`) as seen throughout `tests/e2e`.
 - Assertions: Common checks are `toHaveURL(/.../)`, `toHaveTitle(...)`, element visibility, and minimal waits (avoid `waitForTimeout`).
 - Visual testing: Use `expect(page).toHaveScreenshot(...)`. Snapshots are stored under `snapshots/<spec>-snapshots/` due to the custom `snapshotPathTemplate`.
-- API tests: Use the built-in `request` fixture (see `tests/api/restful-booker-api-flow.spec.js`). Keep base URL local to the file unless you need global config.
+- API tests: Use the built-in `request` fixture. Keep base URL local to the file unless you need global config.
 
 ## Base URL and navigation
 
@@ -48,8 +45,8 @@ This repository is a Playwright + TypeScript test suite that exercises a demo si
 
 - Config: `playwright.config.ts`
 - Scripts: `package.json`
-- E2E examples: `tests/e2e/1-1-verify-web-form-page-load.spec.ts`, `1-15-submit-form-with-valid-data.spec.ts`, `2-1-verify-navigation-page-load.spec.ts`
-- API example: `tests/api/restful-booker-api-flow.spec.js`
+- E2E tests: `tests/e2e/` (numbered specs for UI testing)
+- API tests: `tests/api/` (REST API flow testing)
 - Visual snapshots: `snapshots/` (auto-organized per spec by Playwright)
 
 ## Do’s for contributors and agents
