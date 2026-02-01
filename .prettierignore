@@ -1,0 +1,4 @@
+# Prettier ignore
+node_modules
+coverage
+*.log

@@ -56,14 +56,14 @@
 #             FAILED_COUNT=$(jq '.stats.unexpected' playwright-report/test-results.json || echo "0")
 #             SKIPPED_COUNT=$(jq '.stats.skipped' playwright-report/test-results.json || echo "0")
 #             FLAKY_COUNT=$(jq '.stats.flaky' playwright-report/test-results.json || echo "0")
-            
+
 #             # Ensure no null values
 #             TOTAL_COUNT=${TOTAL_COUNT:-0}
 #             PASSED_COUNT=${PASSED_COUNT:-0}
 #             FAILED_COUNT=${FAILED_COUNT:-0}
 #             SKIPPED_COUNT=${SKIPPED_COUNT:-0}
 #             FLAKY_COUNT=${FLAKY_COUNT:-0}
-            
+
 #             # Set subject prefix based on test results
 #             if [ "$FAILED_COUNT" -eq 0 ]; then
 #               echo "status_emoji=✅" >> $GITHUB_OUTPUT
@@ -72,14 +72,14 @@
 #               echo "status_emoji=❌" >> $GITHUB_OUTPUT
 #               echo "subject_prefix=FAILURE" >> $GITHUB_OUTPUT
 #             fi
-            
+
 #             # Output test statistics for use in email
 #             echo "total=$TOTAL_COUNT" >> $GITHUB_OUTPUT
 #             echo "passed=$PASSED_COUNT" >> $GITHUB_OUTPUT
 #             echo "failed=$FAILED_COUNT" >> $GITHUB_OUTPUT
 #             echo "skipped=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
 #             echo "flaky=$FLAKY_COUNT" >> $GITHUB_OUTPUT
-#           else 
+#           else
 #             # Fallback for missing test results file
 #             echo "subject_prefix=ERROR" >> $GITHUB_OUTPUT
 #             echo "total=0" >> $GITHUB_OUTPUT

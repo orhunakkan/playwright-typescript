@@ -6,7 +6,10 @@
   "author": "Orhun Akkan",
   "main": "index.js",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
   "dependencies": {
     "dotenv": "^17.2.3",
     "playwright": "^1.58.1"
