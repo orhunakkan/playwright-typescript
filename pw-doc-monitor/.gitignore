@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+npm-debug.log
+npm-debug.log.*
+yarn-error.log
+pnpm-debug.log
+
+# Build output
+dist/
+*.js.map
+*.d.ts.map
+monitoring-report/
+
+# Logs
+*.log
+logs/
+combined.log
+error.log
+
+# Generated artifacts and run data
+artifacts/
+artifacts/**/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database backups (local)
+*.sql
+backup_*.sql
+
+# VS Code workspace
+.vscode/extensions.json

@@ -1,0 +1,42 @@
+{
+  "name": "playwright-typescript",
+  "version": "1.0.0",
+  "description": "Playwright-Typescript Framework",
+  "license": "ISC",
+  "author": "Orhun Akkan",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|less|scss|ts|tsx|md|mdx|graphql|vue)\"",
+    "format:check": "prettier --check \"**/*.+(js|jsx|json|yml|yaml|css|less|scss|ts|tsx|md|mdx|graphql|vue)\"",
+    "lint:check": "eslint --ext .ts",
+    "lint:fix": "eslint --fix --ext .ts",
+    "doc-to-pdf": "tsc --project pw-doc-book/tsconfig.json && node pw-doc-book/dist/index.js",
+    "doc-scrape": "tsc --project pw-doc-book/tsconfig.json && node pw-doc-book/dist/scraper-only.js",
+    "doc-generate": "tsc --project pw-doc-book/tsconfig.json && node pw-doc-book/dist/generator-only.js",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "monitor": "node pw-doc-monitor/dist/cli.js monitor:run"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "dotenv": "^17.2.3",
+    "pg": "^8.12.0",
+    "playwright": "^1.57.0",
+    "winston": "^3.14.2"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^24.10.1",
+    "@types/pg": "^8.11.6",
+    "@typescript-eslint/parser": "^8.47.0",
+    "@vitest/ui": "^4.0.17",
+    "eslint": "^9.39.1",
+    "eslint-plugin-playwright": "^2.3.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.6.3",
+    "vitest": "^4.0.17"
+  }
+}

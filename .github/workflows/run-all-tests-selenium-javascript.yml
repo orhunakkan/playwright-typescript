@@ -1,0 +1,37 @@
+name: Run All Tests Selenium
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  all-tests:
+    name: Run All Selenium Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        working-directory: ./selenium-javascript
+        run: npm install
+
+      - name: Run Selenium tests
+        working-directory: ./selenium-javascript
+        run: HEADLESS=true npx mocha tests/e2e
+
+      - name: Upload Selenium Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-report
+          path: selenium-javascript/reports/
+          retention-days: 30

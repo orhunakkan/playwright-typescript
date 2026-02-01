@@ -1,0 +1,7 @@
+# TypeScript build output
+dist/
+
+# Output files
+output/*.json
+output/*.html
+output/*.pdf

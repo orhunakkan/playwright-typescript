@@ -1,0 +1,49 @@
+name: Run All Tests Playwright
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  all-tests:
+    name: Run All Playwright Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        working-directory: ./playwright-typescript
+        run: npm install
+
+      - name: Install Playwright browsers
+        working-directory: ./playwright-typescript
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        working-directory: ./playwright-typescript
+        run: npx playwright test
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-typescript/playwright-report/
+          retention-days: 30
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: playwright-typescript/test-results/
+          retention-days: 30

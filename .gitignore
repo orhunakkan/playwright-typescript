@@ -1,0 +1,33 @@
+node_modules/
+test-results/
+playwright-report/
+artifacts/
+.idea/
+.vscode/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+
+# Project-specific generated files
+pw-doc-book/output/
+pw-doc-monitor/monitoring-report/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Lock files (optional - comment out if you want to track them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

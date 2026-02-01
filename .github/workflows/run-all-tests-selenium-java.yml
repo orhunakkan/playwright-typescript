@@ -1,0 +1,47 @@
+name: Run All Tests Selenium Java
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  all-tests:
+    name: Run All Selenium Java Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Make Maven wrapper executable
+        working-directory: ./selenium-java
+        run: chmod +x mvnw
+
+      - name: Run tests
+        working-directory: ./selenium-java
+        run: ./mvnw clean test
+
+      - name: Upload Surefire Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: selenium-java/target/surefire-reports/
+          retention-days: 30
+
+      - name: Upload Cucumber Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-reports
+          path: selenium-java/target/cucumber-reports.html
+          retention-days: 30
