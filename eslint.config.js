@@ -1,10 +1,20 @@
-import { defineConfig } from '@eslint/config';
 import playwright from 'eslint-plugin-playwright';
+import tsParser from '@typescript-eslint/parser';
 
-export default defineConfig([
+export default [
   {
-    files: ['tests/**'],
-    extends: [playwright.configs['flat/recommended']],
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+  },
+  {
+    files: ['tests/**/*.ts', 'tests/**/*.tsx'],
+    ...playwright.configs['flat/recommended'],
     rules: {},
   },
-]);
+];
