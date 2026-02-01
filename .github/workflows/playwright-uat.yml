@@ -1,19 +1,19 @@
-# name: Playwright_UAT_Tests
+name: Playwright_UAT_Tests
 
-# on:
-#   workflow_dispatch:
-#     inputs:
-#       name:
-#         description: "Name of the calling workflow"
-#         required: true
-#         default: "Self"
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name of the calling workflow'
+        required: true
+        default: 'Self'
 
-# env:
-#   HOME: /root
+env:
+  HOME: /root
 
-# jobs:
-#   test:
-#     uses: ./.github/workflows/playwright-reusable.yml
-#     with:
-#       environment: https://uat.northerntrust.com
-#     secrets: inherit
+jobs:
+  test:
+    uses: ./.github/workflows/playwright-reusable.yml
+    with:
+      environment: <YOUR_UAT_URL>
+    secrets: inherit

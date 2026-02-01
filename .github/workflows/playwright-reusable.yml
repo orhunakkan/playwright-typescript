@@ -1,134 +1,123 @@
-# name: Playwright Tests
+name: Playwright Tests
 
-# on:
-#   workflow_call:
-#     inputs:
-#       environment:
-#         required: true
-#         type: string
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
-# env:
-#   HOME: /root
-#   ENV: ${{ inputs.environment }}
-#   PLAYWRIGHT_JSON_OUTPUT_FILE: ./playwright-report/test-results.json
+env:
+  HOME: /root
+  ENV: ${{ inputs.environment }}
+  PLAYWRIGHT_JSON_OUTPUT_FILE: ./playwright-report/test-results.json
 
-# jobs:
-#   test:
-#     runs-on: [self-hosted, Linux, enterprise, docker]
-#     container: ghcr.io/northerntrust-internal/ghe-node22-browsers:latest
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: actions/setup-node@v4
-#         with:
-#           node-version: lts/*
-#       - name: Install dependencies
-#         run: npm i
-#       - name: Install Playwright Browsers
-#         run: npx playwright install --with-deps
-#       - name: Run Playwright tests for ${{ inputs.environment }}
-#         run: npx playwright test
-#       # Uploads Playwright's CI-specific snapshot images for visual regression tracking and debugging.
-#       # These are used to compare against baseline images and help diagnose visual test failures in CI environments.
-#       - name: Upload Playwright CI Snapshots
-#         if: ${{ !cancelled() }}
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: snapshots-ci
-#           path: |
-#             tests/**/snapshots-ci/
-#           retention-days: 30
-#       - uses: actions/upload-artifact@v4
-#         if: ${{ !cancelled() }}
-#         with:
-#           name: playwright-report
-#           path: |
-#             playwright-report/
-#           retention-days: 30
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm i
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests for ${{ inputs.environment }}
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+          retention-days: 30
 
-#       # Email reporting directly from JSON output using direct calculations
-#       - name: Generate test statistics
-#         id: get-test-stats
-#         if: ${{ !cancelled() }}
-#         run: |
-#           if [ -f "playwright-report/test-results.json" ]; then
-#             TOTAL_COUNT=$(jq '.stats | .expected + .skipped + .unexpected + .flaky' playwright-report/test-results.json || echo "0")
-#             PASSED_COUNT=$(jq '.stats.expected' playwright-report/test-results.json || echo "0")
-#             FAILED_COUNT=$(jq '.stats.unexpected' playwright-report/test-results.json || echo "0")
-#             SKIPPED_COUNT=$(jq '.stats.skipped' playwright-report/test-results.json || echo "0")
-#             FLAKY_COUNT=$(jq '.stats.flaky' playwright-report/test-results.json || echo "0")
+      # Email reporting directly from JSON output using direct calculations
+      - name: Generate test statistics
+        id: get-test-stats
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f "playwright-report/test-results.json" ]; then
+            TOTAL_COUNT=$(jq '.stats | .expected + .skipped + .unexpected + .flaky' playwright-report/test-results.json || echo "0")
+            PASSED_COUNT=$(jq '.stats.expected' playwright-report/test-results.json || echo "0")
+            FAILED_COUNT=$(jq '.stats.unexpected' playwright-report/test-results.json || echo "0")
+            SKIPPED_COUNT=$(jq '.stats.skipped' playwright-report/test-results.json || echo "0")
+            FLAKY_COUNT=$(jq '.stats.flaky' playwright-report/test-results.json || echo "0")
 
-#             # Ensure no null values
-#             TOTAL_COUNT=${TOTAL_COUNT:-0}
-#             PASSED_COUNT=${PASSED_COUNT:-0}
-#             FAILED_COUNT=${FAILED_COUNT:-0}
-#             SKIPPED_COUNT=${SKIPPED_COUNT:-0}
-#             FLAKY_COUNT=${FLAKY_COUNT:-0}
+            # Ensure no null values
+            TOTAL_COUNT=${TOTAL_COUNT:-0}
+            PASSED_COUNT=${PASSED_COUNT:-0}
+            FAILED_COUNT=${FAILED_COUNT:-0}
+            SKIPPED_COUNT=${SKIPPED_COUNT:-0}
+            FLAKY_COUNT=${FLAKY_COUNT:-0}
 
-#             # Set subject prefix based on test results
-#             if [ "$FAILED_COUNT" -eq 0 ]; then
-#               echo "status_emoji=✅" >> $GITHUB_OUTPUT
-#               echo "subject_prefix=SUCCESS" >> $GITHUB_OUTPUT
-#             else
-#               echo "status_emoji=❌" >> $GITHUB_OUTPUT
-#               echo "subject_prefix=FAILURE" >> $GITHUB_OUTPUT
-#             fi
+            # Set subject prefix based on test results
+            if [ "$FAILED_COUNT" -eq 0 ]; then
+              echo "status_emoji=✅" >> $GITHUB_OUTPUT
+              echo "subject_prefix=SUCCESS" >> $GITHUB_OUTPUT
+            else
+              echo "status_emoji=❌" >> $GITHUB_OUTPUT
+              echo "subject_prefix=FAILURE" >> $GITHUB_OUTPUT
+            fi
 
-#             # Output test statistics for use in email
-#             echo "total=$TOTAL_COUNT" >> $GITHUB_OUTPUT
-#             echo "passed=$PASSED_COUNT" >> $GITHUB_OUTPUT
-#             echo "failed=$FAILED_COUNT" >> $GITHUB_OUTPUT
-#             echo "skipped=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
-#             echo "flaky=$FLAKY_COUNT" >> $GITHUB_OUTPUT
-#           else
-#             # Fallback for missing test results file
-#             echo "subject_prefix=ERROR" >> $GITHUB_OUTPUT
-#             echo "total=0" >> $GITHUB_OUTPUT
-#             echo "passed=0" >> $GITHUB_OUTPUT
-#             echo "failed=0" >> $GITHUB_OUTPUT
-#             echo "skipped=0" >> $GITHUB_OUTPUT
-#             echo "flaky=0" >> $GITHUB_OUTPUT
-#             echo "error_msg=Test Results Summary not found. Please check the GitHub Action run for details." >> $GITHUB_OUTPUT
-#           fi
+            # Output test statistics for use in email
+            echo "total=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+            echo "passed=$PASSED_COUNT" >> $GITHUB_OUTPUT
+            echo "failed=$FAILED_COUNT" >> $GITHUB_OUTPUT
+            echo "skipped=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
+            echo "flaky=$FLAKY_COUNT" >> $GITHUB_OUTPUT
+          else
+            # Fallback for missing test results file
+            echo "subject_prefix=ERROR" >> $GITHUB_OUTPUT
+            echo "total=0" >> $GITHUB_OUTPUT
+            echo "passed=0" >> $GITHUB_OUTPUT
+            echo "failed=0" >> $GITHUB_OUTPUT
+            echo "skipped=0" >> $GITHUB_OUTPUT
+            echo "flaky=0" >> $GITHUB_OUTPUT
+            echo "error_msg=Test Results Summary not found. Please check the GitHub Action run for details." >> $GITHUB_OUTPUT
+          fi
 
-#       - name: Send Playwright report via email
-#         if: ${{ !cancelled() && steps.get-test-stats.outputs.total != 0 }}
-#         uses: northerntrust-internal/actions-send-email@main
-#         with:
-#           server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-#           server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-#           username: WebPublishing@ntrs.com
-#           password: ${{ secrets.DUMMY_PASSWORD }}
-#           to: WebPublishing emails - WT <f2a547a1.ntrs.onmicrosoft.com@amer.teams.ms>
-#           from: WebPublishing <WebPublishing@ntrs.com>
-#           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
-#           body: |
-#             ${{ steps.get-test-stats.outputs.status_emoji || '' }} Test Results Summary for ${{ inputs.environment }}:
+      - name: Send Playwright report via email
+        if: ${{ !cancelled() && steps.get-test-stats.outputs.total != 0 }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
+          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          username: <YOUR_EMAIL_USERNAME>
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          to: <YOUR_RECIPIENT_EMAIL>
+          from: <YOUR_SENDER_EMAIL>
+          subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
+          body: |
+            ${{ steps.get-test-stats.outputs.status_emoji || '' }} Test Results Summary for ${{ inputs.environment }}:
 
-#             Total Tests: ${{ steps.get-test-stats.outputs.total }}
-#             Passed: ${{ steps.get-test-stats.outputs.passed }}
-#             Failed: ${{ steps.get-test-stats.outputs.failed }}
-#             Skipped: ${{ steps.get-test-stats.outputs.skipped }}
-#             Flaky: ${{ steps.get-test-stats.outputs.flaky }}
+            Total Tests: ${{ steps.get-test-stats.outputs.total }}
+            Passed: ${{ steps.get-test-stats.outputs.passed }}
+            Failed: ${{ steps.get-test-stats.outputs.failed }}
+            Skipped: ${{ steps.get-test-stats.outputs.skipped }}
+            Flaky: ${{ steps.get-test-stats.outputs.flaky }}
 
-#             URL: ${{ inputs.environment }}
+            URL: ${{ inputs.environment }}
 
-#             View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-#             The test artifacts are available directly in the GitHub Actions run.
+            The test artifacts are available directly in the GitHub Actions run.
 
-#             ${{ steps.get-test-stats.outputs.error_msg || '' }}
-#       - name: Send Playwright error notification
-#         if: ${{ !cancelled() && steps.get-test-stats.outputs.subject_prefix == 0 }}
-#         uses: northerntrust-internal/actions-send-email@main
-#         with:
-#           server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-#           server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-#           username: WebPublishing@ntrs.com
-#           password: ${{ secrets.DUMMY_PASSWORD }}
-#           to: WebPublishing emails - WT <f2a547a1.ntrs.onmicrosoft.com@amer.teams.ms>
-#           from: WebPublishing <WebPublishing@ntrs.com>
-#           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
-#           body: |
-#             An error was thrown while generating the test results summary for ${{ inputs.environment }}.
-#             Please check the GitHub Action run for details.
-#             View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            ${{ steps.get-test-stats.outputs.error_msg || '' }}
+      - name: Send Playwright error notification
+        if: ${{ !cancelled() && steps.get-test-stats.outputs.total == 0 }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
+          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          username: <YOUR_EMAIL_USERNAME>
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          to: <YOUR_RECIPIENT_EMAIL>
+          from: <YOUR_SENDER_EMAIL>
+          subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
+          body: |
+            An error was thrown while generating the test results summary for ${{ inputs.environment }}.
+            Please check the GitHub Action run for details.
+            View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

@@ -1,35 +1,34 @@
-# name: Dispatch_Playwright_Workflow_Call
+name: Dispatch_Playwright_Workflow_Call
 
-# on:
-#   workflow_call:
-#     inputs:
-#       environment:
-#         required: true
-#         type: string
-#       calling-application:
-#         required: true
-#         type: string
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      calling-application:
+        required: true
+        type: string
 
-# jobs:
-#   Curl-Playwright-Repo:
-#     name: Curl Playwright Repo
-#     runs-on: [self-hosted, linux, enterprise, docker]
-#     container: ghcr.io/northerntrust-internal/ghe-node22-browsers:latest
+jobs:
+  Curl-Playwright-Repo:
+    name: Curl Playwright Repo
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - name: Log inputs
-#         id: log_inputs
-#         run: |
-#           echo ${{ inputs.environment }}
-#           echo ${{ inputs.calling-application }}
+    steps:
+      - name: Log inputs
+        id: log_inputs
+        run: |
+          echo ${{ inputs.environment }}
+          echo ${{ inputs.calling-application }}
 
-#       - name: Trigger E2E Repo with Curl
-#         id: curl_e2e
-#         run: |
-#           curl -L \
-#             -X POST \
-#             -H "Accept: application/vnd.github+json" \
-#             -H "Authorization: Bearer ${{ secrets.GIT_PAT }}" \
-#             -H "X-GitHub-Api-Version: 2022-11-28" \
-#             https://api.github.com/repos/northerntrust-internal/apm0003932-pws-e2e/actions/workflows/${{ inputs.environment }}/dispatches \
-#             -d '{"ref":"main","inputs":{"name":"${{ inputs.calling-application }}"}}'
+      - name: Trigger E2E Repo with Curl
+        id: curl_e2e
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GIT_PAT }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/<YOUR_ORG>/<YOUR_REPO>/actions/workflows/${{ inputs.environment }}/dispatches \
+            -d '{"ref":"main","inputs":{"name":"${{ inputs.calling-application }}"}}'

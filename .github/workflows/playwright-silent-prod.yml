@@ -1,19 +1,19 @@
-# name: Playwright_Silent_Prod_Tests
+name: Playwright_Silent_Prod_Tests
 
-# on:
-#   workflow_dispatch:
-#     inputs:
-#       name:
-#         description: "Name of the calling workflow"
-#         required: true
-#         default: "Self"
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name of the calling workflow'
+        required: true
+        default: 'Self'
 
-# env:
-#   HOME: /root
+env:
+  HOME: /root
 
-# jobs:
-#   test:
-#     uses: ./.github/workflows/playwright-reusable.yml
-#     with:
-#       environment: https://corporate.northerntrust.com
-#     secrets: inherit
+jobs:
+  test:
+    uses: ./.github/workflows/playwright-reusable.yml
+    with:
+      environment: <YOUR_SECONDARY_PRODUCTION_URL>
+    secrets: inherit

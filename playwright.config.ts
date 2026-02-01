@@ -10,7 +10,7 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 4 : undefined,
-  reporter: [['list'], ['html'], ['json', { outputFile: 'test-results/report.json' }]],
+  reporter: [['list'], ['html'], ['json', { outputFile: 'playwright-report/test-results.json' }]],
   outputDir: 'test-results',
   use: {
     baseURL: process.env.ENV,
