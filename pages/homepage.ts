@@ -1,7 +1,7 @@
 import { Locator, Page } from '@playwright/test';
 
 class HomePage {
-  constructor(private page: Page) {}
+  constructor() {}
 }
 
 export default HomePage;
