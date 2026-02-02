@@ -18,7 +18,6 @@ on:
         type: string
 
 env:
-  HOME: /root
   ENV: ${{ inputs.environment || 'http://localhost:3000' }}
   PLAYWRIGHT_JSON_OUTPUT_FILE: ./playwright-report/test-results.json
 
