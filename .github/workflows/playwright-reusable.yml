@@ -112,10 +112,10 @@ jobs:
         with:
           server_address: ${{ secrets.SMTP_MAIL_SERVER }}
           server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: <YOUR_EMAIL_USERNAME>
+          username: orhunakkan@icloud.com
           password: ${{ secrets.DUMMY_PASSWORD }}
-          to: <YOUR_RECIPIENT_EMAIL>
-          from: <YOUR_SENDER_EMAIL>
+          to: orhunakkan@icloud.com
+          from: orhunakkan@icloud.com
           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
           body: |
             An error was thrown while generating the test results summary for ${{ inputs.environment }}.
