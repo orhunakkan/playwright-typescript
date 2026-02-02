@@ -9,7 +9,7 @@ on:
       environment:
         description: 'Environment URL to test'
         required: false
-        default: 'https://bonigarcia.dev/selenium-webdriver-java'
+        default: 'https://practice.expandtesting.com/'
         type: string
   workflow_call:
     inputs:
@@ -18,7 +18,7 @@ on:
         type: string
 
 env:
-  ENV: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
+  ENV: ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
   PLAYWRIGHT_JSON_OUTPUT_FILE: ./playwright-report/test-results.json
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
         run: npm i
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Run Playwright tests for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
+      - name: Run Playwright tests for ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
         run: npx playwright test
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
@@ -100,7 +100,7 @@ jobs:
           from: orhunakkan@icloud.com
           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
           body: |
-            ${{ steps.get-test-stats.outputs.status_emoji || '' }} Test Results Summary for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}:
+            ${{ steps.get-test-stats.outputs.status_emoji || '' }} Test Results Summary for ${{ inputs.environment || 'https://practice.expandtesting.com/' }}:
 
             Total Tests: ${{ steps.get-test-stats.outputs.total }}
             Passed: ${{ steps.get-test-stats.outputs.passed }}
@@ -108,7 +108,7 @@ jobs:
             Skipped: ${{ steps.get-test-stats.outputs.skipped }}
             Flaky: ${{ steps.get-test-stats.outputs.flaky }}
 
-            URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
+            URL: ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
 
             View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -127,6 +127,6 @@ jobs:
           from: orhunakkan@icloud.com
           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
           body: |
-            An error was thrown while generating the test results summary for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}.
+            An error was thrown while generating the test results summary for ${{ inputs.environment || 'https://practice.expandtesting.com/' }}.
             Please check the GitHub Action run for details.
             View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
