@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  test:
+    build: .
+    environment:
+      - ENV=https://practice.expandtesting.com/
+      - API_URL=https://practice.expandtesting.com/notes/api
+    volumes:
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
+      - ./fixtures/reference-snapshots:/app/fixtures/reference-snapshots
