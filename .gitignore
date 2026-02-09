@@ -10,6 +10,12 @@ artifacts/
 .env.local
 .env.*.local
 
+# Authentication state files (sensitive)
+fixtures/linkedin-auth.json
+
+# Generated job URLs
+job-urls.html
+
 # OS files
 .DS_Store
 Thumbs.db

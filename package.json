@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint:check": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix"
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "linkedin:auth": "npx ts-node utilities/linkedin-auth.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.3"
