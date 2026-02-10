@@ -26,8 +26,8 @@ test.describe('LinkedIn Job Search', () => {
     // Job titles to search for
     const jobTitles = ['QA Engineer', 'Test Automation Engineer', 'SDET', 'Quality Engineer', 'Software Test Engineer'];
 
-    // Set to track unique job URLs (automatically handles duplicates)
-    const uniqueJobUrls = new Set<string>();
+    // Map to track unique job URLs with their titles (URL -> Title)
+    const uniqueJobUrls = new Map<string, string>();
 
     // Search for each job title
     for (const jobTitle of jobTitles) {
@@ -128,16 +128,19 @@ test.describe('LinkedIn Job Search', () => {
 
         for (const jobLink of jobLinks) {
           const href = await jobLink.getAttribute('href');
-          if (href) {
+          const jobTitle = await jobLink.getAttribute('aria-label');
+          if (href && jobTitle) {
             // Extract only the job ID from the URL
             const match = href.match(/\/jobs\/view\/(\d+)\//);
             if (match) {
               const jobId = match[1];
               const jobUrl = `https://www.linkedin.com/jobs/view/${jobId}/`;
+              // Clean up job title by removing " with verification" suffix
+              const cleanTitle = jobTitle.replace(/ with verification$/i, '').trim();
               const previousSize = uniqueJobUrls.size;
-              uniqueJobUrls.add(jobUrl);
+              uniqueJobUrls.set(jobUrl, cleanTitle);
               if (uniqueJobUrls.size > previousSize) {
-                console.log(`✅ NEW: ${jobUrl}`);
+                console.log(`✅ NEW: ${jobUrl} - ${cleanTitle}`);
               } else {
                 console.log(`⏭️  DUPLICATE: ${jobUrl}`);
               }
@@ -164,13 +167,13 @@ test.describe('LinkedIn Job Search', () => {
       console.log(`Total unique jobs so far: ${uniqueJobUrls.size}`);
     }
 
-    // Convert Set to Array for HTML generation
-    const allJobUrls = Array.from(uniqueJobUrls);
+    // Convert Map to Array of objects for HTML generation
+    const allJobs = Array.from(uniqueJobUrls.entries()).map(([url, title]) => ({ url, title }));
 
     console.log(`\n\n========================================`);
     console.log(`📊 FINAL RESULTS`);
     console.log(`========================================`);
-    console.log(`Total unique job listings found: ${allJobUrls.length}`);
+    console.log(`Total unique job listings found: ${allJobs.length}`);
     console.log(`Searched titles: ${jobTitles.join(', ')}`);
 
     // Write all URLs to HTML file
@@ -182,7 +185,7 @@ test.describe('LinkedIn Job Search', () => {
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 50px auto;
             padding: 20px;
         }
@@ -219,12 +222,29 @@ test.describe('LinkedIn Job Search', () => {
         }
         button:hover { background-color: #004182; }
         ul#jobList { list-style: none; padding: 0; }
-        ul#jobList li { margin: 8px 0; }
-        a {
+        ul#jobList li { 
+            margin: 12px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .job-number {
+            color: #666;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .job-url {
             color: #0a66c2;
             text-decoration: none;
+            margin-right: 8px;
         }
-        a:hover { text-decoration: underline; }
+        .job-url:hover { 
+            text-decoration: underline; 
+        }
+        .job-title {
+            color: #333;
+            font-weight: 500;
+        }
         .count { 
             color: #666; 
             margin: 10px 0;
@@ -241,25 +261,37 @@ test.describe('LinkedIn Job Search', () => {
             ${jobTitles.map((title) => `<li>${title}</li>`).join('\n            ')}
         </ul>
     </div>
-    <p class="count">Total unique jobs found: ${allJobUrls.length}</p>
-    <button onclick="openAll()">Open All ${allJobUrls.length} Jobs</button>
+    <p class="count">Total unique jobs found: ${allJobs.length}</p>
+    <button onclick="openAll()">Open All ${allJobs.length} Jobs</button>
     <ul id="jobList"></ul>
     <script>
-        const urls = ${JSON.stringify(allJobUrls, null, 2)};
+        const jobs = ${JSON.stringify(allJobs, null, 2)};
         
         function openAll() {
-            urls.forEach(url => window.open(url, '_blank'));
+            jobs.forEach(job => window.open(job.url, '_blank'));
         }
         
-        // Display URLs as clickable links
+        // Display URLs with job titles as clickable links
         const jobList = document.getElementById('jobList');
-        urls.forEach((url, index) => {
+        jobs.forEach((job, index) => {
             const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.className = 'job-number';
+            span.textContent = 'Job ' + (index + 1) + ':';
+            
             const a = document.createElement('a');
-            a.href = url;
+            a.className = 'job-url';
+            a.href = job.url;
             a.target = '_blank';
-            a.textContent = 'Job ' + (index + 1) + ': ' + url;
+            a.textContent = job.url;
+            
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'job-title';
+            titleSpan.textContent = ' - ' + job.title;
+            
+            li.appendChild(span);
             li.appendChild(a);
+            li.appendChild(titleSpan);
             jobList.appendChild(li);
         });
     </script>
@@ -268,7 +300,7 @@ test.describe('LinkedIn Job Search', () => {
 
     const htmlFile = path.join(process.cwd(), 'job-urls.html');
     fs.writeFileSync(htmlFile, htmlContent);
-    console.log(`\n✅ Saved ${allJobUrls.length} unique job URLs to job-urls.html`);
+    console.log(`\n✅ Saved ${allJobs.length} unique job URLs to job-urls.html`);
     console.log('Open this file in your browser and click "Open All Jobs" button');
   });
 });
