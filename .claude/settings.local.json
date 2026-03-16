@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx playwright test *)",
+      "Bash(npx playwright test)",
+      "Bash(npx playwright show-report)",
+      "Bash(npx playwright codegen *)",
+      "Bash(npm run format*)",
+      "Bash(npm run lint*)",
+      "Bash(npm install*)",
+      "Bash(git status*)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git add *)",
+      "Bash(ls *)",
+      "Read(/tests/**)",
+      "Read(/utilities/**)",
+      "Read(/fixtures/**)",
+      "Read(/pages/**)",
+      "Edit(/tests/**/*.spec.ts)",
+      "Edit(/utilities/**/*.ts)",
+      "Edit(/pages/**/*.ts)",
+      "Edit(/fixtures/**/*.ts)",
+      "mcp__playwright"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Edit(/playwright.config.ts)",
+      "Edit(/.env)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git reset --hard*)",
+      "Bash(git push --force*)"
+    ]
+  }
+}
