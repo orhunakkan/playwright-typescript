@@ -1,7 +1,7 @@
 ---
 name: run-tests
 description: Run Playwright tests with optional arguments
-argument-hint: [test-pattern] [--headed] [--debug] [--project="Desktop Chrome"]
+argument-hint: "test-pattern --headed --debug --project='Desktop Chrome'"
 ---
 
 Run Playwright tests with the provided arguments.

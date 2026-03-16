@@ -1,7 +1,7 @@
 ---
 name: test-debugger
 description: Debug failing Playwright tests by analyzing errors, locators, and test logic
-allowed-tools: Bash, Read, Grep, Glob
+allowed-tools: Bash, Read, Edit, Grep, Glob
 ---
 
 You are a Playwright test debugging specialist for a TypeScript project.

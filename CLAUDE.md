@@ -121,6 +121,43 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 3. Desktop Firefox — `tests/e2e/`
 4. Desktop Edge — `tests/e2e/`
 
+## Utilities (reuse these — don't write inline equivalents)
+
+- `utilities/cookies.ts` — `acceptCookiesBeforeSession(context)` / `rejectCookiesBeforeSession(context)` — load pre-saved cookies from JSON fixtures
+- `utilities/login.ts` — `programmaticLogin(page, context)` — multi-step Keycloak login (form extraction, CSRF, session validation)
+- `utilities/error-listeners.ts` — `attachAllErrorListeners(page)` — returns array tracking console errors, page errors, failed requests
+- `utilities/page-load-time.ts` — `waitForDomStability(page)` / `expectedPageLoadTime(page, url)` — DOM stability via MutationObserver, perf timing
+- `utilities/dedicated-page.ts` — `validateLinkNewTab(page, locator)` / `validateLinkCurrentTab(page, locator)` — new tab/window validation
+- `utilities/skip-test.ts` — `skipIfNotSilentProduction(test)` — conditional test skip by environment
+- `utilities/img-src-path.ts` — `validateImageSrcPath(env, path)` — environment-aware image URL construction
+- `utilities/linkedin-auth.ts` — manual LinkedIn login, saves auth state to `fixtures/linkedin-auth.json`
+
+## API Test Pattern
+
+API tests in `tests/api/` follow a specific pattern:
+- Configure serial mode: `test.describe.configure({ mode: 'serial' })`
+- Share state across tests via module-scoped variables (e.g., `let authToken: string`)
+- Use `request` fixture from Playwright (not `page`)
+- Generate payloads with Faker.js from `fixtures/notes-api-payloads/`
+- Flow: register → login → create → read → update → list → delete
+
+## Fixtures Organization
+
+- `fixtures/cookies/` — pre-recorded accept/reject cookie JSON files
+- `fixtures/notes-api-payloads/` — Faker-based payload generators (`notes-request-payloads.ts`, `users-request-payloads.ts`)
+- `fixtures/reference-snapshots/` — visual regression PNG baselines, named per browser (`Desktop-Chrome-`, `Desktop-Firefox-`, `Desktop-Edge-`)
+
+## Visual Regression
+
+- Use `await expect(page).toHaveScreenshot({ fullPage: true })`
+- Snapshots stored in `fixtures/reference-snapshots/{testFileName}/{projectName}-{arg}.png`
+- Update baselines: `npx playwright test --update-snapshots`
+
+## Page Object Model
+
+- `pages/homepage.ts` — template class (not fully implemented yet)
+- When creating new POM classes, place in `pages/` directory
+
 ## Conventions
 
 - **Language:** TypeScript with ES modules (`import`/`export`)
