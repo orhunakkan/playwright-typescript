@@ -1,12 +1,13 @@
 ---
 name: gen-test
 description: Generate a new Playwright test file following project conventions
-argument-hint: "feature-name-or-description"
+argument-hint: 'feature-name-or-description'
 ---
 
 Generate a new Playwright E2E test file for: $ARGUMENTS
 
 Follow these project conventions:
+
 - Place in tests/e2e/ directory
 - Use test.describe() blocks for organization
 - Use getByRole(), getByText(), getByLabel() locators (prefer accessible locators)
@@ -17,6 +18,7 @@ Follow these project conventions:
 - File name: kebab-case ending in .spec.ts
 
 Reuse existing utilities instead of writing inline code:
+
 - Cookies needed? Use `acceptCookiesBeforeSession()` from utilities/cookies.ts
 - Login needed? Use `programmaticLogin()` from utilities/login.ts
 - Error tracking? Use `attachAllErrorListeners()` from utilities/error-listeners.ts

@@ -1,12 +1,13 @@
 ---
 name: gen-api-test
 description: Generate a new Playwright API test file following the serial flow pattern
-argument-hint: "api-endpoint-or-feature"
+argument-hint: 'api-endpoint-or-feature'
 ---
 
 Generate a new Playwright API test file for: $ARGUMENTS
 
 Follow these project conventions:
+
 - Place in tests/api/ directory
 - Use `test.describe.configure({ mode: 'serial' })` — API tests are always serial
 - Share state across tests via module-scoped variables (authToken, userId, etc.)

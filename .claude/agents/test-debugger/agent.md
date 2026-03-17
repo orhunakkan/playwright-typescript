@@ -16,6 +16,7 @@ When given a test failure (error message, file path, or test output):
 6. Suggest a specific fix with code
 
 Project conventions:
+
 - Uses @playwright/test with TypeScript
 - ES modules (import/export)
 - Faker.js for test data

@@ -3,6 +3,7 @@
 ## Commands
 
 ### Test Execution
+
 - `npx playwright test` — run all tests
 - `npx playwright test --project="Desktop Chrome"` — single browser
 - `npx playwright test tests/e2e/chapter3*.spec.ts` — single file
@@ -16,6 +17,7 @@
 - `npx playwright test --update-snapshots` — update visual regression baselines
 
 ### Debugging & Inspection
+
 - `npx playwright test --debug` — step-through debugger (Playwright Inspector)
 - `npx playwright test --ui` — interactive UI mode with watch, trace viewer, time travel
 - `npx playwright test --trace on` — capture trace for every test (view in trace viewer)
@@ -24,6 +26,7 @@
 - `PWDEBUG=1 npx playwright test` — env var alternative for debug mode
 
 ### Code Generation & Tooling
+
 - `npx playwright codegen [URL]` — record actions and generate test code interactively
 - `npx playwright codegen --target=javascript [URL]` — generate in specific language
 - `npx playwright codegen --save-storage=auth.json [URL]` — record and save auth state
@@ -31,11 +34,13 @@
 - `npx playwright open [URL]` — open URL in Playwright browser
 
 ### Browser Management
+
 - `npx playwright install` — install all configured browsers
 - `npx playwright install chromium` — install specific browser
 - `npx playwright install --with-deps` — install browsers + OS dependencies (CI)
 
 ### Screenshots & PDF
+
 - `npx playwright screenshot [URL] screenshot.png` — take a screenshot
 - `npx playwright screenshot --full-page [URL] full.png` — full page screenshot
 - `npx playwright pdf [URL] page.pdf` — generate PDF (Chromium only)
@@ -45,6 +50,7 @@
 Control a live browser session from terminal. Use `-s=<session>` for named sessions.
 
 **Core:**
+
 - `playwright-cli open [url]` — open browser
 - `playwright-cli close` — close browser
 - `playwright-cli goto <url>` — navigate to URL
@@ -62,31 +68,37 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 - `playwright-cli resize <w> <h>` — resize browser window
 
 **Navigation:**
+
 - `playwright-cli go-back/go-forward/reload` — browser navigation
 
 **Keyboard & Mouse:**
+
 - `playwright-cli press <key>` — press key (`Enter`, `ArrowLeft`, etc.)
 - `playwright-cli mousemove <x> <y>` / `mousedown` / `mouseup` / `mousewheel <dx> <dy>`
 
 **Tabs:**
+
 - `playwright-cli tab-list` — list all tabs
 - `playwright-cli tab-new [url]` — open new tab
 - `playwright-cli tab-select <index>` — switch tab
 - `playwright-cli tab-close [index]` — close tab
 
 **Storage & Cookies:**
+
 - `playwright-cli state-save [file]` / `state-load <file>` — save/load auth state
 - `playwright-cli cookie-list/cookie-get/cookie-set/cookie-delete/cookie-clear`
 - `playwright-cli localstorage-list/localstorage-get/localstorage-set/localstorage-delete/localstorage-clear`
 - `playwright-cli sessionstorage-list/sessionstorage-get/sessionstorage-set/sessionstorage-delete/sessionstorage-clear`
 
 **Network:**
+
 - `playwright-cli route <pattern>` — mock network requests
 - `playwright-cli route-list` — list active mocks
 - `playwright-cli unroute [pattern]` — remove mocks
 - `playwright-cli network` — list all network requests since page load
 
 **DevTools & Recording:**
+
 - `playwright-cli console [min-level]` — list console messages
 - `playwright-cli run-code <code>` — run Playwright code snippet
 - `playwright-cli screenshot [ref]` — screenshot page or element
@@ -96,11 +108,13 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 - `playwright-cli devtools-start` — open browser devtools
 
 **Session Management:**
+
 - `playwright-cli list` — list browser sessions
 - `playwright-cli close-all` — close all sessions
 - `playwright-cli kill-all` — force kill stale/zombie sessions
 
 ### Code Quality
+
 - `npm run lint:check` — check ESLint
 - `npm run lint:fix` — auto-fix lint issues
 - `npm run format` — format with Prettier
@@ -135,6 +149,7 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 ## API Test Pattern
 
 API tests in `tests/api/` follow a specific pattern:
+
 - Configure serial mode: `test.describe.configure({ mode: 'serial' })`
 - Share state across tests via module-scoped variables (e.g., `let authToken: string`)
 - Use `request` fixture from Playwright (not `page`)
