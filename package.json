@@ -10,7 +10,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint:check": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix"
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "test:visual": "docker run --rm -v .:/work -w /work --env-file .env mcr.microsoft.com/playwright:v1.58.1-noble npx playwright test tests/e2e/visual-regression.spec.ts",
+    "test:visual:update": "docker run --rm -v .:/work -w /work --env-file .env mcr.microsoft.com/playwright:v1.58.1-noble npx playwright test tests/e2e/visual-regression.spec.ts --update-snapshots"
   },
   "dependencies": {
     "dotenv": "^17.2.3"
