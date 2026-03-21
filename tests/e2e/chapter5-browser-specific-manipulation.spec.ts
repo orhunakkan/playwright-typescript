@@ -206,12 +206,8 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(button).toHaveClass(/btn-outline-primary/);
     });
 
-    test('should display video device info when media is granted', async ({ browser, browserName }) => {
-      test.skip(browserName === 'firefox', 'Firefox does not support camera/microphone permissions in Playwright');
-      // Create a context with fake media device permissions
-      const context = await browser.newContext({
-        permissions: ['camera', 'microphone'],
-      });
+    test('should display video device info when media is granted', async ({ browser }) => {
+      const context = await browser.newContext();
       const page = await context.newPage();
 
       // Mock getUserMedia to return a fake stream
@@ -235,11 +231,8 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await context.close();
     });
 
-    test('should disable the Start button after clicking', async ({ browser, browserName }) => {
-      test.skip(browserName === 'firefox', 'Firefox does not support camera/microphone permissions in Playwright');
-      const context = await browser.newContext({
-        permissions: ['camera', 'microphone'],
-      });
+    test('should disable the Start button after clicking', async ({ browser }) => {
+      const context = await browser.newContext();
       const page = await context.newPage();
 
       await page.addInitScript(() => {
