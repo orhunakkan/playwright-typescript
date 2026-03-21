@@ -58,20 +58,17 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       }
     });
 
-    test('should download the WebDriverManager PNG file', async ({ page }) => {
+    test('should download the WebDriverManager PNG file', async ({ page }, testInfo) => {
       const downloadPromise = page.waitForEvent('download');
       await page.getByRole('link', { name: 'WebDriverManager logo' }).click();
       const download = await downloadPromise;
 
       expect(download.suggestedFilename()).toBe('webdrivermanager.png');
 
-      // Save and verify file exists
-      const filePath = path.join('test-results', download.suggestedFilename());
+      // Save to test-specific output path for parallel safety
+      const filePath = testInfo.outputPath(download.suggestedFilename());
       await download.saveAs(filePath);
       expect(fs.existsSync(filePath)).toBe(true);
-
-      // Clean up
-      fs.unlinkSync(filePath);
     });
 
     test('should download the WebDriverManager PDF file', async ({ page }) => {
@@ -98,19 +95,16 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       expect(download.suggestedFilename()).toBe('selenium-jupiter.pdf');
     });
 
-    test('should verify downloaded PNG file has content', async ({ page }) => {
+    test('should verify downloaded PNG file has content', async ({ page }, testInfo) => {
       const downloadPromise = page.waitForEvent('download');
       await page.getByRole('link', { name: 'WebDriverManager logo' }).click();
       const download = await downloadPromise;
 
-      const filePath = path.join('test-results', 'verify-' + download.suggestedFilename());
+      const filePath = testInfo.outputPath(download.suggestedFilename());
       await download.saveAs(filePath);
 
       const stats = fs.statSync(filePath);
       expect(stats.size).toBeGreaterThan(0);
-
-      // Clean up
-      fs.unlinkSync(filePath);
     });
 
     test('should verify page title and copyright', async ({ page }) => {

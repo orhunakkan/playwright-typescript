@@ -113,21 +113,24 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
     test('should load more content when scrolling to bottom', async ({ page }) => {
       const contentDiv = page.locator('#content');
+      const paragraphs = contentDiv.locator('p');
 
       // Count initial paragraphs
-      const initialCount = await contentDiv.locator('p').count();
+      const initialCount = await paragraphs.count();
 
       // Scroll to the bottom to trigger infinite scroll
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
       // Wait for new content to load via AJAX
-      await page.waitForTimeout(2000);
+      await expect(paragraphs).not.toHaveCount(initialCount);
+
+      const midCount = await paragraphs.count();
 
       // Scroll again to ensure more content loads
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-      await page.waitForTimeout(2000);
+      await expect(paragraphs).not.toHaveCount(midCount);
 
       // Should have more paragraphs now
-      const newCount = await contentDiv.locator('p').count();
+      const newCount = await paragraphs.count();
       expect(newCount).toBeGreaterThan(initialCount);
     });
 
@@ -136,7 +139,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
       // Scroll to bottom
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-      await page.waitForTimeout(2000);
+      await page.waitForFunction((prevHeight) => document.documentElement.scrollHeight > prevHeight, initialHeight);
 
       const newHeight = await page.evaluate(() => document.documentElement.scrollHeight);
       expect(newHeight).toBeGreaterThan(initialHeight);
@@ -144,15 +147,17 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
     test('should load content multiple times on successive scrolls', async ({ page }) => {
       const contentDiv = page.locator('#content');
+      const paragraphs = contentDiv.locator('p');
 
       // Scroll multiple times
       for (let i = 0; i < 3; i++) {
+        const countBefore = await paragraphs.count();
         await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-        await page.waitForTimeout(2000);
+        await expect(paragraphs).not.toHaveCount(countBefore);
       }
 
       // Should have significantly more paragraphs
-      const finalCount = await contentDiv.locator('p').count();
+      const finalCount = await paragraphs.count();
       expect(finalCount).toBeGreaterThanOrEqual(40);
     });
   });
@@ -232,10 +237,8 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await page.getByRole('button', { name: 'Display cookies' }).click();
 
       // Should show cookie text (username and date are set by the page)
-      await expect(cookiesDisplay).not.toHaveText('');
-      const cookieText = await cookiesDisplay.textContent();
-      expect(cookieText).toContain('username=John Doe');
-      expect(cookieText).toContain('date=10/07/2018');
+      await expect(cookiesDisplay).toContainText('username=John Doe');
+      await expect(cookiesDisplay).toContainText('date=10/07/2018');
     });
 
     test('should read cookies via Playwright context API', async ({ context }) => {
@@ -268,8 +271,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
       // Verify the new cookie appears in the list
       const cookiesDisplay = page.locator('#cookies-list');
-      const cookieText = await cookiesDisplay.textContent();
-      expect(cookieText).toContain('test-cookie=playwright-value');
+      await expect(cookiesDisplay).toContainText('test-cookie=playwright-value');
     });
 
     test('should delete a specific cookie', async ({ page, context }) => {
@@ -714,9 +716,8 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await page.getByRole('button', { name: 'Display session storage' }).click();
 
       const sessionDisplay = page.locator('#session-storage');
-      const text = await sessionDisplay.textContent();
-      expect(text).toContain('John');
-      expect(text).toContain('Doe');
+      await expect(sessionDisplay).toContainText('John');
+      await expect(sessionDisplay).toContainText('Doe');
     });
 
     test('should read session storage via Playwright evaluate', async ({ page }) => {
@@ -738,8 +739,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       // Display and verify
       await page.getByRole('button', { name: 'Display session storage' }).click();
       const sessionDisplay = page.locator('#session-storage');
-      const text = await sessionDisplay.textContent();
-      expect(text).toContain('tester');
+      await expect(sessionDisplay).toContainText('tester');
     });
 
     test('should remove a session storage item', async ({ page }) => {
@@ -770,8 +770,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       // Verify display shows empty object
       await page.getByRole('button', { name: 'Display session storage' }).click();
       const sessionDisplay = page.locator('#session-storage');
-      const text = await sessionDisplay.textContent();
-      expect(text).toContain('{}');
+      await expect(sessionDisplay).toContainText('{}');
     });
 
     // --- Local Storage ---
@@ -786,8 +785,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       // Display and verify
       await page.getByRole('button', { name: 'Display local storage' }).click();
       const localDisplay = page.locator('#local-storage');
-      const text = await localDisplay.textContent();
-      expect(text).toContain('playwright');
+      await expect(localDisplay).toContainText('playwright');
     });
 
     test('should remove a local storage item', async ({ page }) => {

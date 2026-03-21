@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import path from 'path';
+import { pressCalcKeys } from '../../utilities/calculator';
 
 const BASE_URL = 'https://bonigarcia.dev/selenium-webdriver-java';
 
@@ -417,6 +418,15 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await page.getByRole('link', { name: '3' }).click();
       await expect(page.locator('p.lead')).toContainText('Excepteur sint occaecat cupidatat');
     });
+
+    test('should stay on the same page when clicking current page number', async ({ page }) => {
+      await page.goto(`${BASE_URL}/navigation1.html`);
+
+      // Click page 1 while already on page 1
+      await page.getByRole('link', { name: '1' }).click();
+      await expect(page).toHaveURL(/navigation1\.html/);
+      await expect(page.locator('p.lead')).toContainText('Lorem ipsum dolor sit amet');
+    });
   });
 
   // ─────────────────────────────────────────────────
@@ -542,6 +552,17 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await dblMenu.getByRole('link', { name: 'Another action' }).click();
       await expect(dblMenu).toBeHidden();
     });
+
+    test('should close dropdown when clicking outside', async ({ page }) => {
+      // Open left-click dropdown
+      await page.getByRole('button', { name: 'Use left-click here' }).click();
+      const dropdown = page.locator('#my-dropdown-1 + .dropdown-menu');
+      await expect(dropdown).toBeVisible();
+
+      // Click outside to dismiss
+      await page.getByRole('heading', { name: 'Dropdown menu' }).click();
+      await expect(dropdown).toBeHidden();
+    });
   });
 
   // ─────────────────────────────────────────────────
@@ -570,20 +591,6 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
         // Hover over the image to reveal the caption
         await figure.locator('img').hover();
         await expect(figure.getByText(expectedCaptions[i])).toBeVisible();
-      }
-    });
-
-    test('should hover over each image and verify caption visibility', async ({ page }) => {
-      const figures = page.locator('.figure');
-
-      for (let i = 0; i < 4; i++) {
-        const figure = figures.nth(i);
-        const image = figure.locator('img');
-        await image.hover();
-
-        // Verify the caption is still visible after hover
-        const caption = figure.locator('.caption p');
-        await expect(caption).toBeVisible();
       }
     });
 
@@ -721,10 +728,26 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       const box = await canvas.boundingBox();
       expect(box).not.toBeNull();
 
+      // Get pixel data before drawing
+      const pixelsBefore = await page.evaluate(() => {
+        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = c.getContext('2d')!;
+        return ctx.getImageData(0, 0, c.width, c.height).data.some((v, i) => i % 4 === 3 && v > 0);
+      });
+      expect(pixelsBefore).toBe(false);
+
       // Click in the center of canvas to draw
       await canvas.click({
         position: { x: box!.width / 2, y: box!.height / 2 },
       });
+
+      // Verify pixels were drawn
+      const pixelsAfter = await page.evaluate(() => {
+        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = c.getContext('2d')!;
+        return ctx.getImageData(0, 0, c.width, c.height).data.some((v, i) => i % 4 === 3 && v > 0);
+      });
+      expect(pixelsAfter).toBe(true);
     });
 
     test('should draw a line on canvas by dragging', async ({ page }) => {
@@ -742,6 +765,14 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await page.mouse.down();
       await page.mouse.move(endX, endY, { steps: 20 });
       await page.mouse.up();
+
+      // Verify non-transparent pixels exist after drawing
+      const hasDrawnPixels = await page.evaluate(() => {
+        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = c.getContext('2d')!;
+        return ctx.getImageData(0, 0, c.width, c.height).data.some((v, i) => i % 4 === 3 && v > 0);
+      });
+      expect(hasDrawnPixels).toBe(true);
     });
 
     test('should draw multiple shapes on canvas', async ({ page }) => {
@@ -760,11 +791,35 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
         await page.mouse.click(point.x, point.y);
       }
 
+      const countAfterClicks = await page.evaluate(() => {
+        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = c.getContext('2d')!;
+        const data = ctx.getImageData(0, 0, c.width, c.height).data;
+        let count = 0;
+        for (let i = 3; i < data.length; i += 4) {
+          if (data[i] > 0) count++;
+        }
+        return count;
+      });
+
       // Draw a line
       await page.mouse.move(box!.x + 200, box!.y + 30);
       await page.mouse.down();
       await page.mouse.move(box!.x + 350, box!.y + 130, { steps: 15 });
       await page.mouse.up();
+
+      // Verify more pixels were drawn after the line
+      const countAfterLine = await page.evaluate(() => {
+        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = c.getContext('2d')!;
+        const data = ctx.getImageData(0, 0, c.width, c.height).data;
+        let count = 0;
+        for (let i = 3; i < data.length; i += 4) {
+          if (data[i] > 0) count++;
+        }
+        return count;
+      });
+      expect(countAfterLine).toBeGreaterThan(countAfterClicks);
     });
 
     test('should verify canvas dimensions', async ({ page }) => {
@@ -801,42 +856,26 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(compassImg).toHaveAttribute('alt', 'compass');
     });
 
-    test('should load all four images after waiting', async ({ page }) => {
+    test('should load all four images with correct attributes after waiting', async ({ page }) => {
       test.setTimeout(20000);
       await page.goto(`${BASE_URL}/loading-images.html`);
 
       // Wait for all images to load (last image appears at ~8s)
       await expect(page.locator('#text')).toHaveText('Done!', { timeout: 15000 });
 
-      // Verify all 4 images are present
-      await expect(page.locator('#compass')).toBeVisible();
-      await expect(page.locator('#calendar')).toBeVisible();
-      await expect(page.locator('#award')).toBeVisible();
-      await expect(page.locator('#landscape')).toBeVisible();
-    });
+      // Verify all 4 images are present with correct alt and src attributes
+      const images = [
+        { id: '#compass', alt: 'compass', src: 'img/compass.png' },
+        { id: '#calendar', alt: 'calendar', src: 'img/calendar.png' },
+        { id: '#award', alt: 'award', src: 'img/award.png' },
+        { id: '#landscape', alt: 'landscape', src: 'img/landscape.png' },
+      ];
 
-    test('should verify image alt attributes', async ({ page }) => {
-      test.setTimeout(20000);
-      await page.goto(`${BASE_URL}/loading-images.html`);
-
-      await expect(page.locator('#text')).toHaveText('Done!', { timeout: 15000 });
-
-      await expect(page.locator('#compass')).toHaveAttribute('alt', 'compass');
-      await expect(page.locator('#calendar')).toHaveAttribute('alt', 'calendar');
-      await expect(page.locator('#award')).toHaveAttribute('alt', 'award');
-      await expect(page.locator('#landscape')).toHaveAttribute('alt', 'landscape');
-    });
-
-    test('should verify image sources', async ({ page }) => {
-      test.setTimeout(20000);
-      await page.goto(`${BASE_URL}/loading-images.html`);
-
-      await expect(page.locator('#text')).toHaveText('Done!', { timeout: 15000 });
-
-      await expect(page.locator('#compass')).toHaveAttribute('src', 'img/compass.png');
-      await expect(page.locator('#calendar')).toHaveAttribute('src', 'img/calendar.png');
-      await expect(page.locator('#award')).toHaveAttribute('src', 'img/award.png');
-      await expect(page.locator('#landscape')).toHaveAttribute('src', 'img/landscape.png');
+      for (const img of images) {
+        await expect(page.locator(img.id)).toBeVisible();
+        await expect(page.locator(img.id)).toHaveAttribute('alt', img.alt);
+        await expect(page.locator(img.id)).toHaveAttribute('src', img.src);
+      }
     });
 
     test('should verify images appear in correct order', async ({ page }) => {
@@ -905,97 +944,49 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
     test('should perform addition (1 + 3 = 4) with reduced delay', async ({ page }) => {
       test.setTimeout(15000);
+      await page.locator('#delay').fill('1');
 
-      // Set a short delay for faster testing
-      const delayInput = page.locator('#delay');
-      await delayInput.fill('1');
-
-      // Click: 1 + 3 =
-      await page.locator('#calculator .keys >> text="1"').click();
-      await page.locator('#calculator .keys >> text="+"').click();
-      await page.locator('#calculator .keys >> text="3"').click();
-      await page.locator('#calculator .keys >> text="="').click();
-
-      // Wait for result (1 second delay)
+      await pressCalcKeys(page, '1', '+', '3', '=');
       await expect(page.locator('#calculator .screen')).toHaveText('4', { timeout: 10000 });
     });
 
     test('should perform subtraction (9 - 4 = 5) with reduced delay', async ({ page }) => {
       test.setTimeout(15000);
+      await page.locator('#delay').fill('1');
 
-      const delayInput = page.locator('#delay');
-      await delayInput.fill('1');
-
-      // Click: 9 - 4 =
-      await page.locator('#calculator .keys >> text="9"').click();
-      await page.locator('#calculator .keys >> text="-"').click();
-      await page.locator('#calculator .keys >> text="4"').click();
-      await page.locator('#calculator .keys >> text="="').click();
-
+      await pressCalcKeys(page, '9', '-', '4', '=');
       await expect(page.locator('#calculator .screen')).toHaveText('5', { timeout: 10000 });
     });
 
     test('should perform multiplication (6 x 7 = 42) with reduced delay', async ({ page }) => {
       test.setTimeout(15000);
+      await page.locator('#delay').fill('1');
 
-      const delayInput = page.locator('#delay');
-      await delayInput.fill('1');
-
-      // Click: 6 x 7 =
-      await page.locator('#calculator .keys >> text="6"').click();
-      await page.locator('#calculator .keys >> text="x"').click();
-      await page.locator('#calculator .keys >> text="7"').click();
-      await page.locator('#calculator .keys >> text="="').click();
-
+      await pressCalcKeys(page, '6', 'x', '7', '=');
       await expect(page.locator('#calculator .screen')).toHaveText('42', { timeout: 10000 });
     });
 
     test('should perform division (8 ÷ 2 = 4) with reduced delay', async ({ page }) => {
       test.setTimeout(15000);
+      await page.locator('#delay').fill('1');
 
-      const delayInput = page.locator('#delay');
-      await delayInput.fill('1');
-
-      // Click: 8 ÷ 2 =
-      await page.locator('#calculator .keys >> text="8"').click();
-      await page.locator('#calculator .keys >> text="÷"').click();
-      await page.locator('#calculator .keys >> text="2"').click();
-      await page.locator('#calculator .keys >> text="="').click();
-
+      await pressCalcKeys(page, '8', '÷', '2', '=');
       await expect(page.locator('#calculator .screen')).toHaveText('4', { timeout: 10000 });
     });
 
     test('should clear calculator display', async ({ page }) => {
-      // Enter a number first
-      await page.locator('#calculator .keys >> text="5"').click();
-      await page.locator('#calculator .keys >> text="3"').click();
-
-      // Screen should show 53
+      await pressCalcKeys(page, '5', '3');
       await expect(page.locator('#calculator .screen')).toHaveText('53');
 
-      // Press Clear
-      await page.locator('#calculator >> text="C"').click();
-
-      // Screen should be empty
+      await pressCalcKeys(page, 'C');
       await expect(page.locator('#calculator .screen')).toHaveText('');
     });
 
     test('should handle decimal numbers with reduced delay', async ({ page }) => {
       test.setTimeout(15000);
+      await page.locator('#delay').fill('1');
 
-      const delayInput = page.locator('#delay');
-      await delayInput.fill('1');
-
-      // Click: 2 . 5 + 1 . 5 =
-      await page.locator('#calculator .keys >> text="2"').click();
-      await page.locator('#calculator .keys >> text="."').click();
-      await page.locator('#calculator .keys >> text="5"').click();
-      await page.locator('#calculator .keys >> text="+"').click();
-      await page.locator('#calculator .keys >> text="1"').click();
-      await page.locator('#calculator .keys >> text="."').click();
-      await page.locator('#calculator .keys >> text="5"').click();
-      await page.locator('#calculator .keys >> text="="').click();
-
+      await pressCalcKeys(page, '2', '.', '5', '+', '1', '.', '5', '=');
       await expect(page.locator('#calculator .screen')).toHaveText('4', { timeout: 10000 });
     });
 
@@ -1003,16 +994,11 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       test.setTimeout(15000);
 
       // Keep default 5-second delay so spinner is visible
-      await page.locator('#calculator .keys >> text="1"').click();
-      await page.locator('#calculator .keys >> text="+"').click();
-      await page.locator('#calculator .keys >> text="1"').click();
-      await page.locator('#calculator .keys >> text="="').click();
+      await pressCalcKeys(page, '1', '+', '1', '=');
 
-      // Spinner should be visible while calculating
       const spinner = page.locator('#spinner');
       await expect(spinner).toBeVisible();
 
-      // Wait for the result
       await expect(page.locator('#calculator .screen')).toHaveText('2', { timeout: 10000 });
     });
 
@@ -1024,50 +1010,29 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
     test('should perform chained calculation with reduced delay', async ({ page }) => {
       test.setTimeout(15000);
+      await page.locator('#delay').fill('1');
 
-      const delayInput = page.locator('#delay');
-      await delayInput.fill('1');
-
-      // Calculate 1 + 2 = 3
-      await page.locator('#calculator .keys >> text="1"').click();
-      await page.locator('#calculator .keys >> text="+"').click();
-      await page.locator('#calculator .keys >> text="2"').click();
-      await page.locator('#calculator .keys >> text="="').click();
-
+      await pressCalcKeys(page, '1', '+', '2', '=');
       await expect(page.locator('#calculator .screen')).toHaveText('3', { timeout: 10000 });
     });
 
     test('should handle division by zero with reduced delay', async ({ page }) => {
       test.setTimeout(15000);
+      await page.locator('#delay').fill('1');
 
-      const delayInput = page.locator('#delay');
-      await delayInput.fill('1');
-
-      // Calculate 5 ÷ 0 = Infinity
-      await page.locator('#calculator .keys >> text="5"').click();
-      await page.locator('#calculator .keys >> text="÷"').click();
-      await page.locator('#calculator .keys >> text="0"').click();
-      await page.locator('#calculator .keys >> text="="').click();
-
+      await pressCalcKeys(page, '5', '÷', '0', '=');
       await expect(page.locator('#calculator .screen')).toHaveText('Infinity', { timeout: 10000 });
     });
 
     test('should hide spinner after calculation completes', async ({ page }) => {
       test.setTimeout(15000);
+      await page.locator('#delay').fill('1');
 
-      const delayInput = page.locator('#delay');
-      await delayInput.fill('1');
+      await pressCalcKeys(page, '3', '+', '4', '=');
 
-      await page.locator('#calculator .keys >> text="3"').click();
-      await page.locator('#calculator .keys >> text="+"').click();
-      await page.locator('#calculator .keys >> text="4"').click();
-      await page.locator('#calculator .keys >> text="="').click();
-
-      // Spinner should appear during calculation
       const spinner = page.locator('#spinner');
       await expect(spinner).toBeVisible();
 
-      // After result appears, spinner should be hidden
       await expect(page.locator('#calculator .screen')).toHaveText('7', { timeout: 10000 });
       await expect(spinner).toBeHidden();
     });

@@ -23,8 +23,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await page.goto(`${BASE_URL}/geolocation.html`);
       const coordinates = page.locator('#coordinates');
       await expect(coordinates).toBeAttached();
-      const text = await coordinates.textContent();
-      expect(text!.trim()).toBe('');
+      await expect(coordinates).toHaveText('');
     });
 
     test('should display coordinates when geolocation is granted', async ({ context, page }) => {
@@ -86,6 +85,30 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await page.goto(`${BASE_URL}/geolocation.html`);
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
       await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
+    });
+
+    test('should handle geolocation permission denied', async ({ browser }) => {
+      const context = await browser.newContext({
+        geolocation: undefined,
+        permissions: [],
+      });
+      const page = await context.newPage();
+
+      // Mock geolocation to simulate denial
+      await page.addInitScript(() => {
+        navigator.geolocation.getCurrentPosition = (_success, error) => {
+          error!({ code: 1, message: 'User denied Geolocation', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 });
+        };
+      });
+
+      await page.goto(`${BASE_URL}/geolocation.html`);
+      await page.getByRole('button', { name: 'Get coordinates' }).click();
+
+      // Coordinates should show an error message when permission is denied
+      const coordinates = page.locator('#coordinates');
+      await expect(coordinates).toContainText('Error');
+
+      await context.close();
     });
   });
 
@@ -166,6 +189,30 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
       await expect(page.getByRole('link', { name: 'Boni García' })).toBeVisible();
     });
+
+    test('should handle notification permission denied', async ({ browser }) => {
+      const context = await browser.newContext();
+      const page = await context.newPage();
+
+      // Mock Notification.permission as 'denied'
+      await page.addInitScript(() => {
+        Object.defineProperty(window, 'Notification', {
+          value: class {
+            static permission = 'denied';
+            static requestPermission = async () => 'denied';
+          },
+          writable: true,
+        });
+      });
+
+      await page.goto(`${BASE_URL}/notifications.html`);
+      await page.getByRole('button', { name: 'Notify me' }).click();
+
+      // No notification should be created — page should remain unchanged
+      await expect(page.getByRole('heading', { name: 'Notifications' })).toBeVisible();
+
+      await context.close();
+    });
   });
 
   // ─────────────────────────────────────────────────
@@ -196,8 +243,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await page.goto(`${BASE_URL}/get-user-media.html`);
       const videoDevice = page.locator('#video-device');
       await expect(videoDevice).toBeAttached();
-      const text = await videoDevice.textContent();
-      expect(text!.trim()).toBe('');
+      await expect(videoDevice).toHaveText('');
     });
 
     test('should have correct button styling', async ({ page }) => {
@@ -267,6 +313,31 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       const video = page.locator('#my-video');
       await expect(video).toHaveClass(/border/);
       await expect(video).toHaveClass(/rounded/);
+    });
+
+    test('should handle getUserMedia permission denied', async ({ browser }) => {
+      const context = await browser.newContext();
+      const page = await context.newPage();
+
+      // Mock getUserMedia to throw a NotAllowedError
+      await page.addInitScript(() => {
+        navigator.mediaDevices.getUserMedia = async () => {
+          throw new DOMException('Permission denied', 'NotAllowedError');
+        };
+      });
+
+      await page.goto(`${BASE_URL}/get-user-media.html`);
+
+      // Listen for page errors caused by the unhandled rejection
+      const errors: Error[] = [];
+      page.on('pageerror', (err) => errors.push(err));
+
+      await page.getByRole('button', { name: 'Start' }).click();
+
+      // Video device label should remain empty since media access was denied
+      await expect(page.locator('#video-device')).toHaveText('');
+
+      await context.close();
     });
   });
 
@@ -390,58 +461,6 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should display the description paragraph', async ({ page }) => {
       await page.goto(`${BASE_URL}/console-logs.html`);
       await expect(page.getByText("This page makes call to JavaScript's console (log, info, warn, error).")).toBeVisible();
-    });
-
-    test('should capture console.log message', async ({ page }) => {
-      const logs: string[] = [];
-      page.on('console', (msg) => {
-        if (msg.type() === 'log') {
-          logs.push(msg.text());
-        }
-      });
-
-      await page.goto(`${BASE_URL}/console-logs.html`);
-
-      expect(logs.some((l) => l.includes('console.log'))).toBe(true);
-    });
-
-    test('should capture console.info message', async ({ page }) => {
-      const infos: string[] = [];
-      page.on('console', (msg) => {
-        if (msg.type() === 'info') {
-          infos.push(msg.text());
-        }
-      });
-
-      await page.goto(`${BASE_URL}/console-logs.html`);
-
-      expect(infos.some((l) => l.includes('console.info'))).toBe(true);
-    });
-
-    test('should capture console.warn message', async ({ page }) => {
-      const warnings: string[] = [];
-      page.on('console', (msg) => {
-        if (msg.type() === 'warning') {
-          warnings.push(msg.text());
-        }
-      });
-
-      await page.goto(`${BASE_URL}/console-logs.html`);
-
-      expect(warnings.some((l) => l.includes('console.warn'))).toBe(true);
-    });
-
-    test('should capture console.error message', async ({ page }) => {
-      const errors: string[] = [];
-      page.on('console', (msg) => {
-        if (msg.type() === 'error') {
-          errors.push(msg.text());
-        }
-      });
-
-      await page.goto(`${BASE_URL}/console-logs.html`);
-
-      expect(errors.some((l) => l.includes('console.error'))).toBe(true);
     });
 
     test('should capture all four console message types', async ({ page }) => {

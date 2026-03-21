@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { clickCalcButton, pressCalcKeys } from '../../utilities/calculator';
 
 const BASE_URL = 'https://bonigarcia.dev/selenium-webdriver-java';
 
@@ -50,8 +51,7 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
       const screen = page.locator('#calculator .screen');
       await expect(screen).toBeAttached();
       // Screen should be empty initially
-      const text = await screen.textContent();
-      expect(text!.trim()).toBe('');
+      await expect(screen).toHaveText('');
     });
 
     test('should have digit buttons 0-9', async ({ page }) => {
@@ -95,34 +95,30 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
     test('should display digits when clicked', async ({ page }) => {
       const screen = page.locator('#calculator .screen');
 
-      await page.locator('#calculator .keys span').filter({ hasText: '1' }).first().click();
+      await clickCalcButton(page, '1');
       await expect(screen).toHaveText('1');
 
-      await page.locator('#calculator .keys span').filter({ hasText: '2' }).first().click();
+      await clickCalcButton(page, '2');
       await expect(screen).toHaveText('12');
 
-      await page.locator('#calculator .keys span').filter({ hasText: '3' }).first().click();
+      await clickCalcButton(page, '3');
       await expect(screen).toHaveText('123');
     });
 
     test('should clear the screen when C is clicked', async ({ page }) => {
       const screen = page.locator('#calculator .screen');
 
-      // Type a number
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '6' }).first().click();
+      await pressCalcKeys(page, '5', '6');
       await expect(screen).toHaveText('56');
 
-      // Clear
-      await page.locator('#calculator .clear').click();
+      await clickCalcButton(page, 'C');
       await expect(screen).toHaveText('');
     });
 
     test('should display operator after digit', async ({ page }) => {
       const screen = page.locator('#calculator .screen');
 
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
+      await pressCalcKeys(page, '5', '+');
       await expect(screen).toHaveText('5+');
     });
 
@@ -130,31 +126,25 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
       const screen = page.locator('#calculator .screen');
 
       // Plus should not appear on empty screen
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
+      await clickCalcButton(page, '+');
       await expect(screen).toHaveText('');
 
       // But minus should work as negative sign
-      await page.locator('#calculator .keys .operator').filter({ hasText: '-' }).click();
+      await clickCalcButton(page, '-');
       await expect(screen).toHaveText('-');
     });
 
     test('should handle decimal point input', async ({ page }) => {
       const screen = page.locator('#calculator .screen');
 
-      await page.locator('#calculator .keys span').filter({ hasText: '3' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '.' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
+      await pressCalcKeys(page, '3', '.', '5');
       await expect(screen).toHaveText('3.5');
     });
 
     test('should not allow multiple decimal points in same number', async ({ page }) => {
       const screen = page.locator('#calculator .screen');
 
-      await page.locator('#calculator .keys span').filter({ hasText: '3' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '.' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '.' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '2' }).first().click();
+      await pressCalcKeys(page, '3', '.', '5', '.', '2');
       // Second dot should be ignored
       await expect(screen).toHaveText('3.52');
     });
@@ -162,126 +152,77 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
     test('should replace operator when another operator is pressed', async ({ page }) => {
       const screen = page.locator('#calculator .screen');
 
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
+      await pressCalcKeys(page, '5', '+');
       await expect(screen).toHaveText('5+');
 
       // Press minus — should replace +
-      await page.locator('#calculator .keys .operator').filter({ hasText: '-' }).click();
+      await clickCalcButton(page, '-');
       await expect(screen).toHaveText('5-');
     });
 
     test('should produce a result when equals is clicked (100% correct mode)', async ({ page }) => {
-      // Set the calculator to always produce correct results
-      const percentInput = page.locator('#percent');
-      await percentInput.fill('0');
-
+      await page.locator('#percent').fill('0');
       const screen = page.locator('#calculator .screen');
 
-      // Calculate 2 + 3
-      await page.locator('#calculator .keys span').filter({ hasText: '2' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '3' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
-
+      await pressCalcKeys(page, '2', '+', '3', '=');
       await expect(screen).toHaveText('5');
     });
 
     test('should correctly subtract in 100% correct mode', async ({ page }) => {
       await page.locator('#percent').fill('0');
-
       const screen = page.locator('#calculator .screen');
 
-      // Calculate 9 - 4
-      await page.locator('#calculator .keys span').filter({ hasText: '9' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '-' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '4' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
-
+      await pressCalcKeys(page, '9', '-', '4', '=');
       await expect(screen).toHaveText('5');
     });
 
     test('should correctly multiply in 100% correct mode', async ({ page }) => {
       await page.locator('#percent').fill('0');
-
       const screen = page.locator('#calculator .screen');
 
-      // Calculate 6 x 7
-      await page.locator('#calculator .keys span').filter({ hasText: '6' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: 'x' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '7' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
-
+      await pressCalcKeys(page, '6', 'x', '7', '=');
       await expect(screen).toHaveText('42');
     });
 
     test('should correctly divide in 100% correct mode', async ({ page }) => {
       await page.locator('#percent').fill('0');
-
       const screen = page.locator('#calculator .screen');
 
-      // Calculate 8 ÷ 2
-      await page.locator('#calculator .keys span').filter({ hasText: '8' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '÷' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '2' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
-
+      await pressCalcKeys(page, '8', '÷', '2', '=');
       await expect(screen).toHaveText('4');
     });
 
     test('should handle multi-digit calculations in 100% correct mode', async ({ page }) => {
       await page.locator('#percent').fill('0');
-
       const screen = page.locator('#calculator .screen');
 
-      // Calculate 15 + 27 = 42
-      await page.locator('#calculator .keys span').filter({ hasText: '1' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '2' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '7' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
-
+      await pressCalcKeys(page, '1', '5', '+', '2', '7', '=');
       await expect(screen).toHaveText('42');
     });
 
     test('should clear and start a new calculation', async ({ page }) => {
       await page.locator('#percent').fill('0');
-
       const screen = page.locator('#calculator .screen');
 
       // First calculation
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '3' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
+      await pressCalcKeys(page, '5', '+', '3', '=');
       await expect(screen).toHaveText('8');
 
       // Clear
-      await page.locator('#calculator .clear').click();
+      await clickCalcButton(page, 'C');
       await expect(screen).toHaveText('');
 
       // New calculation
-      await page.locator('#calculator .keys span').filter({ hasText: '9' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '-' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '1' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
+      await pressCalcKeys(page, '9', '-', '1', '=');
       await expect(screen).toHaveText('8');
     });
 
     test('should produce incorrect results in 100% error mode', async ({ page }) => {
-      // Set the calculator to always produce incorrect results
       await page.locator('#percent').fill('100');
-      // Set retries very high so it never switches to correct
       await page.locator('#correct').fill('999');
-
       const screen = page.locator('#calculator .screen');
 
-      // Calculate 2 + 3 (should be 5, but will be random)
-      await page.locator('#calculator .keys span').filter({ hasText: '2' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '3' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
+      await pressCalcKeys(page, '2', '+', '3', '=');
 
       // The result should be a number (random 1-100), not necessarily 5
       const result = await screen.textContent();
@@ -314,19 +255,9 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
 
     test('should handle decimal calculations in 100% correct mode', async ({ page }) => {
       await page.locator('#percent').fill('0');
-
       const screen = page.locator('#calculator .screen');
 
-      // Calculate 1.5 + 2.5 = 4
-      await page.locator('#calculator .keys span').filter({ hasText: '1' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '.' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '2' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '.' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
-
+      await pressCalcKeys(page, '1', '.', '5', '+', '2', '.', '5', '=');
       await expect(screen).toHaveText('4');
     });
 
@@ -344,44 +275,28 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
 
       // First 2 calculations may be random; the 3rd should be correct
       for (let i = 0; i < 2; i++) {
-        await page.locator('#calculator .keys span').filter({ hasText: '1' }).first().click();
-        await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
-        await page.locator('#calculator .keys span').filter({ hasText: '1' }).first().click();
-        await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
+        await pressCalcKeys(page, '1', '+', '1', '=');
         await screen.waitFor({ state: 'attached' });
-        // Clear for next calculation
-        await page.locator('#calculator .top .clear').click();
+        await clickCalcButton(page, 'C');
       }
 
       // Third calculation: 3 + 4 = 7 (should be correct now)
-      await page.locator('#calculator .keys span').filter({ hasText: '3' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '4' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
-
+      await pressCalcKeys(page, '3', '+', '4', '=');
       await expect(screen).toHaveText('7');
     });
 
     test('should handle zero as an operand in 100% correct mode', async ({ page }) => {
-      // 100% correct from the start
       await page.locator('#percent').fill('100');
       await page.locator('#correct').fill('0');
-
       const screen = page.locator('#calculator .screen');
 
       // 0 + 5 = 5
-      await page.locator('#calculator .keys span').filter({ hasText: '0' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: '+' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '5' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
+      await pressCalcKeys(page, '0', '+', '5', '=');
       await expect(screen).toHaveText('5');
 
       // Clear and do 7 x 0 = 0
-      await page.locator('#calculator .top .clear').click();
-      await page.locator('#calculator .keys span').filter({ hasText: '7' }).first().click();
-      await page.locator('#calculator .keys .operator').filter({ hasText: 'x' }).click();
-      await page.locator('#calculator .keys span').filter({ hasText: '0' }).first().click();
-      await page.locator('#calculator .keys span').filter({ hasText: '=' }).click();
+      await clickCalcButton(page, 'C');
+      await pressCalcKeys(page, '7', 'x', '0', '=');
       await expect(screen).toHaveText('0');
     });
   });
