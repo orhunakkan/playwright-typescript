@@ -165,7 +165,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     container:
-      image: mcr.microsoft.com/playwright:v1.58.1-noble
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
     env:
       HOME: /root
       ENV: ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
