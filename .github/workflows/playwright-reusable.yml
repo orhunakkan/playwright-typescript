@@ -119,7 +119,7 @@ jobs:
           fi
 
       - name: Send Playwright report via email
-        if: ${{ !cancelled() && steps.get-test-stats.outputs.total != 0 }}
+        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-test-stats.outputs.total != 0 }}
         uses: dawidd6/action-send-mail@v16
         with:
           server_address: ${{ secrets.SMTP_MAIL_SERVER }}
@@ -146,7 +146,7 @@ jobs:
 
             ${{ steps.get-test-stats.outputs.error_msg || '' }}
       - name: Send Playwright error notification
-        if: ${{ !cancelled() && steps.get-test-stats.outputs.total == 0 }}
+        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-test-stats.outputs.total == 0 }}
         uses: dawidd6/action-send-mail@v16
         with:
           server_address: ${{ secrets.SMTP_MAIL_SERVER }}
