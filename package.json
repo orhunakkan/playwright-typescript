@@ -19,7 +19,7 @@
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
-    "@faker-js/faker": "^10.2.0",
+    "@faker-js/faker": "^10.3.0",
     "@playwright/test": "^1.58.1",
     "@types/node": "^25.1.0",
     "@typescript-eslint/parser": "^8.54.0",
