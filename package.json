@@ -22,7 +22,7 @@
     "@faker-js/faker": "^10.2.0",
     "@playwright/test": "^1.58.1",
     "@types/node": "^25.1.0",
-    "@typescript-eslint/parser": "^8.54.0",
+    "@typescript-eslint/parser": "^8.57.1",
     "eslint": "^9.39.2",
     "eslint-plugin-playwright": "^2.5.1",
     "prettier": "^3.8.1",
