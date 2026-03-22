@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 6 * * 1-5'
   workflow_dispatch:
     inputs:
       environment:
@@ -11,28 +16,53 @@ on:
         required: false
         default: 'https://practice.expandtesting.com/'
         type: string
+      api_url:
+        description: 'API URL to test'
+        required: false
+        default: 'https://practice.expandtesting.com/notes/api'
+        type: string
   workflow_call:
     inputs:
       environment:
         required: true
         type: string
+      api_url:
+        required: false
+        type: string
 
 env:
   ENV: ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
+  API_URL: ${{ inputs.api_url || 'https://practice.expandtesting.com/notes/api' }}
   PLAYWRIGHT_JSON_OUTPUT_FILE: ./playwright-report/test-results.json
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: lts/*
+          cache: 'npm'
       - name: Install dependencies
-        run: npm i
+        run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
+      - name: Install Playwright system deps only
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
       - name: Run Playwright tests for ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
         run: npx playwright test --grep-invert "visual regression"
       - uses: actions/upload-artifact@v7
@@ -94,10 +124,10 @@ jobs:
         with:
           server_address: ${{ secrets.SMTP_MAIL_SERVER }}
           server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: orhunakkan@icloud.com
+          username: ${{ vars.NOTIFICATION_EMAIL }}
           password: ${{ secrets.DUMMY_PASSWORD }}
-          to: orhunakkan@icloud.com
-          from: orhunakkan@icloud.com
+          to: ${{ vars.NOTIFICATION_EMAIL }}
+          from: ${{ vars.NOTIFICATION_EMAIL }}
           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
           body: |
             ${{ steps.get-test-stats.outputs.status_emoji || '' }} Test Results Summary for ${{ inputs.environment || 'https://practice.expandtesting.com/' }}:
@@ -121,10 +151,10 @@ jobs:
         with:
           server_address: ${{ secrets.SMTP_MAIL_SERVER }}
           server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: orhunakkan@icloud.com
+          username: ${{ vars.NOTIFICATION_EMAIL }}
           password: ${{ secrets.DUMMY_PASSWORD }}
-          to: orhunakkan@icloud.com
-          from: orhunakkan@icloud.com
+          to: ${{ vars.NOTIFICATION_EMAIL }}
+          from: ${{ vars.NOTIFICATION_EMAIL }}
           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
           body: |
             An error was thrown while generating the test results summary for ${{ inputs.environment || 'https://practice.expandtesting.com/' }}.
@@ -133,6 +163,7 @@ jobs:
 
   test-visual:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     container:
       image: mcr.microsoft.com/playwright:v1.58.1-noble
     env:
@@ -143,8 +174,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: lts/*
+          cache: 'npm'
       - name: Install dependencies
-        run: npm i
+        run: npm ci
       - name: Run visual regression tests
         run: npx playwright test tests/e2e/visual-regression.spec.ts
       - uses: actions/upload-artifact@v7
