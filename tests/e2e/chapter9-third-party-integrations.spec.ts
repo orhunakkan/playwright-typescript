@@ -1,8 +1,7 @@
 import { expect, test } from '@playwright/test';
-import path from 'path';
 import fs from 'fs';
 
-const BASE_URL = 'https://bonigarcia.dev/selenium-webdriver-java';
+const BASE_URL = process.env.PRACTICE_E2E_URL;
 
 test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
@@ -53,8 +52,8 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
     test('should have correct button styling on all download links', async ({ page }) => {
       const downloadLinks = page.locator('a[download]');
       const count = await downloadLinks.count();
-      for (let i = 0; i < count; i++) {
-        await expect(downloadLinks.nth(i)).toHaveClass(/btn-outline-primary/);
+      for (let linkIndex = 0; linkIndex < count; linkIndex++) {
+        await expect(downloadLinks.nth(linkIndex)).toHaveClass(/btn-outline-primary/);
       }
     });
 

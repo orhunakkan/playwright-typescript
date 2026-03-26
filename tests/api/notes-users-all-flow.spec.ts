@@ -11,11 +11,11 @@ import {
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Notes Users API Flow', () => {
-  const registerUrl = `${process.env.API_URL}/users/register`;
-  const loginUrl = `${process.env.API_URL}/users/login`;
-  const profileUrl = `${process.env.API_URL}/users/profile`;
-  const forgotPasswordUrl = `${process.env.API_URL}/users/forgot-password`;
-  const logoutUrl = `${process.env.API_URL}/users/logout`;
+  const registerUrl = `${process.env.PRACTICE_API_URL}/users/register`;
+  const loginUrl = `${process.env.PRACTICE_API_URL}/users/login`;
+  const profileUrl = `${process.env.PRACTICE_API_URL}/users/profile`;
+  const forgotPasswordUrl = `${process.env.PRACTICE_API_URL}/users/forgot-password`;
+  const logoutUrl = `${process.env.PRACTICE_API_URL}/users/logout`;
 
   let registeredUser: any = {};
   let authToken = '';

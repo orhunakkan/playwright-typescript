@@ -14,7 +14,7 @@ on:
       environment:
         description: 'Environment URL to test'
         required: false
-        default: 'https://practice.expandtesting.com/'
+        default: 'https://bonigarcia.dev/selenium-webdriver-java'
         type: string
       api_url:
         description: 'API URL to test'
@@ -31,8 +31,8 @@ on:
         type: string
 
 env:
-  ENV: ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
-  API_URL: ${{ inputs.api_url || 'https://practice.expandtesting.com/notes/api' }}
+  PRACTICE_E2E_URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
+  PRACTICE_API_URL: ${{ inputs.api_url || 'https://practice.expandtesting.com/notes/api' }}
   PLAYWRIGHT_JSON_OUTPUT_FILE: ./playwright-report/test-results.json
 
 concurrency:
@@ -63,7 +63,7 @@ jobs:
       - name: Install Playwright system deps only
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
-      - name: Run Playwright tests for ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
+      - name: Run Playwright tests for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
         run: npx playwright test --grep-invert "visual regression"
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
@@ -130,7 +130,7 @@ jobs:
           from: ${{ vars.NOTIFICATION_EMAIL }}
           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
           body: |
-            ${{ steps.get-test-stats.outputs.status_emoji || '' }} Test Results Summary for ${{ inputs.environment || 'https://practice.expandtesting.com/' }}:
+            ${{ steps.get-test-stats.outputs.status_emoji || '' }} Test Results Summary for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}:
 
             Total Tests: ${{ steps.get-test-stats.outputs.total }}
             Passed: ${{ steps.get-test-stats.outputs.passed }}
@@ -138,7 +138,7 @@ jobs:
             Skipped: ${{ steps.get-test-stats.outputs.skipped }}
             Flaky: ${{ steps.get-test-stats.outputs.flaky }}
 
-            URL: ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
+            URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
 
             View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -157,7 +157,7 @@ jobs:
           from: ${{ vars.NOTIFICATION_EMAIL }}
           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
           body: |
-            An error was thrown while generating the test results summary for ${{ inputs.environment || 'https://practice.expandtesting.com/' }}.
+            An error was thrown while generating the test results summary for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}.
             Please check the GitHub Action run for details.
             View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -168,7 +168,7 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
     env:
       HOME: /root
-      ENV: ${{ inputs.environment || 'https://practice.expandtesting.com/' }}
+      PRACTICE_E2E_URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6

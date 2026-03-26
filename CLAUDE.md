@@ -185,6 +185,5 @@ API tests in `tests/api/` follow a specific pattern:
 
 ## Environment
 
-- `.env` contains `ENV` (base URL) and `API_URL`
-- Base URL: `https://practice.expandtesting.com/`
-- E2E test site: `https://bonigarcia.dev/selenium-webdriver-java`
+- `.env` contains `PRACTICE_E2E_URL` (E2E base URL) and `PRACTICE_API_URL` (API base URL)
+- No `baseURL` in playwright.config.ts — all tests read URLs directly from `.env`

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const BASE_URL = 'https://bonigarcia.dev/selenium-webdriver-java';
+const BASE_URL = process.env.PRACTICE_E2E_URL;
 
 test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
@@ -398,8 +398,8 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       expect(count).toBe(5);
 
       // Each should have a key attribute
-      for (let i = 0; i < count; i++) {
-        const key = await langElements.nth(i).getAttribute('key');
+      for (let langIndex = 0; langIndex < count; langIndex++) {
+        const key = await langElements.nth(langIndex).getAttribute('key');
         expect(key).toBeTruthy();
         expect(key).toMatch(/^_/);
       }
@@ -471,7 +471,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
 
       await page.goto(`${BASE_URL}/console-logs.html`);
 
-      const types = messages.map((m) => m.type);
+      const types = messages.map((message) => message.type);
       expect(types).toContain('log');
       expect(types).toContain('info');
       expect(types).toContain('warning');

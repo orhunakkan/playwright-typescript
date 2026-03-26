@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Notes Health Check API', () => {
-  const apiUrl = `${process.env.API_URL}/health-check`;
+  const apiUrl = `${process.env.PRACTICE_API_URL}/health-check`;
 
   test('should return a successful health check response', async ({ request }) => {
     const response = await request.get(apiUrl);

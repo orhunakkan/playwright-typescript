@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import path from 'path';
 import { pressCalcKeys } from '../../utilities/calculator';
 
-const BASE_URL = 'https://bonigarcia.dev/selenium-webdriver-java';
+const BASE_URL = process.env.PRACTICE_E2E_URL;
 
 test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
@@ -586,11 +586,11 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       const figures = page.locator('.figure');
       const expectedCaptions = ['Compass', 'Calendar', 'Award', 'Landscape'];
 
-      for (let i = 0; i < expectedCaptions.length; i++) {
-        const figure = figures.nth(i);
+      for (let captionIndex = 0; captionIndex < expectedCaptions.length; captionIndex++) {
+        const figure = figures.nth(captionIndex);
         // Hover over the image to reveal the caption
         await figure.locator('img').hover();
-        await expect(figure.getByText(expectedCaptions[i])).toBeVisible();
+        await expect(figure.getByText(expectedCaptions[captionIndex])).toBeVisible();
       }
     });
 
@@ -605,8 +605,8 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       const images = page.locator('.figure img');
       const count = await images.count();
 
-      for (let i = 0; i < count; i++) {
-        const image = images.nth(i);
+      for (let imageIndex = 0; imageIndex < count; imageIndex++) {
+        const image = images.nth(imageIndex);
         const naturalWidth = await image.evaluate((el: HTMLImageElement) => el.naturalWidth);
         expect(naturalWidth).toBeGreaterThan(0);
       }
@@ -617,8 +617,8 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       const count = await captions.count();
       expect(count).toBe(4);
 
-      for (let i = 0; i < count; i++) {
-        await expect(captions.nth(i)).toBeHidden();
+      for (let captionIndex = 0; captionIndex < count; captionIndex++) {
+        await expect(captions.nth(captionIndex)).toBeHidden();
       }
     });
 
@@ -730,9 +730,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
       // Get pixel data before drawing
       const pixelsBefore = await page.evaluate(() => {
-        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
-        const ctx = c.getContext('2d')!;
-        return ctx.getImageData(0, 0, c.width, c.height).data.some((v, i) => i % 4 === 3 && v > 0);
+        const canvas = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d')!;
+        return ctx.getImageData(0, 0, canvas.width, canvas.height).data.some((pixel, index) => index % 4 === 3 && pixel > 0);
       });
       expect(pixelsBefore).toBe(false);
 
@@ -743,9 +743,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
       // Verify pixels were drawn
       const pixelsAfter = await page.evaluate(() => {
-        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
-        const ctx = c.getContext('2d')!;
-        return ctx.getImageData(0, 0, c.width, c.height).data.some((v, i) => i % 4 === 3 && v > 0);
+        const canvas = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d')!;
+        return ctx.getImageData(0, 0, canvas.width, canvas.height).data.some((pixel, index) => index % 4 === 3 && pixel > 0);
       });
       expect(pixelsAfter).toBe(true);
     });
@@ -768,9 +768,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
       // Verify non-transparent pixels exist after drawing
       const hasDrawnPixels = await page.evaluate(() => {
-        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
-        const ctx = c.getContext('2d')!;
-        return ctx.getImageData(0, 0, c.width, c.height).data.some((v, i) => i % 4 === 3 && v > 0);
+        const canvas = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d')!;
+        return ctx.getImageData(0, 0, canvas.width, canvas.height).data.some((pixel, index) => index % 4 === 3 && pixel > 0);
       });
       expect(hasDrawnPixels).toBe(true);
     });
@@ -792,12 +792,12 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       }
 
       const countAfterClicks = await page.evaluate(() => {
-        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
-        const ctx = c.getContext('2d')!;
-        const data = ctx.getImageData(0, 0, c.width, c.height).data;
+        const canvas = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d')!;
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
         let count = 0;
-        for (let i = 3; i < data.length; i += 4) {
-          if (data[i] > 0) count++;
+        for (let alphaIndex = 3; alphaIndex < data.length; alphaIndex += 4) {
+          if (data[alphaIndex] > 0) count++;
         }
         return count;
       });
@@ -810,12 +810,12 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
       // Verify more pixels were drawn after the line
       const countAfterLine = await page.evaluate(() => {
-        const c = document.getElementById('my-canvas') as HTMLCanvasElement;
-        const ctx = c.getContext('2d')!;
-        const data = ctx.getImageData(0, 0, c.width, c.height).data;
+        const canvas = document.getElementById('my-canvas') as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d')!;
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
         let count = 0;
-        for (let i = 3; i < data.length; i += 4) {
-          if (data[i] > 0) count++;
+        for (let alphaIndex = 3; alphaIndex < data.length; alphaIndex += 4) {
+          if (data[alphaIndex] > 0) count++;
         }
         return count;
       });
@@ -926,8 +926,8 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
     test('should verify all calculator buttons are present', async ({ page }) => {
       // Number buttons
-      for (let i = 0; i <= 9; i++) {
-        await expect(page.locator(`#calculator .keys >> text="${i}"`)).toBeVisible();
+      for (let digit = 0; digit <= 9; digit++) {
+        await expect(page.locator(`#calculator .keys >> text="${digit}"`)).toBeVisible();
       }
 
       // Operator buttons

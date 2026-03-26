@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { clickCalcButton, pressCalcKeys } from '../../utilities/calculator';
 
-const BASE_URL = 'https://bonigarcia.dev/selenium-webdriver-java';
+const BASE_URL = process.env.PRACTICE_E2E_URL;
 
 test.describe('Chapter 8 - Testing Framework Specifics', () => {
   // ─────────────────────────────────────────────────
@@ -274,7 +274,7 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
       const screen = page.locator('#calculator .screen');
 
       // First 2 calculations may be random; the 3rd should be correct
-      for (let i = 0; i < 2; i++) {
+      for (let attempt = 0; attempt < 2; attempt++) {
         await pressCalcKeys(page, '1', '+', '1', '=');
         await screen.waitFor({ state: 'attached' });
         await clickCalcButton(page, 'C');

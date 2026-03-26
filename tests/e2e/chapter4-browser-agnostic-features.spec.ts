@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const BASE_URL = 'https://bonigarcia.dev/selenium-webdriver-java';
+const BASE_URL = process.env.PRACTICE_E2E_URL;
 
 test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
@@ -150,7 +150,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       const paragraphs = contentDiv.locator('p');
 
       // Scroll multiple times
-      for (let i = 0; i < 3; i++) {
+      for (let scrollAttempt = 0; scrollAttempt < 3; scrollAttempt++) {
         const countBefore = await paragraphs.count();
         await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
         await expect(paragraphs).not.toHaveCount(countBefore);
@@ -243,8 +243,8 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
     test('should read cookies via Playwright context API', async ({ context }) => {
       const cookies = await context.cookies('https://bonigarcia.dev');
-      const usernameCookie = cookies.find((c) => c.name === 'username');
-      const dateCookie = cookies.find((c) => c.name === 'date');
+      const usernameCookie = cookies.find((cookie) => cookie.name === 'username');
+      const dateCookie = cookies.find((cookie) => cookie.name === 'date');
 
       expect(usernameCookie).toBeDefined();
       expect(usernameCookie?.value).toBe('John Doe');
@@ -277,14 +277,14 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
     test('should delete a specific cookie', async ({ page, context }) => {
       // Verify username cookie exists
       let cookies = await context.cookies('https://bonigarcia.dev');
-      expect(cookies.find((c) => c.name === 'username')).toBeDefined();
+      expect(cookies.find((cookie) => cookie.name === 'username')).toBeDefined();
 
       // Delete the username cookie
       await context.clearCookies({ name: 'username' });
 
       // Verify it's gone
       cookies = await context.cookies('https://bonigarcia.dev');
-      expect(cookies.find((c) => c.name === 'username')).toBeUndefined();
+      expect(cookies.find((cookie) => cookie.name === 'username')).toBeUndefined();
     });
 
     test('should clear all cookies', async ({ page, context }) => {
@@ -305,7 +305,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
     test('should verify cookie properties', async ({ context }) => {
       const cookies = await context.cookies('https://bonigarcia.dev');
-      const usernameCookie = cookies.find((c) => c.name === 'username');
+      const usernameCookie = cookies.find((cookie) => cookie.name === 'username');
 
       expect(usernameCookie).toBeDefined();
       expect(usernameCookie!.path).toBe('/');
@@ -315,7 +315,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
     test('should modify an existing cookie and verify the updated value', async ({ page, context }) => {
       // Verify original username cookie
       let cookies = await context.cookies('https://bonigarcia.dev');
-      const original = cookies.find((c) => c.name === 'username');
+      const original = cookies.find((cookie) => cookie.name === 'username');
       expect(original).toBeDefined();
 
       // Overwrite the cookie with a new value
@@ -330,7 +330,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
       // Verify the updated value
       cookies = await context.cookies('https://bonigarcia.dev');
-      const updated = cookies.find((c) => c.name === 'username');
+      const updated = cookies.find((cookie) => cookie.name === 'username');
       expect(updated).toBeDefined();
       expect(updated!.value).toBe('new-user');
     });
@@ -835,8 +835,8 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
     test('should iterate session storage keys', async ({ page }) => {
       const keys = await page.evaluate(() => {
         const allKeys: string[] = [];
-        for (let i = 0; i < sessionStorage.length; i++) {
-          const key = sessionStorage.key(i);
+        for (let storageIndex = 0; storageIndex < sessionStorage.length; storageIndex++) {
+          const key = sessionStorage.key(storageIndex);
           if (key) allKeys.push(key);
         }
         return allKeys;

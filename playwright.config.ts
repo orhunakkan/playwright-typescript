@@ -14,14 +14,10 @@ export default defineConfig({
   outputDir: 'test-results',
   snapshotPathTemplate: 'fixtures/reference-snapshots/{testFileName}/{projectName}-{arg}{ext}',
   use: {
-    baseURL: process.env.ENV,
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    extraHTTPHeaders: {
-      API_BASE_URL: process.env.API_URL,
-    },
   },
   projects: [
     {

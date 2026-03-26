@@ -15,7 +15,7 @@ Follow these project conventions:
 - Generate payloads with @faker-js/faker, place generators in fixtures/notes-api-payloads/
 - Follow the flow pattern: setup → create → read → update → list → delete → cleanup
 - Assert status codes and response body properties
-- Use `process.env.API_URL` or `extraHTTPHeaders.API_BASE_URL` for base URL
+- Use `process.env.PRACTICE_API_URL` for base URL
 - File name: kebab-case ending in .spec.ts
 
 Read existing API test files in tests/api/ first to match the exact style and patterns.

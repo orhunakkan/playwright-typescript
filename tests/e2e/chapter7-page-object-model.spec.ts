@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { LoginFormPage } from '../../pages/login-form.page';
 import { SlowLoginFormPage } from '../../pages/slow-login-form.page';
 
-const BASE_URL = 'https://bonigarcia.dev/selenium-webdriver-java';
+const BASE_URL = process.env.PRACTICE_E2E_URL;
 
 test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   // ─────────────────────────────────────────────────
