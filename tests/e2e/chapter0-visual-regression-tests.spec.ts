@@ -43,9 +43,18 @@ test.describe('visual regression', () => {
 
   test('ab-testing variation A', async ({ page }) => {
     await page.goto(`${BASE_URL}/ab-testing.html`);
-    await page.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).$?.('#content').load('variation-a.html');
+    await page.evaluate(async () => {
+      const content = document.querySelector<HTMLElement>('#content');
+      if (!content) {
+        throw new Error('Missing #content container');
+      }
+
+      const response = await fetch('variation-a.html');
+      if (!response.ok) {
+        throw new Error(`Failed to load variation-a.html: ${response.status}`);
+      }
+
+      content.innerHTML = await response.text();
     });
 
     await expect(page.getByText('This is variation A')).toBeVisible();
@@ -54,9 +63,18 @@ test.describe('visual regression', () => {
 
   test('ab-testing variation B', async ({ page }) => {
     await page.goto(`${BASE_URL}/ab-testing.html`);
-    await page.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).$?.('#content').load('variation-b.html');
+    await page.evaluate(async () => {
+      const content = document.querySelector<HTMLElement>('#content');
+      if (!content) {
+        throw new Error('Missing #content container');
+      }
+
+      const response = await fetch('variation-b.html');
+      if (!response.ok) {
+        throw new Error(`Failed to load variation-b.html: ${response.status}`);
+      }
+
+      content.innerHTML = await response.text();
     });
 
     await expect(page.getByText('This is variation B')).toBeVisible();
