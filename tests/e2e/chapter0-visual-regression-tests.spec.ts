@@ -32,9 +32,11 @@ const pages = [
   'data-types',
 ];
 
-for (const pageName of pages) {
-  test(pageName, async ({ page }) => {
-    await page.goto(`${BASE_URL}/${pageName}.html`);
-    await expect(page).toHaveScreenshot('full-page.png', { fullPage: true });
-  });
-}
+test.describe('visual regression', () => {
+  for (const pageName of pages) {
+    test(pageName, async ({ page }) => {
+      await page.goto(`${BASE_URL}/${pageName}.html`);
+      await expect(page).toHaveScreenshot('full-page.png', { fullPage: true });
+    });
+  }
+});
