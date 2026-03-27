@@ -13,138 +13,144 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
 
     test.beforeEach(async ({ page }) => {
       loginPage = new LoginFormPage(page);
-      await loginPage.goto();
+      await loginPage.actions.goto();
     });
 
     test('should display the login form heading', async () => {
-      await expect(loginPage.heading).toBeVisible();
+      await expect(loginPage.locators.heading).toBeVisible();
     });
 
     test('should have a username input field', async () => {
-      await expect(loginPage.usernameInput).toBeVisible();
-      await expect(loginPage.usernameInput).toHaveId('username');
-      await expect(loginPage.usernameInput).toHaveAttribute('type', 'text');
-      await expect(loginPage.usernameInput).toHaveAttribute('name', 'username');
+      await expect(loginPage.locators.usernameInput).toBeVisible();
+      await expect(loginPage.locators.usernameInput).toHaveId('username');
+      await expect(loginPage.locators.usernameInput).toHaveAttribute('type', 'text');
+      await expect(loginPage.locators.usernameInput).toHaveAttribute('name', 'username');
     });
 
     test('should have a password input field', async () => {
-      await expect(loginPage.passwordInput).toBeVisible();
-      await expect(loginPage.passwordInput).toHaveId('password');
-      await expect(loginPage.passwordInput).toHaveAttribute('type', 'password');
-      await expect(loginPage.passwordInput).toHaveAttribute('name', 'password');
-      await expect(loginPage.passwordInput).toHaveAttribute('autocomplete', 'off');
+      await expect(loginPage.locators.passwordInput).toBeVisible();
+      await expect(loginPage.locators.passwordInput).toHaveId('password');
+      await expect(loginPage.locators.passwordInput).toHaveAttribute('type', 'password');
+      await expect(loginPage.locators.passwordInput).toHaveAttribute('name', 'password');
+      await expect(loginPage.locators.passwordInput).toHaveAttribute('autocomplete', 'off');
     });
 
     test('should have a submit button', async () => {
-      await expect(loginPage.submitButton).toBeVisible();
-      await expect(loginPage.submitButton).toHaveAttribute('type', 'submit');
+      await expect(loginPage.locators.submitButton).toBeVisible();
+      await expect(loginPage.locators.submitButton).toHaveAttribute('type', 'submit');
     });
 
     test('should have empty inputs initially', async () => {
-      await expect(loginPage.usernameInput).toHaveValue('');
-      await expect(loginPage.passwordInput).toHaveValue('');
+      await expect(loginPage.locators.usernameInput).toHaveValue('');
+      await expect(loginPage.locators.passwordInput).toHaveValue('');
     });
 
     test('should allow typing in the username field', async () => {
-      await loginPage.usernameInput.fill('testuser');
-      await expect(loginPage.usernameInput).toHaveValue('testuser');
+      await loginPage.locators.usernameInput.fill('testuser');
+      await expect(loginPage.locators.usernameInput).toHaveValue('testuser');
     });
 
     test('should allow typing in the password field', async () => {
-      await loginPage.passwordInput.fill('secret123');
-      await expect(loginPage.passwordInput).toHaveValue('secret123');
+      await loginPage.locators.passwordInput.fill('secret123');
+      await expect(loginPage.locators.passwordInput).toHaveValue('secret123');
     });
 
     test('should have a hidden invalid credentials alert', async () => {
-      await expect(loginPage.invalidAlert).toBeAttached();
-      await expect(loginPage.invalidAlert).toHaveClass(/d-none/);
-      await expect(loginPage.invalidAlert).toHaveText('Invalid credentials');
+      await expect(loginPage.locators.invalidAlert).toBeAttached();
+      await expect(loginPage.locators.invalidAlert).toHaveClass(/d-none/);
+      await expect(loginPage.locators.invalidAlert).toHaveText('Invalid credentials');
     });
 
-    test('should login successfully with valid credentials', async () => {
-      await loginPage.login('user', 'user');
-      await loginPage.expectSuccessfulLogin();
+    test('should login successfully with valid credentials', async ({ page }) => {
+      await loginPage.actions.login('user', 'user');
+      await expect(page).toHaveURL(/login-sucess\.html/);
+      await expect(loginPage.locators.successAlert).toBeVisible();
+      await expect(loginPage.locators.successAlert).toHaveText('Login successful');
     });
 
-    test('should show success alert with correct styling', async () => {
-      await loginPage.login('user', 'user');
-      await expect(loginPage.page).toHaveURL(/login-sucess\.html/);
-      await expect(loginPage.successAlert).toHaveClass(/alert-success/);
+    test('should show success alert with correct styling', async ({ page }) => {
+      await loginPage.actions.login('user', 'user');
+      await expect(page).toHaveURL(/login-sucess\.html/);
+      await expect(loginPage.locators.successAlert).toHaveClass(/alert-success/);
     });
 
-    test('should show invalid credentials with wrong username', async () => {
-      await loginPage.login('wronguser', 'user');
-      await loginPage.expectInvalidCredentials();
+    test('should show invalid credentials with wrong username', async ({ page }) => {
+      await loginPage.actions.login('wronguser', 'user');
+      await expect(page).toHaveURL(/login-form\.html/);
+      await expect(loginPage.locators.invalidAlert).toBeVisible();
+      await expect(loginPage.locators.invalidAlert).toHaveText('Invalid credentials');
     });
 
-    test('should show invalid credentials with wrong password', async () => {
-      await loginPage.login('user', 'wrongpass');
-      await expect(loginPage.page).toHaveURL(/login-form\.html/);
-      await expect(loginPage.invalidAlert).toBeVisible();
+    test('should show invalid credentials with wrong password', async ({ page }) => {
+      await loginPage.actions.login('user', 'wrongpass');
+      await expect(page).toHaveURL(/login-form\.html/);
+      await expect(loginPage.locators.invalidAlert).toBeVisible();
     });
 
-    test('should show invalid credentials with empty fields', async () => {
-      await loginPage.submitButton.click();
-      await loginPage.expectInvalidCredentials();
+    test('should show invalid credentials with empty fields', async ({ page }) => {
+      await loginPage.locators.submitButton.click();
+      await expect(page).toHaveURL(/login-form\.html/);
+      await expect(loginPage.locators.invalidAlert).toBeVisible();
+      await expect(loginPage.locators.invalidAlert).toHaveText('Invalid credentials');
     });
 
-    test('should show invalid credentials with both wrong', async () => {
-      await loginPage.login('wrong', 'wrong');
-      await expect(loginPage.page).toHaveURL(/login-form\.html/);
-      await expect(loginPage.invalidAlert).toBeVisible();
+    test('should show invalid credentials with both wrong', async ({ page }) => {
+      await loginPage.actions.login('wrong', 'wrong');
+      await expect(page).toHaveURL(/login-form\.html/);
+      await expect(loginPage.locators.invalidAlert).toBeVisible();
     });
 
     test('should have the form action pointing to success page', async () => {
-      await expect(loginPage.form).toHaveAttribute('action', 'login-sucess.html');
-      await expect(loginPage.form).toHaveAttribute('method', 'get');
+      await expect(loginPage.locators.form).toHaveAttribute('action', 'login-sucess.html');
+      await expect(loginPage.locators.form).toHaveAttribute('method', 'get');
     });
 
     test('should have correct button styling', async () => {
-      await expect(loginPage.submitButton).toHaveClass(/btn-outline-primary/);
+      await expect(loginPage.locators.submitButton).toHaveClass(/btn-outline-primary/);
     });
 
-    test('should pass query parameters on successful login', async () => {
-      await loginPage.login('user', 'user');
-      await expect(loginPage.page).toHaveURL(/username=user/);
-      await expect(loginPage.page).toHaveURL(/password=user/);
+    test('should pass query parameters on successful login', async ({ page }) => {
+      await loginPage.actions.login('user', 'user');
+      await expect(page).toHaveURL(/username=user/);
+      await expect(page).toHaveURL(/password=user/);
     });
 
     test('should clear and re-type credentials', async () => {
-      await loginPage.usernameInput.fill('wrong');
-      await loginPage.passwordInput.fill('wrong');
-      await expect(loginPage.usernameInput).toHaveValue('wrong');
+      await loginPage.locators.usernameInput.fill('wrong');
+      await loginPage.locators.passwordInput.fill('wrong');
+      await expect(loginPage.locators.usernameInput).toHaveValue('wrong');
 
-      await loginPage.usernameInput.clear();
-      await loginPage.passwordInput.clear();
-      await expect(loginPage.usernameInput).toHaveValue('');
-      await expect(loginPage.passwordInput).toHaveValue('');
+      await loginPage.locators.usernameInput.clear();
+      await loginPage.locators.passwordInput.clear();
+      await expect(loginPage.locators.usernameInput).toHaveValue('');
+      await expect(loginPage.locators.passwordInput).toHaveValue('');
 
-      await loginPage.usernameInput.fill('user');
-      await loginPage.passwordInput.fill('user');
-      await expect(loginPage.usernameInput).toHaveValue('user');
-      await expect(loginPage.passwordInput).toHaveValue('user');
+      await loginPage.locators.usernameInput.fill('user');
+      await loginPage.locators.passwordInput.fill('user');
+      await expect(loginPage.locators.usernameInput).toHaveValue('user');
+      await expect(loginPage.locators.passwordInput).toHaveValue('user');
     });
 
-    test('should submit form via Enter key', async () => {
-      await loginPage.usernameInput.fill('user');
-      await loginPage.passwordInput.fill('user');
-      await loginPage.passwordInput.press('Enter');
+    test('should submit form via Enter key', async ({ page }) => {
+      await loginPage.locators.usernameInput.fill('user');
+      await loginPage.locators.passwordInput.fill('user');
+      await loginPage.locators.passwordInput.press('Enter');
 
-      await expect(loginPage.page).toHaveURL(/login-sucess\.html/);
-      await expect(loginPage.successAlert).toBeVisible();
+      await expect(page).toHaveURL(/login-sucess\.html/);
+      await expect(loginPage.locators.successAlert).toBeVisible();
     });
 
-    test('should verify page title and copyright', async () => {
-      await expect(loginPage.page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(loginPage.page.getByText('Copyright © 2021-2025')).toBeAttached();
+    test('should verify page title and copyright', async ({ page }) => {
+      await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
+      await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
     });
 
-    test('should tab between form fields', async () => {
-      await loginPage.usernameInput.click();
-      await expect(loginPage.usernameInput).toBeFocused();
+    test('should tab between form fields', async ({ page }) => {
+      await loginPage.locators.usernameInput.click();
+      await expect(loginPage.locators.usernameInput).toBeFocused();
 
-      await loginPage.page.keyboard.press('Tab');
-      await expect(loginPage.passwordInput).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(loginPage.locators.passwordInput).toBeFocused();
     });
   });
 
@@ -156,127 +162,131 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
 
     test.beforeEach(async ({ page }) => {
       slowLoginPage = new SlowLoginFormPage(page);
-      await slowLoginPage.goto();
+      await slowLoginPage.actions.goto();
     });
 
     test('should display the slow login form heading', async () => {
-      await expect(slowLoginPage.heading).toBeVisible();
+      await expect(slowLoginPage.locators.heading).toBeVisible();
     });
 
     test('should have a username input field', async () => {
-      await expect(slowLoginPage.usernameInput).toBeVisible();
-      await expect(slowLoginPage.usernameInput).toHaveId('username');
+      await expect(slowLoginPage.locators.usernameInput).toBeVisible();
+      await expect(slowLoginPage.locators.usernameInput).toHaveId('username');
     });
 
     test('should have a password input field', async () => {
-      await expect(slowLoginPage.passwordInput).toBeVisible();
-      await expect(slowLoginPage.passwordInput).toHaveId('password');
+      await expect(slowLoginPage.locators.passwordInput).toBeVisible();
+      await expect(slowLoginPage.locators.passwordInput).toHaveId('password');
     });
 
     test('should have a submit button', async () => {
-      await expect(slowLoginPage.submitButton).toBeVisible();
+      await expect(slowLoginPage.locators.submitButton).toBeVisible();
     });
 
     test('should have a hidden spinner element', async () => {
-      await expect(slowLoginPage.spinner).toBeAttached();
-      await expect(slowLoginPage.spinner).toBeHidden();
-      await expect(slowLoginPage.spinner).toHaveClass(/spinner-border/);
+      await expect(slowLoginPage.locators.spinner).toBeAttached();
+      await expect(slowLoginPage.locators.spinner).toBeHidden();
+      await expect(slowLoginPage.locators.spinner).toHaveClass(/spinner-border/);
     });
 
     test('should show spinner when form is submitted', async () => {
-      await slowLoginPage.usernameInput.fill('user');
-      await slowLoginPage.passwordInput.fill('user');
+      await slowLoginPage.locators.usernameInput.fill('user');
+      await slowLoginPage.locators.passwordInput.fill('user');
 
-      await expect(slowLoginPage.spinner).toBeHidden();
+      await expect(slowLoginPage.locators.spinner).toBeHidden();
 
-      await slowLoginPage.submitButton.click();
+      await slowLoginPage.locators.submitButton.click();
 
       // Spinner should become visible during the delay
-      await expect(slowLoginPage.spinner).toBeVisible();
+      await expect(slowLoginPage.locators.spinner).toBeVisible();
     });
 
-    test('should login successfully with valid credentials after delay', async () => {
-      await slowLoginPage.login('user', 'user');
-      await slowLoginPage.expectSuccessfulLogin();
+    test('should login successfully with valid credentials after delay', async ({ page }) => {
+      await slowLoginPage.actions.login('user', 'user');
+      await expect(page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
+      await expect(slowLoginPage.locators.successAlert).toBeVisible();
+      await expect(slowLoginPage.locators.successAlert).toHaveText('Login successful');
     });
 
     test('should show invalid credentials with wrong credentials after delay', async () => {
-      await slowLoginPage.login('wronguser', 'wrongpass');
+      await slowLoginPage.actions.login('wronguser', 'wrongpass');
 
       // Spinner appears during delay
-      await expect(slowLoginPage.spinner).toBeVisible();
+      await expect(slowLoginPage.locators.spinner).toBeVisible();
 
       // After delay, error should show and spinner should hide
-      await expect(slowLoginPage.invalidAlert).toBeVisible({ timeout: 10000 });
-      await expect(slowLoginPage.spinner).toBeHidden();
+      await expect(slowLoginPage.locators.invalidAlert).toBeVisible({ timeout: 10000 });
+      await expect(slowLoginPage.locators.spinner).toBeHidden();
     });
 
     test('should show invalid credentials with wrong username after delay', async () => {
-      await slowLoginPage.login('wrong', 'user');
-      await slowLoginPage.expectInvalidCredentials();
+      await slowLoginPage.actions.login('wrong', 'user');
+      await expect(slowLoginPage.locators.invalidAlert).toBeVisible({ timeout: 10000 });
+      await expect(slowLoginPage.locators.invalidAlert).toHaveText('Invalid credentials');
     });
 
     test('should show invalid credentials with wrong password after delay', async () => {
-      await slowLoginPage.login('user', 'wrong');
-      await expect(slowLoginPage.invalidAlert).toBeVisible({ timeout: 10000 });
+      await slowLoginPage.actions.login('user', 'wrong');
+      await expect(slowLoginPage.locators.invalidAlert).toBeVisible({ timeout: 10000 });
     });
 
     test('should show invalid credentials with empty fields after delay', async () => {
-      await slowLoginPage.submitButton.click();
-      await slowLoginPage.expectInvalidCredentials();
+      await slowLoginPage.locators.submitButton.click();
+      await expect(slowLoginPage.locators.invalidAlert).toBeVisible({ timeout: 10000 });
+      await expect(slowLoginPage.locators.invalidAlert).toHaveText('Invalid credentials');
     });
 
     test('should hide spinner after delay completes on failure', async () => {
-      await slowLoginPage.login('wrong', 'wrong');
+      await slowLoginPage.actions.login('wrong', 'wrong');
 
       // Spinner shows during delay
-      await expect(slowLoginPage.spinner).toBeVisible();
+      await expect(slowLoginPage.locators.spinner).toBeVisible();
 
       // After ~3s the spinner should hide and the error should appear
-      await expect(slowLoginPage.spinner).toBeHidden({ timeout: 10000 });
-      await expect(slowLoginPage.invalidAlert).toBeVisible();
+      await expect(slowLoginPage.locators.spinner).toBeHidden({ timeout: 10000 });
+      await expect(slowLoginPage.locators.invalidAlert).toBeVisible();
     });
 
-    test('should stay on the same page during the delay', async () => {
-      await slowLoginPage.login('user', 'user');
+    test('should stay on the same page during the delay', async ({ page }) => {
+      await slowLoginPage.actions.login('user', 'user');
 
       // Right after clicking, should still be on login-slow.html
-      await expect(slowLoginPage.page).toHaveURL(/login-slow\.html/);
+      await expect(page).toHaveURL(/login-slow\.html/);
 
       // Spinner should be visible during the wait
-      await expect(slowLoginPage.spinner).toBeVisible();
+      await expect(slowLoginPage.locators.spinner).toBeVisible();
 
       // Eventually navigates
-      await expect(slowLoginPage.page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
+      await expect(page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
     });
 
     test('should have the form with correct id and action', async () => {
-      await expect(slowLoginPage.form).toBeAttached();
-      await expect(slowLoginPage.form).toHaveAttribute('action', 'login-sucess.html');
-      await expect(slowLoginPage.form).toHaveAttribute('method', 'get');
+      await expect(slowLoginPage.locators.form).toBeAttached();
+      await expect(slowLoginPage.locators.form).toHaveAttribute('action', 'login-sucess.html');
+      await expect(slowLoginPage.locators.form).toHaveAttribute('method', 'get');
     });
 
-    test('should verify success page shows correct heading after slow login', async () => {
-      await slowLoginPage.login('user', 'user');
+    test('should verify success page shows correct heading after slow login', async ({ page }) => {
+      await slowLoginPage.actions.login('user', 'user');
 
-      await expect(slowLoginPage.page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
+      await expect(page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
 
       // Success page should still show "Login form" heading
-      await expect(slowLoginPage.page.getByRole('heading', { name: 'Login form' })).toBeVisible();
-      await expect(slowLoginPage.successAlert).toHaveClass(/alert-success/);
+      await expect(page.getByRole('heading', { name: 'Login form' })).toBeVisible();
+      await expect(slowLoginPage.locators.successAlert).toHaveClass(/alert-success/);
     });
 
-    test('should pass query parameters on successful slow login', async () => {
-      await slowLoginPage.login('user', 'user');
+    test('should pass query parameters on successful slow login', async ({ page }) => {
+      await slowLoginPage.actions.login('user', 'user');
 
-      await expect(slowLoginPage.page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
-      await expect(slowLoginPage.page).toHaveURL(/login-sucess\.html/);
+      await expect(page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
+      await expect(page).toHaveURL(/login-sucess\.html/);
     });
 
-    test('should verify page title and copyright on slow login page', async () => {
-      await expect(slowLoginPage.page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(slowLoginPage.page.getByText('Copyright © 2021-2025')).toBeAttached();
-      await expect(slowLoginPage.page.getByRole('link', { name: 'Boni García' })).toBeVisible();
+    test('should verify page title and copyright on slow login page', async ({ page }) => {
+      await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
+      await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
+      await expect(page.getByRole('link', { name: 'Boni García' })).toBeVisible();
     });
   });
 

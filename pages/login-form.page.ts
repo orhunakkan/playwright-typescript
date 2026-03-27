@@ -1,47 +1,41 @@
-import { expect, Locator, Page } from '@playwright/test';
-
-const BASE_URL = 'https://bonigarcia.dev/selenium-webdriver-java';
+import { Locator, Page } from '@playwright/test';
+import { BASE_URL } from './base-url';
 
 export class LoginFormPage {
-  readonly page: Page;
-  readonly heading: Locator;
-  readonly usernameInput: Locator;
-  readonly passwordInput: Locator;
-  readonly submitButton: Locator;
-  readonly invalidAlert: Locator;
-  readonly successAlert: Locator;
-  readonly form: Locator;
+  readonly locators: {
+    heading: Locator;
+    usernameInput: Locator;
+    passwordInput: Locator;
+    submitButton: Locator;
+    invalidAlert: Locator;
+    successAlert: Locator;
+    form: Locator;
+  };
+  readonly actions: {
+    goto: () => Promise<void>;
+    login: (username: string, password: string) => Promise<void>;
+  };
 
-  constructor(page: Page) {
-    this.page = page;
-    this.heading = page.getByRole('heading', { name: 'Login form' });
-    this.usernameInput = page.getByLabel('Login');
-    this.passwordInput = page.getByLabel('Password');
-    this.submitButton = page.getByRole('button', { name: 'Submit' });
-    this.invalidAlert = page.locator('#invalid');
-    this.successAlert = page.locator('#success');
-    this.form = page.locator('form');
-  }
+  constructor(private readonly page: Page) {
+    this.locators = {
+      heading: page.getByRole('heading', { name: 'Login form' }),
+      usernameInput: page.getByLabel('Login'),
+      passwordInput: page.getByLabel('Password'),
+      submitButton: page.getByRole('button', { name: 'Submit' }),
+      invalidAlert: page.locator('#invalid'),
+      successAlert: page.locator('#success'),
+      form: page.locator('form'),
+    };
 
-  async goto() {
-    await this.page.goto(`${BASE_URL}/login-form.html`);
-  }
-
-  async login(username: string, password: string) {
-    await this.usernameInput.fill(username);
-    await this.passwordInput.fill(password);
-    await this.submitButton.click();
-  }
-
-  async expectSuccessfulLogin() {
-    await expect(this.page).toHaveURL(/login-sucess\.html/);
-    await expect(this.successAlert).toBeVisible();
-    await expect(this.successAlert).toHaveText('Login successful');
-  }
-
-  async expectInvalidCredentials() {
-    await expect(this.page).toHaveURL(/login-form\.html/);
-    await expect(this.invalidAlert).toBeVisible();
-    await expect(this.invalidAlert).toHaveText('Invalid credentials');
+    this.actions = {
+      goto: async () => {
+        await this.page.goto(`${BASE_URL}/login-form.html`);
+      },
+      login: async (username: string, password: string) => {
+        await this.locators.usernameInput.fill(username);
+        await this.locators.passwordInput.fill(password);
+        await this.locators.submitButton.click();
+      },
+    };
   }
 }

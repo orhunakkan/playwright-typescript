@@ -1,6 +1,14 @@
 import { expect, test } from '@playwright/test';
 import path from 'path';
-import { pressCalcKeys } from '../../utilities/calculator';
+import { WebFormPage } from '../../pages/web-form.page';
+import { NavigationPage } from '../../pages/navigation.page';
+import { DropdownMenuPage } from '../../pages/dropdown-menu.page';
+import { MouseOverPage } from '../../pages/mouse-over.page';
+import { DragAndDropPage } from '../../pages/drag-and-drop.page';
+import { DrawInCanvasPage } from '../../pages/draw-in-canvas.page';
+import { LoadingImagesPage } from '../../pages/loading-images.page';
+import { SlowCalculatorPage } from '../../pages/slow-calculator.page';
+import { HomePage } from '../../pages/home.page';
 
 const BASE_URL = process.env.PRACTICE_E2E_URL;
 
@@ -9,217 +17,190 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  1. Web Form
   // ─────────────────────────────────────────────────
   test.describe('Web Form', () => {
+    let webForm: WebFormPage;
+
     test.beforeEach(async ({ page }) => {
-      await page.goto(`${BASE_URL}/web-form.html`);
+      webForm = new WebFormPage(page);
+      await webForm.actions.goto();
     });
 
-    test('should display the web form heading', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: 'Web form' })).toBeVisible();
+    test('should display the web form heading', async () => {
+      await expect(webForm.locators.heading).toBeVisible();
     });
 
     // --- Text Input ---
-    test('should type into text input field', async ({ page }) => {
-      const textInput = page.getByRole('textbox', { name: 'Text input' });
-      await textInput.fill('Hello Playwright');
-      await expect(textInput).toHaveValue('Hello Playwright');
+    test('should type into text input field', async () => {
+      await webForm.locators.textInput.fill('Hello Playwright');
+      await expect(webForm.locators.textInput).toHaveValue('Hello Playwright');
     });
 
-    test('should clear and retype in text input field', async ({ page }) => {
-      const textInput = page.getByRole('textbox', { name: 'Text input' });
-      await textInput.fill('Initial text');
-      await expect(textInput).toHaveValue('Initial text');
-      await textInput.clear();
-      await expect(textInput).toHaveValue('');
-      await textInput.fill('Updated text');
-      await expect(textInput).toHaveValue('Updated text');
+    test('should clear and retype in text input field', async () => {
+      await webForm.locators.textInput.fill('Initial text');
+      await expect(webForm.locators.textInput).toHaveValue('Initial text');
+      await webForm.locators.textInput.clear();
+      await expect(webForm.locators.textInput).toHaveValue('');
+      await webForm.locators.textInput.fill('Updated text');
+      await expect(webForm.locators.textInput).toHaveValue('Updated text');
     });
 
     // --- Password Input ---
-    test('should type into password field', async ({ page }) => {
-      const passwordInput = page.getByRole('textbox', { name: 'Password' });
-      await passwordInput.fill('secret123');
-      await expect(passwordInput).toHaveValue('secret123');
+    test('should type into password field', async () => {
+      await webForm.locators.passwordInput.fill('secret123');
+      await expect(webForm.locators.passwordInput).toHaveValue('secret123');
       // Verify the input type is password (masked)
-      await expect(passwordInput).toHaveAttribute('type', 'password');
+      await expect(webForm.locators.passwordInput).toHaveAttribute('type', 'password');
     });
 
     // --- Textarea ---
-    test('should type into textarea', async ({ page }) => {
-      const textarea = page.getByRole('textbox', { name: 'Textarea' });
+    test('should type into textarea', async () => {
       const multiLineText = 'Line 1\nLine 2\nLine 3';
-      await textarea.fill(multiLineText);
-      await expect(textarea).toHaveValue(multiLineText);
+      await webForm.locators.textarea.fill(multiLineText);
+      await expect(webForm.locators.textarea).toHaveValue(multiLineText);
     });
 
     // --- Disabled Input ---
-    test('should verify disabled input is not editable', async ({ page }) => {
-      const disabledInput = page.getByRole('textbox', { name: 'Disabled input' });
-      await expect(disabledInput).toBeDisabled();
-      await expect(disabledInput).toHaveAttribute('placeholder', 'Disabled input');
+    test('should verify disabled input is not editable', async () => {
+      await expect(webForm.locators.disabledInput).toBeDisabled();
+      await expect(webForm.locators.disabledInput).toHaveAttribute('placeholder', 'Disabled input');
     });
 
     // --- Readonly Input ---
-    test('should verify readonly input has pre-filled value', async ({ page }) => {
-      const readonlyInput = page.getByRole('textbox', { name: 'Readonly input' });
-      await expect(readonlyInput).toBeEditable({ editable: false });
-      await expect(readonlyInput).toHaveValue('Readonly input');
-      await expect(readonlyInput).toHaveAttribute('readonly', '');
+    test('should verify readonly input has pre-filled value', async () => {
+      await expect(webForm.locators.readonlyInput).toBeEditable({ editable: false });
+      await expect(webForm.locators.readonlyInput).toHaveValue('Readonly input');
+      await expect(webForm.locators.readonlyInput).toHaveAttribute('readonly', '');
     });
 
     // --- Dropdown (select) ---
-    test('should select options from dropdown by visible text', async ({ page }) => {
-      const dropdown = page.getByRole('combobox', { name: 'Dropdown (select)' });
-      await expect(dropdown).toHaveValue('Open this select menu');
+    test('should select options from dropdown by visible text', async () => {
+      await expect(webForm.locators.dropdown).toHaveValue('Open this select menu');
 
-      await dropdown.selectOption({ label: 'One' });
-      await expect(dropdown).toHaveValue('1');
+      await webForm.locators.dropdown.selectOption({ label: 'One' });
+      await expect(webForm.locators.dropdown).toHaveValue('1');
 
-      await dropdown.selectOption({ label: 'Two' });
-      await expect(dropdown).toHaveValue('2');
+      await webForm.locators.dropdown.selectOption({ label: 'Two' });
+      await expect(webForm.locators.dropdown).toHaveValue('2');
 
-      await dropdown.selectOption({ label: 'Three' });
-      await expect(dropdown).toHaveValue('3');
+      await webForm.locators.dropdown.selectOption({ label: 'Three' });
+      await expect(webForm.locators.dropdown).toHaveValue('3');
     });
 
-    test('should select dropdown option by value', async ({ page }) => {
-      const dropdown = page.getByRole('combobox', { name: 'Dropdown (select)' });
-      await dropdown.selectOption('2');
-      await expect(dropdown).toHaveValue('2');
+    test('should select dropdown option by value', async () => {
+      await webForm.locators.dropdown.selectOption('2');
+      await expect(webForm.locators.dropdown).toHaveValue('2');
     });
 
-    test('should verify all dropdown options are present', async ({ page }) => {
-      const options = page.getByRole('combobox', { name: 'Dropdown (select)' }).getByRole('option');
-      await expect(options).toHaveCount(4);
-      await expect(options).toHaveText(['Open this select menu', 'One', 'Two', 'Three']);
+    test('should verify all dropdown options are present', async () => {
+      await expect(webForm.locators.dropdownOptions).toHaveCount(4);
+      await expect(webForm.locators.dropdownOptions).toHaveText(['Open this select menu', 'One', 'Two', 'Three']);
     });
 
     // --- Dropdown (datalist) ---
-    test('should type into datalist input and verify suggestions', async ({ page }) => {
-      const datalistInput = page.getByRole('combobox', { name: 'Dropdown (datalist)' });
-      await expect(datalistInput).toHaveAttribute('placeholder', 'Type to search...');
-      await datalistInput.fill('San Francisco');
-      await expect(datalistInput).toHaveValue('San Francisco');
+    test('should type into datalist input and verify suggestions', async () => {
+      await expect(webForm.locators.datalistInput).toHaveAttribute('placeholder', 'Type to search...');
+      await webForm.locators.datalistInput.fill('San Francisco');
+      await expect(webForm.locators.datalistInput).toHaveValue('San Francisco');
     });
 
-    test('should verify datalist options exist', async ({ page }) => {
-      const datalistOptions = page.locator('#my-options option');
-      await expect(datalistOptions).toHaveCount(5);
+    test('should verify datalist options exist', async () => {
+      await expect(webForm.locators.datalistOptions).toHaveCount(5);
 
       const expectedCities = ['San Francisco', 'New York', 'Seattle', 'Los Angeles', 'Chicago'];
       for (const city of expectedCities) {
-        await expect(datalistOptions.filter({ hasText: city })).toHaveCount(0); // datalist options use value attribute
-        await expect(page.locator(`#my-options option[value="${city}"]`)).toBeAttached();
+        await expect(webForm.locators.datalistOptions.filter({ hasText: city })).toHaveCount(0); // datalist options use value attribute
+        await expect(webForm.locators.datalistOption(city)).toBeAttached();
       }
     });
 
     // --- File Input ---
-    test('should upload a file', async ({ page }) => {
-      const fileInput = page.locator('input[type="file"]');
+    test('should upload a file', async () => {
       const testFilePath = path.resolve('package.json');
-      await fileInput.setInputFiles(testFilePath);
+      await webForm.actions.uploadFile(testFilePath);
       // Verify a file has been selected (input value contains the filename)
-      const inputValue = await fileInput.inputValue();
+      const inputValue = await webForm.locators.fileInput.inputValue();
       expect(inputValue).toContain('package.json');
     });
 
     // --- Checkboxes ---
-    test('should verify default checkbox states', async ({ page }) => {
-      const checkedCheckbox = page.getByRole('checkbox', { name: 'Checked checkbox' });
-      const defaultCheckbox = page.getByRole('checkbox', { name: 'Default checkbox' });
-
-      await expect(checkedCheckbox).toBeChecked();
-      await expect(defaultCheckbox).not.toBeChecked();
+    test('should verify default checkbox states', async () => {
+      await expect(webForm.locators.checkedCheckbox).toBeChecked();
+      await expect(webForm.locators.defaultCheckbox).not.toBeChecked();
     });
 
-    test('should toggle checkboxes', async ({ page }) => {
-      const checkedCheckbox = page.getByRole('checkbox', { name: 'Checked checkbox' });
-      const defaultCheckbox = page.getByRole('checkbox', { name: 'Default checkbox' });
-
+    test('should toggle checkboxes', async () => {
       // Uncheck the checked one
-      await checkedCheckbox.uncheck();
-      await expect(checkedCheckbox).not.toBeChecked();
+      await webForm.locators.checkedCheckbox.uncheck();
+      await expect(webForm.locators.checkedCheckbox).not.toBeChecked();
 
       // Check the default one
-      await defaultCheckbox.check();
-      await expect(defaultCheckbox).toBeChecked();
+      await webForm.locators.defaultCheckbox.check();
+      await expect(webForm.locators.defaultCheckbox).toBeChecked();
     });
 
     // --- Radio Buttons ---
-    test('should verify default radio button states', async ({ page }) => {
-      const checkedRadio = page.getByRole('radio', { name: 'Checked radio' });
-      const defaultRadio = page.getByRole('radio', { name: 'Default radio' });
-
-      await expect(checkedRadio).toBeChecked();
-      await expect(defaultRadio).not.toBeChecked();
+    test('should verify default radio button states', async () => {
+      await expect(webForm.locators.checkedRadio).toBeChecked();
+      await expect(webForm.locators.defaultRadio).not.toBeChecked();
     });
 
-    test('should select a different radio button', async ({ page }) => {
-      const checkedRadio = page.getByRole('radio', { name: 'Checked radio' });
-      const defaultRadio = page.getByRole('radio', { name: 'Default radio' });
-
-      await defaultRadio.check();
-      await expect(defaultRadio).toBeChecked();
+    test('should select a different radio button', async () => {
+      await webForm.locators.defaultRadio.check();
+      await expect(webForm.locators.defaultRadio).toBeChecked();
       // Only one radio in the group can be selected
-      await expect(checkedRadio).not.toBeChecked();
+      await expect(webForm.locators.checkedRadio).not.toBeChecked();
     });
 
     // --- Color Picker ---
-    test('should verify default color picker value', async ({ page }) => {
-      const colorPicker = page.locator('input[type="color"]');
-      await expect(colorPicker).toHaveValue('#563d7c');
+    test('should verify default color picker value', async () => {
+      await expect(webForm.locators.colorPicker).toHaveValue('#563d7c');
     });
 
-    test('should change color picker value', async ({ page }) => {
-      const colorPicker = page.locator('input[type="color"]');
-      await colorPicker.fill('#ff5733');
-      await expect(colorPicker).toHaveValue('#ff5733');
+    test('should change color picker value', async () => {
+      await webForm.locators.colorPicker.fill('#ff5733');
+      await expect(webForm.locators.colorPicker).toHaveValue('#ff5733');
     });
 
     // --- Date Picker ---
-    test('should set a date in the date picker', async ({ page }) => {
-      const datePicker = page.getByRole('textbox', { name: 'Date picker' });
-      await datePicker.fill('03/02/2026');
-      await expect(datePicker).toHaveValue('03/02/2026');
+    test('should set a date in the date picker', async () => {
+      await webForm.locators.datePicker.fill('03/02/2026');
+      await expect(webForm.locators.datePicker).toHaveValue('03/02/2026');
     });
 
     // --- Range Slider ---
-    test('should verify default range slider value', async ({ page }) => {
-      const rangeSlider = page.getByRole('slider', { name: 'Example range' });
-      await expect(rangeSlider).toHaveValue('5');
-      await expect(rangeSlider).toHaveAttribute('min', '0');
-      await expect(rangeSlider).toHaveAttribute('max', '10');
-      await expect(rangeSlider).toHaveAttribute('step', '1');
+    test('should verify default range slider value', async () => {
+      await expect(webForm.locators.rangeSlider).toHaveValue('5');
+      await expect(webForm.locators.rangeSlider).toHaveAttribute('min', '0');
+      await expect(webForm.locators.rangeSlider).toHaveAttribute('max', '10');
+      await expect(webForm.locators.rangeSlider).toHaveAttribute('step', '1');
     });
 
-    test('should change range slider value', async ({ page }) => {
-      const rangeSlider = page.getByRole('slider', { name: 'Example range' });
-      await rangeSlider.fill('8');
-      await expect(rangeSlider).toHaveValue('8');
+    test('should change range slider value', async () => {
+      await webForm.locators.rangeSlider.fill('8');
+      await expect(webForm.locators.rangeSlider).toHaveValue('8');
     });
 
     // --- Hidden Input ---
-    test('should verify hidden input exists', async ({ page }) => {
-      const hiddenInput = page.locator('input[name="my-hidden"]');
-      await expect(hiddenInput).toBeAttached();
-      await expect(hiddenInput).toBeHidden();
-      await expect(hiddenInput).toHaveAttribute('type', 'hidden');
+    test('should verify hidden input exists', async () => {
+      await expect(webForm.locators.hiddenInput).toBeAttached();
+      await expect(webForm.locators.hiddenInput).toBeHidden();
+      await expect(webForm.locators.hiddenInput).toHaveAttribute('type', 'hidden');
     });
 
     // --- Return to Index Link ---
     test('should navigate back to index via link', async ({ page }) => {
-      await page.getByRole('link', { name: 'Return to index' }).click();
+      await webForm.locators.returnToIndexLink.click();
       await expect(page).toHaveURL(`${BASE_URL}/index.html`);
     });
 
     // --- Form Submission ---
     test('should submit the form and verify navigation', async ({ page }) => {
       // Fill the form
-      await page.getByRole('textbox', { name: 'Text input' }).fill('Playwright Test');
-      await page.getByRole('textbox', { name: 'Password' }).fill('mypassword');
-      await page.getByRole('textbox', { name: 'Textarea' }).fill('Test content');
+      await webForm.locators.textInput.fill('Playwright Test');
+      await webForm.locators.passwordInput.fill('mypassword');
+      await webForm.locators.textarea.fill('Test content');
 
       // Submit the form
-      await page.getByRole('button', { name: 'Submit' }).click();
+      await webForm.actions.submitForm();
 
       // Verify we land on the submitted page
       await expect(page).toHaveURL(/submitted-form\.html/);
@@ -229,63 +210,56 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
     test('should submit the form with all fields filled', async ({ page }) => {
       // Text input
-      await page.getByRole('textbox', { name: 'Text input' }).fill('Full form test');
+      await webForm.locators.textInput.fill('Full form test');
       // Password
-      await page.getByRole('textbox', { name: 'Password' }).fill('pass123');
+      await webForm.locators.passwordInput.fill('pass123');
       // Textarea
-      await page.getByRole('textbox', { name: 'Textarea' }).fill('Some notes here');
+      await webForm.locators.textarea.fill('Some notes here');
       // Dropdown
-      await page.getByRole('combobox', { name: 'Dropdown (select)' }).selectOption({ label: 'Two' });
+      await webForm.locators.dropdown.selectOption({ label: 'Two' });
       // Datalist
-      await page.getByRole('combobox', { name: 'Dropdown (datalist)' }).fill('New York');
+      await webForm.locators.datalistInput.fill('New York');
       // File upload
-      await page.locator('input[type="file"]').setInputFiles(path.resolve('package.json'));
+      await webForm.actions.uploadFile(path.resolve('package.json'));
       // Uncheck the checked checkbox
-      await page.getByRole('checkbox', { name: 'Checked checkbox' }).uncheck();
+      await webForm.locators.checkedCheckbox.uncheck();
       // Check the default checkbox
-      await page.getByRole('checkbox', { name: 'Default checkbox' }).check();
+      await webForm.locators.defaultCheckbox.check();
       // Select default radio
-      await page.getByRole('radio', { name: 'Default radio' }).check();
+      await webForm.locators.defaultRadio.check();
       // Color
-      await page.locator('input[type="color"]').fill('#00ff00');
+      await webForm.locators.colorPicker.fill('#00ff00');
       // Date
-      await page.getByRole('textbox', { name: 'Date picker' }).fill('12/25/2025');
+      await webForm.locators.datePicker.fill('12/25/2025');
       // Range
-      await page.getByRole('slider', { name: 'Example range' }).fill('9');
+      await webForm.locators.rangeSlider.fill('9');
 
       // Submit
-      await page.getByRole('button', { name: 'Submit' }).click();
+      await webForm.actions.submitForm();
 
       await expect(page).toHaveURL(/submitted-form\.html/);
       await expect(page.getByText('Received!')).toBeVisible();
     });
 
     // --- Custom Attribute ---
-    test('should locate element by custom attribute', async ({ page }) => {
-      const textInput = page.locator('[myprop="myvalue"]');
-      await expect(textInput).toBeVisible();
-      await textInput.fill('Located by custom attribute');
-      await expect(textInput).toHaveValue('Located by custom attribute');
+    test('should locate element by custom attribute', async () => {
+      await expect(webForm.locators.textInputByCustomAttr).toBeVisible();
+      await webForm.locators.textInputByCustomAttr.fill('Located by custom attribute');
+      await expect(webForm.locators.textInputByCustomAttr).toHaveValue('Located by custom attribute');
     });
 
     // --- Locator by ID ---
-    test('should locate text input by id', async ({ page }) => {
-      const textInput = page.locator('#my-text-id');
-      await expect(textInput).toBeVisible();
-      await textInput.fill('Located by ID');
-      await expect(textInput).toHaveValue('Located by ID');
+    test('should locate text input by id', async () => {
+      await expect(webForm.locators.textInputById).toBeVisible();
+      await webForm.locators.textInputById.fill('Located by ID');
+      await expect(webForm.locators.textInputById).toHaveValue('Located by ID');
     });
 
     // --- Locator by Name ---
-    test('should locate elements by name attribute', async ({ page }) => {
-      const textInput = page.locator('[name="my-text"]');
-      await expect(textInput).toBeVisible();
-
-      const passwordInput = page.locator('[name="my-password"]');
-      await expect(passwordInput).toBeVisible();
-
-      const textarea = page.locator('[name="my-textarea"]');
-      await expect(textarea).toBeVisible();
+    test('should locate elements by name attribute', async () => {
+      await expect(webForm.locators.textInputByName).toBeVisible();
+      await expect(webForm.locators.passwordInputByName).toBeVisible();
+      await expect(webForm.locators.textareaByName).toBeVisible();
     });
   });
 
@@ -293,52 +267,57 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  2. Navigation
   // ─────────────────────────────────────────────────
   test.describe('Navigation', () => {
+    let nav: NavigationPage;
+
+    test.beforeEach(async ({ page }) => {
+      nav = new NavigationPage(page);
+    });
+
     test('should display navigation page 1 content', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
-      await expect(page.getByRole('heading', { name: 'Navigation example' })).toBeVisible();
+      await nav.actions.goto();
+      await expect(nav.locators.heading).toBeVisible();
       await expect(page.getByText('Lorem ipsum dolor sit amet')).toBeVisible();
     });
 
     test('should navigate through pages using pagination links', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
+      await nav.actions.goto();
 
       // Verify we are on page 1
       await expect(page).toHaveURL(/navigation1\.html/);
 
       // Click page 2
-      await page.getByRole('link', { name: '2' }).click();
+      await nav.actions.goToPage(2);
       await expect(page).toHaveURL(/navigation2\.html/);
-      await expect(page.getByRole('heading', { name: 'Navigation example' })).toBeVisible();
+      await expect(nav.locators.heading).toBeVisible();
 
       // Click page 3
-      await page.getByRole('link', { name: '3' }).click();
+      await nav.actions.goToPage(3);
       await expect(page).toHaveURL(/navigation3\.html/);
-      await expect(page.getByRole('heading', { name: 'Navigation example' })).toBeVisible();
+      await expect(nav.locators.heading).toBeVisible();
     });
 
     test('should navigate using Next and Previous links', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
+      await nav.actions.goto();
 
       // "Previous" should be disabled on page 1 (it has href="#")
-      const previousLink = page.getByRole('link', { name: 'Previous' });
-      await expect(previousLink).toBeVisible();
+      await expect(nav.locators.previousLink).toBeVisible();
 
       // Click "Next" to go to page 2
-      await page.getByRole('link', { name: 'Next' }).click();
+      await nav.actions.goNext();
       await expect(page).toHaveURL(/navigation2\.html/);
 
       // Click "Next" again to go to page 3
-      await page.getByRole('link', { name: 'Next' }).click();
+      await nav.actions.goNext();
       await expect(page).toHaveURL(/navigation3\.html/);
 
       // Click "Previous" to go back to page 2
-      await page.getByRole('link', { name: 'Previous' }).click();
+      await nav.actions.goPrevious();
       await expect(page).toHaveURL(/navigation2\.html/);
     });
 
     test('should navigate back using browser history', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
-      await page.getByRole('link', { name: '2' }).click();
+      await nav.actions.goto();
+      await nav.actions.goToPage(2);
       await expect(page).toHaveURL(/navigation2\.html/);
 
       // Go back using browser history
@@ -351,81 +330,75 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
     });
 
     test('should navigate using Back to index link', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
-      await page.getByRole('link', { name: 'Back to index' }).click();
+      await nav.actions.goto();
+      await nav.locators.backToIndexLink.click();
       await expect(page).toHaveURL(`${BASE_URL}/index.html`);
     });
 
-    test('should verify all pagination links are present', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
+    test('should verify all pagination links are present', async () => {
+      await nav.actions.goto();
 
-      const pagination = page.getByRole('navigation', { name: 'Page navigation example' });
-      await expect(pagination).toBeVisible();
-
-      await expect(page.getByRole('link', { name: 'Previous' })).toBeVisible();
-      await expect(page.getByRole('link', { name: '1' })).toBeVisible();
-      await expect(page.getByRole('link', { name: '2' })).toBeVisible();
-      await expect(page.getByRole('link', { name: '3' })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Next' })).toBeVisible();
+      await expect(nav.locators.pagination).toBeVisible();
+      await expect(nav.locators.previousLink).toBeVisible();
+      await expect(nav.locators.pageLink(1)).toBeVisible();
+      await expect(nav.locators.pageLink(2)).toBeVisible();
+      await expect(nav.locators.pageLink(3)).toBeVisible();
+      await expect(nav.locators.nextLink).toBeVisible();
     });
 
     test('should verify page title remains consistent across pages', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
+      await nav.actions.goto();
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
 
-      await page.getByRole('link', { name: '2' }).click();
+      await nav.actions.goToPage(2);
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
 
-      await page.getByRole('link', { name: '3' }).click();
+      await nav.actions.goToPage(3);
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
     });
 
-    test('should verify current page has active class in pagination', async ({ page }) => {
+    test('should verify current page has active class in pagination', async () => {
       // Page 1 — "1" should be active
-      await page.goto(`${BASE_URL}/navigation1.html`);
-      await expect(page.locator('li.page-item.active a.page-link')).toHaveText('1');
+      await nav.actions.goto();
+      await expect(nav.locators.activePageLink).toHaveText('1');
 
       // Page 2 — "2" should be active
-      await page.getByRole('link', { name: '2' }).click();
-      await expect(page.locator('li.page-item.active a.page-link')).toHaveText('2');
+      await nav.actions.goToPage(2);
+      await expect(nav.locators.activePageLink).toHaveText('2');
 
       // Page 3 — "3" should be active
-      await page.getByRole('link', { name: '3' }).click();
-      await expect(page.locator('li.page-item.active a.page-link')).toHaveText('3');
+      await nav.actions.goToPage(3);
+      await expect(nav.locators.activePageLink).toHaveText('3');
     });
 
-    test('should verify Previous link is disabled on first page', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
-
-      const previousItem = page.locator('li.page-item').filter({ hasText: 'Previous' });
-      await expect(previousItem).toHaveClass(/disabled/);
+    test('should verify Previous link is disabled on first page', async () => {
+      await nav.actions.goto();
+      await expect(nav.locators.previousItem).toHaveClass(/disabled/);
     });
 
-    test('should verify Next link is disabled on last page', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation3.html`);
-
-      const nextItem = page.locator('li.page-item').filter({ hasText: 'Next' });
-      await expect(nextItem).toHaveClass(/disabled/);
+    test('should verify Next link is disabled on last page', async () => {
+      await nav.actions.goto(3);
+      await expect(nav.locators.nextItem).toHaveClass(/disabled/);
     });
 
-    test('should display different content on each page', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
-      await expect(page.locator('p.lead')).toContainText('Lorem ipsum dolor sit amet');
+    test('should display different content on each page', async () => {
+      await nav.actions.goto();
+      await expect(nav.locators.leadParagraph).toContainText('Lorem ipsum dolor sit amet');
 
-      await page.getByRole('link', { name: '2' }).click();
-      await expect(page.locator('p.lead')).toContainText('Ut enim ad minim veniam');
+      await nav.actions.goToPage(2);
+      await expect(nav.locators.leadParagraph).toContainText('Ut enim ad minim veniam');
 
-      await page.getByRole('link', { name: '3' }).click();
-      await expect(page.locator('p.lead')).toContainText('Excepteur sint occaecat cupidatat');
+      await nav.actions.goToPage(3);
+      await expect(nav.locators.leadParagraph).toContainText('Excepteur sint occaecat cupidatat');
     });
 
     test('should stay on the same page when clicking current page number', async ({ page }) => {
-      await page.goto(`${BASE_URL}/navigation1.html`);
+      await nav.actions.goto();
 
       // Click page 1 while already on page 1
-      await page.getByRole('link', { name: '1' }).click();
+      await nav.actions.goToPage(1);
       await expect(page).toHaveURL(/navigation1\.html/);
-      await expect(page.locator('p.lead')).toContainText('Lorem ipsum dolor sit amet');
+      await expect(nav.locators.leadParagraph).toContainText('Lorem ipsum dolor sit amet');
     });
   });
 
@@ -433,135 +406,123 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  3. Dropdown Menu
   // ─────────────────────────────────────────────────
   test.describe('Dropdown Menu', () => {
+    let dropdown: DropdownMenuPage;
+
     test.beforeEach(async ({ page }) => {
-      await page.goto(`${BASE_URL}/dropdown-menu.html`);
+      dropdown = new DropdownMenuPage(page);
+      await dropdown.actions.goto();
     });
 
-    test('should display dropdown menu heading', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: 'Dropdown menu' })).toBeVisible();
+    test('should display dropdown menu heading', async () => {
+      await expect(dropdown.locators.heading).toBeVisible();
     });
 
-    test('should open dropdown with left-click', async ({ page }) => {
-      const leftClickButton = page.getByRole('button', { name: 'Use left-click here' });
-      await expect(leftClickButton).toBeVisible();
+    test('should open dropdown with left-click', async () => {
+      await expect(dropdown.locators.leftClickButton).toBeVisible();
 
       // Click the button to open the dropdown
-      await leftClickButton.click();
+      await dropdown.actions.openLeftClickDropdown();
 
       // Verify dropdown items are visible
-      const dropdownMenu = page.locator('#my-dropdown-1 + .dropdown-menu');
-      await expect(dropdownMenu).toBeVisible();
-      await expect(dropdownMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
-      await expect(dropdownMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
-      await expect(dropdownMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
-      await expect(dropdownMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
+      await expect(dropdown.locators.leftClickMenu).toBeVisible();
+      await expect(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
+      await expect(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
+      await expect(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
+      await expect(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
     });
 
-    test('should open dropdown with right-click (context menu)', async ({ page }) => {
-      const rightClickButton = page.getByRole('button', { name: 'Use right-click here' });
-      await expect(rightClickButton).toBeVisible();
+    test('should open dropdown with right-click (context menu)', async () => {
+      await expect(dropdown.locators.rightClickButton).toBeVisible();
 
       // Right-click
-      await rightClickButton.click({ button: 'right' });
+      await dropdown.actions.openRightClickDropdown();
 
       // Verify the context menu dropdown is shown
-      const contextMenu = page.locator('#context-menu-2');
-      await expect(contextMenu).toBeVisible();
-      await expect(contextMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
-      await expect(contextMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
-      await expect(contextMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
-      await expect(contextMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
+      await expect(dropdown.locators.rightClickMenu).toBeVisible();
+      await expect(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
+      await expect(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
+      await expect(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
+      await expect(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
     });
 
-    test('should open dropdown with double-click', async ({ page }) => {
-      const doubleClickButton = page.getByRole('button', { name: 'Use double-click here' });
-      await expect(doubleClickButton).toBeVisible();
+    test('should open dropdown with double-click', async () => {
+      await expect(dropdown.locators.doubleClickButton).toBeVisible();
 
       // Double-click
-      await doubleClickButton.dblclick();
+      await dropdown.actions.openDoubleClickDropdown();
 
       // Verify the dropdown is shown
-      const dblClickMenu = page.locator('#context-menu-3');
-      await expect(dblClickMenu).toBeVisible();
-      await expect(dblClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
-      await expect(dblClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
+      await expect(dropdown.locators.doubleClickMenu).toBeVisible();
+      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
+      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
     });
 
-    test('should close dropdown after clicking an item (left-click)', async ({ page }) => {
-      const leftClickButton = page.getByRole('button', { name: 'Use left-click here' });
-      await leftClickButton.click();
-
-      const dropdownMenu = page.locator('#my-dropdown-1 + .dropdown-menu');
-      await expect(dropdownMenu).toBeVisible();
+    test('should close dropdown after clicking an item (left-click)', async () => {
+      await dropdown.actions.openLeftClickDropdown();
+      await expect(dropdown.locators.leftClickMenu).toBeVisible();
 
       // Click an item to close the dropdown
-      await dropdownMenu.getByRole('link', { name: 'Action', exact: true }).click();
-      await expect(dropdownMenu).toBeHidden();
+      await dropdown.locators.leftClickMenu.getByRole('link', { name: 'Action', exact: true }).click();
+      await expect(dropdown.locators.leftClickMenu).toBeHidden();
     });
 
-    test('should verify all three dropdown trigger buttons exist', async ({ page }) => {
-      await expect(page.getByRole('button', { name: 'Use left-click here' })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Use right-click here' })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Use double-click here' })).toBeVisible();
+    test('should verify all three dropdown trigger buttons exist', async () => {
+      await expect(dropdown.locators.leftClickButton).toBeVisible();
+      await expect(dropdown.locators.rightClickButton).toBeVisible();
+      await expect(dropdown.locators.doubleClickButton).toBeVisible();
     });
 
-    test('should verify all four items in double-click dropdown', async ({ page }) => {
-      await page.getByRole('button', { name: 'Use double-click here' }).dblclick();
+    test('should verify all four items in double-click dropdown', async () => {
+      await dropdown.actions.openDoubleClickDropdown();
 
-      const menu = page.locator('#context-menu-3');
-      await expect(menu).toBeVisible();
-      await expect(menu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
-      await expect(menu.getByRole('link', { name: 'Another action' })).toBeVisible();
-      await expect(menu.getByRole('link', { name: 'Something else here' })).toBeVisible();
-      await expect(menu.getByRole('link', { name: 'Separated link' })).toBeVisible();
+      await expect(dropdown.locators.doubleClickMenu).toBeVisible();
+      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
+      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
+      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
+      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
     });
 
     test('should verify dropdown divider exists in each dropdown', async ({ page }) => {
       // Left-click dropdown
-      await page.getByRole('button', { name: 'Use left-click here' }).click();
-      const leftMenu = page.locator('#my-dropdown-1 + .dropdown-menu');
-      await expect(leftMenu).toBeVisible();
-      await expect(leftMenu.locator('hr.dropdown-divider')).toBeAttached();
+      await dropdown.actions.openLeftClickDropdown();
+      await expect(dropdown.locators.leftClickMenu).toBeVisible();
+      await expect(dropdown.locators.leftClickMenu.locator('hr.dropdown-divider')).toBeAttached();
 
       // Dismiss by clicking elsewhere
       await page.locator('body').click();
 
       // Right-click dropdown
-      await page.getByRole('button', { name: 'Use right-click here' }).click({ button: 'right' });
-      const rightMenu = page.locator('#context-menu-2');
-      await expect(rightMenu).toBeVisible();
-      await expect(rightMenu.locator('hr.dropdown-divider')).toBeAttached();
+      await dropdown.actions.openRightClickDropdown();
+      await expect(dropdown.locators.rightClickMenu).toBeVisible();
+      await expect(dropdown.locators.rightClickMenu.locator('hr.dropdown-divider')).toBeAttached();
     });
 
-    test('should close right-click dropdown after clicking an item', async ({ page }) => {
-      await page.getByRole('button', { name: 'Use right-click here' }).click({ button: 'right' });
+    test('should close right-click dropdown after clicking an item', async () => {
+      await dropdown.actions.openRightClickDropdown();
 
-      const contextMenu = page.locator('#context-menu-2');
-      await expect(contextMenu).toBeVisible();
+      await expect(dropdown.locators.rightClickMenu).toBeVisible();
 
-      await contextMenu.getByRole('link', { name: 'Action', exact: true }).click();
-      await expect(contextMenu).toBeHidden();
+      await dropdown.locators.rightClickMenu.getByRole('link', { name: 'Action', exact: true }).click();
+      await expect(dropdown.locators.rightClickMenu).toBeHidden();
     });
 
-    test('should close double-click dropdown after clicking an item', async ({ page }) => {
-      await page.getByRole('button', { name: 'Use double-click here' }).dblclick();
+    test('should close double-click dropdown after clicking an item', async () => {
+      await dropdown.actions.openDoubleClickDropdown();
 
-      const dblMenu = page.locator('#context-menu-3');
-      await expect(dblMenu).toBeVisible();
+      await expect(dropdown.locators.doubleClickMenu).toBeVisible();
 
-      await dblMenu.getByRole('link', { name: 'Another action' }).click();
-      await expect(dblMenu).toBeHidden();
+      await dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Another action' }).click();
+      await expect(dropdown.locators.doubleClickMenu).toBeHidden();
     });
 
-    test('should close dropdown when clicking outside', async ({ page }) => {
+    test('should close dropdown when clicking outside', async () => {
       // Open left-click dropdown
-      await page.getByRole('button', { name: 'Use left-click here' }).click();
-      const dropdown = page.locator('#my-dropdown-1 + .dropdown-menu');
-      await expect(dropdown).toBeVisible();
+      await dropdown.actions.openLeftClickDropdown();
+      await expect(dropdown.locators.leftClickMenu).toBeVisible();
 
       // Click outside to dismiss
-      await page.getByRole('heading', { name: 'Dropdown menu' }).click();
-      await expect(dropdown).toBeHidden();
+      await dropdown.locators.heading.click();
+      await expect(dropdown.locators.leftClickMenu).toBeHidden();
     });
   });
 
@@ -569,72 +530,71 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  4. Mouse Over
   // ─────────────────────────────────────────────────
   test.describe('Mouse Over', () => {
+    let mouseOver: MouseOverPage;
+
     test.beforeEach(async ({ page }) => {
-      await page.goto(`${BASE_URL}/mouse-over.html`);
+      mouseOver = new MouseOverPage(page);
+      await mouseOver.actions.goto();
     });
 
-    test('should display the mouse over heading', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: 'Mouse over' })).toBeVisible();
+    test('should display the mouse over heading', async () => {
+      await expect(mouseOver.locators.heading).toBeVisible();
     });
 
-    test('should display all four images', async ({ page }) => {
-      const images = page.locator('.figure img');
-      await expect(images).toHaveCount(4);
+    test('should display all four images', async () => {
+      await expect(mouseOver.locators.images).toHaveCount(4);
     });
 
-    test('should reveal image captions on hover', async ({ page }) => {
-      const figures = page.locator('.figure');
+    test('should reveal image captions on hover', async () => {
       const expectedCaptions = ['Compass', 'Calendar', 'Award', 'Landscape'];
 
       for (let captionIndex = 0; captionIndex < expectedCaptions.length; captionIndex++) {
-        const figure = figures.nth(captionIndex);
+        const figure = mouseOver.locators.figures.nth(captionIndex);
         // Hover over the image to reveal the caption
-        await figure.locator('img').hover();
+        await mouseOver.actions.hoverImage(captionIndex);
         await expect(figure.getByText(expectedCaptions[captionIndex])).toBeVisible();
       }
     });
 
-    test('should verify image sources are correct', async ({ page }) => {
-      await expect(page.locator('img[src="img/compass.png"]')).toBeVisible();
-      await expect(page.locator('img[src="img/calendar.png"]')).toBeVisible();
-      await expect(page.locator('img[src="img/award.png"]')).toBeVisible();
-      await expect(page.locator('img[src="img/landscape.png"]')).toBeVisible();
+    test('should verify image sources are correct', async () => {
+      await expect(mouseOver.locators.compassImage).toBeVisible();
+      await expect(mouseOver.locators.calendarImage).toBeVisible();
+      await expect(mouseOver.locators.awardImage).toBeVisible();
+      await expect(mouseOver.locators.landscapeImage).toBeVisible();
     });
 
-    test('should verify images are loaded successfully', async ({ page }) => {
-      const images = page.locator('.figure img');
-      const count = await images.count();
+    test('should verify images are loaded successfully', async () => {
+      const count = await mouseOver.locators.images.count();
 
       for (let imageIndex = 0; imageIndex < count; imageIndex++) {
-        const image = images.nth(imageIndex);
+        const image = mouseOver.locators.images.nth(imageIndex);
         const naturalWidth = await image.evaluate((el: HTMLImageElement) => el.naturalWidth);
         expect(naturalWidth).toBeGreaterThan(0);
       }
     });
 
-    test('should have all captions hidden before hover', async ({ page }) => {
-      const captions = page.locator('.figure .caption');
-      const count = await captions.count();
+    test('should have all captions hidden before hover', async () => {
+      const count = await mouseOver.locators.captions.count();
       expect(count).toBe(4);
 
       for (let captionIndex = 0; captionIndex < count; captionIndex++) {
-        await expect(captions.nth(captionIndex)).toBeHidden();
+        await expect(mouseOver.locators.captions.nth(captionIndex)).toBeHidden();
       }
     });
 
-    test('should hide caption when mouse leaves the image', async ({ page }) => {
-      const figure = page.locator('.figure').first();
+    test('should hide caption when mouse leaves the image', async () => {
+      const figure = mouseOver.locators.figures.first();
       const caption = figure.locator('.caption');
 
       // Initially hidden
       await expect(caption).toBeHidden();
 
       // Hover to reveal
-      await figure.locator('img').hover();
+      await mouseOver.actions.hoverImage(0);
       await expect(caption).toBeVisible();
 
       // Move mouse away (hover on heading to leave the figure area)
-      await page.getByRole('heading', { name: 'Mouse over' }).hover();
+      await mouseOver.locators.heading.hover();
       await expect(caption).toBeHidden();
     });
   });
@@ -643,39 +603,37 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  5. Drag and Drop
   // ─────────────────────────────────────────────────
   test.describe('Drag and Drop', () => {
+    let dragDrop: DragAndDropPage;
+
     test.beforeEach(async ({ page }) => {
-      await page.goto(`${BASE_URL}/drag-and-drop.html`);
+      dragDrop = new DragAndDropPage(page);
+      await dragDrop.actions.goto();
     });
 
-    test('should display the drag and drop heading', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: 'Drag and drop' })).toBeVisible();
+    test('should display the drag and drop heading', async () => {
+      await expect(dragDrop.locators.heading).toBeVisible();
     });
 
-    test('should display the draggable panel', async ({ page }) => {
-      const draggable = page.locator('#draggable');
-      await expect(draggable).toBeVisible();
-      await expect(page.getByRole('heading', { name: 'Draggable panel' })).toBeVisible();
-      await expect(page.getByText('Drag me')).toBeVisible();
+    test('should display the draggable panel', async () => {
+      await expect(dragDrop.locators.draggable).toBeVisible();
+      await expect(dragDrop.locators.draggableHeading).toBeVisible();
+      await expect(dragDrop.locators.dragMeText).toBeVisible();
     });
 
-    test('should display the drop target area', async ({ page }) => {
-      const target = page.locator('#target');
-      await expect(target).toBeVisible();
+    test('should display the drop target area', async () => {
+      await expect(dragDrop.locators.target).toBeVisible();
     });
 
-    test('should drag element to target', async ({ page }) => {
-      const draggable = page.locator('#draggable');
-      const target = page.locator('#target');
-
+    test('should drag element to target', async () => {
       // Get initial position of draggable
-      const initialBox = await draggable.boundingBox();
+      const initialBox = await dragDrop.locators.draggable.boundingBox();
       expect(initialBox).not.toBeNull();
 
       // Perform drag and drop
-      await draggable.dragTo(target);
+      await dragDrop.actions.dragToTarget();
 
       // Verify position has changed after drag
-      const finalBox = await draggable.boundingBox();
+      const finalBox = await dragDrop.locators.draggable.boundingBox();
       expect(finalBox).not.toBeNull();
 
       // The position should have changed (moved to the right towards target)
@@ -683,9 +641,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
     });
 
     test('should drag element using mouse actions', async ({ page }) => {
-      const draggable = page.locator('#draggable');
-
-      const box = await draggable.boundingBox();
+      const box = await dragDrop.locators.draggable.boundingBox();
       expect(box).not.toBeNull();
 
       const startX = box!.x + box!.width / 2;
@@ -698,7 +654,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await page.mouse.up();
 
       // Verify position has changed
-      const newBox = await draggable.boundingBox();
+      const newBox = await dragDrop.locators.draggable.boundingBox();
       expect(newBox).not.toBeNull();
       expect(newBox!.x).toBeGreaterThan(box!.x);
     });
@@ -708,24 +664,25 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  6. Draw in Canvas
   // ─────────────────────────────────────────────────
   test.describe('Draw in Canvas', () => {
+    let canvas: DrawInCanvasPage;
+
     test.beforeEach(async ({ page }) => {
-      await page.goto(`${BASE_URL}/draw-in-canvas.html`);
+      canvas = new DrawInCanvasPage(page);
+      await canvas.actions.goto();
     });
 
-    test('should display the drawing in canvas heading', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: 'Drawing in canvas' })).toBeVisible();
-      await expect(page.getByText('Click to draw.')).toBeVisible();
+    test('should display the drawing in canvas heading', async () => {
+      await expect(canvas.locators.heading).toBeVisible();
+      await expect(canvas.locators.instructions).toBeVisible();
     });
 
-    test('should verify canvas element exists', async ({ page }) => {
-      const canvas = page.locator('#my-canvas');
-      await expect(canvas).toBeVisible();
-      await expect(canvas).toHaveAttribute('id', 'my-canvas');
+    test('should verify canvas element exists', async () => {
+      await expect(canvas.locators.canvas).toBeVisible();
+      await expect(canvas.locators.canvas).toHaveAttribute('id', 'my-canvas');
     });
 
     test('should draw on canvas by clicking', async ({ page }) => {
-      const canvas = page.locator('#my-canvas');
-      const box = await canvas.boundingBox();
+      const box = await canvas.locators.canvas.boundingBox();
       expect(box).not.toBeNull();
 
       // Get pixel data before drawing
@@ -737,7 +694,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       expect(pixelsBefore).toBe(false);
 
       // Click in the center of canvas to draw
-      await canvas.click({
+      await canvas.locators.canvas.click({
         position: { x: box!.width / 2, y: box!.height / 2 },
       });
 
@@ -751,8 +708,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
     });
 
     test('should draw a line on canvas by dragging', async ({ page }) => {
-      const canvas = page.locator('#my-canvas');
-      const box = await canvas.boundingBox();
+      const box = await canvas.locators.canvas.boundingBox();
       expect(box).not.toBeNull();
 
       const startX = box!.x + 50;
@@ -776,8 +732,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
     });
 
     test('should draw multiple shapes on canvas', async ({ page }) => {
-      const canvas = page.locator('#my-canvas');
-      const box = await canvas.boundingBox();
+      const box = await canvas.locators.canvas.boundingBox();
       expect(box).not.toBeNull();
 
       // Draw a triangle by clicking three points
@@ -822,9 +777,8 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       expect(countAfterLine).toBeGreaterThan(countAfterClicks);
     });
 
-    test('should verify canvas dimensions', async ({ page }) => {
-      const canvas = page.locator('#my-canvas');
-      const width = await canvas.getAttribute('width');
+    test('should verify canvas dimensions', async () => {
+      const width = await canvas.locators.canvas.getAttribute('width');
       expect(Number(width)).toBeGreaterThan(0);
     });
   });
@@ -833,77 +787,81 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  7. Loading Images
   // ─────────────────────────────────────────────────
   test.describe('Loading Images', () => {
-    test('should display loading message initially', async ({ page }) => {
-      await page.goto(`${BASE_URL}/loading-images.html`);
-      // The spinner should be visible initially
-      const spinner = page.locator('#spinner');
-      await expect(spinner).toBeVisible();
+    let loadingImages: LoadingImagesPage;
+
+    test.beforeEach(async ({ page }) => {
+      loadingImages = new LoadingImagesPage(page);
     });
 
-    test('should show "Done!" text after all images load', async ({ page }) => {
-      await page.goto(`${BASE_URL}/loading-images.html`);
+    test('should display loading message initially', async () => {
+      await loadingImages.actions.goto();
+      // The spinner should be visible initially
+      await expect(loadingImages.locators.spinner).toBeVisible();
+    });
+
+    test('should show "Done!" text after all images load', async () => {
+      await loadingImages.actions.goto();
 
       // Wait for the text to change to "Done!" (images load at 2s intervals, last at 8s)
-      await expect(page.locator('#text')).toHaveText('Done!', { timeout: 15000 });
+      await expect(loadingImages.locators.text).toHaveText('Done!', { timeout: 15000 });
     });
 
-    test('should load compass image first', async ({ page }) => {
-      await page.goto(`${BASE_URL}/loading-images.html`);
+    test('should load compass image first', async () => {
+      await loadingImages.actions.goto();
 
       // Compass image should appear quickly (within ~2s)
-      const compassImg = page.locator('#compass');
-      await expect(compassImg).toBeVisible({ timeout: 5000 });
-      await expect(compassImg).toHaveAttribute('alt', 'compass');
+      await expect(loadingImages.locators.compassImg).toBeVisible({ timeout: 5000 });
+      await expect(loadingImages.locators.compassImg).toHaveAttribute('alt', 'compass');
     });
 
-    test('should load all four images with correct attributes after waiting', async ({ page }) => {
+    test('should load all four images with correct attributes after waiting', async () => {
       test.setTimeout(20000);
-      await page.goto(`${BASE_URL}/loading-images.html`);
+      await loadingImages.actions.goto();
 
       // Wait for all images to load (last image appears at ~8s)
-      await expect(page.locator('#text')).toHaveText('Done!', { timeout: 15000 });
+      await expect(loadingImages.locators.text).toHaveText('Done!', { timeout: 15000 });
 
       // Verify all 4 images are present with correct alt and src attributes
       const images = [
-        { id: '#compass', alt: 'compass', src: 'img/compass.png' },
-        { id: '#calendar', alt: 'calendar', src: 'img/calendar.png' },
-        { id: '#award', alt: 'award', src: 'img/award.png' },
-        { id: '#landscape', alt: 'landscape', src: 'img/landscape.png' },
+        { locator: loadingImages.locators.compassImg, alt: 'compass', src: 'img/compass.png' },
+        { locator: loadingImages.locators.calendarImg, alt: 'calendar', src: 'img/calendar.png' },
+        { locator: loadingImages.locators.awardImg, alt: 'award', src: 'img/award.png' },
+        { locator: loadingImages.locators.landscapeImg, alt: 'landscape', src: 'img/landscape.png' },
       ];
 
       for (const img of images) {
-        await expect(page.locator(img.id)).toBeVisible();
-        await expect(page.locator(img.id)).toHaveAttribute('alt', img.alt);
-        await expect(page.locator(img.id)).toHaveAttribute('src', img.src);
+        await expect(img.locator).toBeVisible();
+        await expect(img.locator).toHaveAttribute('alt', img.alt);
+        await expect(img.locator).toHaveAttribute('src', img.src);
       }
     });
 
-    test('should verify images appear in correct order', async ({ page }) => {
+    test('should verify images appear in correct order', async () => {
       test.setTimeout(20000);
-      await page.goto(`${BASE_URL}/loading-images.html`);
+      await loadingImages.actions.goto();
 
       // First image should appear within ~2s
-      await expect(page.locator('#compass')).toBeVisible({ timeout: 5000 });
+      await expect(loadingImages.locators.compassImg).toBeVisible({ timeout: 5000 });
 
       // Second image should appear around ~4s
-      await expect(page.locator('#calendar')).toBeVisible({ timeout: 5000 });
+      await expect(loadingImages.locators.calendarImg).toBeVisible({ timeout: 5000 });
 
       // Third image around ~6s
-      await expect(page.locator('#award')).toBeVisible({ timeout: 5000 });
+      await expect(loadingImages.locators.awardImg).toBeVisible({ timeout: 5000 });
 
       // Fourth image around ~8s
-      await expect(page.locator('#landscape')).toBeVisible({ timeout: 5000 });
+      await expect(loadingImages.locators.landscapeImg).toBeVisible({ timeout: 5000 });
     });
 
-    test('should verify spinner disappears after loading', async ({ page }) => {
+    test('should verify spinner disappears after loading', async () => {
       test.setTimeout(20000);
-      await page.goto(`${BASE_URL}/loading-images.html`);
+      await loadingImages.actions.goto();
 
       // Wait for done text which replaces the spinner
-      await expect(page.locator('#text')).toHaveText('Done!', { timeout: 15000 });
+      await expect(loadingImages.locators.text).toHaveText('Done!', { timeout: 15000 });
 
       // Spinner should no longer exist (the innerHTML is replaced)
-      await expect(page.locator('#spinner')).toHaveCount(0);
+      await expect(loadingImages.locators.spinner).toHaveCount(0);
     });
   });
 
@@ -911,17 +869,19 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  8. Slow Calculator
   // ─────────────────────────────────────────────────
   test.describe('Slow Calculator', () => {
+    let calc: SlowCalculatorPage;
+
     test.beforeEach(async ({ page }) => {
-      await page.goto(`${BASE_URL}/slow-calculator.html`);
+      calc = new SlowCalculatorPage(page);
+      await calc.actions.goto();
     });
 
-    test('should display the slow calculator heading', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: 'Slow calculator' })).toBeVisible();
+    test('should display the slow calculator heading', async () => {
+      await expect(calc.locators.heading).toBeVisible();
     });
 
-    test('should verify default delay is 5 seconds', async ({ page }) => {
-      const delayInput = page.locator('#delay');
-      await expect(delayInput).toHaveValue('5');
+    test('should verify default delay is 5 seconds', async () => {
+      await expect(calc.locators.delayInput).toHaveValue('5');
     });
 
     test('should verify all calculator buttons are present', async ({ page }) => {
@@ -942,99 +902,96 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(page.locator('#calculator >> text="C"')).toBeVisible();
     });
 
-    test('should perform addition (1 + 3 = 4) with reduced delay', async ({ page }) => {
+    test('should perform addition (1 + 3 = 4) with reduced delay', async () => {
       test.setTimeout(15000);
-      await page.locator('#delay').fill('1');
+      await calc.actions.setDelay('1');
 
-      await pressCalcKeys(page, '1', '+', '3', '=');
-      await expect(page.locator('#calculator .screen')).toHaveText('4', { timeout: 10000 });
+      await calc.actions.pressKeys('1', '+', '3', '=');
+      await expect(calc.locators.screen).toHaveText('4', { timeout: 10000 });
     });
 
-    test('should perform subtraction (9 - 4 = 5) with reduced delay', async ({ page }) => {
+    test('should perform subtraction (9 - 4 = 5) with reduced delay', async () => {
       test.setTimeout(15000);
-      await page.locator('#delay').fill('1');
+      await calc.actions.setDelay('1');
 
-      await pressCalcKeys(page, '9', '-', '4', '=');
-      await expect(page.locator('#calculator .screen')).toHaveText('5', { timeout: 10000 });
+      await calc.actions.pressKeys('9', '-', '4', '=');
+      await expect(calc.locators.screen).toHaveText('5', { timeout: 10000 });
     });
 
-    test('should perform multiplication (6 x 7 = 42) with reduced delay', async ({ page }) => {
+    test('should perform multiplication (6 x 7 = 42) with reduced delay', async () => {
       test.setTimeout(15000);
-      await page.locator('#delay').fill('1');
+      await calc.actions.setDelay('1');
 
-      await pressCalcKeys(page, '6', 'x', '7', '=');
-      await expect(page.locator('#calculator .screen')).toHaveText('42', { timeout: 10000 });
+      await calc.actions.pressKeys('6', 'x', '7', '=');
+      await expect(calc.locators.screen).toHaveText('42', { timeout: 10000 });
     });
 
-    test('should perform division (8 ÷ 2 = 4) with reduced delay', async ({ page }) => {
+    test('should perform division (8 ÷ 2 = 4) with reduced delay', async () => {
       test.setTimeout(15000);
-      await page.locator('#delay').fill('1');
+      await calc.actions.setDelay('1');
 
-      await pressCalcKeys(page, '8', '÷', '2', '=');
-      await expect(page.locator('#calculator .screen')).toHaveText('4', { timeout: 10000 });
+      await calc.actions.pressKeys('8', '÷', '2', '=');
+      await expect(calc.locators.screen).toHaveText('4', { timeout: 10000 });
     });
 
-    test('should clear calculator display', async ({ page }) => {
-      await pressCalcKeys(page, '5', '3');
-      await expect(page.locator('#calculator .screen')).toHaveText('53');
+    test('should clear calculator display', async () => {
+      await calc.actions.pressKeys('5', '3');
+      await expect(calc.locators.screen).toHaveText('53');
 
-      await pressCalcKeys(page, 'C');
-      await expect(page.locator('#calculator .screen')).toHaveText('');
+      await calc.actions.clear();
+      await expect(calc.locators.screen).toHaveText('');
     });
 
-    test('should handle decimal numbers with reduced delay', async ({ page }) => {
+    test('should handle decimal numbers with reduced delay', async () => {
       test.setTimeout(15000);
-      await page.locator('#delay').fill('1');
+      await calc.actions.setDelay('1');
 
-      await pressCalcKeys(page, '2', '.', '5', '+', '1', '.', '5', '=');
-      await expect(page.locator('#calculator .screen')).toHaveText('4', { timeout: 10000 });
+      await calc.actions.pressKeys('2', '.', '5', '+', '1', '.', '5', '=');
+      await expect(calc.locators.screen).toHaveText('4', { timeout: 10000 });
     });
 
-    test('should show spinner while calculating', async ({ page }) => {
+    test('should show spinner while calculating', async () => {
       test.setTimeout(15000);
 
       // Keep default 5-second delay so spinner is visible
-      await pressCalcKeys(page, '1', '+', '1', '=');
+      await calc.actions.pressKeys('1', '+', '1', '=');
 
-      const spinner = page.locator('#spinner');
-      await expect(spinner).toBeVisible();
+      await expect(calc.locators.spinner).toBeVisible();
 
-      await expect(page.locator('#calculator .screen')).toHaveText('2', { timeout: 10000 });
+      await expect(calc.locators.screen).toHaveText('2', { timeout: 10000 });
     });
 
-    test('should change the delay value', async ({ page }) => {
-      const delayInput = page.locator('#delay');
-      await delayInput.fill('2');
-      await expect(delayInput).toHaveValue('2');
+    test('should change the delay value', async () => {
+      await calc.actions.setDelay('2');
+      await expect(calc.locators.delayInput).toHaveValue('2');
     });
 
-    test('should perform chained calculation with reduced delay', async ({ page }) => {
+    test('should perform chained calculation with reduced delay', async () => {
       test.setTimeout(15000);
-      await page.locator('#delay').fill('1');
+      await calc.actions.setDelay('1');
 
-      await pressCalcKeys(page, '1', '+', '2', '=');
-      await expect(page.locator('#calculator .screen')).toHaveText('3', { timeout: 10000 });
+      await calc.actions.pressKeys('1', '+', '2', '=');
+      await expect(calc.locators.screen).toHaveText('3', { timeout: 10000 });
     });
 
-    test('should handle division by zero with reduced delay', async ({ page }) => {
+    test('should handle division by zero with reduced delay', async () => {
       test.setTimeout(15000);
-      await page.locator('#delay').fill('1');
+      await calc.actions.setDelay('1');
 
-      await pressCalcKeys(page, '5', '÷', '0', '=');
-      await expect(page.locator('#calculator .screen')).toHaveText('Infinity', { timeout: 10000 });
+      await calc.actions.pressKeys('5', '÷', '0', '=');
+      await expect(calc.locators.screen).toHaveText('Infinity', { timeout: 10000 });
     });
 
-    test('should hide spinner after calculation completes', async ({ page }) => {
+    test('should hide spinner after calculation completes', async () => {
       test.setTimeout(15000);
-      await page.locator('#delay').fill('1');
+      await calc.actions.setDelay('1');
 
-      await pressCalcKeys(page, '3', '+', '4', '=');
+      await calc.actions.pressKeys('3', '+', '4', '=');
 
-      const spinner = page.locator('#spinner');
-      await expect(spinner).toBeVisible();
+      await expect(calc.locators.spinner).toBeVisible();
 
-      await expect(page.locator('#calculator .screen')).toHaveText('7', { timeout: 10000 });
-      await expect(spinner).toBeHidden();
+      await expect(calc.locators.screen).toHaveText('7', { timeout: 10000 });
+      await expect(calc.locators.spinner).toBeHidden();
     });
   });
 
@@ -1042,19 +999,22 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  Cross-page: Index Page Links
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 3 Links', () => {
+    let homePage: HomePage;
+
     test.beforeEach(async ({ page }) => {
-      await page.goto(`${BASE_URL}/index.html`);
+      homePage = new HomePage(page);
+      await homePage.actions.goto();
     });
 
-    test('should display the Chapter 3 section heading', async ({ page }) => {
-      await expect(page.getByRole('heading', { name: 'Chapter 3. WebDriver Fundamentals' })).toBeVisible();
+    test('should display the Chapter 3 section heading', async () => {
+      await expect(homePage.locators.chapter3Heading).toBeVisible();
     });
 
-    test('should have all Chapter 3 links', async ({ page }) => {
+    test('should have all Chapter 3 links', async () => {
       const chapter3Links = ['Web form', 'Navigation', 'Dropdown menu', 'Mouse over', 'Drag and drop', 'Draw in canvas', 'Loading images', 'Slow calculator'];
 
       for (const linkText of chapter3Links) {
-        await expect(page.getByRole('link', { name: linkText })).toBeVisible();
+        await expect(homePage.locators.chapterLink(linkText)).toBeVisible();
       }
     });
 
@@ -1071,8 +1031,8 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       ];
 
       for (const pageInfo of chapter3Pages) {
-        await page.goto(`${BASE_URL}/index.html`);
-        await page.getByRole('link', { name: pageInfo.name }).click();
+        await homePage.actions.goto();
+        await homePage.actions.navigateToLink(pageInfo.name);
         await expect(page).toHaveURL(new RegExp(pageInfo.url));
         await expect(page.getByRole('heading', { name: pageInfo.heading })).toBeVisible();
       }
