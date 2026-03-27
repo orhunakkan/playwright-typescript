@@ -6,7 +6,9 @@ import {
   generateLoginPayload,
   generateNotePayload,
   generateUpdateNotePayload,
+  expectObjectKeys,
 } from '../../fixtures/notes-api-payloads/notes-request-payloads';
+import type { ApiResponse, UserData, LoginData, NoteData } from '../../fixtures/notes-api-payloads/api-types';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -37,13 +39,13 @@ test.describe('Notes Notes API Flow', () => {
       headers: contentTypeHeaders,
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<UserData>;
     expect(response.status()).toBe(201);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('status', 201);
     expect(responseBody).toHaveProperty('message', 'User account created successfully');
     expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
+    expectObjectKeys(responseBody.data, ['id', 'name', 'email']);
     expect(typeof responseBody.data.id).toBe('string');
     expect(responseBody.data).toHaveProperty('name', registerPayload.name);
     expect(responseBody.data).toHaveProperty('email', registerPayload.email);
@@ -55,13 +57,13 @@ test.describe('Notes Notes API Flow', () => {
       headers: contentTypeHeaders,
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<LoginData>;
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('status', 200);
     expect(responseBody).toHaveProperty('message', 'Login successful');
     expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
+    expectObjectKeys(responseBody.data, ['id', 'name', 'email', 'token']);
     expect(typeof responseBody.data.id).toBe('string');
     expect(responseBody.data).toHaveProperty('name', registeredUser.name);
     expect(responseBody.data).toHaveProperty('email', registeredUser.email);
@@ -77,22 +79,19 @@ test.describe('Notes Notes API Flow', () => {
       headers: getAuthHeaders(authToken),
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<NoteData>;
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('message', 'Note successfully created');
     expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
+    expectObjectKeys(responseBody.data, ['id', 'title', 'description', 'category', 'completed', 'created_at', 'updated_at', 'user_id']);
     expect(typeof responseBody.data.id).toBe('string');
     expect(responseBody.data).toHaveProperty('title', firstNotePayload.title);
     expect(responseBody.data).toHaveProperty('description', firstNotePayload.description);
     expect(responseBody.data).toHaveProperty('category', firstNotePayload.category);
     expect(responseBody.data).toHaveProperty('completed', false);
-    expect(responseBody.data).toHaveProperty('created_at');
     expect(typeof responseBody.data.created_at).toBe('string');
-    expect(responseBody.data).toHaveProperty('updated_at');
     expect(typeof responseBody.data.updated_at).toBe('string');
-    expect(responseBody.data).toHaveProperty('user_id');
     expect(typeof responseBody.data.user_id).toBe('string');
 
     createdNoteId = responseBody.data.id;
@@ -104,22 +103,18 @@ test.describe('Notes Notes API Flow', () => {
       headers: getAuthHeaders(authToken),
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<NoteData>;
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('message', 'Note successfully created');
     expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
     expect(typeof responseBody.data.id).toBe('string');
     expect(responseBody.data).toHaveProperty('title', secondNotePayload.title);
     expect(responseBody.data).toHaveProperty('description', secondNotePayload.description);
     expect(responseBody.data).toHaveProperty('category', secondNotePayload.category);
     expect(responseBody.data).toHaveProperty('completed', false);
-    expect(responseBody.data).toHaveProperty('created_at');
     expect(typeof responseBody.data.created_at).toBe('string');
-    expect(responseBody.data).toHaveProperty('updated_at');
     expect(typeof responseBody.data.updated_at).toBe('string');
-    expect(responseBody.data).toHaveProperty('user_id');
     expect(typeof responseBody.data.user_id).toBe('string');
   });
 
@@ -128,7 +123,7 @@ test.describe('Notes Notes API Flow', () => {
       headers: getAuthHeaders(authToken),
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<NoteData>;
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('message', 'Note successfully retrieved');
@@ -138,11 +133,8 @@ test.describe('Notes Notes API Flow', () => {
     expect(responseBody.data).toHaveProperty('description', firstNotePayload.description);
     expect(responseBody.data).toHaveProperty('category', firstNotePayload.category);
     expect(responseBody.data).toHaveProperty('completed', false);
-    expect(responseBody.data).toHaveProperty('created_at');
     expect(typeof responseBody.data.created_at).toBe('string');
-    expect(responseBody.data).toHaveProperty('updated_at');
     expect(typeof responseBody.data.updated_at).toBe('string');
-    expect(responseBody.data).toHaveProperty('user_id');
     expect(typeof responseBody.data.user_id).toBe('string');
   });
 
@@ -152,7 +144,7 @@ test.describe('Notes Notes API Flow', () => {
       headers: getAuthHeaders(authToken),
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<NoteData>;
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('message', 'Note successfully Updated');
@@ -162,11 +154,8 @@ test.describe('Notes Notes API Flow', () => {
     expect(responseBody.data).toHaveProperty('description', updateNotePayload.description);
     expect(responseBody.data).toHaveProperty('category', updateNotePayload.category);
     expect(responseBody.data).toHaveProperty('completed', updateNotePayload.completed);
-    expect(responseBody.data).toHaveProperty('created_at');
     expect(typeof responseBody.data.created_at).toBe('string');
-    expect(responseBody.data).toHaveProperty('updated_at');
     expect(typeof responseBody.data.updated_at).toBe('string');
-    expect(responseBody.data).toHaveProperty('user_id');
     expect(typeof responseBody.data.user_id).toBe('string');
   });
 
@@ -175,7 +164,7 @@ test.describe('Notes Notes API Flow', () => {
       headers: getAuthHeaders(authToken),
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<NoteData[]>;
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('message', 'Notes successfully retrieved');
@@ -185,25 +174,21 @@ test.describe('Notes Notes API Flow', () => {
 
     const notes = responseBody.data;
 
-    const updatedNote = notes.find((note: any) => note.id === createdNoteId);
+    const updatedNote = notes.find((note: NoteData) => note.id === createdNoteId);
     expect(updatedNote).toBeDefined();
     expect(updatedNote).toHaveProperty('id');
-    expect(typeof updatedNote.id).toBe('string');
+    expect(typeof updatedNote!.id).toBe('string');
     expect(updatedNote).toHaveProperty('title', updateNotePayload.title);
     expect(updatedNote).toHaveProperty('description', updateNotePayload.description);
     expect(updatedNote).toHaveProperty('completed', updateNotePayload.completed);
     expect(updatedNote).toHaveProperty('category', updateNotePayload.category);
-    expect(updatedNote).toHaveProperty('created_at');
-    expect(typeof updatedNote.created_at).toBe('string');
-    expect(updatedNote).toHaveProperty('updated_at');
-    expect(typeof updatedNote.updated_at).toBe('string');
-    expect(updatedNote).toHaveProperty('user_id');
-    expect(typeof updatedNote.user_id).toBe('string');
+    expect(typeof updatedNote!.created_at).toBe('string');
+    expect(typeof updatedNote!.updated_at).toBe('string');
+    expect(typeof updatedNote!.user_id).toBe('string');
 
-    const secondNote = notes.find((note: any) => note.id !== createdNoteId);
+    const secondNote = notes.find((note: NoteData) => note.id !== createdNoteId);
     expect(secondNote).toBeDefined();
-    expect(secondNote).toHaveProperty('id');
-    expect(typeof secondNote.id).toBe('string');
+    expect(typeof secondNote!.id).toBe('string');
     expect(secondNote).toHaveProperty('title', secondNotePayload.title);
     expect(secondNote).toHaveProperty('description', secondNotePayload.description);
     expect(secondNote).toHaveProperty('completed', false);
@@ -219,5 +204,15 @@ test.describe('Notes Notes API Flow', () => {
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('message', 'Note successfully deleted');
+  });
+
+  test('should return 404 when retrieving the deleted note', async ({ request }) => {
+    const response = await request.get(`${notesUrl}/${createdNoteId}`, {
+      headers: getAuthHeaders(authToken),
+    });
+
+    expect(response.status()).toBe(404);
+    const responseBody = await response.json();
+    expect(responseBody).toHaveProperty('success', false);
   });
 });

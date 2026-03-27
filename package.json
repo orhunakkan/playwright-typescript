@@ -12,8 +12,8 @@
     "typecheck": "tsc --noEmit",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test:visual": "docker run --rm -v .:/work -w /work --env-file .env mcr.microsoft.com/playwright:v1.58.2-noble npx playwright test tests/e2e/visual-regression.spec.ts",
-    "test:visual:update": "docker run --rm -v .:/work -w /work --env-file .env mcr.microsoft.com/playwright:v1.58.2-noble npx playwright test tests/e2e/visual-regression.spec.ts --update-snapshots"
+    "test:visual": "docker run --rm -v .:/work -w /work --env-file .env mcr.microsoft.com/playwright:v1.58.2-noble npx playwright test tests/e2e/chapter0-visual-regression-tests.spec.ts",
+    "test:visual:update": "docker run --rm -v .:/work -w /work --env-file .env mcr.microsoft.com/playwright:v1.58.2-noble npx playwright test tests/e2e/chapter0-visual-regression-tests.spec.ts --update-snapshots"
   },
   "dependencies": {
     "dotenv": "^17.3.1"

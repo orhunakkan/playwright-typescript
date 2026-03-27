@@ -6,7 +6,9 @@ import {
   generateLoginPayload,
   generateUpdateProfilePayload,
   generateForgotPasswordPayload,
+  expectObjectKeys,
 } from '../../fixtures/notes-api-payloads/users-request-payloads';
+import type { ApiResponse, UserData, LoginData, UserProfileData } from '../../fixtures/notes-api-payloads/api-types';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -17,7 +19,11 @@ test.describe('Notes Users API Flow', () => {
   const forgotPasswordUrl = `${process.env.PRACTICE_API_URL}/users/forgot-password`;
   const logoutUrl = `${process.env.PRACTICE_API_URL}/users/logout`;
 
-  let registeredUser: any = {};
+  let registeredUser: { name: string; email: string; password: string; phone?: string; company?: string } = {
+    name: '',
+    email: '',
+    password: '',
+  };
   let authToken = '';
 
   const registerPayload = generateRegisterPayload();
@@ -31,13 +37,13 @@ test.describe('Notes Users API Flow', () => {
       headers: contentTypeHeaders,
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<UserData>;
     expect(response.status()).toBe(201);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('status', 201);
     expect(responseBody).toHaveProperty('message', 'User account created successfully');
     expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
+    expectObjectKeys(responseBody.data, ['id', 'name', 'email']);
     expect(typeof responseBody.data.id).toBe('string');
     expect(responseBody.data).toHaveProperty('name', registerPayload.name);
     expect(responseBody.data).toHaveProperty('email', registerPayload.email);
@@ -49,13 +55,13 @@ test.describe('Notes Users API Flow', () => {
       headers: contentTypeHeaders,
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<LoginData>;
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('status', 200);
     expect(responseBody).toHaveProperty('message', 'Login successful');
     expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
+    expectObjectKeys(responseBody.data, ['id', 'name', 'email', 'token']);
     expect(typeof responseBody.data.id).toBe('string');
     expect(responseBody.data).toHaveProperty('name', registeredUser.name);
     expect(responseBody.data).toHaveProperty('email', registeredUser.email);
@@ -70,12 +76,11 @@ test.describe('Notes Users API Flow', () => {
       headers: getAuthHeaders(authToken),
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<UserProfileData>;
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('message', 'Profile successful');
     expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
     expect(typeof responseBody.data.id).toBe('string');
     expect(responseBody.data).toHaveProperty('name', registeredUser.name);
     expect(responseBody.data).toHaveProperty('email', registeredUser.email);
@@ -89,13 +94,13 @@ test.describe('Notes Users API Flow', () => {
       headers: getAuthHeaders(authToken),
     });
 
-    const responseBody = await response.json();
+    const responseBody = (await response.json()) as ApiResponse<UserProfileData>;
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('status', 200);
     expect(responseBody).toHaveProperty('message', 'Profile updated successful');
     expect(responseBody).toHaveProperty('data');
-    expect(responseBody.data).toHaveProperty('id');
+    expectObjectKeys(responseBody.data, ['id', 'name', 'email', 'phone', 'company']);
     expect(typeof responseBody.data.id).toBe('string');
     expect(responseBody.data).toHaveProperty('name', updatedProfile.name);
     expect(responseBody.data).toHaveProperty('email', registeredUser.email);
@@ -129,5 +134,15 @@ test.describe('Notes Users API Flow', () => {
     expect(response.status()).toBe(200);
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('message', 'User has been successfully logged out');
+  });
+
+  test('should return 401 when using token after logout', async ({ request }) => {
+    const response = await request.get(profileUrl, {
+      headers: getAuthHeaders(authToken),
+    });
+
+    expect(response.status()).toBe(401);
+    const responseBody = await response.json();
+    expect(responseBody).toHaveProperty('success', false);
   });
 });

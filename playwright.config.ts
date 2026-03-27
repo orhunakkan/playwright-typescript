@@ -12,7 +12,7 @@ export default defineConfig({
   workers: process.env.CI ? 4 : undefined,
   reporter: [['list'], ['html'], ['json', { outputFile: 'playwright-report/test-results.json' }]],
   outputDir: 'test-results',
-  snapshotPathTemplate: 'fixtures/reference-snapshots/{testFileName}/{projectName}-{arg}{ext}',
+  snapshotPathTemplate: 'fixtures/reference-snapshots/{testFileName}/{testName}/{projectName}-{arg}{ext}',
   use: {
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true,
