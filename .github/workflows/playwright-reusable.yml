@@ -191,7 +191,7 @@ jobs:
 
       - name: Install jq
         if: ${{ !cancelled() }}
-        run: apt-get install -y jq
+        run: apt-get update -y && apt-get install -y jq
 
       # Email reporting directly from JSON output using direct calculations
       - name: Generate visual test statistics
