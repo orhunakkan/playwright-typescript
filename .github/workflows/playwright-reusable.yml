@@ -64,7 +64,7 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
       - name: Run Playwright tests for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
-        run: npx playwright test --grep-invert "visual regression"
+        run: npx playwright test --ignore-pattern="chapter0-visual-regression-tests.spec.ts"
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
