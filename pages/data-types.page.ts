@@ -20,7 +20,22 @@ export class DataTypesPage {
     copyright: Locator;
     resultField: (id: string) => Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    fillAllFields: (data: {
+      firstName: string;
+      lastName: string;
+      address: string;
+      zipCode: string;
+      city: string;
+      country: string;
+      email: string;
+      phone: string;
+      jobPosition: string;
+      company: string;
+    }) => Promise<void>;
+    submit: () => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

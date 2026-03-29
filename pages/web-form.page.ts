@@ -31,7 +31,11 @@ export class WebFormPage {
     textareaByName: Locator;
     datalistOption: (city: string) => Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    submitForm: () => Promise<void>;
+    uploadFile: (filePath: string) => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

@@ -9,7 +9,10 @@ export class DragAndDropPage {
     draggableHeading: Locator;
     dragMeText: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    dragToTarget: () => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

@@ -14,7 +14,12 @@ export class NavigationPage {
     leadParagraph: Locator;
     backToIndexLink: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: (pageNum?: number) => Promise<void>;
+    goToPage: (num: number) => Promise<void>;
+    goNext: () => Promise<void>;
+    goPrevious: () => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

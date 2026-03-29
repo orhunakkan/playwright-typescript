@@ -6,7 +6,10 @@ export class NotificationsPage {
     heading: Locator;
     notifyMeButton: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    clickNotifyMe: () => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

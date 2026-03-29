@@ -19,7 +19,14 @@ export class RandomCalculatorPage {
     digitButton: (digit: string) => Locator;
     copyright: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    pressKeys: (...keys: string[]) => Promise<void>;
+    clickButton: (key: string) => Promise<void>;
+    clear: () => Promise<void>;
+    setPercent: (value: string) => Promise<void>;
+    setCorrectAfter: (value: string) => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

@@ -8,7 +8,10 @@ export class GetUserMediaPage {
     video: Locator;
     videoDevice: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    clickStart: () => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

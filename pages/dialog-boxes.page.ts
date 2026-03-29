@@ -17,7 +17,15 @@ export class DialogBoxesPage {
     promptText: Locator;
     modalText: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    launchAlert: () => Promise<void>;
+    launchConfirm: () => Promise<void>;
+    launchPrompt: () => Promise<void>;
+    launchModal: () => Promise<void>;
+    closeModal: () => Promise<void>;
+    saveModal: () => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

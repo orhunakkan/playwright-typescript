@@ -12,7 +12,10 @@ export class HomePage {
     chapter9Heading: Locator;
     chapterLink: (name: string, options?: { exact?: boolean }) => Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    navigateToLink: (name: string) => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

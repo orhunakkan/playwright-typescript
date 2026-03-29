@@ -12,7 +12,10 @@ export class MouseOverPage {
     awardImage: Locator;
     landscapeImage: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    hoverImage: (index: number) => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

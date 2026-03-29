@@ -12,7 +12,10 @@ export class SlowLoginFormPage {
     successAlert: Locator;
     form: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    login: (username: string, password: string) => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

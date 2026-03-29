@@ -11,7 +11,12 @@ export class SlowCalculatorPage {
     clearButton: Locator;
     equalsButton: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    setDelay: (seconds: string) => Promise<void>;
+    pressKeys: (...keys: string[]) => Promise<void>;
+    clear: () => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {

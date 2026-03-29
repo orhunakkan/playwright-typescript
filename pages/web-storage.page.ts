@@ -9,7 +9,11 @@ export class WebStoragePage {
     sessionStorageDisplay: Locator;
     localStorageDisplay: Locator;
   };
-  readonly actions: Record<string, (...args: any[]) => Promise<void>>;
+  readonly actions: {
+    goto: () => Promise<void>;
+    displaySessionStorage: () => Promise<void>;
+    displayLocalStorage: () => Promise<void>;
+  };
 
   constructor(private readonly page: Page) {
     this.locators = {
