@@ -144,7 +144,6 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 - `utilities/dedicated-page.ts` — `validateLinkNewTab(page, locator)` / `validateLinkCurrentTab(page, locator)` — new tab/window validation
 - `utilities/skip-test.ts` — `skipIfNotSilentProduction(test)` — conditional test skip by environment
 - `utilities/img-src-path.ts` — `validateImageSrcPath(env, path)` — environment-aware image URL construction
-- `utilities/linkedin-auth.ts` — manual LinkedIn login, saves auth state to `fixtures/linkedin-auth.json`
 
 ## API Test Pattern
 

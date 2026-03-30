@@ -10,12 +10,6 @@ artifacts/
 .env.local
 .env.*.local
 
-# Authentication state files (sensitive)
-fixtures/linkedin-auth.json
-
-# Generated job URLs
-job-urls.html
-
 # OS files
 .DS_Store
 Thumbs.db
@@ -23,10 +17,6 @@ Thumbs.db
 # Build outputs
 dist/
 build/
-
-# Project-specific generated files
-pw-doc-book/output/
-pw-doc-monitor/monitoring-report/
 
 # Coverage
 coverage/

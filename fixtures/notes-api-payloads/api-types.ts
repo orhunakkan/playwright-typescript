@@ -11,11 +11,17 @@ export interface UserData {
   email: string;
 }
 
-export interface LoginData extends UserData {
+export interface LoginData {
+  id: string;
+  name: string;
+  email: string;
   token: string;
 }
 
-export interface UserProfileData extends UserData {
+export interface UserProfileData {
+  id: string;
+  name: string;
+  email: string;
   phone: string;
   company: string;
 }
