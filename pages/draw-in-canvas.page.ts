@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 
 export class DrawInCanvasPage {
   readonly locators: {
@@ -20,7 +19,7 @@ export class DrawInCanvasPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${BASE_URL}/draw-in-canvas.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/draw-in-canvas.html`);
       },
     };
   }

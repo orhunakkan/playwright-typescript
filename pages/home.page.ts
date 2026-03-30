@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 
 export class HomePage {
   readonly locators: {
@@ -31,7 +30,7 @@ export class HomePage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${BASE_URL}/index.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/index.html`);
       },
       navigateToLink: async (name: string) => {
         await this.locators.chapterLink(name).click();

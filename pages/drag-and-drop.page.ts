@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 
 export class DragAndDropPage {
   readonly locators: {
@@ -25,7 +24,7 @@ export class DragAndDropPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${BASE_URL}/drag-and-drop.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/drag-and-drop.html`);
       },
       dragToTarget: async () => {
         await this.locators.draggable.dragTo(this.locators.target);

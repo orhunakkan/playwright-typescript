@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 
 export class DialogBoxesPage {
   readonly locators: {
@@ -46,7 +45,7 @@ export class DialogBoxesPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${BASE_URL}/dialog-boxes.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/dialog-boxes.html`);
       },
       launchAlert: async () => {
         await this.locators.launchAlertButton.click();

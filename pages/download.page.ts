@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 
 export class DownloadPage {
   readonly locators: {
@@ -28,7 +27,7 @@ export class DownloadPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${BASE_URL}/download.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/download.html`);
       },
     };
   }

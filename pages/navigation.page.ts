@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 
 export class NavigationPage {
   readonly locators: {
@@ -37,7 +36,7 @@ export class NavigationPage {
 
     this.actions = {
       goto: async (pageNum: number = 1) => {
-        await this.page.goto(`${BASE_URL}/navigation${pageNum}.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/navigation${pageNum}.html`);
       },
       goToPage: async (num: number) => {
         await this.locators.pageLink(num).click();

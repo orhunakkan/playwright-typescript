@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 
 export class DropdownMenuPage {
   readonly locators: {
@@ -31,7 +30,7 @@ export class DropdownMenuPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${BASE_URL}/dropdown-menu.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/dropdown-menu.html`);
       },
       openLeftClickDropdown: async () => {
         await this.locators.leftClickButton.click();

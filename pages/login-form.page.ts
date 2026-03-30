@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 
 export class LoginFormPage {
   readonly locators: {
@@ -29,7 +28,7 @@ export class LoginFormPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${BASE_URL}/login-form.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/login-form.html`);
       },
       login: async (username: string, password: string) => {
         await this.locators.usernameInput.fill(username);

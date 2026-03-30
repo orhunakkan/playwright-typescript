@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 import { clickCalcButton, pressCalcKeys } from '../utilities/calculator';
 
 export class RandomCalculatorPage {
@@ -48,7 +47,7 @@ export class RandomCalculatorPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${BASE_URL}/random-calculator.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/random-calculator.html`);
       },
       pressKeys: async (...keys: string[]) => {
         await pressCalcKeys(this.page, ...keys);

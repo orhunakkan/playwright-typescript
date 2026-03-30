@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { BASE_URL } from './base-url';
 
 export class WebStoragePage {
   readonly locators: {
@@ -26,7 +25,7 @@ export class WebStoragePage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${BASE_URL}/web-storage.html`);
+        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/web-storage.html`);
       },
       displaySessionStorage: async () => {
         await this.locators.displaySessionStorageButton.click();

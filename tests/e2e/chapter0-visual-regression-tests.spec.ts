@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { BASE_URL } from '../../pages/base-url';
+const BASE_URL = process.env.PRACTICE_E2E_URL;
 
 const pages = [
   'web-form',
