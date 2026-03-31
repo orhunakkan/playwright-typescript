@@ -44,5 +44,17 @@ export default defineConfig({
       testDir: './tests/e2e',
       use: { ...devices['Desktop Edge'] },
     },
+
+    {
+      name: 'Mobile Safari',
+      testDir: './tests/e2e',
+      use: { ...devices['iPhone 15 Pro Max'] },
+    },
+
+    {
+      name: 'Mobile Chrome',
+      testDir: './tests/e2e',
+      use: { ...devices['Pixel 7'] },
+    },
   ],
 });

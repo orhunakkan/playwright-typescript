@@ -162,6 +162,129 @@ jobs:
             Please check the GitHub Action run for details.
             View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
+  test-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        id: playwright-cache-mobile
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache-mobile.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium webkit
+      - name: Install Playwright system deps only
+        if: steps.playwright-cache-mobile.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium webkit
+      - name: Run mobile tests (Mobile Safari & Chrome)
+        run: npx playwright test --project="Mobile Safari" --project="Mobile Chrome" --grep-invert "visual regression|Chapter 10"
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: mobile-report
+          path: |
+            playwright-report/
+          retention-days: 30
+
+      # Email reporting directly from JSON output using direct calculations
+      - name: Generate mobile test statistics
+        id: get-mobile-test-stats
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f "playwright-report/test-results.json" ]; then
+            TOTAL_COUNT=$(jq '.stats | .expected + .skipped + .unexpected + .flaky' playwright-report/test-results.json || echo "0")
+            PASSED_COUNT=$(jq '.stats.expected' playwright-report/test-results.json || echo "0")
+            FAILED_COUNT=$(jq '.stats.unexpected' playwright-report/test-results.json || echo "0")
+            SKIPPED_COUNT=$(jq '.stats.skipped' playwright-report/test-results.json || echo "0")
+            FLAKY_COUNT=$(jq '.stats.flaky' playwright-report/test-results.json || echo "0")
+
+            # Ensure no null values
+            TOTAL_COUNT=${TOTAL_COUNT:-0}
+            PASSED_COUNT=${PASSED_COUNT:-0}
+            FAILED_COUNT=${FAILED_COUNT:-0}
+            SKIPPED_COUNT=${SKIPPED_COUNT:-0}
+            FLAKY_COUNT=${FLAKY_COUNT:-0}
+
+            # Set subject prefix based on test results
+            if [ "$FAILED_COUNT" -eq 0 ]; then
+              echo "status_emoji=✅" >> $GITHUB_OUTPUT
+              echo "subject_prefix=SUCCESS" >> $GITHUB_OUTPUT
+            else
+              echo "status_emoji=❌" >> $GITHUB_OUTPUT
+              echo "subject_prefix=FAILURE" >> $GITHUB_OUTPUT
+            fi
+
+            # Output test statistics for use in email
+            echo "total=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+            echo "passed=$PASSED_COUNT" >> $GITHUB_OUTPUT
+            echo "failed=$FAILED_COUNT" >> $GITHUB_OUTPUT
+            echo "skipped=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
+            echo "flaky=$FLAKY_COUNT" >> $GITHUB_OUTPUT
+          else
+            # Fallback for missing test results file
+            echo "subject_prefix=ERROR" >> $GITHUB_OUTPUT
+            echo "total=0" >> $GITHUB_OUTPUT
+            echo "passed=0" >> $GITHUB_OUTPUT
+            echo "failed=0" >> $GITHUB_OUTPUT
+            echo "skipped=0" >> $GITHUB_OUTPUT
+            echo "flaky=0" >> $GITHUB_OUTPUT
+            echo "error_msg=Test Results Summary not found. Please check the GitHub Action run for details." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send mobile report via email
+        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-mobile-test-stats.outputs.total != 0 }}
+        uses: dawidd6/action-send-mail@v16
+        with:
+          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
+          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          username: ${{ vars.NOTIFICATION_EMAIL }}
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          to: ${{ vars.NOTIFICATION_EMAIL }}
+          from: ${{ vars.NOTIFICATION_EMAIL }}
+          subject: '${{ steps.get-mobile-test-stats.outputs.subject_prefix }}: Playwright Mobile Test Report (Mobile Safari & Chrome)'
+          body: |
+            ${{ steps.get-mobile-test-stats.outputs.status_emoji || '' }} Mobile Test Results Summary for ${{ github.server_url }}/${{ github.repository }}:
+
+            Projects: Mobile Safari (iPhone 15 Pro Max) · Mobile Chrome (Pixel 7)
+
+            Total Tests: ${{ steps.get-mobile-test-stats.outputs.total }}
+            Passed: ${{ steps.get-mobile-test-stats.outputs.passed }}
+            Failed: ${{ steps.get-mobile-test-stats.outputs.failed }}
+            Skipped: ${{ steps.get-mobile-test-stats.outputs.skipped }}
+            Flaky: ${{ steps.get-mobile-test-stats.outputs.flaky }}
+
+            PRACTICE_E2E_URL=${{ env.PRACTICE_E2E_URL }}
+
+            View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            The test artifacts are available directly in the GitHub Actions run.
+
+            ${{ steps.get-mobile-test-stats.outputs.error_msg || '' }}
+      - name: Send mobile error notification
+        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-mobile-test-stats.outputs.total == 0 }}
+        uses: dawidd6/action-send-mail@v16
+        with:
+          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
+          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          username: ${{ vars.NOTIFICATION_EMAIL }}
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          to: ${{ vars.NOTIFICATION_EMAIL }}
+          from: ${{ vars.NOTIFICATION_EMAIL }}
+          subject: '${{ steps.get-mobile-test-stats.outputs.subject_prefix }}: Playwright Mobile Test Report (Mobile Safari & Chrome)'
+          body: |
+            An error was thrown while generating the mobile test results summary for ${{ github.server_url }}/${{ github.repository }}.
+            Please check the GitHub Action run for details.
+            View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
   test-a11y:
     runs-on: ubuntu-latest
     timeout-minutes: 15
