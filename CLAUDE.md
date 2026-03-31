@@ -119,13 +119,15 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 - `npm run lint:fix` — auto-fix lint issues
 - `npm run format` — format with Prettier
 - `npm run format:check` — check formatting
+- `npm run test:visual` — run visual regression tests in Docker
+- `npm run test:visual:update` — update visual regression snapshots in Docker
 
 ## Project Structure
 
 - `tests/api/` — API tests (run in **serial** mode, test dependencies between steps)
 - `tests/e2e/` — E2E browser tests (run in **parallel**, independent scenarios)
-- `utilities/` — Shared helpers (cookies, login, error listeners, page load, etc.)
-- `fixtures/` — Test data: cookies JSON, API payloads (Faker.js), reference snapshots
+- `utilities/` — Shared helpers (error listeners, calculator, etc.)
+- `fixtures/` — Test data: API payloads (Faker.js), reference snapshots
 - `pages/` — Page Object Model classes
 
 ## Test Projects (playwright.config.ts)
@@ -137,13 +139,8 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 
 ## Utilities (reuse these — don't write inline equivalents)
 
-- `utilities/cookies.ts` — `acceptCookiesBeforeSession(context)` / `rejectCookiesBeforeSession(context)` — load pre-saved cookies from JSON fixtures
-- `utilities/login.ts` — `programmaticLogin(page, context)` — multi-step Keycloak login (form extraction, CSRF, session validation)
-- `utilities/error-listeners.ts` — `attachAllErrorListeners(page)` — returns array tracking console errors, page errors, failed requests
-- `utilities/page-load-time.ts` — `waitForDomStability(page)` / `expectedPageLoadTime(page, url)` — DOM stability via MutationObserver, perf timing
-- `utilities/dedicated-page.ts` — `validateLinkNewTab(page, locator)` / `validateLinkCurrentTab(page, locator)` — new tab/window validation
-- `utilities/skip-test.ts` — `skipIfNotSilentProduction(test)` — conditional test skip by environment
-- `utilities/img-src-path.ts` — `validateImageSrcPath(env, path)` — environment-aware image URL construction
+- `utilities/error-listeners.ts` — `attachConsoleErrorListener(page, errorMessages)` / `attachPageErrorListener(page, errorMessages)` / `attachRequestFailedListener(page, errorMessages)` / `attachAllErrorListeners(page)` — composable error tracking for console errors, page errors, and failed requests
+- `utilities/calculator.ts` — `clickCalcButton(page, key)` / `pressCalcKeys(page, ...keys)` — helpers for interacting with calculator pages
 
 ## API Test Pattern
 
@@ -157,8 +154,7 @@ API tests in `tests/api/` follow a specific pattern:
 
 ## Fixtures Organization
 
-- `fixtures/cookies/` — pre-recorded accept/reject cookie JSON files
-- `fixtures/notes-api-payloads/` — Faker-based payload generators (`notes-request-payloads.ts`, `users-request-payloads.ts`)
+- `fixtures/notes-api-payloads/` — Faker-based payload generators (`notes-request-payloads.ts`, `users-request-payloads.ts`) + shared helpers (`shared-request-payloads.ts`: `contentTypeHeaders`, `getAuthHeaders()`, `generateRegisterPayload()`, `generateLoginPayload()`, `expectObjectKeys()`) + type definitions (`api-types.ts`: `ApiResponse<T>`, `UserData`, `LoginData`, `UserProfileData`, `NoteData`)
 - `fixtures/reference-snapshots/` — visual regression PNG baselines, named per browser (`Desktop-Chrome-`, `Desktop-Firefox-`, `Desktop-Edge-`)
 
 ## Visual Regression
@@ -169,8 +165,11 @@ API tests in `tests/api/` follow a specific pattern:
 
 ## Page Object Model
 
-- `pages/homepage.ts` — template class (not fully implemented yet)
-- When creating new POM classes, place in `pages/` directory
+All POM classes live in `pages/`. Existing classes:
+
+`home`, `ab-testing`, `console-logs`, `cookies`, `data-types`, `dialog-boxes`, `download`, `drag-and-drop`, `draw-in-canvas`, `dropdown-menu`, `frames`, `geolocation`, `get-user-media`, `iframes`, `infinite-scroll`, `loading-images`, `login-form`, `long-page`, `mouse-over`, `multilanguage`, `navigation`, `notifications`, `random-calculator`, `shadow-dom`, `slow-calculator`, `slow-login-form`, `submitted-form`, `web-form`, `web-storage`
+
+Files follow the `<name>.page.ts` naming convention.
 
 ## Conventions
 
