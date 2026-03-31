@@ -64,7 +64,7 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
       - name: Run Playwright tests for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
-        run: npx playwright test --grep-invert "visual regression"
+        run: npx playwright test --grep-invert "visual regression|Chapter 10"
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
@@ -159,6 +159,126 @@ jobs:
           subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
           body: |
             An error was thrown while generating the test results summary for ${{ github.server_url }}/${{ github.repository }}.
+            Please check the GitHub Action run for details.
+            View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  test-a11y:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        id: playwright-cache-a11y
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache-a11y.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+      - name: Install Playwright system deps only
+        if: steps.playwright-cache-a11y.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+      - name: Run accessibility tests (failures allowed — source not owned)
+        run: npx playwright test tests/e2e/chapter10-accessibility-testing.spec.ts --project="Desktop Chrome"
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: a11y-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 30
+
+      - name: Generate a11y test statistics
+        id: get-a11y-test-stats
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f "playwright-report/test-results.json" ]; then
+            TOTAL_COUNT=$(jq '.stats | .expected + .skipped + .unexpected + .flaky' playwright-report/test-results.json || echo "0")
+            PASSED_COUNT=$(jq '.stats.expected' playwright-report/test-results.json || echo "0")
+            FAILED_COUNT=$(jq '.stats.unexpected' playwright-report/test-results.json || echo "0")
+            SKIPPED_COUNT=$(jq '.stats.skipped' playwright-report/test-results.json || echo "0")
+            FLAKY_COUNT=$(jq '.stats.flaky' playwright-report/test-results.json || echo "0")
+
+            TOTAL_COUNT=${TOTAL_COUNT:-0}
+            PASSED_COUNT=${PASSED_COUNT:-0}
+            FAILED_COUNT=${FAILED_COUNT:-0}
+            SKIPPED_COUNT=${SKIPPED_COUNT:-0}
+            FLAKY_COUNT=${FLAKY_COUNT:-0}
+
+            if [ "$FAILED_COUNT" -eq 0 ]; then
+              echo "status_emoji=✅" >> $GITHUB_OUTPUT
+              echo "subject_prefix=SUCCESS" >> $GITHUB_OUTPUT
+            else
+              echo "status_emoji=⚠️" >> $GITHUB_OUTPUT
+              echo "subject_prefix=VIOLATIONS FOUND" >> $GITHUB_OUTPUT
+            fi
+
+            echo "total=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+            echo "passed=$PASSED_COUNT" >> $GITHUB_OUTPUT
+            echo "failed=$FAILED_COUNT" >> $GITHUB_OUTPUT
+            echo "skipped=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
+            echo "flaky=$FLAKY_COUNT" >> $GITHUB_OUTPUT
+          else
+            echo "subject_prefix=ERROR" >> $GITHUB_OUTPUT
+            echo "total=0" >> $GITHUB_OUTPUT
+            echo "passed=0" >> $GITHUB_OUTPUT
+            echo "failed=0" >> $GITHUB_OUTPUT
+            echo "skipped=0" >> $GITHUB_OUTPUT
+            echo "flaky=0" >> $GITHUB_OUTPUT
+            echo "error_msg=Test Results Summary not found. Please check the GitHub Action run for details." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send a11y report via email
+        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-a11y-test-stats.outputs.total != 0 }}
+        uses: dawidd6/action-send-mail@v16
+        with:
+          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
+          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          username: ${{ vars.NOTIFICATION_EMAIL }}
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          to: ${{ vars.NOTIFICATION_EMAIL }}
+          from: ${{ vars.NOTIFICATION_EMAIL }}
+          subject: '${{ steps.get-a11y-test-stats.outputs.subject_prefix }}: Playwright Accessibility Test Report'
+          body: |
+            ${{ steps.get-a11y-test-stats.outputs.status_emoji || '' }} Accessibility (a11y) Test Results for ${{ github.server_url }}/${{ github.repository }}:
+
+            Note: failures are informational — the site source is not owned by this project.
+
+            Total Tests: ${{ steps.get-a11y-test-stats.outputs.total }}
+            Passed: ${{ steps.get-a11y-test-stats.outputs.passed }}
+            Failed: ${{ steps.get-a11y-test-stats.outputs.failed }}
+            Skipped: ${{ steps.get-a11y-test-stats.outputs.skipped }}
+            Flaky: ${{ steps.get-a11y-test-stats.outputs.flaky }}
+
+            PRACTICE_E2E_URL=${{ env.PRACTICE_E2E_URL }}
+
+            View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            The test artifacts (with violation details) are available directly in the GitHub Actions run.
+
+            ${{ steps.get-a11y-test-stats.outputs.error_msg || '' }}
+      - name: Send a11y error notification
+        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-a11y-test-stats.outputs.total == 0 }}
+        uses: dawidd6/action-send-mail@v16
+        with:
+          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
+          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          username: ${{ vars.NOTIFICATION_EMAIL }}
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          to: ${{ vars.NOTIFICATION_EMAIL }}
+          from: ${{ vars.NOTIFICATION_EMAIL }}
+          subject: '${{ steps.get-a11y-test-stats.outputs.subject_prefix }}: Playwright Accessibility Test Report'
+          body: |
+            An error was thrown while generating the accessibility test results summary for ${{ github.server_url }}/${{ github.repository }}.
             Please check the GitHub Action run for details.
             View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
