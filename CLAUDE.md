@@ -141,6 +141,7 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 
 - `utilities/error-listeners.ts` — `attachConsoleErrorListener(page, errorMessages)` / `attachPageErrorListener(page, errorMessages)` / `attachRequestFailedListener(page, errorMessages)` / `attachAllErrorListeners(page)` — composable error tracking for console errors, page errors, and failed requests
 - `utilities/calculator.ts` — `clickCalcButton(page, key)` / `pressCalcKeys(page, ...keys)` — helpers for interacting with calculator pages
+- `utilities/a11y.ts` — `runA11yScan(page, options?)` — wraps AxeBuilder with WCAG 2.1 AA defaults; options: `include`/`exclude` CSS selector, custom `tags`
 
 ## API Test Pattern
 
