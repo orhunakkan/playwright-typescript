@@ -162,7 +162,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
           Object.defineProperty((window as any).Notification, 'permission', {
             get: () => 'granted',
           });
-          (window as any).Notification.requestPermission = OriginalNotification.requestPermission;
+          (window as any).Notification.requestPermission = OriginalNotification?.requestPermission ?? (() => Promise.resolve('granted' as NotificationPermission));
           document.getElementById('notify-me')!.click();
         });
       });
@@ -278,6 +278,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
           getAudioTracks: () => [{ label: 'fake-audio-device-0' }],
           getTracks: () => [],
         };
+        if (!navigator.mediaDevices) {
+          Object.defineProperty(navigator, 'mediaDevices', { value: {}, writable: true, configurable: true });
+        }
         navigator.mediaDevices.getUserMedia = async () => fakeStream as unknown as MediaStream;
       });
 
@@ -302,6 +305,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
           getAudioTracks: () => [{ label: 'fake-audio-device' }],
           getTracks: () => [],
         };
+        if (!navigator.mediaDevices) {
+          Object.defineProperty(navigator, 'mediaDevices', { value: {}, writable: true, configurable: true });
+        }
         navigator.mediaDevices.getUserMedia = async () => fakeStream as unknown as MediaStream;
 
         // Prevent video.srcObject assignment from throwing with a fake stream

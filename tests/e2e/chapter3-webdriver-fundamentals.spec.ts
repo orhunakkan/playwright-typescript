@@ -231,6 +231,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await webForm.locators.colorPicker.fill('#00ff00');
       // Date
       await webForm.locators.datePicker.fill('12/25/2025');
+      await page.keyboard.press('Escape');
       // Range
       await webForm.locators.rangeSlider.fill('9');
 
@@ -735,11 +736,11 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       const box = await canvas.locators.canvas.boundingBox();
       expect(box).not.toBeNull();
 
-      // Draw a triangle by clicking three points
+      // Draw a triangle using proportional coords so it stays within the canvas on all viewport sizes
       const points = [
-        { x: box!.x + 100, y: box!.y + 20 },
-        { x: box!.x + 50, y: box!.y + 120 },
-        { x: box!.x + 150, y: box!.y + 120 },
+        { x: box!.x + box!.width * 0.2, y: box!.y + box!.height * 0.2 },
+        { x: box!.x + box!.width * 0.5, y: box!.y + box!.height * 0.8 },
+        { x: box!.x + box!.width * 0.8, y: box!.y + box!.height * 0.2 },
       ];
 
       for (const point of points) {
@@ -757,11 +758,11 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
         return count;
       });
 
-      // Draw a line
-      await page.mouse.move(box!.x + 200, box!.y + 30);
-      await page.mouse.down();
-      await page.mouse.move(box!.x + 350, box!.y + 130, { steps: 15 });
-      await page.mouse.up();
+      // Draw a line using proportional coords to stay within canvas on all viewport sizes
+      const lineSteps = 10;
+      for (let i = 0; i <= lineSteps; i++) {
+        await page.mouse.click(box!.x + box!.width * 0.1 + (box!.width * 0.6 * i) / lineSteps, box!.y + box!.height * 0.3 + (box!.height * 0.4 * i) / lineSteps);
+      }
 
       // Verify more pixels were drawn after the line
       const countAfterLine = await page.evaluate(() => {
