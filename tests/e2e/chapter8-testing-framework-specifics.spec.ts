@@ -161,37 +161,21 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
       await expect(calcPage.locators.screen).toHaveText('5-');
     });
 
-    test('should produce a result when equals is clicked (100% correct mode)', async ({ page }) => {
-      const calcPage = new RandomCalculatorPage(page);
-      await calcPage.actions.setPercent('0');
+    const arithmeticCases = [
+      { label: 'addition', keys: ['2', '+', '3', '='] as const, expected: '5' },
+      { label: 'subtraction', keys: ['9', '-', '4', '='] as const, expected: '5' },
+      { label: 'multiplication', keys: ['6', 'x', '7', '='] as const, expected: '42' },
+      { label: 'division', keys: ['8', '÷', '2', '='] as const, expected: '4' },
+    ];
 
-      await calcPage.actions.pressKeys('2', '+', '3', '=');
-      await expect(calcPage.locators.screen).toHaveText('5');
-    });
-
-    test('should correctly subtract in 100% correct mode', async ({ page }) => {
-      const calcPage = new RandomCalculatorPage(page);
-      await calcPage.actions.setPercent('0');
-
-      await calcPage.actions.pressKeys('9', '-', '4', '=');
-      await expect(calcPage.locators.screen).toHaveText('5');
-    });
-
-    test('should correctly multiply in 100% correct mode', async ({ page }) => {
-      const calcPage = new RandomCalculatorPage(page);
-      await calcPage.actions.setPercent('0');
-
-      await calcPage.actions.pressKeys('6', 'x', '7', '=');
-      await expect(calcPage.locators.screen).toHaveText('42');
-    });
-
-    test('should correctly divide in 100% correct mode', async ({ page }) => {
-      const calcPage = new RandomCalculatorPage(page);
-      await calcPage.actions.setPercent('0');
-
-      await calcPage.actions.pressKeys('8', '÷', '2', '=');
-      await expect(calcPage.locators.screen).toHaveText('4');
-    });
+    for (const { label, keys, expected } of arithmeticCases) {
+      test(`should correctly compute ${label} in 100% correct mode`, async ({ page }) => {
+        const calcPage = new RandomCalculatorPage(page);
+        await calcPage.actions.setPercent('0');
+        await calcPage.actions.pressKeys(...keys);
+        await expect(calcPage.locators.screen).toHaveText(expected);
+      });
+    }
 
     test('should handle multi-digit calculations in 100% correct mode', async ({ page }) => {
       const calcPage = new RandomCalculatorPage(page);

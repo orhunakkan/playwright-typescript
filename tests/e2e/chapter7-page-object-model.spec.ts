@@ -21,18 +21,18 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
     });
 
     test('should have a username input field', async () => {
-      await expect(loginPage.locators.usernameInput).toBeVisible();
-      await expect(loginPage.locators.usernameInput).toHaveId('username');
-      await expect(loginPage.locators.usernameInput).toHaveAttribute('type', 'text');
-      await expect(loginPage.locators.usernameInput).toHaveAttribute('name', 'username');
+      await expect.soft(loginPage.locators.usernameInput).toBeVisible();
+      await expect.soft(loginPage.locators.usernameInput).toHaveId('username');
+      await expect.soft(loginPage.locators.usernameInput).toHaveAttribute('type', 'text');
+      await expect.soft(loginPage.locators.usernameInput).toHaveAttribute('name', 'username');
     });
 
     test('should have a password input field', async () => {
-      await expect(loginPage.locators.passwordInput).toBeVisible();
-      await expect(loginPage.locators.passwordInput).toHaveId('password');
-      await expect(loginPage.locators.passwordInput).toHaveAttribute('type', 'password');
-      await expect(loginPage.locators.passwordInput).toHaveAttribute('name', 'password');
-      await expect(loginPage.locators.passwordInput).toHaveAttribute('autocomplete', 'off');
+      await expect.soft(loginPage.locators.passwordInput).toBeVisible();
+      await expect.soft(loginPage.locators.passwordInput).toHaveId('password');
+      await expect.soft(loginPage.locators.passwordInput).toHaveAttribute('type', 'password');
+      await expect.soft(loginPage.locators.passwordInput).toHaveAttribute('name', 'password');
+      await expect.soft(loginPage.locators.passwordInput).toHaveAttribute('autocomplete', 'off');
     });
 
     test('should have a submit button', async () => {
@@ -56,9 +56,9 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
     });
 
     test('should have a hidden invalid credentials alert', async () => {
-      await expect(loginPage.locators.invalidAlert).toBeAttached();
-      await expect(loginPage.locators.invalidAlert).toHaveClass(/d-none/);
-      await expect(loginPage.locators.invalidAlert).toHaveText('Invalid credentials');
+      await expect.soft(loginPage.locators.invalidAlert).toBeAttached();
+      await expect.soft(loginPage.locators.invalidAlert).toHaveClass(/d-none/);
+      await expect.soft(loginPage.locators.invalidAlert).toHaveText('Invalid credentials');
     });
 
     test('should login successfully with valid credentials', async ({ page }) => {
@@ -74,35 +74,25 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect(loginPage.locators.successAlert).toHaveClass(/alert-success/);
     });
 
-    test('should show invalid credentials with wrong username', async ({ page }) => {
-      await loginPage.actions.login('wronguser', 'user');
-      await expect(page).toHaveURL(/login-form\.html/);
-      await expect(loginPage.locators.invalidAlert).toBeVisible();
-      await expect(loginPage.locators.invalidAlert).toHaveText('Invalid credentials');
-    });
+    const invalidCredentialCases = [
+      { label: 'wrong username', username: 'wronguser', password: 'user' },
+      { label: 'wrong password', username: 'user', password: 'wrongpass' },
+      { label: 'empty fields', username: '', password: '' },
+      { label: 'both wrong', username: 'wrong', password: 'wrong' },
+    ];
 
-    test('should show invalid credentials with wrong password', async ({ page }) => {
-      await loginPage.actions.login('user', 'wrongpass');
-      await expect(page).toHaveURL(/login-form\.html/);
-      await expect(loginPage.locators.invalidAlert).toBeVisible();
-    });
-
-    test('should show invalid credentials with empty fields', async ({ page }) => {
-      await loginPage.locators.submitButton.click();
-      await expect(page).toHaveURL(/login-form\.html/);
-      await expect(loginPage.locators.invalidAlert).toBeVisible();
-      await expect(loginPage.locators.invalidAlert).toHaveText('Invalid credentials');
-    });
-
-    test('should show invalid credentials with both wrong', async ({ page }) => {
-      await loginPage.actions.login('wrong', 'wrong');
-      await expect(page).toHaveURL(/login-form\.html/);
-      await expect(loginPage.locators.invalidAlert).toBeVisible();
-    });
+    for (const { label, username, password } of invalidCredentialCases) {
+      test(`should show invalid credentials with ${label}`, async ({ page }) => {
+        await loginPage.actions.login(username, password);
+        await expect(page).toHaveURL(/login-form\.html/);
+        await expect(loginPage.locators.invalidAlert).toBeVisible();
+        await expect(loginPage.locators.invalidAlert).toHaveText('Invalid credentials');
+      });
+    }
 
     test('should have the form action pointing to success page', async () => {
-      await expect(loginPage.locators.form).toHaveAttribute('action', 'login-sucess.html');
-      await expect(loginPage.locators.form).toHaveAttribute('method', 'get');
+      await expect.soft(loginPage.locators.form).toHaveAttribute('action', 'login-sucess.html');
+      await expect.soft(loginPage.locators.form).toHaveAttribute('method', 'get');
     });
 
     test('should have correct button styling', async () => {
@@ -184,9 +174,9 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
     });
 
     test('should have a hidden spinner element', async () => {
-      await expect(slowLoginPage.locators.spinner).toBeAttached();
-      await expect(slowLoginPage.locators.spinner).toBeHidden();
-      await expect(slowLoginPage.locators.spinner).toHaveClass(/spinner-border/);
+      await expect.soft(slowLoginPage.locators.spinner).toBeAttached();
+      await expect.soft(slowLoginPage.locators.spinner).toBeHidden();
+      await expect.soft(slowLoginPage.locators.spinner).toHaveClass(/spinner-border/);
     });
 
     test('should show spinner when form is submitted', async () => {
@@ -219,22 +209,19 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect(slowLoginPage.locators.spinner).toBeHidden();
     });
 
-    test('should show invalid credentials with wrong username after delay', async () => {
-      await slowLoginPage.actions.login('wrong', 'user');
-      await expect(slowLoginPage.locators.invalidAlert).toBeVisible({ timeout: 10000 });
-      await expect(slowLoginPage.locators.invalidAlert).toHaveText('Invalid credentials');
-    });
+    const slowInvalidCredentialCases = [
+      { label: 'wrong username', username: 'wrong', password: 'user' },
+      { label: 'wrong password', username: 'user', password: 'wrong' },
+      { label: 'empty fields', username: '', password: '' },
+    ];
 
-    test('should show invalid credentials with wrong password after delay', async () => {
-      await slowLoginPage.actions.login('user', 'wrong');
-      await expect(slowLoginPage.locators.invalidAlert).toBeVisible({ timeout: 10000 });
-    });
-
-    test('should show invalid credentials with empty fields after delay', async () => {
-      await slowLoginPage.locators.submitButton.click();
-      await expect(slowLoginPage.locators.invalidAlert).toBeVisible({ timeout: 10000 });
-      await expect(slowLoginPage.locators.invalidAlert).toHaveText('Invalid credentials');
-    });
+    for (const { label, username, password } of slowInvalidCredentialCases) {
+      test(`should show invalid credentials with ${label} after delay`, async () => {
+        await slowLoginPage.actions.login(username, password);
+        await expect(slowLoginPage.locators.invalidAlert).toBeVisible({ timeout: 10000 });
+        await expect(slowLoginPage.locators.invalidAlert).toHaveText('Invalid credentials');
+      });
+    }
 
     test('should hide spinner after delay completes on failure', async () => {
       await slowLoginPage.actions.login('wrong', 'wrong');
@@ -261,9 +248,9 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
     });
 
     test('should have the form with correct id and action', async () => {
-      await expect(slowLoginPage.locators.form).toBeAttached();
-      await expect(slowLoginPage.locators.form).toHaveAttribute('action', 'login-sucess.html');
-      await expect(slowLoginPage.locators.form).toHaveAttribute('method', 'get');
+      await expect.soft(slowLoginPage.locators.form).toBeAttached();
+      await expect.soft(slowLoginPage.locators.form).toHaveAttribute('action', 'login-sucess.html');
+      await expect.soft(slowLoginPage.locators.form).toHaveAttribute('method', 'get');
     });
 
     test('should verify success page shows correct heading after slow login', async ({ page }) => {
@@ -284,9 +271,9 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
     });
 
     test('should verify page title and copyright on slow login page', async ({ page }) => {
-      await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
-      await expect(page.getByRole('link', { name: 'Boni García' })).toBeVisible();
+      await expect.soft(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
+      await expect.soft(page.getByText('Copyright © 2021-2025')).toBeAttached();
+      await expect.soft(page.getByRole('link', { name: 'Boni García' })).toBeVisible();
     });
   });
 

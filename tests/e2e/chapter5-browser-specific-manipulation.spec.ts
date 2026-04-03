@@ -55,8 +55,8 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await geoPage.actions.goto();
       await geoPage.actions.getCoordinates();
 
-      await expect(geoPage.locators.coordinates).toContainText('40.7128');
-      await expect(geoPage.locators.coordinates).toContainText('-74.006');
+      await expect.soft(geoPage.locators.coordinates).toContainText('40.7128');
+      await expect.soft(geoPage.locators.coordinates).toContainText('-74.006');
     });
 
     test('should update coordinates when geolocation changes', async ({ context, page }) => {
@@ -91,8 +91,8 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should verify page title and copyright', async ({ page }) => {
       const geoPage = new GeolocationPage(page);
       await geoPage.actions.goto();
-      await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
+      await expect.soft(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
+      await expect.soft(page.getByText('Copyright © 2021-2025')).toBeAttached();
     });
 
     test('should handle geolocation permission denied', async ({ browser }) => {
@@ -133,8 +133,8 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should have a "Notify me" button', async ({ page }) => {
       const notifPage = new NotificationsPage(page);
       await notifPage.actions.goto();
-      await expect(notifPage.locators.notifyMeButton).toBeVisible();
-      await expect(notifPage.locators.notifyMeButton).toHaveId('notify-me');
+      await expect.soft(notifPage.locators.notifyMeButton).toBeVisible();
+      await expect.soft(notifPage.locators.notifyMeButton).toHaveId('notify-me');
     });
 
     test('should have correct button styling', async ({ page }) => {
@@ -248,9 +248,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should have a video element on the page', async ({ page }) => {
       const mediaPage = new GetUserMediaPage(page);
       await mediaPage.actions.goto();
-      await expect(mediaPage.locators.video).toBeAttached();
-      await expect(mediaPage.locators.video).toHaveAttribute('autoplay', '');
-      await expect(mediaPage.locators.video).toHaveAttribute('playsinline', '');
+      await expect.soft(mediaPage.locators.video).toBeAttached();
+      await expect.soft(mediaPage.locators.video).toHaveAttribute('autoplay', '');
+      await expect.soft(mediaPage.locators.video).toHaveAttribute('playsinline', '');
     });
 
     test('should have an empty video device label initially', async ({ page }) => {
@@ -386,11 +386,11 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
 
       await multiPage.actions.goto();
 
-      await expect(multiPage.locators.heading).toHaveText('Multilanguage page');
-      await expect(page.getByText('Home')).toBeVisible();
-      await expect(page.getByText('Content')).toBeVisible();
-      await expect(page.getByText('About us')).toBeVisible();
-      await expect(page.getByText('Contact us')).toBeVisible();
+      await expect.soft(multiPage.locators.heading).toHaveText('Multilanguage page');
+      await expect.soft(page.getByText('Home')).toBeVisible();
+      await expect.soft(page.getByText('Content')).toBeVisible();
+      await expect.soft(page.getByText('About us')).toBeVisible();
+      await expect.soft(page.getByText('Contact us')).toBeVisible();
 
       await context.close();
     });
@@ -402,11 +402,11 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
 
       await multiPage.actions.goto();
 
-      await expect(multiPage.locators.heading).toHaveText('Página multilenguage');
-      await expect(page.getByText('Inicio')).toBeVisible();
-      await expect(page.getByText('Contenido')).toBeVisible();
-      await expect(page.getByText('Acerca de')).toBeVisible();
-      await expect(page.getByText('Contacto')).toBeVisible();
+      await expect.soft(multiPage.locators.heading).toHaveText('Página multilenguage');
+      await expect.soft(page.getByText('Inicio')).toBeVisible();
+      await expect.soft(page.getByText('Contenido')).toBeVisible();
+      await expect.soft(page.getByText('Acerca de')).toBeVisible();
+      await expect.soft(page.getByText('Contacto')).toBeVisible();
 
       await context.close();
     });
@@ -617,11 +617,11 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     });
 
     test('should have all Chapter 5 links', async () => {
-      await expect(homePage.locators.chapterLink('Geolocation')).toBeVisible();
-      await expect(homePage.locators.chapterLink('Notifications')).toBeVisible();
-      await expect(homePage.locators.chapterLink('Get user media')).toBeVisible();
-      await expect(homePage.locators.chapterLink('Multilanguage')).toBeVisible();
-      await expect(homePage.locators.chapterLink('Console logs')).toBeVisible();
+      await expect.soft(homePage.locators.chapterLink('Geolocation')).toBeVisible();
+      await expect.soft(homePage.locators.chapterLink('Notifications')).toBeVisible();
+      await expect.soft(homePage.locators.chapterLink('Get user media')).toBeVisible();
+      await expect.soft(homePage.locators.chapterLink('Multilanguage')).toBeVisible();
+      await expect.soft(homePage.locators.chapterLink('Console logs')).toBeVisible();
     });
 
     test('should navigate to each Chapter 5 page and back', async ({ page }) => {

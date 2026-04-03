@@ -516,10 +516,10 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
     });
 
     test('should have all dialog trigger buttons', async () => {
-      await expect(dialogPage.locators.launchAlertButton).toBeVisible();
-      await expect(dialogPage.locators.launchConfirmButton).toBeVisible();
-      await expect(dialogPage.locators.launchPromptButton).toBeVisible();
-      await expect(dialogPage.locators.launchModalButton).toBeVisible();
+      await expect.soft(dialogPage.locators.launchAlertButton).toBeVisible();
+      await expect.soft(dialogPage.locators.launchConfirmButton).toBeVisible();
+      await expect.soft(dialogPage.locators.launchPromptButton).toBeVisible();
+      await expect.soft(dialogPage.locators.launchModalButton).toBeVisible();
     });
 
     // --- Alert Dialog ---
@@ -620,10 +620,10 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
       // Verify modal elements are visible
       await expect(dialogPage.locators.modal).toBeVisible();
-      await expect(dialogPage.locators.modalTitle).toBeVisible();
-      await expect(dialogPage.locators.modalBodyText).toBeVisible();
-      await expect(dialogPage.locators.closeButton).toBeVisible();
-      await expect(dialogPage.locators.saveChangesButton).toBeVisible();
+      await expect.soft(dialogPage.locators.modalTitle).toBeVisible();
+      await expect.soft(dialogPage.locators.modalBodyText).toBeVisible();
+      await expect.soft(dialogPage.locators.closeButton).toBeVisible();
+      await expect.soft(dialogPage.locators.saveChangesButton).toBeVisible();
     });
 
     test('should close modal by clicking Close button', async () => {
@@ -864,11 +864,11 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       const chapter4Links = ['Long page', 'Infinite scroll', 'Shadow DOM', 'Cookies', 'IFrames', 'Dialog boxes', 'Web storage'];
 
       for (const linkText of chapter4Links) {
-        await expect(homePage.locators.chapterLink(linkText)).toBeVisible();
+        await expect.soft(homePage.locators.chapterLink(linkText)).toBeVisible();
       }
 
       // 'Frames' needs exact match to avoid matching 'IFrames' as well
-      await expect(homePage.locators.chapterLink('Frames', { exact: true })).toBeVisible();
+      await expect.soft(homePage.locators.chapterLink('Frames', { exact: true })).toBeVisible();
     });
 
     test('should navigate to each Chapter 4 page and back', async ({ page }) => {

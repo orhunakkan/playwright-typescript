@@ -60,15 +60,15 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
     // --- Disabled Input ---
     test('should verify disabled input is not editable', async () => {
-      await expect(webForm.locators.disabledInput).toBeDisabled();
-      await expect(webForm.locators.disabledInput).toHaveAttribute('placeholder', 'Disabled input');
+      await expect.soft(webForm.locators.disabledInput).toBeDisabled();
+      await expect.soft(webForm.locators.disabledInput).toHaveAttribute('placeholder', 'Disabled input');
     });
 
     // --- Readonly Input ---
     test('should verify readonly input has pre-filled value', async () => {
-      await expect(webForm.locators.readonlyInput).toBeEditable({ editable: false });
-      await expect(webForm.locators.readonlyInput).toHaveValue('Readonly input');
-      await expect(webForm.locators.readonlyInput).toHaveAttribute('readonly', '');
+      await expect.soft(webForm.locators.readonlyInput).toBeEditable({ editable: false });
+      await expect.soft(webForm.locators.readonlyInput).toHaveValue('Readonly input');
+      await expect.soft(webForm.locators.readonlyInput).toHaveAttribute('readonly', '');
     });
 
     // --- Dropdown (select) ---
@@ -168,10 +168,10 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
     // --- Range Slider ---
     test('should verify default range slider value', async () => {
-      await expect(webForm.locators.rangeSlider).toHaveValue('5');
-      await expect(webForm.locators.rangeSlider).toHaveAttribute('min', '0');
-      await expect(webForm.locators.rangeSlider).toHaveAttribute('max', '10');
-      await expect(webForm.locators.rangeSlider).toHaveAttribute('step', '1');
+      await expect.soft(webForm.locators.rangeSlider).toHaveValue('5');
+      await expect.soft(webForm.locators.rangeSlider).toHaveAttribute('min', '0');
+      await expect.soft(webForm.locators.rangeSlider).toHaveAttribute('max', '10');
+      await expect.soft(webForm.locators.rangeSlider).toHaveAttribute('step', '1');
     });
 
     test('should change range slider value', async () => {
@@ -181,9 +181,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
     // --- Hidden Input ---
     test('should verify hidden input exists', async () => {
-      await expect(webForm.locators.hiddenInput).toBeAttached();
-      await expect(webForm.locators.hiddenInput).toBeHidden();
-      await expect(webForm.locators.hiddenInput).toHaveAttribute('type', 'hidden');
+      await expect.soft(webForm.locators.hiddenInput).toBeAttached();
+      await expect.soft(webForm.locators.hiddenInput).toBeHidden();
+      await expect.soft(webForm.locators.hiddenInput).toHaveAttribute('type', 'hidden');
     });
 
     // --- Return to Index Link ---
@@ -340,11 +340,11 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await nav.actions.goto();
 
       await expect(nav.locators.pagination).toBeVisible();
-      await expect(nav.locators.previousLink).toBeVisible();
-      await expect(nav.locators.pageLink(1)).toBeVisible();
-      await expect(nav.locators.pageLink(2)).toBeVisible();
-      await expect(nav.locators.pageLink(3)).toBeVisible();
-      await expect(nav.locators.nextLink).toBeVisible();
+      await expect.soft(nav.locators.previousLink).toBeVisible();
+      await expect.soft(nav.locators.pageLink(1)).toBeVisible();
+      await expect.soft(nav.locators.pageLink(2)).toBeVisible();
+      await expect.soft(nav.locators.pageLink(3)).toBeVisible();
+      await expect.soft(nav.locators.nextLink).toBeVisible();
     });
 
     test('should verify page title remains consistent across pages', async ({ page }) => {
@@ -426,10 +426,10 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
       // Verify dropdown items are visible
       await expect(dropdown.locators.leftClickMenu).toBeVisible();
-      await expect(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
-      await expect(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
-      await expect(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
-      await expect(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
+      await expect.soft(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
+      await expect.soft(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
+      await expect.soft(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
+      await expect.soft(dropdown.locators.leftClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
     });
 
     test('should open dropdown with right-click (context menu)', async () => {
@@ -440,10 +440,10 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
       // Verify the context menu dropdown is shown
       await expect(dropdown.locators.rightClickMenu).toBeVisible();
-      await expect(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
-      await expect(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
-      await expect(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
-      await expect(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
+      await expect.soft(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
+      await expect.soft(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
+      await expect.soft(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
+      await expect.soft(dropdown.locators.rightClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
     });
 
     test('should open dropdown with double-click', async () => {
@@ -477,10 +477,10 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await dropdown.actions.openDoubleClickDropdown();
 
       await expect(dropdown.locators.doubleClickMenu).toBeVisible();
-      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
-      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
-      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
-      await expect(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
+      await expect.soft(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Action', exact: true })).toBeVisible();
+      await expect.soft(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Another action' })).toBeVisible();
+      await expect.soft(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Something else here' })).toBeVisible();
+      await expect.soft(dropdown.locators.doubleClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
     });
 
     test('should verify dropdown divider exists in each dropdown', async ({ page }) => {
