@@ -712,16 +712,15 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       const box = await canvas.locators.canvas.boundingBox();
       expect(box).not.toBeNull();
 
-      const startX = box!.x + 50;
-      const startY = box!.y + 50;
-      const endX = box!.x + 200;
-      const endY = box!.y + 100;
+      // Use proportional coords to stay within canvas bounds on all viewport sizes
+      // SignaturePad draws a line between sequential click points
+      const startX = box!.x + box!.width * 0.2;
+      const startY = box!.y + box!.height * 0.3;
+      const endX = box!.x + box!.width * 0.8;
+      const endY = box!.y + box!.height * 0.7;
 
-      // Draw by clicking and dragging
-      await page.mouse.move(startX, startY);
-      await page.mouse.down();
-      await page.mouse.move(endX, endY, { steps: 20 });
-      await page.mouse.up();
+      await page.mouse.click(startX, startY);
+      await page.mouse.click(endX, endY);
 
       // Verify non-transparent pixels exist after drawing
       const hasDrawnPixels = await page.evaluate(() => {
