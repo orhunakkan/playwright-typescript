@@ -419,7 +419,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     container:
-      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
     env:
       HOME: /root
       PRACTICE_E2E_URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
