@@ -12,7 +12,7 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
       await calcPage.actions.goto();
     });
 
-    test('should display the random calculator heading', async ({ page }) => {
+    test('should display the random calculator heading @smoke', async ({ page }) => {
       const calcPage = new RandomCalculatorPage(page);
       await expect(calcPage.locators.heading).toBeVisible();
     });
@@ -93,7 +93,7 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
     });
 
     // --- Calculator Interactions ---
-    test('should display digits when clicked', async ({ page }) => {
+    test('should display digits when clicked @critical', async ({ page }) => {
       const calcPage = new RandomCalculatorPage(page);
 
       await calcPage.actions.clickButton('1');
@@ -106,7 +106,7 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
       await expect(calcPage.locators.screen).toHaveText('123');
     });
 
-    test('should clear the screen when C is clicked', async ({ page }) => {
+    test('should clear the screen when C is clicked @critical', async ({ page }) => {
       const calcPage = new RandomCalculatorPage(page);
 
       await calcPage.actions.pressKeys('5', '6');
@@ -162,14 +162,14 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
     });
 
     const arithmeticCases = [
-      { label: 'addition', keys: ['2', '+', '3', '='] as const, expected: '5' },
-      { label: 'subtraction', keys: ['9', '-', '4', '='] as const, expected: '5' },
-      { label: 'multiplication', keys: ['6', 'x', '7', '='] as const, expected: '42' },
-      { label: 'division', keys: ['8', '÷', '2', '='] as const, expected: '4' },
+      { label: 'addition', keys: ['2', '+', '3', '='] as const, expected: '5', tags: '@smoke @critical' },
+      { label: 'subtraction', keys: ['9', '-', '4', '='] as const, expected: '5', tags: '@critical' },
+      { label: 'multiplication', keys: ['6', 'x', '7', '='] as const, expected: '42', tags: '@critical' },
+      { label: 'division', keys: ['8', '÷', '2', '='] as const, expected: '4', tags: '@critical' },
     ];
 
-    for (const { label, keys, expected } of arithmeticCases) {
-      test(`should correctly compute ${label} in 100% correct mode`, async ({ page }) => {
+    for (const { label, keys, expected, tags } of arithmeticCases) {
+      test(`should correctly compute ${label} in 100% correct mode ${tags}`, async ({ page }) => {
         const calcPage = new RandomCalculatorPage(page);
         await calcPage.actions.setPercent('0');
         await calcPage.actions.pressKeys(...keys);

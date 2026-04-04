@@ -12,7 +12,7 @@ import { expectMatchesSchema, UserDataSchema, LoginDataSchema, UserProfileDataSc
 
 test.describe.configure({ mode: 'serial' });
 
-test.describe('Notes Users API Flow', () => {
+test.describe('Notes Users API Flow @critical', () => {
   const registerUrl = `${process.env.PRACTICE_API_URL}/users/register`;
   const loginUrl = `${process.env.PRACTICE_API_URL}/users/login`;
   const profileUrl = `${process.env.PRACTICE_API_URL}/users/profile`;

@@ -16,7 +16,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await loginPage.actions.goto();
     });
 
-    test('should display the login form heading', async () => {
+    test('should display the login form heading @smoke', async () => {
       await expect(loginPage.locators.heading).toBeVisible();
     });
 
@@ -61,7 +61,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect.soft(loginPage.locators.invalidAlert).toHaveText('Invalid credentials');
     });
 
-    test('should login successfully with valid credentials', async ({ page }) => {
+    test('should login successfully with valid credentials @smoke @critical', async ({ page }) => {
       await loginPage.actions.login('user', 'user');
       await expect(page).toHaveURL(/login-sucess\.html/);
       await expect(loginPage.locators.successAlert).toBeVisible();
@@ -82,7 +82,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
     ];
 
     for (const { label, username, password } of invalidCredentialCases) {
-      test(`should show invalid credentials with ${label}`, async ({ page }) => {
+      test(`should show invalid credentials with ${label} @critical`, async ({ page }) => {
         await loginPage.actions.login(username, password);
         await expect(page).toHaveURL(/login-form\.html/);
         await expect(loginPage.locators.invalidAlert).toBeVisible();
@@ -121,7 +121,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect(loginPage.locators.passwordInput).toHaveValue('user');
     });
 
-    test('should submit form via Enter key', async ({ page }) => {
+    test('should submit form via Enter key @critical', async ({ page }) => {
       await loginPage.locators.usernameInput.fill('user');
       await loginPage.locators.passwordInput.fill('user');
       await loginPage.locators.passwordInput.press('Enter');
@@ -155,7 +155,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await slowLoginPage.actions.goto();
     });
 
-    test('should display the slow login form heading', async () => {
+    test('should display the slow login form heading @smoke', async () => {
       await expect(slowLoginPage.locators.heading).toBeVisible();
     });
 
@@ -191,14 +191,14 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect(slowLoginPage.locators.spinner).toBeVisible();
     });
 
-    test('should login successfully with valid credentials after delay', async ({ page }) => {
+    test('should login successfully with valid credentials after delay @smoke @critical', async ({ page }) => {
       await slowLoginPage.actions.login('user', 'user');
       await expect(page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
       await expect(slowLoginPage.locators.successAlert).toBeVisible();
       await expect(slowLoginPage.locators.successAlert).toHaveText('Login successful');
     });
 
-    test('should show invalid credentials with wrong credentials after delay', async () => {
+    test('should show invalid credentials with wrong credentials after delay @critical', async () => {
       await slowLoginPage.actions.login('wronguser', 'wrongpass');
 
       // Spinner appears during delay

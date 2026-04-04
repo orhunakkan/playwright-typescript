@@ -15,7 +15,7 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       await downloadPage.actions.goto();
     });
 
-    test('should display the download files heading', async ({ page }) => {
+    test('should display the download files heading @smoke', async ({ page }) => {
       const downloadPage = new DownloadPage(page);
       await expect(downloadPage.locators.heading).toBeVisible();
     });
@@ -49,7 +49,7 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       }
     });
 
-    test('should download the WebDriverManager PNG file', async ({ page }, testInfo) => {
+    test('should download the WebDriverManager PNG file @critical', async ({ page }, testInfo) => {
       const downloadPage = new DownloadPage(page);
       const downloadPromise = page.waitForEvent('download');
       await downloadPage.locators.webDriverManagerLogo.click();
@@ -109,12 +109,12 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       await abPage.actions.waitForContent();
     });
 
-    test('should display the A/B Testing heading', async ({ page }) => {
+    test('should display the A/B Testing heading @smoke', async ({ page }) => {
       const abPage = new ABTestingPage(page);
       await expect(abPage.locators.heading).toBeVisible();
     });
 
-    test('should load either variation A or variation B', async ({ page }) => {
+    test('should load either variation A or variation B @critical', async ({ page }) => {
       const abPage = new ABTestingPage(page);
       const text = await abPage.locators.contentHeading.textContent();
 
@@ -225,7 +225,7 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       await dataPage.actions.goto();
     });
 
-    test('should display the data types heading', async ({ page }) => {
+    test('should display the data types heading @smoke', async ({ page }) => {
       const dataPage = new DataTypesPage(page);
       await expect(dataPage.locators.heading).toBeVisible();
     });
@@ -325,7 +325,7 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
     });
 
     // --- Submission Tests ---
-    test('should show all fields as success when all data is provided', async ({ page }) => {
+    test('should show all fields as success when all data is provided @critical', async ({ page }) => {
       const dataPage = new DataTypesPage(page);
       await dataPage.actions.fillAllFields({
         firstName: 'John',

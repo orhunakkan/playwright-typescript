@@ -64,7 +64,12 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
       - name: Run Playwright tests for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
-        run: npx playwright test tests/e2e/chapter[3-9]*.spec.ts --project="Desktop Chrome" --project="Desktop Firefox" --project="Desktop Edge"
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npx playwright test tests/e2e/chapter[3-9]*.spec.ts --project="Desktop Chrome" --project="Desktop Firefox" --project="Desktop Edge" --grep "@smoke|@critical"
+          else
+            npx playwright test tests/e2e/chapter[3-9]*.spec.ts --project="Desktop Chrome" --project="Desktop Firefox" --project="Desktop Edge"
+          fi
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
@@ -186,7 +191,12 @@ jobs:
         if: steps.playwright-cache-mobile.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium webkit
       - name: Run mobile tests (Mobile Safari & Chrome)
-        run: npx playwright test tests/e2e/chapter[3-9]*.spec.ts --project="Mobile Safari" --project="Mobile Chrome"
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npx playwright test tests/e2e/chapter[3-9]*.spec.ts --project="Mobile Safari" --project="Mobile Chrome" --grep "@smoke|@critical"
+          else
+            npx playwright test tests/e2e/chapter[3-9]*.spec.ts --project="Mobile Safari" --project="Mobile Chrome"
+          fi
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:

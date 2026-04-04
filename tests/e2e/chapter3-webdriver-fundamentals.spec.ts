@@ -24,12 +24,12 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await webForm.actions.goto();
     });
 
-    test('should display the web form heading', async () => {
+    test('should display the web form heading @smoke', async () => {
       await expect(webForm.locators.heading).toBeVisible();
     });
 
     // --- Text Input ---
-    test('should type into text input field', async () => {
+    test('should type into text input field @critical', async () => {
       await webForm.locators.textInput.fill('Hello Playwright');
       await expect(webForm.locators.textInput).toHaveValue('Hello Playwright');
     });
@@ -72,7 +72,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
     });
 
     // --- Dropdown (select) ---
-    test('should select options from dropdown by visible text', async () => {
+    test('should select options from dropdown by visible text @critical', async () => {
       await expect(webForm.locators.dropdown).toHaveValue('Open this select menu');
 
       await webForm.locators.dropdown.selectOption({ label: 'One' });
@@ -127,7 +127,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(webForm.locators.defaultCheckbox).not.toBeChecked();
     });
 
-    test('should toggle checkboxes', async () => {
+    test('should toggle checkboxes @critical', async () => {
       // Uncheck the checked one
       await webForm.locators.checkedCheckbox.uncheck();
       await expect(webForm.locators.checkedCheckbox).not.toBeChecked();
@@ -143,7 +143,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(webForm.locators.defaultRadio).not.toBeChecked();
     });
 
-    test('should select a different radio button', async () => {
+    test('should select a different radio button @critical', async () => {
       await webForm.locators.defaultRadio.check();
       await expect(webForm.locators.defaultRadio).toBeChecked();
       // Only one radio in the group can be selected
@@ -193,7 +193,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
     });
 
     // --- Form Submission ---
-    test('should submit the form and verify navigation', async ({ page }) => {
+    test('should submit the form and verify navigation @smoke @critical', async ({ page }) => {
       // Fill the form
       await webForm.locators.textInput.fill('Playwright Test');
       await webForm.locators.passwordInput.fill('mypassword');
@@ -274,13 +274,13 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       nav = new NavigationPage(page);
     });
 
-    test('should display navigation page 1 content', async ({ page }) => {
+    test('should display navigation page 1 content @smoke', async ({ page }) => {
       await nav.actions.goto();
       await expect(nav.locators.heading).toBeVisible();
       await expect(page.getByText('Lorem ipsum dolor sit amet')).toBeVisible();
     });
 
-    test('should navigate through pages using pagination links', async ({ page }) => {
+    test('should navigate through pages using pagination links @critical', async ({ page }) => {
       await nav.actions.goto();
 
       // Verify we are on page 1
@@ -414,11 +414,11 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await dropdown.actions.goto();
     });
 
-    test('should display dropdown menu heading', async () => {
+    test('should display dropdown menu heading @smoke', async () => {
       await expect(dropdown.locators.heading).toBeVisible();
     });
 
-    test('should open dropdown with left-click', async () => {
+    test('should open dropdown with left-click @critical', async () => {
       await expect(dropdown.locators.leftClickButton).toBeVisible();
 
       // Click the button to open the dropdown
@@ -538,7 +538,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await mouseOver.actions.goto();
     });
 
-    test('should display the mouse over heading', async () => {
+    test('should display the mouse over heading @smoke', async () => {
       await expect(mouseOver.locators.heading).toBeVisible();
     });
 
@@ -546,7 +546,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(mouseOver.locators.images).toHaveCount(4);
     });
 
-    test('should reveal image captions on hover', async () => {
+    test('should reveal image captions on hover @critical', async () => {
       const expectedCaptions = ['Compass', 'Calendar', 'Award', 'Landscape'];
 
       for (let captionIndex = 0; captionIndex < expectedCaptions.length; captionIndex++) {
@@ -611,7 +611,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await dragDrop.actions.goto();
     });
 
-    test('should display the drag and drop heading', async () => {
+    test('should display the drag and drop heading @smoke', async () => {
       await expect(dragDrop.locators.heading).toBeVisible();
     });
 
@@ -625,7 +625,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(dragDrop.locators.target).toBeVisible();
     });
 
-    test('should drag element to target', async () => {
+    test('should drag element to target @critical', async () => {
       // Get initial position of draggable
       const initialBox = await dragDrop.locators.draggable.boundingBox();
       expect(initialBox).not.toBeNull();
@@ -672,7 +672,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await canvas.actions.goto();
     });
 
-    test('should display the drawing in canvas heading', async () => {
+    test('should display the drawing in canvas heading @smoke', async () => {
       await expect(canvas.locators.heading).toBeVisible();
       await expect(canvas.locators.instructions).toBeVisible();
     });
@@ -682,7 +682,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(canvas.locators.canvas).toHaveAttribute('id', 'my-canvas');
     });
 
-    test('should draw on canvas by clicking', async ({ page }) => {
+    test('should draw on canvas by clicking @critical', async ({ page }) => {
       const box = await canvas.locators.canvas.boundingBox();
       expect(box).not.toBeNull();
 
@@ -806,7 +806,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(loadingImages.locators.text).toHaveText('Done!', { timeout: 15000 });
     });
 
-    test('should load compass image first', async () => {
+    test('should load compass image first @smoke', async () => {
       await loadingImages.actions.goto();
 
       // Compass image should appear quickly (within ~2s)
@@ -814,7 +814,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(loadingImages.locators.compassImg).toHaveAttribute('alt', 'compass');
     });
 
-    test('should load all four images with correct attributes after waiting', async () => {
+    test('should load all four images with correct attributes after waiting @critical', async () => {
       test.setTimeout(20000);
       await loadingImages.actions.goto();
 
@@ -876,7 +876,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await calc.actions.goto();
     });
 
-    test('should display the slow calculator heading', async () => {
+    test('should display the slow calculator heading @smoke', async () => {
       await expect(calc.locators.heading).toBeVisible();
     });
 
@@ -902,7 +902,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(page.locator('#calculator >> text="C"')).toBeVisible();
     });
 
-    test('should perform addition (1 + 3 = 4) with reduced delay', async () => {
+    test('should perform addition (1 + 3 = 4) with reduced delay @smoke @critical', async () => {
       test.setTimeout(15000);
       await calc.actions.setDelay('1');
 
@@ -910,7 +910,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(calc.locators.screen).toHaveText('4', { timeout: 10000 });
     });
 
-    test('should perform subtraction (9 - 4 = 5) with reduced delay', async () => {
+    test('should perform subtraction (9 - 4 = 5) with reduced delay @critical', async () => {
       test.setTimeout(15000);
       await calc.actions.setDelay('1');
 
@@ -918,7 +918,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(calc.locators.screen).toHaveText('5', { timeout: 10000 });
     });
 
-    test('should perform multiplication (6 x 7 = 42) with reduced delay', async () => {
+    test('should perform multiplication (6 x 7 = 42) with reduced delay @critical', async () => {
       test.setTimeout(15000);
       await calc.actions.setDelay('1');
 
@@ -926,7 +926,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(calc.locators.screen).toHaveText('42', { timeout: 10000 });
     });
 
-    test('should perform division (8 ÷ 2 = 4) with reduced delay', async () => {
+    test('should perform division (8 ÷ 2 = 4) with reduced delay @critical', async () => {
       test.setTimeout(15000);
       await calc.actions.setDelay('1');
 

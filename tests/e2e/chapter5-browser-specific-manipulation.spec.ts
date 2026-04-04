@@ -13,7 +13,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  1. Geolocation
   // ─────────────────────────────────────────────────
   test.describe('Geolocation', () => {
-    test('should display the geolocation heading', async ({ page }) => {
+    test('should display the geolocation heading @smoke', async ({ page }) => {
       const geoPage = new GeolocationPage(page);
       await geoPage.actions.goto();
       await expect(geoPage.locators.heading).toBeVisible();
@@ -47,7 +47,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(geoPage.locators.coordinates).toContainText('Longitude');
     });
 
-    test('should display the correct mocked latitude and longitude', async ({ context, page }) => {
+    test('should display the correct mocked latitude and longitude @critical', async ({ context, page }) => {
       await context.grantPermissions(['geolocation']);
       await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
 
@@ -124,7 +124,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  2. Notifications
   // ─────────────────────────────────────────────────
   test.describe('Notifications', () => {
-    test('should display the notifications heading', async ({ page }) => {
+    test('should display the notifications heading @smoke', async ({ page }) => {
       const notifPage = new NotificationsPage(page);
       await notifPage.actions.goto();
       await expect(notifPage.locators.heading).toBeVisible();
@@ -143,7 +143,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(notifPage.locators.notifyMeButton).toHaveClass(/btn-outline-primary/);
     });
 
-    test('should trigger notification when permission is granted', async ({ context, page }) => {
+    test('should trigger notification when permission is granted @critical', async ({ context, page }) => {
       // Grant notification permission
       await context.grantPermissions(['notifications']);
 
@@ -365,7 +365,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  4. Multilanguage
   // ─────────────────────────────────────────────────
   test.describe('Multilanguage', () => {
-    test('should display the multilanguage heading', async ({ page }) => {
+    test('should display the multilanguage heading @smoke', async ({ page }) => {
       const multiPage = new MultilanguagePage(page);
       await multiPage.actions.goto();
       // The heading text depends on browser locale, check structure
@@ -437,7 +437,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(multiPage.locators.langListItems.nth(3)).toHaveAttribute('key', '_contact');
     });
 
-    test('should switch from English to Spanish by changing locale', async ({ browser }) => {
+    test('should switch from English to Spanish by changing locale @critical', async ({ browser }) => {
       // First verify English
       const enContext = await browser.newContext({ locale: 'en-US' });
       const enPage = await enContext.newPage();
@@ -478,7 +478,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  5. Console Logs
   // ─────────────────────────────────────────────────
   test.describe('Console Logs', () => {
-    test('should display the console logs heading', async ({ page }) => {
+    test('should display the console logs heading @smoke', async ({ page }) => {
       const consolePage = new ConsoleLogsPage(page);
       await consolePage.actions.goto();
       await expect(consolePage.locators.heading).toBeVisible();
@@ -490,7 +490,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(consolePage.locators.description).toBeVisible();
     });
 
-    test('should capture all four console message types', async ({ page }) => {
+    test('should capture all four console message types @critical', async ({ page }) => {
       const messages: { type: string; text: string }[] = [];
       page.on('console', (msg) => {
         messages.push({ type: msg.type(), text: msg.text() });
