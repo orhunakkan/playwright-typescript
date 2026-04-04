@@ -30,15 +30,16 @@ This framework is a TypeScript reimplementation of the test scenarios from [_Han
 
 ## Tech Stack
 
-| Tool                                                  | Version | Purpose                                               |
-| ----------------------------------------------------- | ------- | ----------------------------------------------------- |
-| [Playwright](https://playwright.dev/)                 | 1.58.2  | Browser automation, API testing, assertions           |
-| [TypeScript](https://www.typescriptlang.org/)         | 5.9     | Strongly-typed test code                              |
-| [Faker.js](https://fakerjs.dev/)                      | 10.4.0  | Dynamic, randomized test data generation              |
-| [GitHub Actions](https://github.com/features/actions) | —       | CI/CD pipeline orchestration                          |
-| [Docker](https://www.docker.com/)                     | —       | Consistent cross-platform visual regression execution |
-| [ESLint](https://eslint.org/)                         | 9       | Static analysis with Playwright-specific rules        |
-| [Prettier](https://prettier.io/)                      | 3.8     | Opinionated code formatting                           |
+| Tool                                                                                                          | Version | Purpose                                               |
+| ------------------------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
+| [Playwright](https://playwright.dev/)                                                                         | 1.58.2  | Browser automation, API testing, assertions           |
+| [TypeScript](https://www.typescriptlang.org/)                                                                 | 5.9     | Strongly-typed test code                              |
+| [Faker.js](https://fakerjs.dev/)                                                                              | 10.4.0  | Dynamic, randomized test data generation              |
+| [axe-core / @axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) | 4.11.1  | Automated WCAG 2.1 AA accessibility scanning          |
+| [GitHub Actions](https://github.com/features/actions)                                                         | —       | CI/CD pipeline orchestration                          |
+| [Docker](https://www.docker.com/)                                                                             | —       | Consistent cross-platform visual regression execution |
+| [ESLint](https://eslint.org/)                                                                                 | 9       | Static analysis with Playwright-specific rules        |
+| [Prettier](https://prettier.io/)                                                                              | 3.8     | Opinionated code formatting                           |
 
 ---
 
@@ -48,6 +49,8 @@ This framework is a TypeScript reimplementation of the test scenarios from [_Han
 - **REST API test suites** with serial execution, shared auth tokens, and full CRUD coverage
 - **Page Object Model** with cleanly separated `locators` and `actions` objects per page
 - **Visual regression testing** using per-browser screenshot baselines stored in version control
+- **Accessibility testing** with automated WCAG 2.1 AA scanning across all 29 pages via axe-core
+- **API schema validation** asserting exact response shape — no extra/missing keys, correct primitive types
 - **Browser API mocking** for geolocation, desktop notifications, and `getUserMedia`
 - **Shadow DOM testing** using Playwright's automatic shadow-piercing locator engine
 - **Cookie & session management** via pre-recorded fixture files loaded before test sessions
@@ -75,19 +78,18 @@ playwright-typescript/
 │       ├── chapter5-browser-specific-manipulation.spec.ts
 │       ├── chapter7-page-object-model.spec.ts
 │       ├── chapter8-testing-framework-specifics.spec.ts
-│       └── chapter9-third-party-integrations.spec.ts
+│       ├── chapter9-third-party-integrations.spec.ts
+│       └── chapter10-accessibility-testing.spec.ts
 ├── pages/                            # Page Object Model classes (29 pages)
 │   ├── login-form.page.ts
 │   ├── web-form.page.ts
 │   ├── shadow-dom.page.ts
 │   └── ... (26 more)
 ├── utilities/                        # Shared test helpers
-│   ├── cookies.ts                    # Pre-load cookie state from fixtures
-│   ├── login.ts                      # Programmatic Keycloak login flow
-│   ├── error-listeners.ts            # Console/network error capture
-│   ├── page-load-time.ts             # DOM stability + performance timing
-│   ├── dedicated-page.ts             # New-tab and same-tab link validation
-│   └── ...
+│   ├── error-listeners.ts            # Console/network/page error capture
+│   ├── calculator.ts                 # Helpers for calculator page interactions
+│   ├── a11y.ts                       # AxeBuilder wrapper (WCAG 2.1 AA defaults)
+│   └── api-schema-validator.ts       # Schema assertions for API response shapes
 ├── fixtures/
 │   ├── cookies/                      # Saved accept/reject cookie states
 │   ├── notes-api-payloads/           # TypeScript interfaces + Faker generators
@@ -227,6 +229,7 @@ npm run format:check    # Check formatting without writing
 | `chapter7-page-object-model`             | POM Pattern        | Login form, slow async login with spinner states, full POM encapsulation of locators and actions                                                                                                                                                      |
 | `chapter8-testing-framework-specifics`   | Framework Features | Flaky test simulation (configurable failure rate), retry validation, calculator operations, test stability tooling                                                                                                                                    |
 | `chapter9-third-party-integrations`      | Integrations       | File download validation (PDF, PNG), A/B test variation detection, content type verification                                                                                                                                                          |
+| `chapter10-accessibility-testing`        | Accessibility      | WCAG 2.1 AA automated scans across all 29 pages via axe-core; violations attached as JSON artifacts                                                                                                                                                   |
 | `chapter0-visual-regression`             | Visual Testing     | Full-page screenshot comparisons across 25+ pages and 3 browsers; per-browser PNG baselines in version control                                                                                                                                        |
 
 ### API Tests
@@ -345,7 +348,7 @@ Runs on push/PR to `main`, weekdays at 6 AM UTC, and on manual dispatch (with co
 
 | Metric                      | Value                     |
 | --------------------------- | ------------------------- |
-| Total test files            | 12 (7 E2E + 5 API)        |
+| Total test files            | 13 (8 E2E + 5 API)        |
 | Page Object classes         | 29                        |
 | Visual regression baselines | 80+ PNG files             |
 | Browsers covered            | 3 (Chrome, Firefox, Edge) |
