@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { contentTypeHeaders, getAuthHeaders, generateRegisterPayload, generateLoginPayload, generateUpdateProfilePayload } from '../../fixtures/notes-api-payloads/users-request-payloads';
+import { expectMatchesSchema, ErrorResponseSchema } from '../../utilities/api-schema-validator';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -39,9 +40,9 @@ test.describe('Notes Users API Error Handling', () => {
 
     expect(response.status()).toBe(409);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '409 duplicate email');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 409);
-    expect(responseBody).toHaveProperty('message');
   });
 
   test('should return 401 when logging in with wrong password', async ({ request }) => {
@@ -52,6 +53,7 @@ test.describe('Notes Users API Error Handling', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '401 wrong password');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 401);
   });
@@ -64,6 +66,7 @@ test.describe('Notes Users API Error Handling', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '401 non-existent email');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 401);
   });
@@ -75,6 +78,7 @@ test.describe('Notes Users API Error Handling', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '401 profile no token');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 401);
   });
@@ -86,6 +90,7 @@ test.describe('Notes Users API Error Handling', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '401 profile invalid token');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 401);
   });
@@ -98,6 +103,7 @@ test.describe('Notes Users API Error Handling', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '401 update profile no token');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 401);
   });
@@ -110,6 +116,7 @@ test.describe('Notes Users API Error Handling', () => {
 
     expect(response.status()).toBe(400);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '400 missing password');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 400);
   });
@@ -122,6 +129,7 @@ test.describe('Notes Users API Error Handling', () => {
 
     expect(response.status()).toBe(400);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '400 invalid email');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 400);
   });
@@ -138,6 +146,7 @@ test.describe('Notes Users API Error Handling', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '401 after logout');
     expect(responseBody).toHaveProperty('success', false);
   });
 });

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-export { contentTypeHeaders, getAuthHeaders, generateRegisterPayload, generateLoginPayload, expectObjectKeys } from './shared-request-payloads';
+export { contentTypeHeaders, getAuthHeaders, generateRegisterPayload, generateLoginPayload } from './shared-request-payloads';
 
 export const noteCategories = ['Home', 'Work', 'Personal'];
 

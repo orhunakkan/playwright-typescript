@@ -6,9 +6,9 @@ import {
   generateLoginPayload,
   generateUpdateProfilePayload,
   generateForgotPasswordPayload,
-  expectObjectKeys,
 } from '../../fixtures/notes-api-payloads/users-request-payloads';
 import type { ApiResponse, UserData, LoginData, UserProfileData } from '../../fixtures/notes-api-payloads/api-types';
+import { expectMatchesSchema, UserDataSchema, LoginDataSchema, UserProfileDataSchema, ErrorResponseSchema } from '../../utilities/api-schema-validator';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -43,8 +43,7 @@ test.describe('Notes Users API Flow', () => {
     expect(responseBody).toHaveProperty('status', 201);
     expect(responseBody).toHaveProperty('message', 'User account created successfully');
     expect(responseBody).toHaveProperty('data');
-    expectObjectKeys(responseBody.data, ['id', 'name', 'email']);
-    expect(typeof responseBody.data.id).toBe('string');
+    expectMatchesSchema(responseBody.data, UserDataSchema, 'register data');
     expect(responseBody.data).toHaveProperty('name', registerPayload.name);
     expect(responseBody.data).toHaveProperty('email', registerPayload.email);
   });
@@ -61,12 +60,10 @@ test.describe('Notes Users API Flow', () => {
     expect(responseBody).toHaveProperty('status', 200);
     expect(responseBody).toHaveProperty('message', 'Login successful');
     expect(responseBody).toHaveProperty('data');
-    expectObjectKeys(responseBody.data, ['id', 'name', 'email', 'token']);
-    expect(typeof responseBody.data.id).toBe('string');
+    expectMatchesSchema(responseBody.data, LoginDataSchema, 'login data');
     expect(responseBody.data).toHaveProperty('name', registeredUser.name);
     expect(responseBody.data).toHaveProperty('email', registeredUser.email);
     expect(responseBody.data).toHaveProperty('token');
-    expect(typeof responseBody.data.token).toBe('string');
 
     authToken = responseBody.data.token;
   });
@@ -81,7 +78,7 @@ test.describe('Notes Users API Flow', () => {
     expect(responseBody).toHaveProperty('success', true);
     expect(responseBody).toHaveProperty('message', 'Profile successful');
     expect(responseBody).toHaveProperty('data');
-    expect(typeof responseBody.data.id).toBe('string');
+    expectMatchesSchema(responseBody.data, UserProfileDataSchema, 'get profile data');
     expect(responseBody.data).toHaveProperty('name', registeredUser.name);
     expect(responseBody.data).toHaveProperty('email', registeredUser.email);
   });
@@ -100,8 +97,7 @@ test.describe('Notes Users API Flow', () => {
     expect(responseBody).toHaveProperty('status', 200);
     expect(responseBody).toHaveProperty('message', 'Profile updated successful');
     expect(responseBody).toHaveProperty('data');
-    expectObjectKeys(responseBody.data, ['id', 'name', 'email', 'phone', 'company']);
-    expect(typeof responseBody.data.id).toBe('string');
+    expectMatchesSchema(responseBody.data, UserProfileDataSchema, 'update profile data');
     expect(responseBody.data).toHaveProperty('name', updatedProfile.name);
     expect(responseBody.data).toHaveProperty('email', registeredUser.email);
     expect(responseBody.data).toHaveProperty('phone', updatedProfile.phone);
@@ -143,6 +139,7 @@ test.describe('Notes Users API Flow', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, 'post-logout 401');
     expect(responseBody).toHaveProperty('success', false);
   });
 });

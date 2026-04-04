@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { contentTypeHeaders, getAuthHeaders, generateRegisterPayload, generateLoginPayload, generateNotePayload } from '../../fixtures/notes-api-payloads/notes-request-payloads';
+import { expectMatchesSchema, ErrorResponseSchema } from '../../utilities/api-schema-validator';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -38,6 +39,7 @@ test.describe('Notes Notes API Error Handling', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '401 no token');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 401);
   });
@@ -50,6 +52,7 @@ test.describe('Notes Notes API Error Handling', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '401 invalid token');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 401);
   });
@@ -62,6 +65,7 @@ test.describe('Notes Notes API Error Handling', () => {
 
     expect(response.status()).toBe(400);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '400 missing title');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 400);
   });
@@ -74,6 +78,7 @@ test.describe('Notes Notes API Error Handling', () => {
 
     expect(response.status()).toBe(400);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '400 invalid category');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 400);
   });
@@ -85,6 +90,7 @@ test.describe('Notes Notes API Error Handling', () => {
 
     expect(response.status()).toBe(401);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '401 list no token');
     expect(responseBody).toHaveProperty('success', false);
     expect(responseBody).toHaveProperty('status', 401);
   });
@@ -96,6 +102,7 @@ test.describe('Notes Notes API Error Handling', () => {
 
     expect(response.status()).toBe(404);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '404 non-existent note');
     expect(responseBody).toHaveProperty('success', false);
   });
 
@@ -107,6 +114,7 @@ test.describe('Notes Notes API Error Handling', () => {
 
     expect(response.status()).toBe(400);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '400 update non-existent');
     expect(responseBody).toHaveProperty('success', false);
   });
 
@@ -117,6 +125,7 @@ test.describe('Notes Notes API Error Handling', () => {
 
     expect(response.status()).toBe(404);
     const responseBody = await response.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '404 delete non-existent');
     expect(responseBody).toHaveProperty('success', false);
   });
 
@@ -139,6 +148,7 @@ test.describe('Notes Notes API Error Handling', () => {
     });
     expect(getResponse.status()).toBe(404);
     const responseBody = await getResponse.json();
+    expectMatchesSchema(responseBody, ErrorResponseSchema, '404 after deletion');
     expect(responseBody).toHaveProperty('success', false);
   });
 });

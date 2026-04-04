@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { expect } from '@playwright/test';
 
 export const contentTypeHeaders = {
   'Content-Type': 'application/json',
@@ -20,7 +19,3 @@ export const generateLoginPayload = (email: string, password: string) => ({
   email,
   password,
 });
-
-export const expectObjectKeys = (obj: object, expectedKeys: string[]) => {
-  expect(Object.keys(obj).sort()).toEqual(expectedKeys.sort());
-};
