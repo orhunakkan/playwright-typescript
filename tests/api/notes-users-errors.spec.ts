@@ -1,14 +1,15 @@
 import { test, expect } from '@playwright/test';
+import { config } from '../../config/env';
 import { contentTypeHeaders, getAuthHeaders, generateRegisterPayload, generateLoginPayload, generateUpdateProfilePayload } from '../../fixtures/notes-api-payloads/users-request-payloads';
 import { expectMatchesSchema, ErrorResponseSchema } from '../../utilities/api-schema-validator';
 
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Notes Users API Error Handling', () => {
-  const registerUrl = `${process.env.PRACTICE_API_URL}/users/register`;
-  const loginUrl = `${process.env.PRACTICE_API_URL}/users/login`;
-  const profileUrl = `${process.env.PRACTICE_API_URL}/users/profile`;
-  const logoutUrl = `${process.env.PRACTICE_API_URL}/users/logout`;
+  const registerUrl = `${config.apiUrl}/users/register`;
+  const loginUrl = `${config.apiUrl}/users/login`;
+  const profileUrl = `${config.apiUrl}/users/profile`;
+  const logoutUrl = `${config.apiUrl}/users/logout`;
 
   let authToken = '';
 

@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class MouseOverPage {
   readonly locators: {
@@ -30,7 +31,7 @@ export class MouseOverPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/mouse-over.html`);
+        await this.page.goto(`${config.e2eUrl}/mouse-over.html`);
       },
       hoverImage: async (index: number) => {
         await this.locators.figures.nth(index).locator('img').hover();

@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class DataTypesPage {
   readonly locators: {
@@ -58,7 +59,7 @@ export class DataTypesPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/data-types.html`);
+        await this.page.goto(`${config.e2eUrl}/data-types.html`);
       },
       fillAllFields: async (data: {
         firstName: string;

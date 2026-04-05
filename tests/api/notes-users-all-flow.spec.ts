@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { config } from '../../config/env';
 import {
   contentTypeHeaders,
   getAuthHeaders,
@@ -13,11 +14,11 @@ import { expectMatchesSchema, UserDataSchema, LoginDataSchema, UserProfileDataSc
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Notes Users API Flow @critical', () => {
-  const registerUrl = `${process.env.PRACTICE_API_URL}/users/register`;
-  const loginUrl = `${process.env.PRACTICE_API_URL}/users/login`;
-  const profileUrl = `${process.env.PRACTICE_API_URL}/users/profile`;
-  const forgotPasswordUrl = `${process.env.PRACTICE_API_URL}/users/forgot-password`;
-  const logoutUrl = `${process.env.PRACTICE_API_URL}/users/logout`;
+  const registerUrl = `${config.apiUrl}/users/register`;
+  const loginUrl = `${config.apiUrl}/users/login`;
+  const profileUrl = `${config.apiUrl}/users/profile`;
+  const forgotPasswordUrl = `${config.apiUrl}/users/forgot-password`;
+  const logoutUrl = `${config.apiUrl}/users/logout`;
 
   let registeredUser: { name: string; email: string; password: string; phone?: string; company?: string } = {
     name: '',

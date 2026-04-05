@@ -21,6 +21,11 @@ on:
         required: false
         default: 'https://practice.expandtesting.com/notes/api'
         type: string
+      test_env:
+        description: 'Environment name (dev, staging, prod)'
+        required: false
+        default: 'dev'
+        type: string
   workflow_call:
     inputs:
       environment:
@@ -29,10 +34,16 @@ on:
       api_url:
         required: false
         type: string
+      test_env:
+        description: 'Environment name (dev, staging, prod)'
+        required: false
+        default: 'dev'
+        type: string
 
 env:
   PRACTICE_E2E_URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
   PRACTICE_API_URL: ${{ inputs.api_url || 'https://practice.expandtesting.com/notes/api' }}
+  TEST_ENV: ${{ inputs.test_env || 'dev' }}
   PLAYWRIGHT_JSON_OUTPUT_FILE: ./playwright-report/test-results.json
 
 concurrency:

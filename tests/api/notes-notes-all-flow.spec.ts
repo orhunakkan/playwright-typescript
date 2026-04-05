@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { config } from '../../config/env';
 import {
   contentTypeHeaders,
   getAuthHeaders,
@@ -13,9 +14,9 @@ import { expectMatchesSchema, expectArrayMatchesSchema, UserDataSchema, LoginDat
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Notes Notes API Flow @critical', () => {
-  const registerUrl = `${process.env.PRACTICE_API_URL}/users/register`;
-  const loginUrl = `${process.env.PRACTICE_API_URL}/users/login`;
-  const notesUrl = `${process.env.PRACTICE_API_URL}/notes`;
+  const registerUrl = `${config.apiUrl}/users/register`;
+  const loginUrl = `${config.apiUrl}/users/login`;
+  const notesUrl = `${config.apiUrl}/notes`;
 
   let registeredUser: { name: string; email: string; password: string } = {
     name: '',

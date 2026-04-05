@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class InfiniteScrollPage {
   readonly locators: {
@@ -20,7 +21,7 @@ export class InfiniteScrollPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/infinite-scroll.html`);
+        await this.page.goto(`${config.e2eUrl}/infinite-scroll.html`);
       },
       scrollToBottom: async () => {
         await this.page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));

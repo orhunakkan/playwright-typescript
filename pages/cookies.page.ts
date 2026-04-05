@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class CookiesPage {
   readonly locators: {
@@ -20,7 +21,7 @@ export class CookiesPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/cookies.html`);
+        await this.page.goto(`${config.e2eUrl}/cookies.html`);
       },
       displayCookies: async () => {
         await this.locators.displayCookiesButton.click();

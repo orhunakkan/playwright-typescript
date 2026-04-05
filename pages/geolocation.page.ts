@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class GeolocationPage {
   readonly locators: {
@@ -20,7 +21,7 @@ export class GeolocationPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/geolocation.html`);
+        await this.page.goto(`${config.e2eUrl}/geolocation.html`);
       },
       getCoordinates: async () => {
         await this.locators.getCoordinatesButton.click();

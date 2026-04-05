@@ -9,8 +9,9 @@ import { DrawInCanvasPage } from '../../pages/draw-in-canvas.page';
 import { LoadingImagesPage } from '../../pages/loading-images.page';
 import { SlowCalculatorPage } from '../../pages/slow-calculator.page';
 import { HomePage } from '../../pages/home.page';
+import { config } from '../../config/env';
 
-const BASE_URL = process.env.PRACTICE_E2E_URL;
+const BASE_URL = config.e2eUrl;
 
 test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────

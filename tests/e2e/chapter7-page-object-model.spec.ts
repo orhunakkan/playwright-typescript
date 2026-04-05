@@ -2,7 +2,8 @@ import { expect, test } from '@playwright/test';
 import { LoginFormPage } from '../../pages/login-form.page';
 import { SlowLoginFormPage } from '../../pages/slow-login-form.page';
 
-const BASE_URL = process.env.PRACTICE_E2E_URL;
+import { config } from '../../config/env';
+const BASE_URL = config.e2eUrl;
 
 test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   // ─────────────────────────────────────────────────

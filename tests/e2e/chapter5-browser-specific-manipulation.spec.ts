@@ -5,8 +5,9 @@ import { GetUserMediaPage } from '../../pages/get-user-media.page';
 import { MultilanguagePage } from '../../pages/multilanguage.page';
 import { ConsoleLogsPage } from '../../pages/console-logs.page';
 import { HomePage } from '../../pages/home.page';
+import { config } from '../../config/env';
 
-const BASE_URL = process.env.PRACTICE_E2E_URL;
+const BASE_URL = config.e2eUrl;
 
 test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────

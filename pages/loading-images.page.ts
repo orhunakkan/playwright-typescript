@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class LoadingImagesPage {
   readonly locators: {
@@ -25,7 +26,7 @@ export class LoadingImagesPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/loading-images.html`);
+        await this.page.goto(`${config.e2eUrl}/loading-images.html`);
       },
     };
   }

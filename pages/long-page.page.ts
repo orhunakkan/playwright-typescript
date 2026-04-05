@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class LongPage {
   readonly locators: {
@@ -20,7 +21,7 @@ export class LongPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/long-page.html`);
+        await this.page.goto(`${config.e2eUrl}/long-page.html`);
       },
       waitForContent: async () => {
         await this.locators.contentParagraphs.first().waitFor();

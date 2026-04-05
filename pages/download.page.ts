@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class DownloadPage {
   readonly locators: {
@@ -27,7 +28,7 @@ export class DownloadPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/download.html`);
+        await this.page.goto(`${config.e2eUrl}/download.html`);
       },
     };
   }

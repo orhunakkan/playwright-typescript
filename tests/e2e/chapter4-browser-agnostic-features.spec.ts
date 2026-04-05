@@ -8,8 +8,9 @@ import { IframesPage } from '../../pages/iframes.page';
 import { DialogBoxesPage } from '../../pages/dialog-boxes.page';
 import { WebStoragePage } from '../../pages/web-storage.page';
 import { HomePage } from '../../pages/home.page';
+import { config } from '../../config/env';
 
-const BASE_URL = process.env.PRACTICE_E2E_URL;
+const BASE_URL = config.e2eUrl;
 
 test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────

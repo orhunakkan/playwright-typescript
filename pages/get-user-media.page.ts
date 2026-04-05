@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class GetUserMediaPage {
   readonly locators: {
@@ -22,7 +23,7 @@ export class GetUserMediaPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/get-user-media.html`);
+        await this.page.goto(`${config.e2eUrl}/get-user-media.html`);
       },
       clickStart: async () => {
         await this.locators.startButton.click();

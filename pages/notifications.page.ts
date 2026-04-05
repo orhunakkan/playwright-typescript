@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class NotificationsPage {
   readonly locators: {
@@ -18,7 +19,7 @@ export class NotificationsPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/notifications.html`);
+        await this.page.goto(`${config.e2eUrl}/notifications.html`);
       },
       clickNotifyMe: async () => {
         await this.locators.notifyMeButton.click();

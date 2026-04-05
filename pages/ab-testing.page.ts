@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class ABTestingPage {
   readonly locators: {
@@ -22,7 +23,7 @@ export class ABTestingPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/ab-testing.html`);
+        await this.page.goto(`${config.e2eUrl}/ab-testing.html`);
       },
       waitForContent: async () => {
         await this.locators.contentHeading.waitFor();

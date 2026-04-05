@@ -1,4 +1,5 @@
 import { Frame, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class FramesPage {
   readonly locators: {
@@ -19,7 +20,7 @@ export class FramesPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/frames.html`);
+        await this.page.goto(`${config.e2eUrl}/frames.html`);
       },
     };
   }

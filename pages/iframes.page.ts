@@ -1,4 +1,5 @@
 import { FrameLocator, Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class IframesPage {
   readonly locators: {
@@ -21,7 +22,7 @@ export class IframesPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/iframes.html`);
+        await this.page.goto(`${config.e2eUrl}/iframes.html`);
       },
     };
   }

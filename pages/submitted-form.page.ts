@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { config } from '../config/env';
 
 export class SubmittedFormPage {
   readonly locators: {
@@ -17,7 +18,7 @@ export class SubmittedFormPage {
 
     this.actions = {
       goto: async () => {
-        await this.page.goto(`${process.env.PRACTICE_E2E_URL}/submitted-form.html`);
+        await this.page.goto(`${config.e2eUrl}/submitted-form.html`);
       },
     };
   }
