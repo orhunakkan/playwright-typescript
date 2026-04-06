@@ -1,5 +1,6 @@
 import { expect, test } from '../../fixtures/page-fixtures';
 import { config } from '../../config/env';
+import { feature, story, severity } from 'allure-js-commons';
 
 test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   // ─────────────────────────────────────────────────
@@ -7,17 +8,20 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   // ─────────────────────────────────────────────────
   test.describe('Touch Interactions', () => {
     test.beforeEach(({ isMobile }) => {
+      feature('Mobile Testing');
+      story('Touch Interactions');
+      severity('critical');
       test.skip(!isMobile, 'Mobile-only');
     });
 
-    test('should tap a text input to focus and type a value @critical', async ({ webFormPage, page }) => {
+    test('should tap a text input to focus and type a value', { tag: ['@critical'] }, async ({ webFormPage, page }) => {
       await webFormPage.actions.goto();
       await webFormPage.locators.textInput.tap();
       await page.keyboard.type('Hello Mobile');
       await expect(webFormPage.locators.textInput).toHaveValue('Hello Mobile');
     });
 
-    test('should draw on the canvas using raw touchscreen coordinates @critical', async ({ drawInCanvasPage, page }) => {
+    test('should draw on the canvas using raw touchscreen coordinates', { tag: ['@critical'] }, async ({ drawInCanvasPage, page }) => {
       await drawInCanvasPage.actions.goto();
       const box = await drawInCanvasPage.locators.canvas.boundingBox();
       expect(box).not.toBeNull();
@@ -36,10 +40,13 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   // ─────────────────────────────────────────────────
   test.describe('Viewport and Device Detection', () => {
     test.beforeEach(({ isMobile }) => {
+      feature('Mobile Testing');
+      story('Viewport and Device Detection');
+      severity('critical');
       test.skip(!isMobile, 'Mobile-only');
     });
 
-    test('should report mobile viewport dimensions @smoke', async ({ webFormPage, page }) => {
+    test('should report mobile viewport dimensions', { tag: ['@smoke'] }, async ({ webFormPage, page }) => {
       await webFormPage.actions.goto();
       const vp = page.viewportSize();
       expect(vp).not.toBeNull();
@@ -64,14 +71,19 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   //  3. Media Emulation
   // ─────────────────────────────────────────────────
   test.describe('Media Emulation', () => {
-    test('should emulate dark color scheme and detect it via matchMedia @smoke', async ({ webFormPage, page }) => {
+    test.beforeEach(() => {
+      feature('Mobile Testing');
+      story('Media Emulation');
+      severity('critical');
+    });
+    test('should emulate dark color scheme and detect it via matchMedia', { tag: ['@smoke'] }, async ({ webFormPage, page }) => {
       await webFormPage.actions.goto();
       await page.emulateMedia({ colorScheme: 'dark' });
       const isDark = await page.evaluate(() => window.matchMedia('(prefers-color-scheme: dark)').matches);
       expect(isDark).toBe(true);
     });
 
-    test('should emulate reduced motion and detect it via matchMedia @critical', async ({ webFormPage, page }) => {
+    test('should emulate reduced motion and detect it via matchMedia', { tag: ['@critical'] }, async ({ webFormPage, page }) => {
       await webFormPage.actions.goto();
       await page.emulateMedia({ reducedMotion: 'reduce' });
       const isReduced = await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -84,10 +96,13 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   // ─────────────────────────────────────────────────
   test.describe('Geolocation on Mobile', () => {
     test.beforeEach(({ isMobile }) => {
+      feature('Mobile Testing');
+      story('Geolocation on Mobile');
+      severity('critical');
       test.skip(!isMobile, 'Mobile-only');
     });
 
-    test('should grant geolocation and retrieve mocked coordinates via tap @critical', async ({ geolocationPage, context }) => {
+    test('should grant geolocation and retrieve mocked coordinates via tap', { tag: ['@critical'] }, async ({ geolocationPage, context }) => {
       await context.grantPermissions(['geolocation']);
       await context.setGeolocation({ latitude: 37.7749, longitude: -122.4194 });
       await geolocationPage.actions.goto();
@@ -102,10 +117,13 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   // ─────────────────────────────────────────────────
   test.describe('Network State', () => {
     test.beforeEach(({ isMobile }) => {
+      feature('Mobile Testing');
+      story('Network State');
+      severity('critical');
       test.skip(!isMobile, 'Mobile-only');
     });
 
-    test('should fail navigation when the network is offline @critical', async ({ webFormPage, page }) => {
+    test('should fail navigation when the network is offline', { tag: ['@critical'] }, async ({ webFormPage, page }) => {
       await webFormPage.actions.goto();
       await page.context().setOffline(true);
       await expect(page.goto(`${config.e2eUrl}/geolocation.html`)).rejects.toThrow();
@@ -117,6 +135,11 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   //  6. Native Input Types
   // ─────────────────────────────────────────────────
   test.describe('Native Input Types', () => {
+    test.beforeEach(() => {
+      feature('Mobile Testing');
+      story('Native Input Types');
+      severity('normal');
+    });
     test('should verify color picker uses native color input type', async ({ webFormPage }) => {
       await webFormPage.actions.goto();
       const inputType = await webFormPage.locators.colorPicker.getAttribute('type');

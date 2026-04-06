@@ -1,6 +1,7 @@
 import { expect, test } from '../../fixtures/page-fixtures';
 import path from 'path';
 import { config } from '../../config/env';
+import { feature, story, severity } from 'allure-js-commons';
 
 const BASE_URL = config.e2eUrl;
 
@@ -10,15 +11,18 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Web Form', () => {
     test.beforeEach(async ({ webFormPage }) => {
+      feature('WebDriver Fundamentals');
+      story('Web Form');
+      severity('critical');
       await webFormPage.actions.goto();
     });
 
-    test('should display the web form heading @smoke', async ({ webFormPage }) => {
+    test('should display the web form heading', { tag: ['@smoke'] }, async ({ webFormPage }) => {
       await expect(webFormPage.locators.heading).toBeVisible();
     });
 
     // --- Text Input ---
-    test('should type into text input field @critical', async ({ webFormPage }) => {
+    test('should type into text input field', { tag: ['@critical'] }, async ({ webFormPage }) => {
       await webFormPage.locators.textInput.fill('Hello Playwright');
       await expect(webFormPage.locators.textInput).toHaveValue('Hello Playwright');
     });
@@ -61,7 +65,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
     });
 
     // --- Dropdown (select) ---
-    test('should select options from dropdown by visible text @critical', async ({ webFormPage }) => {
+    test('should select options from dropdown by visible text', { tag: ['@critical'] }, async ({ webFormPage }) => {
       await expect(webFormPage.locators.dropdown).toHaveValue('Open this select menu');
 
       await webFormPage.locators.dropdown.selectOption({ label: 'One' });
@@ -116,7 +120,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(webFormPage.locators.defaultCheckbox).not.toBeChecked();
     });
 
-    test('should toggle checkboxes @critical', async ({ webFormPage }) => {
+    test('should toggle checkboxes', { tag: ['@critical'] }, async ({ webFormPage }) => {
       // Uncheck the checked one
       await webFormPage.locators.checkedCheckbox.uncheck();
       await expect(webFormPage.locators.checkedCheckbox).not.toBeChecked();
@@ -132,7 +136,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(webFormPage.locators.defaultRadio).not.toBeChecked();
     });
 
-    test('should select a different radio button @critical', async ({ webFormPage }) => {
+    test('should select a different radio button', { tag: ['@critical'] }, async ({ webFormPage }) => {
       await webFormPage.locators.defaultRadio.check();
       await expect(webFormPage.locators.defaultRadio).toBeChecked();
       // Only one radio in the group can be selected
@@ -182,7 +186,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
     });
 
     // --- Form Submission ---
-    test('should submit the form and verify navigation @smoke @critical', async ({ webFormPage, page }) => {
+    test('should submit the form and verify navigation', { tag: ['@smoke', '@critical'] }, async ({ webFormPage, page }) => {
       // Fill the form
       await webFormPage.locators.textInput.fill('Playwright Test');
       await webFormPage.locators.passwordInput.fill('mypassword');
@@ -257,13 +261,19 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  2. Navigation
   // ─────────────────────────────────────────────────
   test.describe('Navigation', () => {
-    test('should display navigation page 1 content @smoke', async ({ navigationPage, page }) => {
+    test.beforeEach(() => {
+      feature('WebDriver Fundamentals');
+      story('Navigation');
+      severity('critical');
+    });
+
+    test('should display navigation page 1 content', { tag: ['@smoke'] }, async ({ navigationPage, page }) => {
       await navigationPage.actions.goto();
       await expect(navigationPage.locators.heading).toBeVisible();
       await expect(page.getByText('Lorem ipsum dolor sit amet')).toBeVisible();
     });
 
-    test('should navigate through pages using pagination links @critical', async ({ navigationPage, page }) => {
+    test('should navigate through pages using pagination links', { tag: ['@critical'] }, async ({ navigationPage, page }) => {
       await navigationPage.actions.goto();
 
       // Verify we are on page 1
@@ -391,14 +401,17 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Dropdown Menu', () => {
     test.beforeEach(async ({ dropdownMenuPage }) => {
+      feature('WebDriver Fundamentals');
+      story('Dropdown Menu');
+      severity('critical');
       await dropdownMenuPage.actions.goto();
     });
 
-    test('should display dropdown menu heading @smoke', async ({ dropdownMenuPage }) => {
+    test('should display dropdown menu heading', { tag: ['@smoke'] }, async ({ dropdownMenuPage }) => {
       await expect(dropdownMenuPage.locators.heading).toBeVisible();
     });
 
-    test('should open dropdown with left-click @critical', async ({ dropdownMenuPage }) => {
+    test('should open dropdown with left-click', { tag: ['@critical'] }, async ({ dropdownMenuPage }) => {
       await expect(dropdownMenuPage.locators.leftClickButton).toBeVisible();
 
       // Click the button to open the dropdown
@@ -512,10 +525,13 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Mouse Over', () => {
     test.beforeEach(async ({ mouseOverPage }) => {
+      feature('WebDriver Fundamentals');
+      story('Mouse Over');
+      severity('critical');
       await mouseOverPage.actions.goto();
     });
 
-    test('should display the mouse over heading @smoke', async ({ mouseOverPage }) => {
+    test('should display the mouse over heading', { tag: ['@smoke'] }, async ({ mouseOverPage }) => {
       await expect(mouseOverPage.locators.heading).toBeVisible();
     });
 
@@ -523,7 +539,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(mouseOverPage.locators.images).toHaveCount(4);
     });
 
-    test('should reveal image captions on hover @critical', async ({ mouseOverPage }) => {
+    test('should reveal image captions on hover', { tag: ['@critical'] }, async ({ mouseOverPage }) => {
       const expectedCaptions = ['Compass', 'Calendar', 'Award', 'Landscape'];
 
       for (let captionIndex = 0; captionIndex < expectedCaptions.length; captionIndex++) {
@@ -582,10 +598,13 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Drag and Drop', () => {
     test.beforeEach(async ({ dragAndDropPage }) => {
+      feature('WebDriver Fundamentals');
+      story('Drag and Drop');
+      severity('critical');
       await dragAndDropPage.actions.goto();
     });
 
-    test('should display the drag and drop heading @smoke', async ({ dragAndDropPage }) => {
+    test('should display the drag and drop heading', { tag: ['@smoke'] }, async ({ dragAndDropPage }) => {
       await expect(dragAndDropPage.locators.heading).toBeVisible();
     });
 
@@ -599,7 +618,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(dragAndDropPage.locators.target).toBeVisible();
     });
 
-    test('should drag element to target @critical', async ({ dragAndDropPage }) => {
+    test('should drag element to target', { tag: ['@critical'] }, async ({ dragAndDropPage }) => {
       // Get initial position of draggable
       const initialBox = await dragAndDropPage.locators.draggable.boundingBox();
       expect(initialBox).not.toBeNull();
@@ -640,10 +659,13 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Draw in Canvas', () => {
     test.beforeEach(async ({ drawInCanvasPage }) => {
+      feature('WebDriver Fundamentals');
+      story('Draw in Canvas');
+      severity('critical');
       await drawInCanvasPage.actions.goto();
     });
 
-    test('should display the drawing in canvas heading @smoke', async ({ drawInCanvasPage }) => {
+    test('should display the drawing in canvas heading', { tag: ['@smoke'] }, async ({ drawInCanvasPage }) => {
       await expect(drawInCanvasPage.locators.heading).toBeVisible();
       await expect(drawInCanvasPage.locators.instructions).toBeVisible();
     });
@@ -653,7 +675,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(drawInCanvasPage.locators.canvas).toHaveAttribute('id', 'my-canvas');
     });
 
-    test('should draw on canvas by clicking @critical', async ({ drawInCanvasPage, page }) => {
+    test('should draw on canvas by clicking', { tag: ['@critical'] }, async ({ drawInCanvasPage, page }) => {
       const box = await drawInCanvasPage.locators.canvas.boundingBox();
       expect(box).not.toBeNull();
 
@@ -758,6 +780,12 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  7. Loading Images
   // ─────────────────────────────────────────────────
   test.describe('Loading Images', () => {
+    test.beforeEach(() => {
+      feature('WebDriver Fundamentals');
+      story('Loading Images');
+      severity('critical');
+    });
+
     test('should display loading message initially', async ({ loadingImagesPage }) => {
       await loadingImagesPage.actions.goto();
       // The spinner should be visible initially
@@ -771,7 +799,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(loadingImagesPage.locators.text).toHaveText('Done!', { timeout: 15000 });
     });
 
-    test('should load compass image first @smoke', async ({ loadingImagesPage }) => {
+    test('should load compass image first', { tag: ['@smoke'] }, async ({ loadingImagesPage }) => {
       await loadingImagesPage.actions.goto();
 
       // Compass image should appear quickly (within ~2s)
@@ -779,7 +807,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(loadingImagesPage.locators.compassImg).toHaveAttribute('alt', 'compass');
     });
 
-    test('should load all four images with correct attributes after waiting @critical', async ({ loadingImagesPage }) => {
+    test('should load all four images with correct attributes after waiting', { tag: ['@critical'] }, async ({ loadingImagesPage }) => {
       test.setTimeout(20000);
       await loadingImagesPage.actions.goto();
 
@@ -835,10 +863,13 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Slow Calculator', () => {
     test.beforeEach(async ({ slowCalculatorPage }) => {
+      feature('WebDriver Fundamentals');
+      story('Slow Calculator');
+      severity('critical');
       await slowCalculatorPage.actions.goto();
     });
 
-    test('should display the slow calculator heading @smoke', async ({ slowCalculatorPage }) => {
+    test('should display the slow calculator heading', { tag: ['@smoke'] }, async ({ slowCalculatorPage }) => {
       await expect(slowCalculatorPage.locators.heading).toBeVisible();
     });
 
@@ -864,7 +895,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(page.locator('#calculator >> text="C"')).toBeVisible();
     });
 
-    test('should perform addition (1 + 3 = 4) with reduced delay @smoke @critical', async ({ slowCalculatorPage }) => {
+    test('should perform addition (1 + 3 = 4) with reduced delay', { tag: ['@smoke', '@critical'] }, async ({ slowCalculatorPage }) => {
       test.setTimeout(15000);
       await slowCalculatorPage.actions.setDelay('1');
 
@@ -872,7 +903,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(slowCalculatorPage.locators.screen).toHaveText('4', { timeout: 10000 });
     });
 
-    test('should perform subtraction (9 - 4 = 5) with reduced delay @critical', async ({ slowCalculatorPage }) => {
+    test('should perform subtraction (9 - 4 = 5) with reduced delay', { tag: ['@critical'] }, async ({ slowCalculatorPage }) => {
       test.setTimeout(15000);
       await slowCalculatorPage.actions.setDelay('1');
 
@@ -880,7 +911,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(slowCalculatorPage.locators.screen).toHaveText('5', { timeout: 10000 });
     });
 
-    test('should perform multiplication (6 x 7 = 42) with reduced delay @critical', async ({ slowCalculatorPage }) => {
+    test('should perform multiplication (6 x 7 = 42) with reduced delay', { tag: ['@critical'] }, async ({ slowCalculatorPage }) => {
       test.setTimeout(15000);
       await slowCalculatorPage.actions.setDelay('1');
 
@@ -888,7 +919,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(slowCalculatorPage.locators.screen).toHaveText('42', { timeout: 10000 });
     });
 
-    test('should perform division (8 ÷ 2 = 4) with reduced delay @critical', async ({ slowCalculatorPage }) => {
+    test('should perform division (8 ÷ 2 = 4) with reduced delay', { tag: ['@critical'] }, async ({ slowCalculatorPage }) => {
       test.setTimeout(15000);
       await slowCalculatorPage.actions.setDelay('1');
 
@@ -962,6 +993,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 3 Links', () => {
     test.beforeEach(async ({ homePage }) => {
+      feature('WebDriver Fundamentals');
+      story('Chapter 3 Index');
+      severity('normal');
       await homePage.actions.goto();
     });
 

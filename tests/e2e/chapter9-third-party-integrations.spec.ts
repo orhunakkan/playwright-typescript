@@ -1,6 +1,7 @@
 import { expect, test } from '../../fixtures/page-fixtures';
 import fs from 'fs';
 import { ABTestingPage } from '../../pages/ab-testing.page';
+import { feature, story, severity } from 'allure-js-commons';
 
 test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
@@ -8,10 +9,13 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
   test.describe('Download Files', () => {
     test.beforeEach(async ({ downloadPage }) => {
+      feature('Third-Party Integrations');
+      story('Download Files');
+      severity('critical');
       await downloadPage.actions.goto();
     });
 
-    test('should display the download files heading @smoke', async ({ downloadPage }) => {
+    test('should display the download files heading', { tag: ['@smoke'] }, async ({ downloadPage }) => {
       await expect(downloadPage.locators.heading).toBeVisible();
     });
 
@@ -42,7 +46,7 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       }
     });
 
-    test('should download the WebDriverManager PNG file @critical', async ({ downloadPage, page }, testInfo) => {
+    test('should download the WebDriverManager PNG file', { tag: ['@critical'] }, async ({ downloadPage, page }, testInfo) => {
       const downloadPromise = page.waitForEvent('download');
       await downloadPage.locators.webDriverManagerLogo.click();
       const download = await downloadPromise;
@@ -93,16 +97,19 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
   test.describe('A/B Testing', () => {
     test.beforeEach(async ({ abTestingPage }) => {
+      feature('Third-Party Integrations');
+      story('A/B Testing');
+      severity('critical');
       await abTestingPage.actions.goto();
       // Content is loaded via jQuery AJAX — wait for it
       await abTestingPage.actions.waitForContent();
     });
 
-    test('should display the A/B Testing heading @smoke', async ({ abTestingPage }) => {
+    test('should display the A/B Testing heading', { tag: ['@smoke'] }, async ({ abTestingPage }) => {
       await expect(abTestingPage.locators.heading).toBeVisible();
     });
 
-    test('should load either variation A or variation B @critical', async ({ abTestingPage }) => {
+    test('should load either variation A or variation B', { tag: ['@critical'] }, async ({ abTestingPage }) => {
       const text = await abTestingPage.locators.contentHeading.textContent();
 
       // Must be one of the two variations
@@ -205,10 +212,13 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
   test.describe('Data Types', () => {
     test.beforeEach(async ({ dataTypesPage }) => {
+      feature('Third-Party Integrations');
+      story('Data Types');
+      severity('critical');
       await dataTypesPage.actions.goto();
     });
 
-    test('should display the data types heading @smoke', async ({ dataTypesPage }) => {
+    test('should display the data types heading', { tag: ['@smoke'] }, async ({ dataTypesPage }) => {
       await expect(dataTypesPage.locators.heading).toBeVisible();
     });
 
@@ -293,7 +303,7 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
     });
 
     // --- Submission Tests ---
-    test('should show all fields as success when all data is provided @critical', async ({ dataTypesPage, page }) => {
+    test('should show all fields as success when all data is provided', { tag: ['@critical'] }, async ({ dataTypesPage, page }) => {
       await dataTypesPage.actions.fillAllFields({
         firstName: 'John',
         lastName: 'Doe',
@@ -441,14 +451,18 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   //  Index Page - Chapter 9 Links
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 9 Links', () => {
-    test('should display the Chapter 9 section heading', async ({ homePage }) => {
+    test.beforeEach(async ({ homePage }) => {
+      feature('Third-Party Integrations');
+      story('Chapter 9 Index');
+      severity('normal');
       await homePage.actions.goto();
+    });
+
+    test('should display the Chapter 9 section heading', async ({ homePage }) => {
       await expect(homePage.locators.chapter9Heading).toBeVisible();
     });
 
     test('should have all Chapter 9 links', async ({ homePage }) => {
-      await homePage.actions.goto();
-
       await expect.soft(homePage.locators.chapterLink('Download files')).toBeVisible();
       await expect.soft(homePage.locators.chapterLink('A/B Testing')).toBeVisible();
       await expect.soft(homePage.locators.chapterLink('Data types')).toBeVisible();

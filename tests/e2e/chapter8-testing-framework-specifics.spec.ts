@@ -1,4 +1,5 @@
 import { expect, test } from '../../fixtures/page-fixtures';
+import { feature, story, severity } from 'allure-js-commons';
 
 test.describe('Chapter 8 - Testing Framework Specifics', () => {
   // ─────────────────────────────────────────────────
@@ -6,10 +7,13 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
   // ─────────────────────────────────────────────────
   test.describe('Random Calculator', () => {
     test.beforeEach(async ({ randomCalculatorPage }) => {
+      feature('Testing Framework Specifics');
+      story('Random Calculator');
+      severity('critical');
       await randomCalculatorPage.actions.goto();
     });
 
-    test('should display the random calculator heading @smoke', async ({ randomCalculatorPage }) => {
+    test('should display the random calculator heading', { tag: ['@smoke'] }, async ({ randomCalculatorPage }) => {
       await expect(randomCalculatorPage.locators.heading).toBeVisible();
     });
 
@@ -78,7 +82,7 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
     });
 
     // --- Calculator Interactions ---
-    test('should display digits when clicked @critical', async ({ randomCalculatorPage }) => {
+    test('should display digits when clicked', { tag: ['@critical'] }, async ({ randomCalculatorPage }) => {
       await randomCalculatorPage.actions.clickButton('1');
       await expect(randomCalculatorPage.locators.screen).toHaveText('1');
 
@@ -89,7 +93,7 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
       await expect(randomCalculatorPage.locators.screen).toHaveText('123');
     });
 
-    test('should clear the screen when C is clicked @critical', async ({ randomCalculatorPage }) => {
+    test('should clear the screen when C is clicked', { tag: ['@critical'] }, async ({ randomCalculatorPage }) => {
       await randomCalculatorPage.actions.pressKeys('5', '6');
       await expect(randomCalculatorPage.locators.screen).toHaveText('56');
 
@@ -133,14 +137,14 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
     });
 
     const arithmeticCases = [
-      { label: 'addition', keys: ['2', '+', '3', '='] as const, expected: '5', tags: '@smoke @critical' },
-      { label: 'subtraction', keys: ['9', '-', '4', '='] as const, expected: '5', tags: '@critical' },
-      { label: 'multiplication', keys: ['6', 'x', '7', '='] as const, expected: '42', tags: '@critical' },
-      { label: 'division', keys: ['8', '÷', '2', '='] as const, expected: '4', tags: '@critical' },
+      { label: 'addition', keys: ['2', '+', '3', '='] as const, expected: '5', tag: ['@smoke', '@critical'] },
+      { label: 'subtraction', keys: ['9', '-', '4', '='] as const, expected: '5', tag: ['@critical'] },
+      { label: 'multiplication', keys: ['6', 'x', '7', '='] as const, expected: '42', tag: ['@critical'] },
+      { label: 'division', keys: ['8', '÷', '2', '='] as const, expected: '4', tag: ['@critical'] },
     ];
 
-    for (const { label, keys, expected, tags } of arithmeticCases) {
-      test(`should correctly compute ${label} in 100% correct mode ${tags}`, async ({ randomCalculatorPage }) => {
+    for (const { label, keys, expected, tag } of arithmeticCases) {
+      test(`should correctly compute ${label} in 100% correct mode`, { tag }, async ({ randomCalculatorPage }) => {
         await randomCalculatorPage.actions.setPercent('0');
         await randomCalculatorPage.actions.pressKeys(...keys);
         await expect(randomCalculatorPage.locators.screen).toHaveText(expected);
@@ -249,18 +253,22 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
   //  Index Page - Chapter 8 Links
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 8 Links', () => {
-    test('should display the Chapter 8 section heading', async ({ homePage }) => {
+    test.beforeEach(async ({ homePage }) => {
+      feature('Testing Framework Specifics');
+      story('Chapter 8 Index');
+      severity('normal');
       await homePage.actions.goto();
+    });
+
+    test('should display the Chapter 8 section heading', async ({ homePage }) => {
       await expect(homePage.locators.chapter8Heading).toBeVisible();
     });
 
     test('should have the Random calculator link', async ({ homePage }) => {
-      await homePage.actions.goto();
       await expect(homePage.locators.chapterLink('Random calculator')).toBeVisible();
     });
 
     test('should navigate to Random calculator and back', async ({ homePage, page }) => {
-      await homePage.actions.goto();
       await homePage.locators.chapterLink('Random calculator').click();
       await expect(page).toHaveURL(/random-calculator\.html/);
       await page.goBack();

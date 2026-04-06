@@ -1,4 +1,5 @@
 import { expect, test } from '../../fixtures/page-fixtures';
+import { feature, story, severity } from 'allure-js-commons';
 
 import { config } from '../../config/env';
 const BASE_URL = config.e2eUrl;
@@ -9,10 +10,13 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   // ─────────────────────────────────────────────────
   test.describe('Login Form', () => {
     test.beforeEach(async ({ loginFormPage }) => {
+      feature('Page Object Model');
+      story('Login Form');
+      severity('critical');
       await loginFormPage.actions.goto();
     });
 
-    test('should display the login form heading @smoke', async ({ loginFormPage }) => {
+    test('should display the login form heading', { tag: ['@smoke'] }, async ({ loginFormPage }) => {
       await expect(loginFormPage.locators.heading).toBeVisible();
     });
 
@@ -57,7 +61,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect.soft(loginFormPage.locators.invalidAlert).toHaveText('Invalid credentials');
     });
 
-    test('should login successfully with valid credentials @smoke @critical', async ({ loginFormPage, page }) => {
+    test('should login successfully with valid credentials', { tag: ['@smoke', '@critical'] }, async ({ loginFormPage, page }) => {
       await loginFormPage.actions.login('user', 'user');
       await expect(page).toHaveURL(/login-sucess\.html/);
       await expect(loginFormPage.locators.successAlert).toBeVisible();
@@ -78,7 +82,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
     ];
 
     for (const { label, username, password } of invalidCredentialCases) {
-      test(`should show invalid credentials with ${label} @critical`, async ({ loginFormPage, page }) => {
+      test(`should show invalid credentials with ${label}`, { tag: ['@critical'] }, async ({ loginFormPage, page }) => {
         await loginFormPage.actions.login(username, password);
         await expect(page).toHaveURL(/login-form\.html/);
         await expect(loginFormPage.locators.invalidAlert).toBeVisible();
@@ -117,7 +121,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect(loginFormPage.locators.passwordInput).toHaveValue('user');
     });
 
-    test('should submit form via Enter key @critical', async ({ loginFormPage, page }) => {
+    test('should submit form via Enter key', { tag: ['@critical'] }, async ({ loginFormPage, page }) => {
       await loginFormPage.locators.usernameInput.fill('user');
       await loginFormPage.locators.passwordInput.fill('user');
       await loginFormPage.locators.passwordInput.press('Enter');
@@ -145,10 +149,13 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   // ─────────────────────────────────────────────────
   test.describe('Slow Login Form', () => {
     test.beforeEach(async ({ slowLoginFormPage }) => {
+      feature('Page Object Model');
+      story('Slow Login Form');
+      severity('critical');
       await slowLoginFormPage.actions.goto();
     });
 
-    test('should display the slow login form heading @smoke', async ({ slowLoginFormPage }) => {
+    test('should display the slow login form heading', { tag: ['@smoke'] }, async ({ slowLoginFormPage }) => {
       await expect(slowLoginFormPage.locators.heading).toBeVisible();
     });
 
@@ -184,14 +191,14 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect(slowLoginFormPage.locators.spinner).toBeVisible();
     });
 
-    test('should login successfully with valid credentials after delay @smoke @critical', async ({ slowLoginFormPage, page }) => {
+    test('should login successfully with valid credentials after delay', { tag: ['@smoke', '@critical'] }, async ({ slowLoginFormPage, page }) => {
       await slowLoginFormPage.actions.login('user', 'user');
       await expect(page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
       await expect(slowLoginFormPage.locators.successAlert).toBeVisible();
       await expect(slowLoginFormPage.locators.successAlert).toHaveText('Login successful');
     });
 
-    test('should show invalid credentials with wrong credentials after delay @critical', async ({ slowLoginFormPage }) => {
+    test('should show invalid credentials with wrong credentials after delay', { tag: ['@critical'] }, async ({ slowLoginFormPage }) => {
       await slowLoginFormPage.actions.login('wronguser', 'wrongpass');
 
       // Spinner appears during delay
@@ -274,6 +281,11 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   //  Index Page - Chapter 7 Links
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 7 Links', () => {
+    test.beforeEach(() => {
+      feature('Page Object Model');
+      story('Chapter 7 Index');
+      severity('normal');
+    });
     test('should display the Chapter 7 section heading', async ({ page }) => {
       await page.goto(`${BASE_URL}/index.html`);
       await expect(page.getByRole('heading', { name: 'Chapter 7. The Page Object Model (POM)' })).toBeVisible();

@@ -10,10 +10,17 @@ import {
 } from '../../fixtures/notes-api-payloads/users-request-payloads';
 import type { ApiResponse, UserData, LoginData, UserProfileData } from '../../fixtures/notes-api-payloads/api-types';
 import { expectMatchesSchema, UserDataSchema, LoginDataSchema, UserProfileDataSchema, ErrorResponseSchema } from '../../utilities/api-schema-validator';
+import { feature, story, severity } from 'allure-js-commons';
 
 test.describe.configure({ mode: 'serial' });
 
-test.describe('Notes Users API Flow @critical', () => {
+test.describe('Notes Users API Flow', { tag: ['@critical'] }, () => {
+  test.beforeEach(() => {
+    feature('Notes API');
+    story('User Management – Happy Path');
+    severity('critical');
+  });
+
   const registerUrl = `${config.apiUrl}/users/register`;
   const loginUrl = `${config.apiUrl}/users/login`;
   const profileUrl = `${config.apiUrl}/users/profile`;

@@ -11,7 +11,23 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 4 : undefined,
-  reporter: [['list'], ['html'], ['json', { outputFile: 'playwright-report/test-results.json' }]],
+  reporter: [
+    ['list'],
+    ['html'],
+    ['json', { outputFile: 'playwright-report/test-results.json' }],
+    [
+      'allure-playwright',
+      {
+        outputFolder: 'allure-results',
+        environmentInfo: {
+          appUrl: process.env.PRACTICE_E2E_URL,
+          apiUrl: process.env.PRACTICE_API_URL,
+          environment: process.env.TEST_ENV ?? 'dev',
+          node: process.versions.node,
+        },
+      },
+    ],
+  ],
   outputDir: 'test-results',
   snapshotPathTemplate: 'fixtures/reference-snapshots/{testFileName}/{testName}/{projectName}-{arg}{ext}',
   use: {

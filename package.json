@@ -13,7 +13,10 @@
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "test:visual": "docker run --rm -v .:/work -w /work -e TEST_ENV=${TEST_ENV:-dev} mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/e2e/chapter0-visual-regression-tests.spec.ts",
-    "test:visual:update": "docker run --rm -v .:/work -w /work -e TEST_ENV=${TEST_ENV:-dev} mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/e2e/chapter0-visual-regression-tests.spec.ts --update-snapshots"
+    "test:visual:update": "docker run --rm -v .:/work -w /work -e TEST_ENV=${TEST_ENV:-dev} mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/e2e/chapter0-visual-regression-tests.spec.ts --update-snapshots",
+    "report:allure:serve": "allure serve allure-results",
+    "report:allure:generate": "allure generate allure-results --clean -o allure-report",
+    "report:allure:open": "allure open allure-report"
   },
   "dependencies": {
     "dotenv": "^17.4.0"
@@ -24,6 +27,8 @@
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.2",
     "@typescript-eslint/parser": "^8.58.0",
+    "allure-commandline": "^2.38.1",
+    "allure-playwright": "^3.6.0",
     "eslint": "^9.39.4",
     "eslint-plugin-playwright": "^2.10.1",
     "prettier": "^3.8.1",

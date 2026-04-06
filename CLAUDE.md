@@ -113,6 +113,12 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 - `playwright-cli close-all` — close all sessions
 - `playwright-cli kill-all` — force kill stale/zombie sessions
 
+### Allure Reporting
+
+- `npm run report:allure:serve` — launch Allure live server (generates + opens in browser)
+- `npm run report:allure:generate` — generate static Allure report in `allure-report/`
+- `npm run report:allure:open` — open previously generated Allure report
+
 ### Code Quality
 
 - `npm run lint:check` — check ESLint

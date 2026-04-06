@@ -2,10 +2,17 @@ import { test, expect } from '@playwright/test';
 import { config } from '../../config/env';
 import { contentTypeHeaders, getAuthHeaders, generateRegisterPayload, generateLoginPayload, generateNotePayload } from '../../fixtures/notes-api-payloads/notes-request-payloads';
 import { expectMatchesSchema, ErrorResponseSchema } from '../../utilities/api-schema-validator';
+import { feature, story, severity } from 'allure-js-commons';
 
 test.describe.configure({ mode: 'serial' });
 
-test.describe('Notes Notes API Error Handling', () => {
+test.describe('Notes Notes API Error Handling', { tag: ['@regression'] }, () => {
+  test.beforeEach(() => {
+    feature('Notes API');
+    story('Notes CRUD – Error Handling');
+    severity('normal');
+  });
+
   const registerUrl = `${config.apiUrl}/users/register`;
   const loginUrl = `${config.apiUrl}/users/login`;
   const notesUrl = `${config.apiUrl}/notes`;

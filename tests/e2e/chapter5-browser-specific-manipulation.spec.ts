@@ -4,6 +4,7 @@ import { NotificationsPage } from '../../pages/notifications.page';
 import { GetUserMediaPage } from '../../pages/get-user-media.page';
 import { MultilanguagePage } from '../../pages/multilanguage.page';
 import { config } from '../../config/env';
+import { feature, story, severity } from 'allure-js-commons';
 
 const BASE_URL = config.e2eUrl;
 
@@ -13,10 +14,13 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Geolocation', () => {
     test.beforeEach(async ({ geolocationPage }) => {
+      feature('Browser-Specific Manipulation');
+      story('Geolocation');
+      severity('critical');
       await geolocationPage.actions.goto();
     });
 
-    test('should display the geolocation heading @smoke', async ({ geolocationPage }) => {
+    test('should display the geolocation heading', { tag: ['@smoke'] }, async ({ geolocationPage }) => {
       await expect(geolocationPage.locators.heading).toBeVisible();
     });
 
@@ -42,7 +46,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(geolocationPage.locators.coordinates).toContainText('Longitude');
     });
 
-    test('should display the correct mocked latitude and longitude @critical', async ({ geolocationPage, context }) => {
+    test('should display the correct mocked latitude and longitude', { tag: ['@critical'] }, async ({ geolocationPage, context }) => {
       await context.grantPermissions(['geolocation']);
       await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
 
@@ -112,10 +116,13 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Notifications', () => {
     test.beforeEach(async ({ notificationsPage }) => {
+      feature('Browser-Specific Manipulation');
+      story('Notifications');
+      severity('critical');
       await notificationsPage.actions.goto();
     });
 
-    test('should display the notifications heading @smoke', async ({ notificationsPage }) => {
+    test('should display the notifications heading', { tag: ['@smoke'] }, async ({ notificationsPage }) => {
       await expect(notificationsPage.locators.heading).toBeVisible();
     });
 
@@ -128,7 +135,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(notificationsPage.locators.notifyMeButton).toHaveClass(/btn-outline-primary/);
     });
 
-    test('should trigger notification when permission is granted @critical', async ({ context, page }) => {
+    test('should trigger notification when permission is granted', { tag: ['@critical'] }, async ({ context, page }) => {
       // Grant notification permission
       await context.grantPermissions(['notifications']);
 
@@ -210,6 +217,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Get User Media', () => {
     test.beforeEach(async ({ getUserMediaPage }) => {
+      feature('Browser-Specific Manipulation');
+      story('Get User Media');
+      severity('critical');
       await getUserMediaPage.actions.goto();
     });
 
@@ -335,10 +345,13 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Multilanguage', () => {
     test.beforeEach(async ({ multilanguagePage }) => {
+      feature('Browser-Specific Manipulation');
+      story('Multilanguage');
+      severity('critical');
       await multilanguagePage.actions.goto();
     });
 
-    test('should display the multilanguage heading @smoke', async ({ multilanguagePage }) => {
+    test('should display the multilanguage heading', { tag: ['@smoke'] }, async ({ multilanguagePage }) => {
       // The heading text depends on browser locale, check structure
       await expect(multilanguagePage.locators.heading).toBeVisible();
       await expect(multilanguagePage.locators.heading).toHaveAttribute('key', '_title');
@@ -400,7 +413,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(multilanguagePage.locators.langListItems.nth(3)).toHaveAttribute('key', '_contact');
     });
 
-    test('should switch from English to Spanish by changing locale @critical', async ({ browser }) => {
+    test('should switch from English to Spanish by changing locale', { tag: ['@critical'] }, async ({ browser }) => {
       // First verify English
       const enContext = await browser.newContext({ locale: 'en-US' });
       const enPage = await enContext.newPage();
@@ -437,7 +450,12 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  5. Console Logs
   // ─────────────────────────────────────────────────
   test.describe('Console Logs', () => {
-    test('should display the console logs heading @smoke', async ({ consoleLogsPage }) => {
+    test.beforeEach(async ({ consoleLogsPage }) => {
+      feature('Browser-Specific Manipulation');
+      story('Console Logs');
+      severity('critical');
+    });
+    test('should display the console logs heading', { tag: ['@smoke'] }, async ({ consoleLogsPage }) => {
       await consoleLogsPage.actions.goto();
       await expect(consoleLogsPage.locators.heading).toBeVisible();
     });
@@ -447,7 +465,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(consoleLogsPage.locators.description).toBeVisible();
     });
 
-    test('should capture all four console message types @critical', async ({ consoleLogsPage, page }) => {
+    test('should capture all four console message types', { tag: ['@critical'] }, async ({ consoleLogsPage, page }) => {
       const messages: { type: string; text: string }[] = [];
       page.on('console', (msg) => {
         messages.push({ type: msg.type(), text: msg.text() });
@@ -555,6 +573,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 5 Links', () => {
     test.beforeEach(async ({ homePage }) => {
+      feature('Browser-Specific Manipulation');
+      story('Chapter 5 Index');
+      severity('normal');
       await homePage.actions.goto();
     });
 

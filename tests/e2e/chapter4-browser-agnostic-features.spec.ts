@@ -1,5 +1,6 @@
 import { expect, test } from '../../fixtures/page-fixtures';
 import { config } from '../../config/env';
+import { feature, story, severity } from 'allure-js-commons';
 
 const BASE_URL = config.e2eUrl;
 
@@ -9,12 +10,15 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Long Page', () => {
     test.beforeEach(async ({ longPage }) => {
+      feature('Browser Agnostic Features');
+      story('Long Page');
+      severity('critical');
       await longPage.actions.goto();
       // Content is loaded via jQuery AJAX — wait for it
       await longPage.actions.waitForContent();
     });
 
-    test('should display the long page heading @smoke', async ({ longPage }) => {
+    test('should display the long page heading', { tag: ['@smoke'] }, async ({ longPage }) => {
       await expect(longPage.locators.heading).toBeVisible();
     });
 
@@ -29,7 +33,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(scrollHeight).toBeGreaterThan(viewportHeight);
     });
 
-    test('should scroll to the bottom of the page @critical', async ({ longPage, page }) => {
+    test('should scroll to the bottom of the page', { tag: ['@critical'] }, async ({ longPage, page }) => {
       // Footer should not be in viewport initially
       await expect(longPage.locators.footer).not.toBeInViewport();
 
@@ -93,10 +97,13 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Infinite Scroll', () => {
     test.beforeEach(async ({ infiniteScrollPage }) => {
+      feature('Browser Agnostic Features');
+      story('Infinite Scroll');
+      severity('critical');
       await infiniteScrollPage.actions.goto();
     });
 
-    test('should display the infinite scroll heading @smoke', async ({ infiniteScrollPage }) => {
+    test('should display the infinite scroll heading', { tag: ['@smoke'] }, async ({ infiniteScrollPage }) => {
       await expect(infiniteScrollPage.locators.heading).toBeVisible();
     });
 
@@ -107,7 +114,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(initialCount).toBeGreaterThanOrEqual(1);
     });
 
-    test('should load more content when scrolling to bottom @critical', async ({ infiniteScrollPage }) => {
+    test('should load more content when scrolling to bottom', { tag: ['@critical'] }, async ({ infiniteScrollPage }) => {
       // Count initial paragraphs
       const initialCount = await infiniteScrollPage.locators.contentParagraphs.count();
 
@@ -157,10 +164,13 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Shadow DOM', () => {
     test.beforeEach(async ({ shadowDomPage }) => {
+      feature('Browser Agnostic Features');
+      story('Shadow DOM');
+      severity('critical');
       await shadowDomPage.actions.goto();
     });
 
-    test('should display the Shadow DOM heading @smoke', async ({ shadowDomPage }) => {
+    test('should display the Shadow DOM heading', { tag: ['@smoke'] }, async ({ shadowDomPage }) => {
       await expect(shadowDomPage.locators.heading).toBeVisible();
     });
 
@@ -169,7 +179,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(shadowDomPage.locators.helloText).toBeVisible();
     });
 
-    test('should locate shadow DOM content via locator @critical', async ({ shadowDomPage }) => {
+    test('should locate shadow DOM content via locator', { tag: ['@critical'] }, async ({ shadowDomPage }) => {
       // Using the content div that hosts the shadow root
       await expect(shadowDomPage.locators.shadowContent).toBeAttached();
 
@@ -207,10 +217,13 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Cookies', () => {
     test.beforeEach(async ({ cookiesPage }) => {
+      feature('Browser Agnostic Features');
+      story('Cookies');
+      severity('critical');
       await cookiesPage.actions.goto();
     });
 
-    test('should display the cookies heading @smoke', async ({ cookiesPage }) => {
+    test('should display the cookies heading', { tag: ['@smoke'] }, async ({ cookiesPage }) => {
       await expect(cookiesPage.locators.heading).toBeVisible();
     });
 
@@ -228,7 +241,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(cookiesPage.locators.cookiesList).toContainText('date=10/07/2018');
     });
 
-    test('should read cookies via Playwright context API @critical', async ({ context }) => {
+    test('should read cookies via Playwright context API', { tag: ['@critical'] }, async ({ context }) => {
       const cookies = await context.cookies('https://bonigarcia.dev');
       const usernameCookie = cookies.find((cookie) => cookie.name === 'username');
       const dateCookie = cookies.find((cookie) => cookie.name === 'date');
@@ -239,7 +252,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(dateCookie?.value).toBe('10/07/2018');
     });
 
-    test('should add a new cookie and verify it appears @critical', async ({ cookiesPage, page, context }) => {
+    test('should add a new cookie and verify it appears', { tag: ['@critical'] }, async ({ cookiesPage, page, context }) => {
       // Add a custom cookie via Playwright API
       await context.addCookies([
         {
@@ -327,10 +340,13 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Frames', () => {
     test.beforeEach(async ({ framesPage }) => {
+      feature('Browser Agnostic Features');
+      story('Frames');
+      severity('critical');
       await framesPage.actions.goto();
     });
 
-    test('should load the frameset page @smoke', async ({ page }) => {
+    test('should load the frameset page', { tag: ['@smoke'] }, async ({ page }) => {
       await expect(page).toHaveURL(/frames\.html/);
     });
 
@@ -384,7 +400,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(footerFrame?.url()).toContain('footer.html');
     });
 
-    test('should interact with content across frames @critical', async ({ framesPage }) => {
+    test('should interact with content across frames', { tag: ['@critical'] }, async ({ framesPage }) => {
       // Verify heading in header frame
       const headerFrame = framesPage.locators.headerFrame();
       const heading = headerFrame!.locator('h1.display-4');
@@ -402,10 +418,13 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('IFrames', () => {
     test.beforeEach(async ({ iframesPage }) => {
+      feature('Browser Agnostic Features');
+      story('IFrames');
+      severity('critical');
       await iframesPage.actions.goto();
     });
 
-    test('should display the IFrame heading @smoke', async ({ iframesPage }) => {
+    test('should display the IFrame heading', { tag: ['@smoke'] }, async ({ iframesPage }) => {
       await expect(iframesPage.locators.heading).toBeVisible();
     });
 
@@ -414,7 +433,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(iframesPage.locators.iframe).toHaveAttribute('src', 'content.html');
     });
 
-    test('should access iframe content using frameLocator @critical', async ({ iframesPage }) => {
+    test('should access iframe content using frameLocator', { tag: ['@critical'] }, async ({ iframesPage }) => {
       const firstParagraph = iframesPage.locators.iframeContent.locator('p').first();
       await expect(firstParagraph).toContainText('Lorem ipsum');
     });
@@ -479,10 +498,13 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Dialog Boxes', () => {
     test.beforeEach(async ({ dialogBoxesPage }) => {
+      feature('Browser Agnostic Features');
+      story('Dialog Boxes');
+      severity('critical');
       await dialogBoxesPage.actions.goto();
     });
 
-    test('should display the dialog boxes heading @smoke', async ({ dialogBoxesPage }) => {
+    test('should display the dialog boxes heading', { tag: ['@smoke'] }, async ({ dialogBoxesPage }) => {
       await expect(dialogBoxesPage.locators.heading).toBeVisible();
     });
 
@@ -494,7 +516,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
     });
 
     // --- Alert Dialog ---
-    test('should handle alert dialog and accept it @critical', async ({ dialogBoxesPage, page }) => {
+    test('should handle alert dialog and accept it', { tag: ['@critical'] }, async ({ dialogBoxesPage, page }) => {
       // Register dialog handler BEFORE the click so the dialog is handled inline
       let dialogType = '';
       let dialogMessage = '';
@@ -511,7 +533,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
     });
 
     // --- Confirm Dialog ---
-    test('should handle confirm dialog - accept @critical', async ({ dialogBoxesPage, page }) => {
+    test('should handle confirm dialog - accept', { tag: ['@critical'] }, async ({ dialogBoxesPage, page }) => {
       let dialogType = '';
       let dialogMessage = '';
       page.once('dialog', async (dialog) => {
@@ -545,7 +567,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
     });
 
     // --- Prompt Dialog ---
-    test('should handle prompt dialog with text input @critical', async ({ dialogBoxesPage, page }) => {
+    test('should handle prompt dialog with text input', { tag: ['@critical'] }, async ({ dialogBoxesPage, page }) => {
       let dialogType = '';
       let dialogMessage = '';
       page.once('dialog', async (dialog) => {
@@ -670,10 +692,13 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Web Storage', () => {
     test.beforeEach(async ({ webStoragePage }) => {
+      feature('Browser Agnostic Features');
+      story('Web Storage');
+      severity('critical');
       await webStoragePage.actions.goto();
     });
 
-    test('should display the web storage heading @smoke', async ({ webStoragePage }) => {
+    test('should display the web storage heading', { tag: ['@smoke'] }, async ({ webStoragePage }) => {
       await expect(webStoragePage.locators.heading).toBeVisible();
     });
 
@@ -697,7 +722,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(sessionLastname).toBe('Doe');
     });
 
-    test('should set and read session storage items @critical', async ({ webStoragePage, page }) => {
+    test('should set and read session storage items', { tag: ['@critical'] }, async ({ webStoragePage, page }) => {
       // Set a new item
       await page.evaluate(() => sessionStorage.setItem('role', 'tester'));
 
@@ -741,7 +766,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
     });
 
     // --- Local Storage ---
-    test('should set and read local storage items @critical', async ({ webStoragePage, page }) => {
+    test('should set and read local storage items', { tag: ['@critical'] }, async ({ webStoragePage, page }) => {
       // Set an item in local storage
       await page.evaluate(() => localStorage.setItem('framework', 'playwright'));
 
@@ -818,6 +843,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 4 Links', () => {
     test.beforeEach(async ({ homePage }) => {
+      feature('Browser Agnostic Features');
+      story('Chapter 4 Index');
+      severity('normal');
       await homePage.actions.goto();
     });
 

@@ -1,5 +1,6 @@
 import { expect, test } from '../../fixtures/page-fixtures';
 import type { Page } from '@playwright/test';
+import { feature, story, severity } from 'allure-js-commons';
 import { ABTestingPage } from '../../pages/ab-testing.page';
 import { ConsoleLogsPage } from '../../pages/console-logs.page';
 import { CookiesPage } from '../../pages/cookies.page';
@@ -65,9 +66,12 @@ const a11yPages: { name: string; factory: PageFactory }[] = [
   { name: 'Random Calculator', factory: (page) => new RandomCalculatorPage(page) },
 ];
 
-test.describe('Chapter 10 - Accessibility Testing (a11y)', () => {
+test.describe('Chapter 10 - Accessibility Testing (a11y)', { tag: ['@a11y'] }, () => {
   for (const { name, factory } of a11yPages) {
     test(`${name} - should have no accessibility violations`, async ({ page }) => {
+      feature('Accessibility Testing');
+      story('WCAG 2.1 AA Compliance');
+      severity('normal');
       await factory(page).actions.goto();
       const results = await runA11yScan(page);
       if (results.violations.length > 0) {

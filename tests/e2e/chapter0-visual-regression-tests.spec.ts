@@ -1,5 +1,6 @@
 import { expect, test } from '../../fixtures/page-fixtures';
 import { config } from '../../config/env';
+import { feature, story, severity } from 'allure-js-commons';
 const BASE_URL = config.e2eUrl;
 
 const pages = [
@@ -31,9 +32,12 @@ const pages = [
   'data-types',
 ];
 
-test.describe('visual regression', () => {
+test.describe('visual regression', { tag: ['@visual'] }, () => {
   for (const pageName of pages) {
     test(pageName, async ({ page }) => {
+      feature('Visual Regression');
+      story('Full Page Snapshots');
+      severity('normal');
       const targetUrl = `${BASE_URL}/${pageName}.html`;
 
       await page.goto(targetUrl);
@@ -42,6 +46,9 @@ test.describe('visual regression', () => {
   }
 
   test('ab-testing variation A', async ({ page }) => {
+    feature('Visual Regression');
+    story('A/B Testing Visual Variants');
+    severity('normal');
     await page.goto(`${BASE_URL}/ab-testing.html`);
     await page.evaluate(async () => {
       const content = document.querySelector<HTMLElement>('#content');
@@ -62,6 +69,9 @@ test.describe('visual regression', () => {
   });
 
   test('ab-testing variation B', async ({ page }) => {
+    feature('Visual Regression');
+    story('A/B Testing Visual Variants');
+    severity('normal');
     await page.goto(`${BASE_URL}/ab-testing.html`);
     await page.evaluate(async () => {
       const content = document.querySelector<HTMLElement>('#content');
