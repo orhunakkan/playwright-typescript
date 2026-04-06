@@ -16,16 +16,21 @@
     "test:visual:update": "docker run --rm -v .:/work -w /work -e TEST_ENV=${TEST_ENV:-dev} mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/e2e/chapter0-visual-regression-tests.spec.ts --update-snapshots",
     "report:allure:serve": "allure serve allure-results",
     "report:allure:generate": "allure generate allure-results --clean -o allure-report",
-    "report:allure:open": "allure open allure-report"
+    "report:allure:open": "allure open allure-report",
+    "test:db": "npx playwright test --project=\"DB Tests\" --workers=1",
+    "docker:up": "docker compose up -d --wait",
+    "docker:down": "docker compose down -v"
   },
   "dependencies": {
-    "dotenv": "^17.4.0"
+    "dotenv": "^17.4.0",
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.2",
+    "@types/pg": "^8.20.0",
     "@typescript-eslint/parser": "^8.58.0",
     "allure-commandline": "^2.38.1",
     "allure-playwright": "^3.6.0",

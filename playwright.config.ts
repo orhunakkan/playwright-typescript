@@ -22,6 +22,7 @@ export default defineConfig({
         environmentInfo: {
           appUrl: process.env.PRACTICE_E2E_URL,
           apiUrl: process.env.PRACTICE_API_URL,
+          postgreStUrl: process.env.POSTGREST_URL,
           environment: process.env.TEST_ENV ?? 'dev',
           node: process.versions.node,
         },
@@ -37,6 +38,13 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   projects: [
+    {
+      name: 'DB Tests',
+      testDir: './tests/db',
+      testMatch: '**/*.spec.ts',
+      use: {},
+    },
+
     {
       name: 'API Tests',
       testDir: './tests/api',
