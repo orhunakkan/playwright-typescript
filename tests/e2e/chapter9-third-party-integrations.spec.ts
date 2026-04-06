@@ -1,27 +1,21 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../fixtures/page-fixtures';
 import fs from 'fs';
-import { DownloadPage } from '../../pages/download.page';
 import { ABTestingPage } from '../../pages/ab-testing.page';
-import { DataTypesPage } from '../../pages/data-types.page';
-import { HomePage } from '../../pages/home.page';
 
 test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
   //  1. Download Files
   // ─────────────────────────────────────────────────
   test.describe('Download Files', () => {
-    test.beforeEach(async ({ page }) => {
-      const downloadPage = new DownloadPage(page);
+    test.beforeEach(async ({ downloadPage }) => {
       await downloadPage.actions.goto();
     });
 
-    test('should display the download files heading @smoke', async ({ page }) => {
-      const downloadPage = new DownloadPage(page);
+    test('should display the download files heading @smoke', async ({ downloadPage }) => {
       await expect(downloadPage.locators.heading).toBeVisible();
     });
 
-    test('should have four download links', async ({ page }) => {
-      const downloadPage = new DownloadPage(page);
+    test('should have four download links', async ({ downloadPage }) => {
       await expect(downloadPage.locators.downloadLinks).toHaveCount(4);
     });
 
@@ -41,16 +35,14 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       });
     }
 
-    test('should have correct button styling on all download links', async ({ page }) => {
-      const downloadPage = new DownloadPage(page);
+    test('should have correct button styling on all download links', async ({ downloadPage }) => {
       const count = await downloadPage.locators.downloadLinks.count();
       for (let linkIndex = 0; linkIndex < count; linkIndex++) {
         await expect(downloadPage.locators.downloadLinks.nth(linkIndex)).toHaveClass(/btn-outline-primary/);
       }
     });
 
-    test('should download the WebDriverManager PNG file @critical', async ({ page }, testInfo) => {
-      const downloadPage = new DownloadPage(page);
+    test('should download the WebDriverManager PNG file @critical', async ({ downloadPage, page }, testInfo) => {
       const downloadPromise = page.waitForEvent('download');
       await downloadPage.locators.webDriverManagerLogo.click();
       const download = await downloadPromise;
@@ -78,8 +70,7 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       });
     }
 
-    test('should verify downloaded PNG file has content', async ({ page }, testInfo) => {
-      const downloadPage = new DownloadPage(page);
+    test('should verify downloaded PNG file has content', async ({ downloadPage, page }, testInfo) => {
       const downloadPromise = page.waitForEvent('download');
       await downloadPage.locators.webDriverManagerLogo.click();
       const download = await downloadPromise;
@@ -91,8 +82,7 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       expect(stats.size).toBeGreaterThan(0);
     });
 
-    test('should verify page title and copyright', async ({ page }) => {
-      const downloadPage = new DownloadPage(page);
+    test('should verify page title and copyright', async ({ downloadPage, page }) => {
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
       await expect(downloadPage.locators.copyright).toBeAttached();
     });
@@ -102,41 +92,36 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   //  2. A/B Testing
   // ─────────────────────────────────────────────────
   test.describe('A/B Testing', () => {
-    test.beforeEach(async ({ page }) => {
-      const abPage = new ABTestingPage(page);
-      await abPage.actions.goto();
+    test.beforeEach(async ({ abTestingPage }) => {
+      await abTestingPage.actions.goto();
       // Content is loaded via jQuery AJAX — wait for it
-      await abPage.actions.waitForContent();
+      await abTestingPage.actions.waitForContent();
     });
 
-    test('should display the A/B Testing heading @smoke', async ({ page }) => {
-      const abPage = new ABTestingPage(page);
-      await expect(abPage.locators.heading).toBeVisible();
+    test('should display the A/B Testing heading @smoke', async ({ abTestingPage }) => {
+      await expect(abTestingPage.locators.heading).toBeVisible();
     });
 
-    test('should load either variation A or variation B @critical', async ({ page }) => {
-      const abPage = new ABTestingPage(page);
-      const text = await abPage.locators.contentHeading.textContent();
+    test('should load either variation A or variation B @critical', async ({ abTestingPage }) => {
+      const text = await abTestingPage.locators.contentHeading.textContent();
 
       // Must be one of the two variations
       expect(text === 'This is variation A' || text === 'This is variation B').toBe(true);
     });
 
-    test('should have a paragraph of Lorem-style text', async ({ page }) => {
-      const abPage = new ABTestingPage(page);
-      await expect(abPage.locators.contentParagraph).toBeVisible();
+    test('should have a paragraph of Lorem-style text', async ({ abTestingPage }) => {
+      await expect(abTestingPage.locators.contentParagraph).toBeVisible();
 
-      const text = await abPage.locators.contentParagraph.textContent();
+      const text = await abTestingPage.locators.contentParagraph.textContent();
       expect(text!.length).toBeGreaterThan(50);
     });
 
-    test('should load content into the #content div', async ({ page }) => {
-      const abPage = new ABTestingPage(page);
-      await expect(abPage.locators.contentDiv).toBeAttached();
+    test('should load content into the #content div', async ({ abTestingPage }) => {
+      await expect(abTestingPage.locators.contentDiv).toBeAttached();
 
       // Should contain a heading and a paragraph
-      await expect(abPage.locators.contentHeading).toBeVisible();
-      await expect(abPage.locators.contentParagraph).toBeVisible();
+      await expect(abTestingPage.locators.contentHeading).toBeVisible();
+      await expect(abTestingPage.locators.contentParagraph).toBeVisible();
     });
 
     test('should show variation A content when loaded', async ({ browser }) => {
@@ -176,10 +161,9 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       await context.close();
     });
 
-    test('should have the content div with correct id', async ({ page }) => {
-      const abPage = new ABTestingPage(page);
-      await expect(abPage.locators.contentDiv).toBeAttached();
-      await expect(abPage.locators.contentDiv).toHaveClass(/py-2/);
+    test('should have the content div with correct id', async ({ abTestingPage }) => {
+      await expect(abTestingPage.locators.contentDiv).toBeAttached();
+      await expect(abTestingPage.locators.contentDiv).toHaveClass(/py-2/);
     });
 
     test('should verify page title', async ({ page }) => {
@@ -220,114 +204,97 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   //  3. Data Types
   // ─────────────────────────────────────────────────
   test.describe('Data Types', () => {
-    test.beforeEach(async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await dataPage.actions.goto();
+    test.beforeEach(async ({ dataTypesPage }) => {
+      await dataTypesPage.actions.goto();
     });
 
-    test('should display the data types heading @smoke', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect(dataPage.locators.heading).toBeVisible();
+    test('should display the data types heading @smoke', async ({ dataTypesPage }) => {
+      await expect(dataTypesPage.locators.heading).toBeVisible();
     });
 
-    test('should have a First name input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.firstNameInput).toBeVisible();
-      await expect.soft(dataPage.locators.firstNameInput).toHaveAttribute('name', 'first-name');
-      await expect.soft(dataPage.locators.firstNameInput).toHaveAttribute('type', 'text');
+    test('should have a First name input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.firstNameInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.firstNameInput).toHaveAttribute('name', 'first-name');
+      await expect.soft(dataTypesPage.locators.firstNameInput).toHaveAttribute('type', 'text');
     });
 
-    test('should have a Last name input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.lastNameInput).toBeVisible();
-      await expect.soft(dataPage.locators.lastNameInput).toHaveAttribute('name', 'last-name');
+    test('should have a Last name input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.lastNameInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.lastNameInput).toHaveAttribute('name', 'last-name');
     });
 
-    test('should have an Address input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.addressInput).toBeVisible();
-      await expect.soft(dataPage.locators.addressInput).toHaveAttribute('name', 'address');
+    test('should have an Address input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.addressInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.addressInput).toHaveAttribute('name', 'address');
     });
 
-    test('should have a Zip code input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.zipCodeInput).toBeVisible();
-      await expect.soft(dataPage.locators.zipCodeInput).toHaveAttribute('name', 'zip-code');
+    test('should have a Zip code input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.zipCodeInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.zipCodeInput).toHaveAttribute('name', 'zip-code');
     });
 
-    test('should have a City input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.cityInput).toBeVisible();
-      await expect.soft(dataPage.locators.cityInput).toHaveAttribute('name', 'city');
+    test('should have a City input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.cityInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.cityInput).toHaveAttribute('name', 'city');
     });
 
-    test('should have a Country input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.countryInput).toBeVisible();
-      await expect.soft(dataPage.locators.countryInput).toHaveAttribute('name', 'country');
+    test('should have a Country input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.countryInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.countryInput).toHaveAttribute('name', 'country');
     });
 
-    test('should have an E-mail input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.emailInput).toBeVisible();
-      await expect.soft(dataPage.locators.emailInput).toHaveAttribute('name', 'e-mail');
-      await expect.soft(dataPage.locators.emailInput).toHaveAttribute('type', 'email');
+    test('should have an E-mail input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.emailInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.emailInput).toHaveAttribute('name', 'e-mail');
+      await expect.soft(dataTypesPage.locators.emailInput).toHaveAttribute('type', 'email');
     });
 
-    test('should have a Phone number input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.phoneInput).toBeVisible();
-      await expect.soft(dataPage.locators.phoneInput).toHaveAttribute('name', 'phone');
+    test('should have a Phone number input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.phoneInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.phoneInput).toHaveAttribute('name', 'phone');
     });
 
-    test('should have a Job position input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.jobPositionInput).toBeVisible();
-      await expect.soft(dataPage.locators.jobPositionInput).toHaveAttribute('name', 'job-position');
+    test('should have a Job position input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.jobPositionInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.jobPositionInput).toHaveAttribute('name', 'job-position');
     });
 
-    test('should have a Company input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.companyInput).toBeVisible();
-      await expect.soft(dataPage.locators.companyInput).toHaveAttribute('name', 'company');
+    test('should have a Company input', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.companyInput).toBeVisible();
+      await expect.soft(dataTypesPage.locators.companyInput).toHaveAttribute('name', 'company');
     });
 
-    test('should have a submit button', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.submitButton).toBeVisible();
-      await expect.soft(dataPage.locators.submitButton).toHaveAttribute('type', 'submit');
-      await expect.soft(dataPage.locators.submitButton).toHaveClass(/btn-outline-primary/);
+    test('should have a submit button', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.submitButton).toBeVisible();
+      await expect.soft(dataTypesPage.locators.submitButton).toHaveAttribute('type', 'submit');
+      await expect.soft(dataTypesPage.locators.submitButton).toHaveClass(/btn-outline-primary/);
     });
 
-    test('should have all 10 input fields', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect(dataPage.locators.formInputs).toHaveCount(10);
+    test('should have all 10 input fields', async ({ dataTypesPage }) => {
+      await expect(dataTypesPage.locators.formInputs).toHaveCount(10);
     });
 
-    test('should have all inputs empty initially', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.firstNameInput).toHaveValue('');
-      await expect.soft(dataPage.locators.lastNameInput).toHaveValue('');
-      await expect.soft(dataPage.locators.addressInput).toHaveValue('');
-      await expect.soft(dataPage.locators.zipCodeInput).toHaveValue('');
-      await expect.soft(dataPage.locators.cityInput).toHaveValue('');
-      await expect.soft(dataPage.locators.countryInput).toHaveValue('');
-      await expect.soft(dataPage.locators.emailInput).toHaveValue('');
-      await expect.soft(dataPage.locators.phoneInput).toHaveValue('');
-      await expect.soft(dataPage.locators.jobPositionInput).toHaveValue('');
-      await expect.soft(dataPage.locators.companyInput).toHaveValue('');
+    test('should have all inputs empty initially', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.firstNameInput).toHaveValue('');
+      await expect.soft(dataTypesPage.locators.lastNameInput).toHaveValue('');
+      await expect.soft(dataTypesPage.locators.addressInput).toHaveValue('');
+      await expect.soft(dataTypesPage.locators.zipCodeInput).toHaveValue('');
+      await expect.soft(dataTypesPage.locators.cityInput).toHaveValue('');
+      await expect.soft(dataTypesPage.locators.countryInput).toHaveValue('');
+      await expect.soft(dataTypesPage.locators.emailInput).toHaveValue('');
+      await expect.soft(dataTypesPage.locators.phoneInput).toHaveValue('');
+      await expect.soft(dataTypesPage.locators.jobPositionInput).toHaveValue('');
+      await expect.soft(dataTypesPage.locators.companyInput).toHaveValue('');
     });
 
-    test('should have form with correct action and method', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await expect.soft(dataPage.locators.form).toHaveAttribute('action', 'data-types-submitted.html');
-      await expect.soft(dataPage.locators.form).toHaveAttribute('method', 'get');
+    test('should have form with correct action and method', async ({ dataTypesPage }) => {
+      await expect.soft(dataTypesPage.locators.form).toHaveAttribute('action', 'data-types-submitted.html');
+      await expect.soft(dataTypesPage.locators.form).toHaveAttribute('method', 'get');
     });
 
     // --- Submission Tests ---
-    test('should show all fields as success when all data is provided @critical', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await dataPage.actions.fillAllFields({
+    test('should show all fields as success when all data is provided @critical', async ({ dataTypesPage, page }) => {
+      await dataTypesPage.actions.fillAllFields({
         firstName: 'John',
         lastName: 'Doe',
         address: '123 Main Street',
@@ -340,19 +307,18 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
         company: 'Acme Corp',
       });
 
-      await dataPage.actions.submit();
+      await dataTypesPage.actions.submit();
       await expect(page).toHaveURL(/data-types-submitted\.html/);
 
       // All fields should show alert-success
       const fieldIds = ['first-name', 'last-name', 'address', 'zip-code', 'city', 'country', 'e-mail', 'phone', 'job-position', 'company'];
       for (const id of fieldIds) {
-        await expect.soft(dataPage.locators.resultField(id)).toHaveClass(/alert-success/);
+        await expect.soft(dataTypesPage.locators.resultField(id)).toHaveClass(/alert-success/);
       }
     });
 
-    test('should display submitted values correctly', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await dataPage.actions.fillAllFields({
+    test('should display submitted values correctly', async ({ dataTypesPage }) => {
+      await dataTypesPage.actions.fillAllFields({
         firstName: 'Jane',
         lastName: 'Smith',
         address: '456 Oak Ave',
@@ -365,116 +331,109 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
         company: 'Design Co',
       });
 
-      await dataPage.actions.submit();
+      await dataTypesPage.actions.submit();
 
-      await expect.soft(dataPage.locators.resultField('first-name')).toHaveText('Jane');
-      await expect.soft(dataPage.locators.resultField('last-name')).toHaveText('Smith');
-      await expect.soft(dataPage.locators.resultField('address')).toHaveText('456 Oak Ave');
-      await expect.soft(dataPage.locators.resultField('zip-code')).toHaveText('67890');
-      await expect.soft(dataPage.locators.resultField('city')).toHaveText('Chicago');
-      await expect.soft(dataPage.locators.resultField('country')).toHaveText('Canada');
-      await expect.soft(dataPage.locators.resultField('e-mail')).toHaveText('jane@test.com');
-      await expect.soft(dataPage.locators.resultField('phone')).toHaveText('999-8888');
-      await expect.soft(dataPage.locators.resultField('job-position')).toHaveText('Designer');
-      await expect.soft(dataPage.locators.resultField('company')).toHaveText('Design Co');
+      await expect.soft(dataTypesPage.locators.resultField('first-name')).toHaveText('Jane');
+      await expect.soft(dataTypesPage.locators.resultField('last-name')).toHaveText('Smith');
+      await expect.soft(dataTypesPage.locators.resultField('address')).toHaveText('456 Oak Ave');
+      await expect.soft(dataTypesPage.locators.resultField('zip-code')).toHaveText('67890');
+      await expect.soft(dataTypesPage.locators.resultField('city')).toHaveText('Chicago');
+      await expect.soft(dataTypesPage.locators.resultField('country')).toHaveText('Canada');
+      await expect.soft(dataTypesPage.locators.resultField('e-mail')).toHaveText('jane@test.com');
+      await expect.soft(dataTypesPage.locators.resultField('phone')).toHaveText('999-8888');
+      await expect.soft(dataTypesPage.locators.resultField('job-position')).toHaveText('Designer');
+      await expect.soft(dataTypesPage.locators.resultField('company')).toHaveText('Design Co');
     });
 
-    test('should show all fields as danger when submitted empty', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await dataPage.actions.submit();
+    test('should show all fields as danger when submitted empty', async ({ dataTypesPage, page }) => {
+      await dataTypesPage.actions.submit();
       await expect(page).toHaveURL(/data-types-submitted\.html/);
 
       // All fields should show alert-danger with N/A
       const fieldIds = ['first-name', 'last-name', 'address', 'zip-code', 'city', 'country', 'e-mail', 'phone', 'job-position', 'company'];
       for (const id of fieldIds) {
-        await expect.soft(dataPage.locators.resultField(id)).toHaveClass(/alert-danger/);
-        await expect.soft(dataPage.locators.resultField(id)).toHaveText('N/A');
+        await expect.soft(dataTypesPage.locators.resultField(id)).toHaveClass(/alert-danger/);
+        await expect.soft(dataTypesPage.locators.resultField(id)).toHaveText('N/A');
       }
     });
 
-    test('should show mixed success and danger for partial data', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
+    test('should show mixed success and danger for partial data', async ({ dataTypesPage }) => {
       // Fill only some fields
-      await dataPage.locators.firstNameInput.fill('Alice');
-      await dataPage.locators.zipCodeInput.fill('11111');
-      await dataPage.locators.emailInput.fill('alice@example.com');
+      await dataTypesPage.locators.firstNameInput.fill('Alice');
+      await dataTypesPage.locators.zipCodeInput.fill('11111');
+      await dataTypesPage.locators.emailInput.fill('alice@example.com');
 
-      await dataPage.actions.submit();
+      await dataTypesPage.actions.submit();
 
       // Filled fields should be success
-      await expect.soft(dataPage.locators.resultField('first-name')).toHaveClass(/alert-success/);
-      await expect.soft(dataPage.locators.resultField('first-name')).toHaveText('Alice');
-      await expect.soft(dataPage.locators.resultField('zip-code')).toHaveClass(/alert-success/);
-      await expect.soft(dataPage.locators.resultField('e-mail')).toHaveClass(/alert-success/);
+      await expect.soft(dataTypesPage.locators.resultField('first-name')).toHaveClass(/alert-success/);
+      await expect.soft(dataTypesPage.locators.resultField('first-name')).toHaveText('Alice');
+      await expect.soft(dataTypesPage.locators.resultField('zip-code')).toHaveClass(/alert-success/);
+      await expect.soft(dataTypesPage.locators.resultField('e-mail')).toHaveClass(/alert-success/);
 
       // Empty fields should be danger
-      await expect.soft(dataPage.locators.resultField('last-name')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('last-name')).toHaveText('N/A');
-      await expect.soft(dataPage.locators.resultField('address')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('city')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('country')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('phone')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('job-position')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('company')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('last-name')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('last-name')).toHaveText('N/A');
+      await expect.soft(dataTypesPage.locators.resultField('address')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('city')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('country')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('phone')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('job-position')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('company')).toHaveClass(/alert-danger/);
     });
 
-    test('should include query parameters in the submitted URL', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await dataPage.locators.firstNameInput.fill('Test');
-      await dataPage.locators.lastNameInput.fill('User');
+    test('should include query parameters in the submitted URL', async ({ dataTypesPage, page }) => {
+      await dataTypesPage.locators.firstNameInput.fill('Test');
+      await dataTypesPage.locators.lastNameInput.fill('User');
 
-      await dataPage.actions.submit();
+      await dataTypesPage.actions.submit();
 
       await expect(page).toHaveURL(/first-name=Test/);
       await expect(page).toHaveURL(/last-name=User/);
     });
 
-    test('should handle special characters in input', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await dataPage.locators.firstNameInput.fill("O'Brien");
-      await dataPage.locators.addressInput.fill('123 Main St, Apt #4');
+    test('should handle special characters in input', async ({ dataTypesPage }) => {
+      await dataTypesPage.locators.firstNameInput.fill("O'Brien");
+      await dataTypesPage.locators.addressInput.fill('123 Main St, Apt #4');
 
-      await dataPage.actions.submit();
+      await dataTypesPage.actions.submit();
 
-      await expect.soft(dataPage.locators.resultField('first-name')).toHaveClass(/alert-success/);
-      await expect.soft(dataPage.locators.resultField('first-name')).toHaveText("O'Brien");
-      await expect.soft(dataPage.locators.resultField('address')).toHaveClass(/alert-success/);
-      await expect.soft(dataPage.locators.resultField('address')).toHaveText('123 Main St, Apt #4');
+      await expect.soft(dataTypesPage.locators.resultField('first-name')).toHaveClass(/alert-success/);
+      await expect.soft(dataTypesPage.locators.resultField('first-name')).toHaveText("O'Brien");
+      await expect.soft(dataTypesPage.locators.resultField('address')).toHaveClass(/alert-success/);
+      await expect.soft(dataTypesPage.locators.resultField('address')).toHaveText('123 Main St, Apt #4');
     });
 
-    test('should preserve the Data types heading on submitted page', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
-      await dataPage.actions.submit();
-      await expect(dataPage.locators.heading).toBeVisible();
+    test('should preserve the Data types heading on submitted page', async ({ dataTypesPage }) => {
+      await dataTypesPage.actions.submit();
+      await expect(dataTypesPage.locators.heading).toBeVisible();
     });
 
-    test('should verify page title and copyright', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
+    test('should verify page title and copyright', async ({ dataTypesPage, page }) => {
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(dataPage.locators.copyright).toBeAttached();
+      await expect(dataTypesPage.locators.copyright).toBeAttached();
     });
 
-    test('should submit with only email filled and verify email field is success', async ({ page }) => {
-      const dataPage = new DataTypesPage(page);
+    test('should submit with only email filled and verify email field is success', async ({ dataTypesPage }) => {
       // Fill only the email field
-      await dataPage.locators.emailInput.fill('test@example.com');
+      await dataTypesPage.locators.emailInput.fill('test@example.com');
 
-      await dataPage.actions.submit();
+      await dataTypesPage.actions.submit();
 
       // Email should be success
-      await expect.soft(dataPage.locators.resultField('e-mail')).toHaveClass(/alert-success/);
-      await expect.soft(dataPage.locators.resultField('e-mail')).toHaveText('test@example.com');
+      await expect.soft(dataTypesPage.locators.resultField('e-mail')).toHaveClass(/alert-success/);
+      await expect.soft(dataTypesPage.locators.resultField('e-mail')).toHaveText('test@example.com');
 
       // All other fields should be danger
-      await expect.soft(dataPage.locators.resultField('first-name')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('last-name')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('address')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('city')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('zip-code')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('country')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('phone')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('job-position')).toHaveClass(/alert-danger/);
-      await expect.soft(dataPage.locators.resultField('company')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('first-name')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('last-name')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('address')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('city')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('zip-code')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('country')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('phone')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('job-position')).toHaveClass(/alert-danger/);
+      await expect.soft(dataTypesPage.locators.resultField('company')).toHaveClass(/alert-danger/);
     });
   });
 
@@ -482,14 +441,12 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   //  Index Page - Chapter 9 Links
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 9 Links', () => {
-    test('should display the Chapter 9 section heading', async ({ page }) => {
-      const homePage = new HomePage(page);
+    test('should display the Chapter 9 section heading', async ({ homePage }) => {
       await homePage.actions.goto();
       await expect(homePage.locators.chapter9Heading).toBeVisible();
     });
 
-    test('should have all Chapter 9 links', async ({ page }) => {
-      const homePage = new HomePage(page);
+    test('should have all Chapter 9 links', async ({ homePage }) => {
       await homePage.actions.goto();
 
       await expect.soft(homePage.locators.chapterLink('Download files')).toBeVisible();
@@ -497,8 +454,7 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
       await expect.soft(homePage.locators.chapterLink('Data types')).toBeVisible();
     });
 
-    test('should navigate to each Chapter 9 page and back', async ({ page }) => {
-      const homePage = new HomePage(page);
+    test('should navigate to each Chapter 9 page and back', async ({ homePage, page }) => {
       const links = [
         { name: 'Download files', url: 'download.html' },
         { name: 'A/B Testing', url: 'ab-testing.html' },

@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '../../fixtures/page-fixtures';
+import type { Page } from '@playwright/test';
 import { ABTestingPage } from '../../pages/ab-testing.page';
 import { ConsoleLogsPage } from '../../pages/console-logs.page';
 import { CookiesPage } from '../../pages/cookies.page';

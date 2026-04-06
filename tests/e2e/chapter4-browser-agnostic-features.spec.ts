@@ -1,13 +1,4 @@
-import { expect, test } from '@playwright/test';
-import { LongPage } from '../../pages/long-page.page';
-import { InfiniteScrollPage } from '../../pages/infinite-scroll.page';
-import { ShadowDomPage } from '../../pages/shadow-dom.page';
-import { CookiesPage } from '../../pages/cookies.page';
-import { FramesPage } from '../../pages/frames.page';
-import { IframesPage } from '../../pages/iframes.page';
-import { DialogBoxesPage } from '../../pages/dialog-boxes.page';
-import { WebStoragePage } from '../../pages/web-storage.page';
-import { HomePage } from '../../pages/home.page';
+import { expect, test } from '../../fixtures/page-fixtures';
 import { config } from '../../config/env';
 
 const BASE_URL = config.e2eUrl;
@@ -17,20 +8,17 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   //  1. Long Page
   // ─────────────────────────────────────────────────
   test.describe('Long Page', () => {
-    let longPage: LongPage;
-
-    test.beforeEach(async ({ page }) => {
-      longPage = new LongPage(page);
+    test.beforeEach(async ({ longPage }) => {
       await longPage.actions.goto();
       // Content is loaded via jQuery AJAX — wait for it
       await longPage.actions.waitForContent();
     });
 
-    test('should display the long page heading @smoke', async () => {
+    test('should display the long page heading @smoke', async ({ longPage }) => {
       await expect(longPage.locators.heading).toBeVisible();
     });
 
-    test('should contain multiple paragraphs of Lorem Ipsum text', async () => {
+    test('should contain multiple paragraphs of Lorem Ipsum text', async ({ longPage }) => {
       const count = await longPage.locators.contentParagraphs.count();
       expect(count).toBeGreaterThanOrEqual(20);
     });
@@ -41,7 +29,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(scrollHeight).toBeGreaterThan(viewportHeight);
     });
 
-    test('should scroll to the bottom of the page @critical', async ({ page }) => {
+    test('should scroll to the bottom of the page @critical', async ({ longPage, page }) => {
       // Footer should not be in viewport initially
       await expect(longPage.locators.footer).not.toBeInViewport();
 
@@ -52,7 +40,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(longPage.locators.footer).toBeInViewport();
     });
 
-    test('should scroll to a specific paragraph and verify visibility', async () => {
+    test('should scroll to a specific paragraph and verify visibility', async ({ longPage }) => {
       const lastParagraph = longPage.locators.contentParagraphs.last();
       await expect(lastParagraph).not.toBeInViewport();
 
@@ -60,7 +48,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(lastParagraph).toBeInViewport();
     });
 
-    test('should scroll down and back to the top', async ({ page }) => {
+    test('should scroll down and back to the top', async ({ longPage, page }) => {
       await expect(longPage.locators.heading).toBeInViewport();
 
       // Scroll to bottom
@@ -72,7 +60,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(longPage.locators.heading).toBeInViewport();
     });
 
-    test('should scroll using keyboard (End key)', async ({ page }) => {
+    test('should scroll using keyboard (End key)', async ({ longPage, page }) => {
       await expect(longPage.locators.footer).not.toBeInViewport();
 
       await page.keyboard.press('End');
@@ -104,65 +92,62 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   //  2. Infinite Scroll
   // ─────────────────────────────────────────────────
   test.describe('Infinite Scroll', () => {
-    let infiniteScroll: InfiniteScrollPage;
-
-    test.beforeEach(async ({ page }) => {
-      infiniteScroll = new InfiniteScrollPage(page);
-      await infiniteScroll.actions.goto();
+    test.beforeEach(async ({ infiniteScrollPage }) => {
+      await infiniteScrollPage.actions.goto();
     });
 
-    test('should display the infinite scroll heading @smoke', async () => {
-      await expect(infiniteScroll.locators.heading).toBeVisible();
+    test('should display the infinite scroll heading @smoke', async ({ infiniteScrollPage }) => {
+      await expect(infiniteScrollPage.locators.heading).toBeVisible();
     });
 
-    test('should have initial content loaded', async () => {
+    test('should have initial content loaded', async ({ infiniteScrollPage }) => {
       // Content is loaded via AJAX — wait for it to appear
-      await infiniteScroll.locators.contentParagraphs.first().waitFor();
-      const initialCount = await infiniteScroll.locators.contentParagraphs.count();
+      await infiniteScrollPage.locators.contentParagraphs.first().waitFor();
+      const initialCount = await infiniteScrollPage.locators.contentParagraphs.count();
       expect(initialCount).toBeGreaterThanOrEqual(1);
     });
 
-    test('should load more content when scrolling to bottom @critical', async () => {
+    test('should load more content when scrolling to bottom @critical', async ({ infiniteScrollPage }) => {
       // Count initial paragraphs
-      const initialCount = await infiniteScroll.locators.contentParagraphs.count();
+      const initialCount = await infiniteScrollPage.locators.contentParagraphs.count();
 
       // Scroll to the bottom to trigger infinite scroll
-      await infiniteScroll.actions.scrollToBottom();
+      await infiniteScrollPage.actions.scrollToBottom();
       // Wait for new content to load via AJAX
-      await expect(infiniteScroll.locators.contentParagraphs).not.toHaveCount(initialCount);
+      await expect(infiniteScrollPage.locators.contentParagraphs).not.toHaveCount(initialCount);
 
-      const midCount = await infiniteScroll.locators.contentParagraphs.count();
+      const midCount = await infiniteScrollPage.locators.contentParagraphs.count();
 
       // Scroll again to ensure more content loads
-      await infiniteScroll.actions.scrollToBottom();
-      await expect(infiniteScroll.locators.contentParagraphs).not.toHaveCount(midCount);
+      await infiniteScrollPage.actions.scrollToBottom();
+      await expect(infiniteScrollPage.locators.contentParagraphs).not.toHaveCount(midCount);
 
       // Should have more paragraphs now
-      const newCount = await infiniteScroll.locators.contentParagraphs.count();
+      const newCount = await infiniteScrollPage.locators.contentParagraphs.count();
       expect(newCount).toBeGreaterThan(initialCount);
     });
 
-    test('should increase page height after scrolling', async ({ page }) => {
+    test('should increase page height after scrolling', async ({ infiniteScrollPage, page }) => {
       const initialHeight = await page.evaluate(() => document.documentElement.scrollHeight);
 
       // Scroll to bottom
-      await infiniteScroll.actions.scrollToBottom();
+      await infiniteScrollPage.actions.scrollToBottom();
       await page.waitForFunction((prevHeight) => document.documentElement.scrollHeight > prevHeight, initialHeight);
 
       const newHeight = await page.evaluate(() => document.documentElement.scrollHeight);
       expect(newHeight).toBeGreaterThan(initialHeight);
     });
 
-    test('should load content multiple times on successive scrolls', async () => {
+    test('should load content multiple times on successive scrolls', async ({ infiniteScrollPage }) => {
       // Scroll multiple times
       for (let scrollAttempt = 0; scrollAttempt < 3; scrollAttempt++) {
-        const countBefore = await infiniteScroll.locators.contentParagraphs.count();
-        await infiniteScroll.actions.scrollToBottom();
-        await expect(infiniteScroll.locators.contentParagraphs).not.toHaveCount(countBefore);
+        const countBefore = await infiniteScrollPage.locators.contentParagraphs.count();
+        await infiniteScrollPage.actions.scrollToBottom();
+        await expect(infiniteScrollPage.locators.contentParagraphs).not.toHaveCount(countBefore);
       }
 
       // Should have significantly more paragraphs
-      const finalCount = await infiniteScroll.locators.contentParagraphs.count();
+      const finalCount = await infiniteScrollPage.locators.contentParagraphs.count();
       expect(finalCount).toBeGreaterThanOrEqual(40);
     });
   });
@@ -171,28 +156,25 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   //  3. Shadow DOM
   // ─────────────────────────────────────────────────
   test.describe('Shadow DOM', () => {
-    let shadowDom: ShadowDomPage;
-
-    test.beforeEach(async ({ page }) => {
-      shadowDom = new ShadowDomPage(page);
-      await shadowDom.actions.goto();
+    test.beforeEach(async ({ shadowDomPage }) => {
+      await shadowDomPage.actions.goto();
     });
 
-    test('should display the Shadow DOM heading @smoke', async () => {
-      await expect(shadowDom.locators.heading).toBeVisible();
+    test('should display the Shadow DOM heading @smoke', async ({ shadowDomPage }) => {
+      await expect(shadowDomPage.locators.heading).toBeVisible();
     });
 
-    test('should access text inside shadow DOM', async () => {
+    test('should access text inside shadow DOM', async ({ shadowDomPage }) => {
       // Playwright automatically pierces open shadow DOMs with getByText
-      await expect(shadowDom.locators.helloText).toBeVisible();
+      await expect(shadowDomPage.locators.helloText).toBeVisible();
     });
 
-    test('should locate shadow DOM content via locator @critical', async () => {
+    test('should locate shadow DOM content via locator @critical', async ({ shadowDomPage }) => {
       // Using the content div that hosts the shadow root
-      await expect(shadowDom.locators.shadowContent).toBeAttached();
+      await expect(shadowDomPage.locators.shadowContent).toBeAttached();
 
       // Playwright pierces shadow DOM automatically
-      await expect(shadowDom.locators.shadowParagraph).toHaveText('Hello Shadow DOM');
+      await expect(shadowDomPage.locators.shadowParagraph).toHaveText('Hello Shadow DOM');
     });
 
     test('should verify shadow root is open mode', async ({ page }) => {
@@ -224,22 +206,19 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   //  4. Cookies
   // ─────────────────────────────────────────────────
   test.describe('Cookies', () => {
-    let cookiesPage: CookiesPage;
-
-    test.beforeEach(async ({ page }) => {
-      cookiesPage = new CookiesPage(page);
+    test.beforeEach(async ({ cookiesPage }) => {
       await cookiesPage.actions.goto();
     });
 
-    test('should display the cookies heading @smoke', async () => {
+    test('should display the cookies heading @smoke', async ({ cookiesPage }) => {
       await expect(cookiesPage.locators.heading).toBeVisible();
     });
 
-    test('should have "Display cookies" button', async () => {
+    test('should have "Display cookies" button', async ({ cookiesPage }) => {
       await expect(cookiesPage.locators.displayCookiesButton).toBeVisible();
     });
 
-    test('should display cookies when button is clicked', async () => {
+    test('should display cookies when button is clicked', async ({ cookiesPage }) => {
       await expect(cookiesPage.locators.cookiesList).toHaveText('');
 
       await cookiesPage.actions.displayCookies();
@@ -260,7 +239,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(dateCookie?.value).toBe('10/07/2018');
     });
 
-    test('should add a new cookie and verify it appears @critical', async ({ page, context }) => {
+    test('should add a new cookie and verify it appears @critical', async ({ cookiesPage, page, context }) => {
       // Add a custom cookie via Playwright API
       await context.addCookies([
         {
@@ -347,10 +326,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   //  5. Frames (frameset)
   // ─────────────────────────────────────────────────
   test.describe('Frames', () => {
-    let framesPage: FramesPage;
-
-    test.beforeEach(async ({ page }) => {
-      framesPage = new FramesPage(page);
+    test.beforeEach(async ({ framesPage }) => {
       await framesPage.actions.goto();
     });
 
@@ -365,7 +341,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(frames.length).toBeGreaterThanOrEqual(4);
     });
 
-    test('should access the header frame content', async () => {
+    test('should access the header frame content', async ({ framesPage }) => {
       const headerFrame = framesPage.locators.headerFrame();
       expect(headerFrame).not.toBeNull();
 
@@ -373,7 +349,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(heading).toHaveText('Frames');
     });
 
-    test('should access the body frame with Lorem Ipsum content', async () => {
+    test('should access the body frame with Lorem Ipsum content', async ({ framesPage }) => {
       const bodyFrame = framesPage.locators.bodyFrame();
       expect(bodyFrame).not.toBeNull();
 
@@ -390,7 +366,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(firstParagraph).toContainText('Lorem ipsum');
     });
 
-    test('should access the footer frame content', async () => {
+    test('should access the footer frame content', async ({ framesPage }) => {
       const footerFrame = framesPage.locators.footerFrame();
       expect(footerFrame).not.toBeNull();
 
@@ -398,7 +374,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(footerFrame!.getByRole('link', { name: 'Boni García' })).toBeVisible();
     });
 
-    test('should verify frame sources', async () => {
+    test('should verify frame sources', async ({ framesPage }) => {
       const headerFrame = framesPage.locators.headerFrame();
       const bodyFrame = framesPage.locators.bodyFrame();
       const footerFrame = framesPage.locators.footerFrame();
@@ -408,7 +384,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(footerFrame?.url()).toContain('footer.html');
     });
 
-    test('should interact with content across frames @critical', async () => {
+    test('should interact with content across frames @critical', async ({ framesPage }) => {
       // Verify heading in header frame
       const headerFrame = framesPage.locators.headerFrame();
       const heading = headerFrame!.locator('h1.display-4');
@@ -425,28 +401,25 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   //  6. IFrames
   // ─────────────────────────────────────────────────
   test.describe('IFrames', () => {
-    let iframesPage: IframesPage;
-
-    test.beforeEach(async ({ page }) => {
-      iframesPage = new IframesPage(page);
+    test.beforeEach(async ({ iframesPage }) => {
       await iframesPage.actions.goto();
     });
 
-    test('should display the IFrame heading @smoke', async () => {
+    test('should display the IFrame heading @smoke', async ({ iframesPage }) => {
       await expect(iframesPage.locators.heading).toBeVisible();
     });
 
-    test('should have an iframe element on the page', async () => {
+    test('should have an iframe element on the page', async ({ iframesPage }) => {
       await expect(iframesPage.locators.iframe).toBeAttached();
       await expect(iframesPage.locators.iframe).toHaveAttribute('src', 'content.html');
     });
 
-    test('should access iframe content using frameLocator @critical', async () => {
+    test('should access iframe content using frameLocator @critical', async ({ iframesPage }) => {
       const firstParagraph = iframesPage.locators.iframeContent.locator('p').first();
       await expect(firstParagraph).toContainText('Lorem ipsum');
     });
 
-    test('should count paragraphs inside the iframe', async () => {
+    test('should count paragraphs inside the iframe', async ({ iframesPage }) => {
       // Wait for iframe content to load
       await iframesPage.locators.iframeContent.locator('p').first().waitFor();
       const paragraphs = iframesPage.locators.iframeContent.locator('p');
@@ -454,7 +427,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(count).toBeGreaterThanOrEqual(10);
     });
 
-    test('should access specific paragraphs inside the iframe', async () => {
+    test('should access specific paragraphs inside the iframe', async ({ iframesPage }) => {
       // First paragraph starts with Lorem ipsum
       const firstParagraph = iframesPage.locators.iframeContent.locator('p').first();
       await expect(firstParagraph).toContainText('Lorem ipsum dolor sit amet');
@@ -465,7 +438,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(text!.length).toBeGreaterThan(0);
     });
 
-    test('should verify iframe dimensions via attribute', async () => {
+    test('should verify iframe dimensions via attribute', async ({ iframesPage }) => {
       // The iframe should be rendered with visible dimensions
       const box = await iframesPage.locators.iframe.boundingBox();
       expect(box).not.toBeNull();
@@ -473,7 +446,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(box!.height).toBeGreaterThan(0);
     });
 
-    test('should access iframe via frame() method', async ({ page }) => {
+    test('should access iframe via frame() method', async ({ iframesPage, page }) => {
       // Wait for iframe to load, then access via frame()
       await iframesPage.locators.iframe.waitFor();
       const contentFrame = page.frame({ url: /content/ });
@@ -488,7 +461,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(count).toBeGreaterThanOrEqual(10);
     });
 
-    test('should distinguish between main page and iframe content', async () => {
+    test('should distinguish between main page and iframe content', async ({ iframesPage }) => {
       // Main page heading should be visible
       await expect(iframesPage.locators.heading).toBeVisible();
 
@@ -505,26 +478,23 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   //  7. Dialog Boxes
   // ─────────────────────────────────────────────────
   test.describe('Dialog Boxes', () => {
-    let dialogPage: DialogBoxesPage;
-
-    test.beforeEach(async ({ page }) => {
-      dialogPage = new DialogBoxesPage(page);
-      await dialogPage.actions.goto();
+    test.beforeEach(async ({ dialogBoxesPage }) => {
+      await dialogBoxesPage.actions.goto();
     });
 
-    test('should display the dialog boxes heading @smoke', async () => {
-      await expect(dialogPage.locators.heading).toBeVisible();
+    test('should display the dialog boxes heading @smoke', async ({ dialogBoxesPage }) => {
+      await expect(dialogBoxesPage.locators.heading).toBeVisible();
     });
 
-    test('should have all dialog trigger buttons', async () => {
-      await expect.soft(dialogPage.locators.launchAlertButton).toBeVisible();
-      await expect.soft(dialogPage.locators.launchConfirmButton).toBeVisible();
-      await expect.soft(dialogPage.locators.launchPromptButton).toBeVisible();
-      await expect.soft(dialogPage.locators.launchModalButton).toBeVisible();
+    test('should have all dialog trigger buttons', async ({ dialogBoxesPage }) => {
+      await expect.soft(dialogBoxesPage.locators.launchAlertButton).toBeVisible();
+      await expect.soft(dialogBoxesPage.locators.launchConfirmButton).toBeVisible();
+      await expect.soft(dialogBoxesPage.locators.launchPromptButton).toBeVisible();
+      await expect.soft(dialogBoxesPage.locators.launchModalButton).toBeVisible();
     });
 
     // --- Alert Dialog ---
-    test('should handle alert dialog and accept it @critical', async ({ page }) => {
+    test('should handle alert dialog and accept it @critical', async ({ dialogBoxesPage, page }) => {
       // Register dialog handler BEFORE the click so the dialog is handled inline
       let dialogType = '';
       let dialogMessage = '';
@@ -534,14 +504,14 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
         await dialog.accept();
       });
 
-      await dialogPage.actions.launchAlert();
+      await dialogBoxesPage.actions.launchAlert();
 
       expect(dialogType).toBe('alert');
       expect(dialogMessage).toBe('Hello world!');
     });
 
     // --- Confirm Dialog ---
-    test('should handle confirm dialog - accept @critical', async ({ page }) => {
+    test('should handle confirm dialog - accept @critical', async ({ dialogBoxesPage, page }) => {
       let dialogType = '';
       let dialogMessage = '';
       page.once('dialog', async (dialog) => {
@@ -550,32 +520,32 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
         await dialog.accept();
       });
 
-      await dialogPage.actions.launchConfirm();
+      await dialogBoxesPage.actions.launchConfirm();
 
       expect(dialogType).toBe('confirm');
       expect(dialogMessage).toBe('Is this correct?');
 
       // Verify confirmation text
-      await expect(dialogPage.locators.confirmText).toHaveText('You chose: true');
+      await expect(dialogBoxesPage.locators.confirmText).toHaveText('You chose: true');
     });
 
-    test('should handle confirm dialog - dismiss', async ({ page }) => {
+    test('should handle confirm dialog - dismiss', async ({ dialogBoxesPage, page }) => {
       let dialogType = '';
       page.once('dialog', async (dialog) => {
         dialogType = dialog.type();
         await dialog.dismiss();
       });
 
-      await dialogPage.actions.launchConfirm();
+      await dialogBoxesPage.actions.launchConfirm();
 
       expect(dialogType).toBe('confirm');
 
       // Verify dismiss text
-      await expect(dialogPage.locators.confirmText).toHaveText('You chose: false');
+      await expect(dialogBoxesPage.locators.confirmText).toHaveText('You chose: false');
     });
 
     // --- Prompt Dialog ---
-    test('should handle prompt dialog with text input @critical', async ({ page }) => {
+    test('should handle prompt dialog with text input @critical', async ({ dialogBoxesPage, page }) => {
       let dialogType = '';
       let dialogMessage = '';
       page.once('dialog', async (dialog) => {
@@ -584,94 +554,94 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
         await dialog.accept('Playwright User');
       });
 
-      await dialogPage.actions.launchPrompt();
+      await dialogBoxesPage.actions.launchPrompt();
 
       expect(dialogType).toBe('prompt');
       expect(dialogMessage).toBe('Please enter your name');
 
       // Verify prompt result text
-      await expect(dialogPage.locators.promptText).toHaveText('You typed: Playwright User');
+      await expect(dialogBoxesPage.locators.promptText).toHaveText('You typed: Playwright User');
     });
 
-    test('should handle prompt dialog - dismiss (cancel)', async ({ page }) => {
+    test('should handle prompt dialog - dismiss (cancel)', async ({ dialogBoxesPage, page }) => {
       page.once('dialog', async (dialog) => {
         await dialog.dismiss();
       });
 
-      await dialogPage.actions.launchPrompt();
+      await dialogBoxesPage.actions.launchPrompt();
 
       // When dismissed, prompt returns null
-      await expect(dialogPage.locators.promptText).toHaveText('You typed: null');
+      await expect(dialogBoxesPage.locators.promptText).toHaveText('You typed: null');
     });
 
-    test('should handle prompt dialog with empty input', async ({ page }) => {
+    test('should handle prompt dialog with empty input', async ({ dialogBoxesPage, page }) => {
       page.once('dialog', async (dialog) => {
         await dialog.accept('');
       });
 
-      await dialogPage.actions.launchPrompt();
+      await dialogBoxesPage.actions.launchPrompt();
 
       // Empty string accepted
-      await expect(dialogPage.locators.promptText).toHaveText('You typed: ');
+      await expect(dialogBoxesPage.locators.promptText).toHaveText('You typed: ');
     });
 
     // --- Modal Dialog ---
-    test('should open modal and verify its content', async () => {
-      await dialogPage.actions.launchModal();
+    test('should open modal and verify its content', async ({ dialogBoxesPage }) => {
+      await dialogBoxesPage.actions.launchModal();
 
       // Verify modal elements are visible
-      await expect(dialogPage.locators.modal).toBeVisible();
-      await expect.soft(dialogPage.locators.modalTitle).toBeVisible();
-      await expect.soft(dialogPage.locators.modalBodyText).toBeVisible();
-      await expect.soft(dialogPage.locators.closeButton).toBeVisible();
-      await expect.soft(dialogPage.locators.saveChangesButton).toBeVisible();
+      await expect(dialogBoxesPage.locators.modal).toBeVisible();
+      await expect.soft(dialogBoxesPage.locators.modalTitle).toBeVisible();
+      await expect.soft(dialogBoxesPage.locators.modalBodyText).toBeVisible();
+      await expect.soft(dialogBoxesPage.locators.closeButton).toBeVisible();
+      await expect.soft(dialogBoxesPage.locators.saveChangesButton).toBeVisible();
     });
 
-    test('should close modal by clicking Close button', async () => {
-      await dialogPage.actions.launchModal();
-      await expect(dialogPage.locators.modal).toBeVisible();
+    test('should close modal by clicking Close button', async ({ dialogBoxesPage }) => {
+      await dialogBoxesPage.actions.launchModal();
+      await expect(dialogBoxesPage.locators.modal).toBeVisible();
 
-      await dialogPage.actions.closeModal();
+      await dialogBoxesPage.actions.closeModal();
 
       // Modal should be hidden after closing
-      await expect(dialogPage.locators.modal).toBeHidden();
+      await expect(dialogBoxesPage.locators.modal).toBeHidden();
 
       // Verify the result text
-      await expect(dialogPage.locators.modalText).toHaveText('You chose: Close');
+      await expect(dialogBoxesPage.locators.modalText).toHaveText('You chose: Close');
     });
 
-    test('should close modal by clicking Save changes button', async () => {
-      await dialogPage.actions.launchModal();
-      await expect(dialogPage.locators.modal).toBeVisible();
+    test('should close modal by clicking Save changes button', async ({ dialogBoxesPage }) => {
+      await dialogBoxesPage.actions.launchModal();
+      await expect(dialogBoxesPage.locators.modal).toBeVisible();
 
-      await dialogPage.actions.saveModal();
+      await dialogBoxesPage.actions.saveModal();
 
-      await expect(dialogPage.locators.modal).toBeHidden();
+      await expect(dialogBoxesPage.locators.modal).toBeHidden();
 
       // Verify the result text
-      await expect(dialogPage.locators.modalText).toHaveText('You chose: Save changes');
+      await expect(dialogBoxesPage.locators.modalText).toHaveText('You chose: Save changes');
     });
 
-    test('should verify modal title element', async () => {
-      await dialogPage.actions.launchModal();
+    test('should verify modal title element', async ({ dialogBoxesPage }) => {
+      await dialogBoxesPage.actions.launchModal();
 
-      await expect(dialogPage.locators.modalTitle).toBeVisible();
-      await expect(dialogPage.locators.modalTitle).toHaveText('Modal title');
+      await expect(dialogBoxesPage.locators.modalTitle).toBeVisible();
+      await expect(dialogBoxesPage.locators.modalTitle).toHaveText('Modal title');
     });
 
-    test('should verify prompt dialog has empty default value', async ({ page }) => {
+    test('should verify prompt dialog has empty default value', async ({ dialogBoxesPage, page }) => {
       let defaultValue = 'NOT_SET';
       page.once('dialog', async (dialog) => {
         defaultValue = dialog.defaultValue();
         await dialog.accept();
       });
 
-      await dialogPage.actions.launchPrompt();
+      await dialogBoxesPage.actions.launchPrompt();
 
       expect(defaultValue).toBe('');
     });
 
-    test('should close modal by pressing Escape key', async ({ page }) => {
+    test('should close modal by pressing Escape key', async ({ dialogBoxesPage, page }) => {
       // Set up a listener for the 'shown.bs.modal' event BEFORE opening
       await page.evaluate(() => {
         const el = document.getElementById('example-modal')!;
@@ -681,17 +651,17 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
         });
       });
 
-      await dialogPage.actions.launchModal();
+      await dialogBoxesPage.actions.launchModal();
 
       // Wait until Bootstrap's shown event fires (transition complete)
       await page.waitForFunction(() => (window as any).__modalShown === true);
 
-      await expect(dialogPage.locators.modal).toBeVisible();
+      await expect(dialogBoxesPage.locators.modal).toBeVisible();
 
       // Press Escape to dismiss the modal
       await page.keyboard.press('Escape');
 
-      await expect(dialogPage.locators.modal).toBeHidden();
+      await expect(dialogBoxesPage.locators.modal).toBeHidden();
     });
   });
 
@@ -699,27 +669,24 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   //  8. Web Storage
   // ─────────────────────────────────────────────────
   test.describe('Web Storage', () => {
-    let storagePage: WebStoragePage;
-
-    test.beforeEach(async ({ page }) => {
-      storagePage = new WebStoragePage(page);
-      await storagePage.actions.goto();
+    test.beforeEach(async ({ webStoragePage }) => {
+      await webStoragePage.actions.goto();
     });
 
-    test('should display the web storage heading @smoke', async () => {
-      await expect(storagePage.locators.heading).toBeVisible();
+    test('should display the web storage heading @smoke', async ({ webStoragePage }) => {
+      await expect(webStoragePage.locators.heading).toBeVisible();
     });
 
-    test('should have display buttons for both storage types', async () => {
-      await expect(storagePage.locators.displayLocalStorageButton).toBeVisible();
-      await expect(storagePage.locators.displaySessionStorageButton).toBeVisible();
+    test('should have display buttons for both storage types', async ({ webStoragePage }) => {
+      await expect(webStoragePage.locators.displayLocalStorageButton).toBeVisible();
+      await expect(webStoragePage.locators.displaySessionStorageButton).toBeVisible();
     });
 
     // --- Session Storage ---
-    test('should display session storage values', async () => {
-      await storagePage.actions.displaySessionStorage();
-      await expect(storagePage.locators.sessionStorageDisplay).toContainText('John');
-      await expect(storagePage.locators.sessionStorageDisplay).toContainText('Doe');
+    test('should display session storage values', async ({ webStoragePage }) => {
+      await webStoragePage.actions.displaySessionStorage();
+      await expect(webStoragePage.locators.sessionStorageDisplay).toContainText('John');
+      await expect(webStoragePage.locators.sessionStorageDisplay).toContainText('Doe');
     });
 
     test('should read session storage via Playwright evaluate', async ({ page }) => {
@@ -730,7 +697,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(sessionLastname).toBe('Doe');
     });
 
-    test('should set and read session storage items @critical', async ({ page }) => {
+    test('should set and read session storage items @critical', async ({ webStoragePage, page }) => {
       // Set a new item
       await page.evaluate(() => sessionStorage.setItem('role', 'tester'));
 
@@ -739,8 +706,8 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(role).toBe('tester');
 
       // Display and verify
-      await storagePage.actions.displaySessionStorage();
-      await expect(storagePage.locators.sessionStorageDisplay).toContainText('tester');
+      await webStoragePage.actions.displaySessionStorage();
+      await expect(webStoragePage.locators.sessionStorageDisplay).toContainText('tester');
     });
 
     test('should remove a session storage item', async ({ page }) => {
@@ -756,7 +723,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(name).toBeNull();
     });
 
-    test('should clear all session storage', async ({ page }) => {
+    test('should clear all session storage', async ({ webStoragePage, page }) => {
       // Verify items exist
       let length = await page.evaluate(() => sessionStorage.length);
       expect(length).toBeGreaterThan(0);
@@ -769,12 +736,12 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(length).toBe(0);
 
       // Verify display shows empty object
-      await storagePage.actions.displaySessionStorage();
-      await expect(storagePage.locators.sessionStorageDisplay).toContainText('{}');
+      await webStoragePage.actions.displaySessionStorage();
+      await expect(webStoragePage.locators.sessionStorageDisplay).toContainText('{}');
     });
 
     // --- Local Storage ---
-    test('should set and read local storage items @critical', async ({ page }) => {
+    test('should set and read local storage items @critical', async ({ webStoragePage, page }) => {
       // Set an item in local storage
       await page.evaluate(() => localStorage.setItem('framework', 'playwright'));
 
@@ -783,8 +750,8 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       expect(value).toBe('playwright');
 
       // Display and verify
-      await storagePage.actions.displayLocalStorage();
-      await expect(storagePage.locators.localStorageDisplay).toContainText('playwright');
+      await webStoragePage.actions.displayLocalStorage();
+      await expect(webStoragePage.locators.localStorageDisplay).toContainText('playwright');
     });
 
     test('should remove a local storage item', async ({ page }) => {
@@ -850,18 +817,15 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   //  Cross-page: Index Page Links
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 4 Links', () => {
-    let homePage: HomePage;
-
-    test.beforeEach(async ({ page }) => {
-      homePage = new HomePage(page);
+    test.beforeEach(async ({ homePage }) => {
       await homePage.actions.goto();
     });
 
-    test('should display the Chapter 4 section heading', async () => {
+    test('should display the Chapter 4 section heading', async ({ homePage }) => {
       await expect(homePage.locators.chapter4Heading).toBeVisible();
     });
 
-    test('should have all Chapter 4 links', async () => {
+    test('should have all Chapter 4 links', async ({ homePage }) => {
       const chapter4Links = ['Long page', 'Infinite scroll', 'Shadow DOM', 'Cookies', 'IFrames', 'Dialog boxes', 'Web storage'];
 
       for (const linkText of chapter4Links) {
@@ -872,7 +836,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect.soft(homePage.locators.chapterLink('Frames', { exact: true })).toBeVisible();
     });
 
-    test('should navigate to each Chapter 4 page and back', async ({ page }) => {
+    test('should navigate to each Chapter 4 page and back', async ({ homePage, page }) => {
       const chapter4Pages = [
         { name: 'Long page', url: 'long-page.html', heading: 'This is a long page' },
         { name: 'Infinite scroll', url: 'infinite-scroll.html', heading: 'Infinite scroll' },

@@ -1,10 +1,8 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../fixtures/page-fixtures';
 import { GeolocationPage } from '../../pages/geolocation.page';
 import { NotificationsPage } from '../../pages/notifications.page';
 import { GetUserMediaPage } from '../../pages/get-user-media.page';
 import { MultilanguagePage } from '../../pages/multilanguage.page';
-import { ConsoleLogsPage } from '../../pages/console-logs.page';
-import { HomePage } from '../../pages/home.page';
 import { config } from '../../config/env';
 
 const BASE_URL = config.e2eUrl;
@@ -14,84 +12,72 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  1. Geolocation
   // ─────────────────────────────────────────────────
   test.describe('Geolocation', () => {
-    test('should display the geolocation heading @smoke', async ({ page }) => {
-      const geoPage = new GeolocationPage(page);
-      await geoPage.actions.goto();
-      await expect(geoPage.locators.heading).toBeVisible();
+    test.beforeEach(async ({ geolocationPage }) => {
+      await geolocationPage.actions.goto();
     });
 
-    test('should have a "Get coordinates" button', async ({ page }) => {
-      const geoPage = new GeolocationPage(page);
-      await geoPage.actions.goto();
-      await expect(geoPage.locators.getCoordinatesButton).toBeVisible();
-      await expect(geoPage.locators.getCoordinatesButton).toHaveId('get-coordinates');
+    test('should display the geolocation heading @smoke', async ({ geolocationPage }) => {
+      await expect(geolocationPage.locators.heading).toBeVisible();
     });
 
-    test('should have an empty coordinates display initially', async ({ page }) => {
-      const geoPage = new GeolocationPage(page);
-      await geoPage.actions.goto();
-      await expect(geoPage.locators.coordinates).toBeAttached();
-      await expect(geoPage.locators.coordinates).toHaveText('');
+    test('should have a "Get coordinates" button', async ({ geolocationPage }) => {
+      await expect(geolocationPage.locators.getCoordinatesButton).toBeVisible();
+      await expect(geolocationPage.locators.getCoordinatesButton).toHaveId('get-coordinates');
     });
 
-    test('should display coordinates when geolocation is granted', async ({ context, page }) => {
+    test('should have an empty coordinates display initially', async ({ geolocationPage }) => {
+      await expect(geolocationPage.locators.coordinates).toBeAttached();
+      await expect(geolocationPage.locators.coordinates).toHaveText('');
+    });
+
+    test('should display coordinates when geolocation is granted', async ({ geolocationPage, context }) => {
       // Grant geolocation permission and set a fake position
       await context.grantPermissions(['geolocation']);
       await context.setGeolocation({ latitude: 48.8584, longitude: 2.2945 });
 
-      const geoPage = new GeolocationPage(page);
-      await geoPage.actions.goto();
-      await geoPage.actions.getCoordinates();
+      await geolocationPage.actions.getCoordinates();
 
       // Wait for coordinates to appear
-      await expect(geoPage.locators.coordinates).toContainText('Latitude');
-      await expect(geoPage.locators.coordinates).toContainText('Longitude');
+      await expect(geolocationPage.locators.coordinates).toContainText('Latitude');
+      await expect(geolocationPage.locators.coordinates).toContainText('Longitude');
     });
 
-    test('should display the correct mocked latitude and longitude @critical', async ({ context, page }) => {
+    test('should display the correct mocked latitude and longitude @critical', async ({ geolocationPage, context }) => {
       await context.grantPermissions(['geolocation']);
       await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
 
-      const geoPage = new GeolocationPage(page);
-      await geoPage.actions.goto();
-      await geoPage.actions.getCoordinates();
+      await geolocationPage.actions.getCoordinates();
 
-      await expect.soft(geoPage.locators.coordinates).toContainText('40.7128');
-      await expect.soft(geoPage.locators.coordinates).toContainText('-74.006');
+      await expect.soft(geolocationPage.locators.coordinates).toContainText('40.7128');
+      await expect.soft(geolocationPage.locators.coordinates).toContainText('-74.006');
     });
 
-    test('should update coordinates when geolocation changes', async ({ context, page }) => {
+    test('should update coordinates when geolocation changes', async ({ geolocationPage, context }) => {
       await context.grantPermissions(['geolocation']);
       await context.setGeolocation({ latitude: 51.5074, longitude: -0.1278 });
 
-      const geoPage = new GeolocationPage(page);
-      await geoPage.actions.goto();
-      await geoPage.actions.getCoordinates();
+      await geolocationPage.actions.getCoordinates();
 
-      await expect(geoPage.locators.coordinates).toContainText('51.5074');
+      await expect(geolocationPage.locators.coordinates).toContainText('51.5074');
 
       // Change geolocation and click again
       await context.setGeolocation({ latitude: 35.6762, longitude: 139.6503 });
-      await geoPage.actions.getCoordinates();
+      await geolocationPage.actions.getCoordinates();
 
-      await expect(geoPage.locators.coordinates).toContainText('35.6762');
-      await expect(geoPage.locators.coordinates).toContainText('139.6503');
+      await expect(geolocationPage.locators.coordinates).toContainText('35.6762');
+      await expect(geolocationPage.locators.coordinates).toContainText('139.6503');
     });
 
-    test('should display latitude with degree symbol', async ({ context, page }) => {
+    test('should display latitude with degree symbol', async ({ geolocationPage, context }) => {
       await context.grantPermissions(['geolocation']);
       await context.setGeolocation({ latitude: 48.8584, longitude: 2.2945 });
 
-      const geoPage = new GeolocationPage(page);
-      await geoPage.actions.goto();
-      await geoPage.actions.getCoordinates();
+      await geolocationPage.actions.getCoordinates();
 
-      await expect(geoPage.locators.coordinates).toContainText('°');
+      await expect(geolocationPage.locators.coordinates).toContainText('°');
     });
 
     test('should verify page title and copyright', async ({ page }) => {
-      const geoPage = new GeolocationPage(page);
-      await geoPage.actions.goto();
       await expect.soft(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
       await expect.soft(page.getByText('Copyright © 2021-2025')).toBeAttached();
     });
@@ -102,7 +88,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         permissions: [],
       });
       const page = await context.newPage();
-      const geoPage = new GeolocationPage(page);
+      const geolocationPage = new GeolocationPage(page);
 
       // Mock geolocation to simulate denial
       await page.addInitScript(() => {
@@ -111,11 +97,11 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         };
       });
 
-      await geoPage.actions.goto();
-      await geoPage.actions.getCoordinates();
+      await geolocationPage.actions.goto();
+      await geolocationPage.actions.getCoordinates();
 
       // Coordinates should show an error message when permission is denied
-      await expect(geoPage.locators.coordinates).toContainText('Error');
+      await expect(geolocationPage.locators.coordinates).toContainText('Error');
 
       await context.close();
     });
@@ -125,31 +111,26 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  2. Notifications
   // ─────────────────────────────────────────────────
   test.describe('Notifications', () => {
-    test('should display the notifications heading @smoke', async ({ page }) => {
-      const notifPage = new NotificationsPage(page);
-      await notifPage.actions.goto();
-      await expect(notifPage.locators.heading).toBeVisible();
+    test.beforeEach(async ({ notificationsPage }) => {
+      await notificationsPage.actions.goto();
     });
 
-    test('should have a "Notify me" button', async ({ page }) => {
-      const notifPage = new NotificationsPage(page);
-      await notifPage.actions.goto();
-      await expect.soft(notifPage.locators.notifyMeButton).toBeVisible();
-      await expect.soft(notifPage.locators.notifyMeButton).toHaveId('notify-me');
+    test('should display the notifications heading @smoke', async ({ notificationsPage }) => {
+      await expect(notificationsPage.locators.heading).toBeVisible();
     });
 
-    test('should have correct button styling', async ({ page }) => {
-      const notifPage = new NotificationsPage(page);
-      await notifPage.actions.goto();
-      await expect(notifPage.locators.notifyMeButton).toHaveClass(/btn-outline-primary/);
+    test('should have a "Notify me" button', async ({ notificationsPage }) => {
+      await expect.soft(notificationsPage.locators.notifyMeButton).toBeVisible();
+      await expect.soft(notificationsPage.locators.notifyMeButton).toHaveId('notify-me');
+    });
+
+    test('should have correct button styling', async ({ notificationsPage }) => {
+      await expect(notificationsPage.locators.notifyMeButton).toHaveClass(/btn-outline-primary/);
     });
 
     test('should trigger notification when permission is granted @critical', async ({ context, page }) => {
       // Grant notification permission
       await context.grantPermissions(['notifications']);
-
-      const notifPage = new NotificationsPage(page);
-      await notifPage.actions.goto();
 
       // Mock the Notification constructor to track it was called
       const notificationFired = await page.evaluate(() => {
@@ -174,9 +155,6 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should create notification with correct title and body', async ({ context, page }) => {
       await context.grantPermissions(['notifications']);
 
-      const notifPage = new NotificationsPage(page);
-      await notifPage.actions.goto();
-
       // Mock Notification to capture its arguments
       const notificationData = await page.evaluate(() => {
         return new Promise<{ title: string; body: string; icon: string }>((resolve) => {
@@ -197,8 +175,6 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     });
 
     test('should verify page has copyright footer', async ({ page }) => {
-      const notifPage = new NotificationsPage(page);
-      await notifPage.actions.goto();
       await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
       await expect(page.getByRole('link', { name: 'Boni García' })).toBeVisible();
     });
@@ -206,7 +182,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should handle notification permission denied', async ({ browser }) => {
       const context = await browser.newContext();
       const page = await context.newPage();
-      const notifPage = new NotificationsPage(page);
+      const notificationsPage = new NotificationsPage(page);
 
       // Mock Notification.permission as 'denied'
       await page.addInitScript(() => {
@@ -219,11 +195,11 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         });
       });
 
-      await notifPage.actions.goto();
-      await notifPage.actions.clickNotifyMe();
+      await notificationsPage.actions.goto();
+      await notificationsPage.actions.clickNotifyMe();
 
       // No notification should be created — page should remain unchanged
-      await expect(notifPage.locators.heading).toBeVisible();
+      await expect(notificationsPage.locators.heading).toBeVisible();
 
       await context.close();
     });
@@ -233,44 +209,38 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  3. Get User Media
   // ─────────────────────────────────────────────────
   test.describe('Get User Media', () => {
-    test('should display the get user media heading', async ({ page }) => {
-      const mediaPage = new GetUserMediaPage(page);
-      await mediaPage.actions.goto();
-      await expect(mediaPage.locators.heading).toBeVisible();
+    test.beforeEach(async ({ getUserMediaPage }) => {
+      await getUserMediaPage.actions.goto();
     });
 
-    test('should have a "Start" button', async ({ page }) => {
-      const mediaPage = new GetUserMediaPage(page);
-      await mediaPage.actions.goto();
-      await expect(mediaPage.locators.startButton).toBeVisible();
-      await expect(mediaPage.locators.startButton).toHaveId('start');
+    test('should display the get user media heading', async ({ getUserMediaPage }) => {
+      await expect(getUserMediaPage.locators.heading).toBeVisible();
     });
 
-    test('should have a video element on the page', async ({ page }) => {
-      const mediaPage = new GetUserMediaPage(page);
-      await mediaPage.actions.goto();
-      await expect.soft(mediaPage.locators.video).toBeAttached();
-      await expect.soft(mediaPage.locators.video).toHaveAttribute('autoplay', '');
-      await expect.soft(mediaPage.locators.video).toHaveAttribute('playsinline', '');
+    test('should have a "Start" button', async ({ getUserMediaPage }) => {
+      await expect(getUserMediaPage.locators.startButton).toBeVisible();
+      await expect(getUserMediaPage.locators.startButton).toHaveId('start');
     });
 
-    test('should have an empty video device label initially', async ({ page }) => {
-      const mediaPage = new GetUserMediaPage(page);
-      await mediaPage.actions.goto();
-      await expect(mediaPage.locators.videoDevice).toBeAttached();
-      await expect(mediaPage.locators.videoDevice).toHaveText('');
+    test('should have a video element on the page', async ({ getUserMediaPage }) => {
+      await expect.soft(getUserMediaPage.locators.video).toBeAttached();
+      await expect.soft(getUserMediaPage.locators.video).toHaveAttribute('autoplay', '');
+      await expect.soft(getUserMediaPage.locators.video).toHaveAttribute('playsinline', '');
     });
 
-    test('should have correct button styling', async ({ page }) => {
-      const mediaPage = new GetUserMediaPage(page);
-      await mediaPage.actions.goto();
-      await expect(mediaPage.locators.startButton).toHaveClass(/btn-outline-primary/);
+    test('should have an empty video device label initially', async ({ getUserMediaPage }) => {
+      await expect(getUserMediaPage.locators.videoDevice).toBeAttached();
+      await expect(getUserMediaPage.locators.videoDevice).toHaveText('');
+    });
+
+    test('should have correct button styling', async ({ getUserMediaPage }) => {
+      await expect(getUserMediaPage.locators.startButton).toHaveClass(/btn-outline-primary/);
     });
 
     test('should display video device info when media is granted', async ({ browser }) => {
       const context = await browser.newContext();
       const page = await context.newPage();
-      const mediaPage = new GetUserMediaPage(page);
+      const getUserMediaPage = new GetUserMediaPage(page);
 
       // Mock getUserMedia to return a fake stream
       await page.addInitScript(() => {
@@ -285,12 +255,12 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         navigator.mediaDevices.getUserMedia = async () => fakeStream as unknown as MediaStream;
       });
 
-      await mediaPage.actions.goto();
-      await mediaPage.actions.clickStart();
+      await getUserMediaPage.actions.goto();
+      await getUserMediaPage.actions.clickStart();
 
       // Wait for video device info to appear
-      await expect(mediaPage.locators.videoDevice).toContainText('Using video device');
-      await expect(mediaPage.locators.videoDevice).toContainText('fake-video-device-0');
+      await expect(getUserMediaPage.locators.videoDevice).toContainText('Using video device');
+      await expect(getUserMediaPage.locators.videoDevice).toContainText('fake-video-device-0');
 
       await context.close();
     });
@@ -298,7 +268,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should disable the Start button after clicking', async ({ browser }) => {
       const context = await browser.newContext();
       const page = await context.newPage();
-      const mediaPage = new GetUserMediaPage(page);
+      const getUserMediaPage = new GetUserMediaPage(page);
 
       await page.addInitScript(() => {
         const fakeStream = {
@@ -318,27 +288,25 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         });
       });
 
-      await mediaPage.actions.goto();
-      await expect(mediaPage.locators.startButton).toBeEnabled();
-      await mediaPage.actions.clickStart();
+      await getUserMediaPage.actions.goto();
+      await expect(getUserMediaPage.locators.startButton).toBeEnabled();
+      await getUserMediaPage.actions.clickStart();
 
       // Button should become disabled after successful media access
-      await expect(mediaPage.locators.startButton).toBeDisabled();
+      await expect(getUserMediaPage.locators.startButton).toBeDisabled();
 
       await context.close();
     });
 
-    test('should have video element with border and rounded styling', async ({ page }) => {
-      const mediaPage = new GetUserMediaPage(page);
-      await mediaPage.actions.goto();
-      await expect(mediaPage.locators.video).toHaveClass(/border/);
-      await expect(mediaPage.locators.video).toHaveClass(/rounded/);
+    test('should have video element with border and rounded styling', async ({ getUserMediaPage }) => {
+      await expect(getUserMediaPage.locators.video).toHaveClass(/border/);
+      await expect(getUserMediaPage.locators.video).toHaveClass(/rounded/);
     });
 
     test('should handle getUserMedia permission denied', async ({ browser }) => {
       const context = await browser.newContext();
       const page = await context.newPage();
-      const mediaPage = new GetUserMediaPage(page);
+      const getUserMediaPage = new GetUserMediaPage(page);
 
       // Mock getUserMedia to throw a NotAllowedError
       await page.addInitScript(() => {
@@ -347,16 +315,16 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         };
       });
 
-      await mediaPage.actions.goto();
+      await getUserMediaPage.actions.goto();
 
       // Listen for page errors caused by the unhandled rejection
       const errors: Error[] = [];
       page.on('pageerror', (err) => errors.push(err));
 
-      await mediaPage.actions.clickStart();
+      await getUserMediaPage.actions.clickStart();
 
       // Video device label should remain empty since media access was denied
-      await expect(mediaPage.locators.videoDevice).toHaveText('');
+      await expect(getUserMediaPage.locators.videoDevice).toHaveText('');
 
       await context.close();
     });
@@ -366,28 +334,28 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  4. Multilanguage
   // ─────────────────────────────────────────────────
   test.describe('Multilanguage', () => {
-    test('should display the multilanguage heading @smoke', async ({ page }) => {
-      const multiPage = new MultilanguagePage(page);
-      await multiPage.actions.goto();
-      // The heading text depends on browser locale, check structure
-      await expect(multiPage.locators.heading).toBeVisible();
-      await expect(multiPage.locators.heading).toHaveAttribute('key', '_title');
+    test.beforeEach(async ({ multilanguagePage }) => {
+      await multilanguagePage.actions.goto();
     });
 
-    test('should have four list items', async ({ page }) => {
-      const multiPage = new MultilanguagePage(page);
-      await multiPage.actions.goto();
-      await expect(multiPage.locators.contentListItems).toHaveCount(4);
+    test('should display the multilanguage heading @smoke', async ({ multilanguagePage }) => {
+      // The heading text depends on browser locale, check structure
+      await expect(multilanguagePage.locators.heading).toBeVisible();
+      await expect(multilanguagePage.locators.heading).toHaveAttribute('key', '_title');
+    });
+
+    test('should have four list items', async ({ multilanguagePage }) => {
+      await expect(multilanguagePage.locators.contentListItems).toHaveCount(4);
     });
 
     test('should display English content with en locale', async ({ browser }) => {
       const context = await browser.newContext({ locale: 'en-US' });
       const page = await context.newPage();
-      const multiPage = new MultilanguagePage(page);
+      const multilanguagePage = new MultilanguagePage(page);
 
-      await multiPage.actions.goto();
+      await multilanguagePage.actions.goto();
 
-      await expect.soft(multiPage.locators.heading).toHaveText('Multilanguage page');
+      await expect.soft(multilanguagePage.locators.heading).toHaveText('Multilanguage page');
       await expect.soft(page.getByText('Home')).toBeVisible();
       await expect.soft(page.getByText('Content')).toBeVisible();
       await expect.soft(page.getByText('About us')).toBeVisible();
@@ -399,11 +367,11 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should display Spanish content with es locale', async ({ browser }) => {
       const context = await browser.newContext({ locale: 'es-ES' });
       const page = await context.newPage();
-      const multiPage = new MultilanguagePage(page);
+      const multilanguagePage = new MultilanguagePage(page);
 
-      await multiPage.actions.goto();
+      await multilanguagePage.actions.goto();
 
-      await expect.soft(multiPage.locators.heading).toHaveText('Página multilenguage');
+      await expect.soft(multilanguagePage.locators.heading).toHaveText('Página multilenguage');
       await expect.soft(page.getByText('Inicio')).toBeVisible();
       await expect.soft(page.getByText('Contenido')).toBeVisible();
       await expect.soft(page.getByText('Acerca de')).toBeVisible();
@@ -412,30 +380,24 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await context.close();
     });
 
-    test('should have lang class and key attributes on all translatable elements', async ({ page }) => {
-      const multiPage = new MultilanguagePage(page);
-      await multiPage.actions.goto();
-
-      const count = await multiPage.locators.langElements.count();
+    test('should have lang class and key attributes on all translatable elements', async ({ multilanguagePage }) => {
+      const count = await multilanguagePage.locators.langElements.count();
       // heading + 4 list items = 5
       expect(count).toBe(5);
 
       // Each should have a key attribute
       for (let langIndex = 0; langIndex < count; langIndex++) {
-        const key = await multiPage.locators.langElements.nth(langIndex).getAttribute('key');
+        const key = await multilanguagePage.locators.langElements.nth(langIndex).getAttribute('key');
         expect(key).toBeTruthy();
         expect(key).toMatch(/^_/);
       }
     });
 
-    test('should verify list items have correct key attributes', async ({ page }) => {
-      const multiPage = new MultilanguagePage(page);
-      await multiPage.actions.goto();
-
-      await expect(multiPage.locators.langListItems.nth(0)).toHaveAttribute('key', '_home');
-      await expect(multiPage.locators.langListItems.nth(1)).toHaveAttribute('key', '_content');
-      await expect(multiPage.locators.langListItems.nth(2)).toHaveAttribute('key', '_about');
-      await expect(multiPage.locators.langListItems.nth(3)).toHaveAttribute('key', '_contact');
+    test('should verify list items have correct key attributes', async ({ multilanguagePage }) => {
+      await expect(multilanguagePage.locators.langListItems.nth(0)).toHaveAttribute('key', '_home');
+      await expect(multilanguagePage.locators.langListItems.nth(1)).toHaveAttribute('key', '_content');
+      await expect(multilanguagePage.locators.langListItems.nth(2)).toHaveAttribute('key', '_about');
+      await expect(multilanguagePage.locators.langListItems.nth(3)).toHaveAttribute('key', '_contact');
     });
 
     test('should switch from English to Spanish by changing locale @critical', async ({ browser }) => {
@@ -457,17 +419,13 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     });
 
     test('should have correct page title', async ({ page }) => {
-      const multiPage = new MultilanguagePage(page);
-      await multiPage.actions.goto();
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
     });
 
-    test('should verify the content section structure', async ({ page }) => {
-      const multiPage = new MultilanguagePage(page);
-      await multiPage.actions.goto();
-      await expect(multiPage.locators.contentDiv).toBeAttached();
+    test('should verify the content section structure', async ({ multilanguagePage }) => {
+      await expect(multilanguagePage.locators.contentDiv).toBeAttached();
 
-      const ul = multiPage.locators.contentDiv.locator('ul');
+      const ul = multilanguagePage.locators.contentDiv.locator('ul');
       await expect(ul).toBeAttached();
 
       const items = ul.locator('li');
@@ -479,26 +437,23 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  5. Console Logs
   // ─────────────────────────────────────────────────
   test.describe('Console Logs', () => {
-    test('should display the console logs heading @smoke', async ({ page }) => {
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
-      await expect(consolePage.locators.heading).toBeVisible();
+    test('should display the console logs heading @smoke', async ({ consoleLogsPage }) => {
+      await consoleLogsPage.actions.goto();
+      await expect(consoleLogsPage.locators.heading).toBeVisible();
     });
 
-    test('should display the description paragraph', async ({ page }) => {
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
-      await expect(consolePage.locators.description).toBeVisible();
+    test('should display the description paragraph', async ({ consoleLogsPage }) => {
+      await consoleLogsPage.actions.goto();
+      await expect(consoleLogsPage.locators.description).toBeVisible();
     });
 
-    test('should capture all four console message types @critical', async ({ page }) => {
+    test('should capture all four console message types @critical', async ({ consoleLogsPage, page }) => {
       const messages: { type: string; text: string }[] = [];
       page.on('console', (msg) => {
         messages.push({ type: msg.type(), text: msg.text() });
       });
 
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
+      await consoleLogsPage.actions.goto();
 
       const types = messages.map((message) => message.type);
       expect(types).toContain('log');
@@ -507,20 +462,19 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       expect(types).toContain('error');
     });
 
-    test('should capture the thrown error as a page error', async ({ page }) => {
+    test('should capture the thrown error as a page error', async ({ consoleLogsPage, page }) => {
       const pageErrors: Error[] = [];
       page.on('pageerror', (error) => {
         pageErrors.push(error);
       });
 
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
+      await consoleLogsPage.actions.goto();
 
       expect(pageErrors.length).toBeGreaterThanOrEqual(1);
       expect(pageErrors[0].message).toContain('This a forced error');
     });
 
-    test('should verify exact console.log message text', async ({ page }) => {
+    test('should verify exact console.log message text', async ({ consoleLogsPage, page }) => {
       const logMessages: string[] = [];
       page.on('console', (msg) => {
         if (msg.type() === 'log') {
@@ -528,13 +482,12 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         }
       });
 
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
+      await consoleLogsPage.actions.goto();
 
       expect(logMessages).toContain("This a call to 'console.log'");
     });
 
-    test('should verify exact console.warn message text', async ({ page }) => {
+    test('should verify exact console.warn message text', async ({ consoleLogsPage, page }) => {
       const warnMessages: string[] = [];
       page.on('console', (msg) => {
         if (msg.type() === 'warning') {
@@ -542,13 +495,12 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         }
       });
 
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
+      await consoleLogsPage.actions.goto();
 
       expect(warnMessages).toContain("This a call to 'console.warn'");
     });
 
-    test('should verify exact console.error message text', async ({ page }) => {
+    test('should verify exact console.error message text', async ({ consoleLogsPage, page }) => {
       const errorMessages: string[] = [];
       page.on('console', (msg) => {
         if (msg.type() === 'error') {
@@ -556,21 +508,19 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         }
       });
 
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
+      await consoleLogsPage.actions.goto();
 
       expect(errorMessages).toContain("This a call to 'console.error'");
     });
 
-    test('should capture console messages with source URLs', async ({ page }) => {
+    test('should capture console messages with source URLs', async ({ consoleLogsPage, page }) => {
       const locations: { url: string; lineNumber: number }[] = [];
       page.on('console', (msg) => {
         const location = msg.location();
         locations.push({ url: location.url, lineNumber: location.lineNumber });
       });
 
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
+      await consoleLogsPage.actions.goto();
 
       // All messages should come from the console-logs.html page
       expect(locations.length).toBeGreaterThanOrEqual(4);
@@ -579,14 +529,13 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       }
     });
 
-    test('should have correct page structure', async ({ page }) => {
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
+    test('should have correct page structure', async ({ consoleLogsPage, page }) => {
+      await consoleLogsPage.actions.goto();
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
       await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
     });
 
-    test('should verify exact console.info message text', async ({ page }) => {
+    test('should verify exact console.info message text', async ({ consoleLogsPage, page }) => {
       const infoMessages: string[] = [];
       page.on('console', (msg) => {
         if (msg.type() === 'info') {
@@ -594,8 +543,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
         }
       });
 
-      const consolePage = new ConsoleLogsPage(page);
-      await consolePage.actions.goto();
+      await consoleLogsPage.actions.goto();
 
       expect(infoMessages.length).toBe(1);
       expect(infoMessages[0]).toBe("This a call to 'console.info'");
@@ -606,18 +554,15 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  Index Page - Chapter 5 Links
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 5 Links', () => {
-    let homePage: HomePage;
-
-    test.beforeEach(async ({ page }) => {
-      homePage = new HomePage(page);
+    test.beforeEach(async ({ homePage }) => {
       await homePage.actions.goto();
     });
 
-    test('should display the Chapter 5 section heading', async () => {
+    test('should display the Chapter 5 section heading', async ({ homePage }) => {
       await expect(homePage.locators.chapter5Heading).toBeVisible();
     });
 
-    test('should have all Chapter 5 links', async () => {
+    test('should have all Chapter 5 links', async ({ homePage }) => {
       await expect.soft(homePage.locators.chapterLink('Geolocation')).toBeVisible();
       await expect.soft(homePage.locators.chapterLink('Notifications')).toBeVisible();
       await expect.soft(homePage.locators.chapterLink('Get user media')).toBeVisible();
@@ -625,7 +570,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect.soft(homePage.locators.chapterLink('Console logs')).toBeVisible();
     });
 
-    test('should navigate to each Chapter 5 page and back', async ({ page }) => {
+    test('should navigate to each Chapter 5 page and back', async ({ homePage, page }) => {
       const links = [
         { name: 'Geolocation', url: 'geolocation.html' },
         { name: 'Notifications', url: 'notifications.html' },

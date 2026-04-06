@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../fixtures/page-fixtures';
 import { config } from '../../config/env';
 const BASE_URL = config.e2eUrl;
 
