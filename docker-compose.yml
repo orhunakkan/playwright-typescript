@@ -17,6 +17,7 @@ services:
 
   practice-db:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: practicedb
       POSTGRES_USER: practiceuser
@@ -24,6 +25,7 @@ services:
     ports:
       - '5434:5432'
     volumes:
+      - practice-db-data:/var/lib/postgresql/data
       - ./docker/practice-init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U practiceuser -d practicedb']
@@ -48,3 +50,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+volumes:
+  practice-db-data:
