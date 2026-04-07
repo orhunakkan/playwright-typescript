@@ -8,9 +8,25 @@ services:
     ports:
       - '5433:5432'
     volumes:
-      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/notes-db-init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U notesuser -d notesdb']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  practice-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: practicedb
+      POSTGRES_USER: practiceuser
+      POSTGRES_PASSWORD: practicepassword
+    ports:
+      - '5434:5432'
+    volumes:
+      - ./docker/practice-init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U practiceuser -d practicedb']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -28,7 +44,7 @@ services:
     ports:
       - '3000:3000'
     healthcheck:
-      test: ['CMD-SHELL', 'wget --quiet --tries=1 --spider http://localhost:3000/ || exit 1']
+      test: ['CMD-SHELL', 'curl -sf http://localhost:3000/ || exit 1']
       interval: 5s
       timeout: 5s
       retries: 5
