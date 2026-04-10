@@ -35,9 +35,9 @@ const pages = [
 test.describe('visual regression', { tag: ['@visual'] }, () => {
   for (const pageName of pages) {
     test(pageName, async ({ page }) => {
-      feature('Visual Regression');
-      story('Full Page Snapshots');
-      severity('normal');
+      await feature('Visual Regression');
+      await story('Full Page Snapshots');
+      await severity('normal');
       const targetUrl = `${BASE_URL}/${pageName}.html`;
 
       await page.goto(targetUrl);
@@ -46,9 +46,9 @@ test.describe('visual regression', { tag: ['@visual'] }, () => {
   }
 
   test('ab-testing variation A', async ({ page }) => {
-    feature('Visual Regression');
-    story('A/B Testing Visual Variants');
-    severity('normal');
+    await feature('Visual Regression');
+    await story('A/B Testing Visual Variants');
+    await severity('normal');
     await page.goto(`${BASE_URL}/ab-testing.html`);
     await page.evaluate(async () => {
       const content = document.querySelector<HTMLElement>('#content');
@@ -69,9 +69,9 @@ test.describe('visual regression', { tag: ['@visual'] }, () => {
   });
 
   test('ab-testing variation B', async ({ page }) => {
-    feature('Visual Regression');
-    story('A/B Testing Visual Variants');
-    severity('normal');
+    await feature('Visual Regression');
+    await story('A/B Testing Visual Variants');
+    await severity('normal');
     await page.goto(`${BASE_URL}/ab-testing.html`);
     await page.evaluate(async () => {
       const content = document.querySelector<HTMLElement>('#content');

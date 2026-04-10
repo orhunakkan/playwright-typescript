@@ -3,10 +3,7 @@ import { GeolocationPage } from '../../pages/geolocation.page';
 import { NotificationsPage } from '../../pages/notifications.page';
 import { GetUserMediaPage } from '../../pages/get-user-media.page';
 import { MultilanguagePage } from '../../pages/multilanguage.page';
-import { config } from '../../config/env';
 import { feature, story, severity } from 'allure-js-commons';
-
-const BASE_URL = config.e2eUrl;
 
 test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
@@ -14,9 +11,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Geolocation', () => {
     test.beforeEach(async ({ geolocationPage }) => {
-      feature('Browser-Specific Manipulation');
-      story('Geolocation');
-      severity('critical');
+      await feature('Browser-Specific Manipulation');
+      await story('Geolocation');
+      await severity('critical');
       await geolocationPage.actions.goto();
     });
 
@@ -116,9 +113,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Notifications', () => {
     test.beforeEach(async ({ notificationsPage }) => {
-      feature('Browser-Specific Manipulation');
-      story('Notifications');
-      severity('critical');
+      await feature('Browser-Specific Manipulation');
+      await story('Notifications');
+      await severity('critical');
       await notificationsPage.actions.goto();
     });
 
@@ -143,7 +140,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       const notificationFired = await page.evaluate(() => {
         return new Promise<boolean>((resolve) => {
           const OriginalNotification = window.Notification;
-          (window as any).Notification = function (title: string, options: any) {
+          (window as any).Notification = function (_title: string, _options: any) {
             resolve(true);
             return {} as Notification;
           };
@@ -217,9 +214,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Get User Media', () => {
     test.beforeEach(async ({ getUserMediaPage }) => {
-      feature('Browser-Specific Manipulation');
-      story('Get User Media');
-      severity('critical');
+      await feature('Browser-Specific Manipulation');
+      await story('Get User Media');
+      await severity('critical');
       await getUserMediaPage.actions.goto();
     });
 
@@ -345,9 +342,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Multilanguage', () => {
     test.beforeEach(async ({ multilanguagePage }) => {
-      feature('Browser-Specific Manipulation');
-      story('Multilanguage');
-      severity('critical');
+      await feature('Browser-Specific Manipulation');
+      await story('Multilanguage');
+      await severity('critical');
       await multilanguagePage.actions.goto();
     });
 
@@ -450,10 +447,10 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   //  5. Console Logs
   // ─────────────────────────────────────────────────
   test.describe('Console Logs', () => {
-    test.beforeEach(async ({ consoleLogsPage }) => {
-      feature('Browser-Specific Manipulation');
-      story('Console Logs');
-      severity('critical');
+    test.beforeEach(async () => {
+      await feature('Browser-Specific Manipulation');
+      await story('Console Logs');
+      await severity('critical');
     });
     test('should display the console logs heading', { tag: ['@smoke'] }, async ({ consoleLogsPage }) => {
       await consoleLogsPage.actions.goto();
@@ -573,9 +570,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 5 Links', () => {
     test.beforeEach(async ({ homePage }) => {
-      feature('Browser-Specific Manipulation');
-      story('Chapter 5 Index');
-      severity('normal');
+      await feature('Browser-Specific Manipulation');
+      await story('Chapter 5 Index');
+      await severity('normal');
       await homePage.actions.goto();
     });
 

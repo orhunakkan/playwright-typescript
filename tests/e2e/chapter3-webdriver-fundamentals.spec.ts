@@ -11,9 +11,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Web Form', () => {
     test.beforeEach(async ({ webFormPage }) => {
-      feature('WebDriver Fundamentals');
-      story('Web Form');
-      severity('critical');
+      await feature('WebDriver Fundamentals');
+      await story('Web Form');
+      await severity('critical');
       await webFormPage.actions.goto();
     });
 
@@ -261,10 +261,10 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  2. Navigation
   // ─────────────────────────────────────────────────
   test.describe('Navigation', () => {
-    test.beforeEach(() => {
-      feature('WebDriver Fundamentals');
-      story('Navigation');
-      severity('critical');
+    test.beforeEach(async () => {
+      await feature('WebDriver Fundamentals');
+      await story('Navigation');
+      await severity('critical');
     });
 
     test('should display navigation page 1 content', { tag: ['@smoke'] }, async ({ navigationPage, page }) => {
@@ -401,9 +401,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Dropdown Menu', () => {
     test.beforeEach(async ({ dropdownMenuPage }) => {
-      feature('WebDriver Fundamentals');
-      story('Dropdown Menu');
-      severity('critical');
+      await feature('WebDriver Fundamentals');
+      await story('Dropdown Menu');
+      await severity('critical');
       await dropdownMenuPage.actions.goto();
     });
 
@@ -525,9 +525,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Mouse Over', () => {
     test.beforeEach(async ({ mouseOverPage }) => {
-      feature('WebDriver Fundamentals');
-      story('Mouse Over');
-      severity('critical');
+      await feature('WebDriver Fundamentals');
+      await story('Mouse Over');
+      await severity('critical');
       await mouseOverPage.actions.goto();
     });
 
@@ -598,9 +598,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Drag and Drop', () => {
     test.beforeEach(async ({ dragAndDropPage }) => {
-      feature('WebDriver Fundamentals');
-      story('Drag and Drop');
-      severity('critical');
+      await feature('WebDriver Fundamentals');
+      await story('Drag and Drop');
+      await severity('critical');
       await dragAndDropPage.actions.goto();
     });
 
@@ -659,9 +659,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Draw in Canvas', () => {
     test.beforeEach(async ({ drawInCanvasPage }) => {
-      feature('WebDriver Fundamentals');
-      story('Draw in Canvas');
-      severity('critical');
+      await feature('WebDriver Fundamentals');
+      await story('Draw in Canvas');
+      await severity('critical');
       await drawInCanvasPage.actions.goto();
     });
 
@@ -780,10 +780,10 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   //  7. Loading Images
   // ─────────────────────────────────────────────────
   test.describe('Loading Images', () => {
-    test.beforeEach(() => {
-      feature('WebDriver Fundamentals');
-      story('Loading Images');
-      severity('critical');
+    test.beforeEach(async () => {
+      await feature('WebDriver Fundamentals');
+      await story('Loading Images');
+      await severity('critical');
     });
 
     test('should display loading message initially', async ({ loadingImagesPage }) => {
@@ -863,9 +863,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Slow Calculator', () => {
     test.beforeEach(async ({ slowCalculatorPage }) => {
-      feature('WebDriver Fundamentals');
-      story('Slow Calculator');
-      severity('critical');
+      await feature('WebDriver Fundamentals');
+      await story('Slow Calculator');
+      await severity('critical');
       await slowCalculatorPage.actions.goto();
     });
 
@@ -877,7 +877,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(slowCalculatorPage.locators.delayInput).toHaveValue('5');
     });
 
-    test('should verify all calculator buttons are present', async ({ slowCalculatorPage, page }) => {
+    test('should verify all calculator buttons are present', async ({ page }) => {
       // Number buttons
       for (let digit = 0; digit <= 9; digit++) {
         await expect(page.locator(`#calculator .keys >> text="${digit}"`)).toBeVisible();
@@ -993,9 +993,9 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 3 Links', () => {
     test.beforeEach(async ({ homePage }) => {
-      feature('WebDriver Fundamentals');
-      story('Chapter 3 Index');
-      severity('normal');
+      await feature('WebDriver Fundamentals');
+      await story('Chapter 3 Index');
+      await severity('normal');
       await homePage.actions.goto();
     });
 

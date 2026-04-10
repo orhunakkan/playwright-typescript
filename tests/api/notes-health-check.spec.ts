@@ -4,10 +4,10 @@ import { config } from '../../config/env';
 import { feature, story, severity } from 'allure-js-commons';
 
 test.describe('Notes Health Check API', { tag: ['@smoke', '@critical'] }, () => {
-  test.beforeEach(() => {
-    feature('Notes API');
-    story('Health Check');
-    severity('critical');
+  test.beforeEach(async () => {
+    await feature('Notes API');
+    await story('Health Check');
+    await severity('critical');
   });
 
   const apiUrl = `${config.apiUrl}/health-check`;

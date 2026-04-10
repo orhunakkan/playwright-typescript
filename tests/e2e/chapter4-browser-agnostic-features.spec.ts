@@ -1,8 +1,5 @@
 import { expect, test } from '../../fixtures/page-fixtures';
-import { config } from '../../config/env';
 import { feature, story, severity } from 'allure-js-commons';
-
-const BASE_URL = config.e2eUrl;
 
 test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
@@ -10,9 +7,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Long Page', () => {
     test.beforeEach(async ({ longPage }) => {
-      feature('Browser Agnostic Features');
-      story('Long Page');
-      severity('critical');
+      await feature('Browser Agnostic Features');
+      await story('Long Page');
+      await severity('critical');
       await longPage.actions.goto();
       // Content is loaded via jQuery AJAX — wait for it
       await longPage.actions.waitForContent();
@@ -97,9 +94,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Infinite Scroll', () => {
     test.beforeEach(async ({ infiniteScrollPage }) => {
-      feature('Browser Agnostic Features');
-      story('Infinite Scroll');
-      severity('critical');
+      await feature('Browser Agnostic Features');
+      await story('Infinite Scroll');
+      await severity('critical');
       await infiniteScrollPage.actions.goto();
     });
 
@@ -164,9 +161,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Shadow DOM', () => {
     test.beforeEach(async ({ shadowDomPage }) => {
-      feature('Browser Agnostic Features');
-      story('Shadow DOM');
-      severity('critical');
+      await feature('Browser Agnostic Features');
+      await story('Shadow DOM');
+      await severity('critical');
       await shadowDomPage.actions.goto();
     });
 
@@ -217,9 +214,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Cookies', () => {
     test.beforeEach(async ({ cookiesPage }) => {
-      feature('Browser Agnostic Features');
-      story('Cookies');
-      severity('critical');
+      await feature('Browser Agnostic Features');
+      await story('Cookies');
+      await severity('critical');
       await cookiesPage.actions.goto();
     });
 
@@ -340,9 +337,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Frames', () => {
     test.beforeEach(async ({ framesPage }) => {
-      feature('Browser Agnostic Features');
-      story('Frames');
-      severity('critical');
+      await feature('Browser Agnostic Features');
+      await story('Frames');
+      await severity('critical');
       await framesPage.actions.goto();
     });
 
@@ -418,9 +415,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('IFrames', () => {
     test.beforeEach(async ({ iframesPage }) => {
-      feature('Browser Agnostic Features');
-      story('IFrames');
-      severity('critical');
+      await feature('Browser Agnostic Features');
+      await story('IFrames');
+      await severity('critical');
       await iframesPage.actions.goto();
     });
 
@@ -498,9 +495,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Dialog Boxes', () => {
     test.beforeEach(async ({ dialogBoxesPage }) => {
-      feature('Browser Agnostic Features');
-      story('Dialog Boxes');
-      severity('critical');
+      await feature('Browser Agnostic Features');
+      await story('Dialog Boxes');
+      await severity('critical');
       await dialogBoxesPage.actions.goto();
     });
 
@@ -692,9 +689,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Web Storage', () => {
     test.beforeEach(async ({ webStoragePage }) => {
-      feature('Browser Agnostic Features');
-      story('Web Storage');
-      severity('critical');
+      await feature('Browser Agnostic Features');
+      await story('Web Storage');
+      await severity('critical');
       await webStoragePage.actions.goto();
     });
 
@@ -843,9 +840,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 4 Links', () => {
     test.beforeEach(async ({ homePage }) => {
-      feature('Browser Agnostic Features');
-      story('Chapter 4 Index');
-      severity('normal');
+      await feature('Browser Agnostic Features');
+      await story('Chapter 4 Index');
+      await severity('normal');
       await homePage.actions.goto();
     });
 

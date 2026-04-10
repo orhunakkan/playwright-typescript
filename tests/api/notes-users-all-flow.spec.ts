@@ -15,10 +15,10 @@ import { feature, story, severity } from 'allure-js-commons';
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Notes Users API Flow', { tag: ['@critical'] }, () => {
-  test.beforeEach(() => {
-    feature('Notes API');
-    story('User Management – Happy Path');
-    severity('critical');
+  test.beforeEach(async () => {
+    await feature('Notes API');
+    await story('User Management – Happy Path');
+    await severity('critical');
   });
 
   const registerUrl = `${config.apiUrl}/users/register`;

@@ -7,9 +7,9 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
   // ─────────────────────────────────────────────────
   test.describe('Random Calculator', () => {
     test.beforeEach(async ({ randomCalculatorPage }) => {
-      feature('Testing Framework Specifics');
-      story('Random Calculator');
-      severity('critical');
+      await feature('Testing Framework Specifics');
+      await story('Random Calculator');
+      await severity('critical');
       await randomCalculatorPage.actions.goto();
     });
 
@@ -254,9 +254,9 @@ test.describe('Chapter 8 - Testing Framework Specifics', () => {
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 8 Links', () => {
     test.beforeEach(async ({ homePage }) => {
-      feature('Testing Framework Specifics');
-      story('Chapter 8 Index');
-      severity('normal');
+      await feature('Testing Framework Specifics');
+      await story('Chapter 8 Index');
+      await severity('normal');
       await homePage.actions.goto();
     });
 

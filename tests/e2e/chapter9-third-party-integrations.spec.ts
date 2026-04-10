@@ -9,9 +9,9 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
   test.describe('Download Files', () => {
     test.beforeEach(async ({ downloadPage }) => {
-      feature('Third-Party Integrations');
-      story('Download Files');
-      severity('critical');
+      await feature('Third-Party Integrations');
+      await story('Download Files');
+      await severity('critical');
       await downloadPage.actions.goto();
     });
 
@@ -97,9 +97,9 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
   test.describe('A/B Testing', () => {
     test.beforeEach(async ({ abTestingPage }) => {
-      feature('Third-Party Integrations');
-      story('A/B Testing');
-      severity('critical');
+      await feature('Third-Party Integrations');
+      await story('A/B Testing');
+      await severity('critical');
       await abTestingPage.actions.goto();
       // Content is loaded via jQuery AJAX — wait for it
       await abTestingPage.actions.waitForContent();
@@ -212,9 +212,9 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
   test.describe('Data Types', () => {
     test.beforeEach(async ({ dataTypesPage }) => {
-      feature('Third-Party Integrations');
-      story('Data Types');
-      severity('critical');
+      await feature('Third-Party Integrations');
+      await story('Data Types');
+      await severity('critical');
       await dataTypesPage.actions.goto();
     });
 
@@ -452,9 +452,9 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 9 Links', () => {
     test.beforeEach(async ({ homePage }) => {
-      feature('Third-Party Integrations');
-      story('Chapter 9 Index');
-      severity('normal');
+      await feature('Third-Party Integrations');
+      await story('Chapter 9 Index');
+      await severity('normal');
       await homePage.actions.goto();
     });
 

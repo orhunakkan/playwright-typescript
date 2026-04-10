@@ -7,10 +7,10 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   //  1. Touch Interactions
   // ─────────────────────────────────────────────────
   test.describe('Touch Interactions', () => {
-    test.beforeEach(({ isMobile }) => {
-      feature('Mobile Testing');
-      story('Touch Interactions');
-      severity('critical');
+    test.beforeEach(async ({ isMobile }) => {
+      await feature('Mobile Testing');
+      await story('Touch Interactions');
+      await severity('critical');
       test.skip(!isMobile, 'Mobile-only');
     });
 
@@ -39,10 +39,10 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   //  2. Viewport & Device Detection
   // ─────────────────────────────────────────────────
   test.describe('Viewport and Device Detection', () => {
-    test.beforeEach(({ isMobile }) => {
-      feature('Mobile Testing');
-      story('Viewport and Device Detection');
-      severity('critical');
+    test.beforeEach(async ({ isMobile }) => {
+      await feature('Mobile Testing');
+      await story('Viewport and Device Detection');
+      await severity('critical');
       test.skip(!isMobile, 'Mobile-only');
     });
 
@@ -71,10 +71,10 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   //  3. Media Emulation
   // ─────────────────────────────────────────────────
   test.describe('Media Emulation', () => {
-    test.beforeEach(() => {
-      feature('Mobile Testing');
-      story('Media Emulation');
-      severity('critical');
+    test.beforeEach(async () => {
+      await feature('Mobile Testing');
+      await story('Media Emulation');
+      await severity('critical');
     });
     test('should emulate dark color scheme and detect it via matchMedia', { tag: ['@smoke'] }, async ({ webFormPage, page }) => {
       await webFormPage.actions.goto();
@@ -95,10 +95,10 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   //  4. Geolocation on Mobile
   // ─────────────────────────────────────────────────
   test.describe('Geolocation on Mobile', () => {
-    test.beforeEach(({ isMobile }) => {
-      feature('Mobile Testing');
-      story('Geolocation on Mobile');
-      severity('critical');
+    test.beforeEach(async ({ isMobile }) => {
+      await feature('Mobile Testing');
+      await story('Geolocation on Mobile');
+      await severity('critical');
       test.skip(!isMobile, 'Mobile-only');
     });
 
@@ -116,10 +116,10 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   //  5. Network State
   // ─────────────────────────────────────────────────
   test.describe('Network State', () => {
-    test.beforeEach(({ isMobile }) => {
-      feature('Mobile Testing');
-      story('Network State');
-      severity('critical');
+    test.beforeEach(async ({ isMobile }) => {
+      await feature('Mobile Testing');
+      await story('Network State');
+      await severity('critical');
       test.skip(!isMobile, 'Mobile-only');
     });
 
@@ -135,10 +135,10 @@ test.describe('Chapter 11 - Mobile-Specific Testing', () => {
   //  6. Native Input Types
   // ─────────────────────────────────────────────────
   test.describe('Native Input Types', () => {
-    test.beforeEach(() => {
-      feature('Mobile Testing');
-      story('Native Input Types');
-      severity('normal');
+    test.beforeEach(async () => {
+      await feature('Mobile Testing');
+      await story('Native Input Types');
+      await severity('normal');
     });
     test('should verify color picker uses native color input type', async ({ webFormPage }) => {
       await webFormPage.actions.goto();

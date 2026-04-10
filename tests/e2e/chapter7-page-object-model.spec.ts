@@ -10,9 +10,9 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   // ─────────────────────────────────────────────────
   test.describe('Login Form', () => {
     test.beforeEach(async ({ loginFormPage }) => {
-      feature('Page Object Model');
-      story('Login Form');
-      severity('critical');
+      await feature('Page Object Model');
+      await story('Login Form');
+      await severity('critical');
       await loginFormPage.actions.goto();
     });
 
@@ -149,9 +149,9 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   // ─────────────────────────────────────────────────
   test.describe('Slow Login Form', () => {
     test.beforeEach(async ({ slowLoginFormPage }) => {
-      feature('Page Object Model');
-      story('Slow Login Form');
-      severity('critical');
+      await feature('Page Object Model');
+      await story('Slow Login Form');
+      await severity('critical');
       await slowLoginFormPage.actions.goto();
     });
 
@@ -281,10 +281,10 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   //  Index Page - Chapter 7 Links
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 7 Links', () => {
-    test.beforeEach(() => {
-      feature('Page Object Model');
-      story('Chapter 7 Index');
-      severity('normal');
+    test.beforeEach(async () => {
+      await feature('Page Object Model');
+      await story('Chapter 7 Index');
+      await severity('normal');
     });
     test('should display the Chapter 7 section heading', async ({ page }) => {
       await page.goto(`${BASE_URL}/index.html`);

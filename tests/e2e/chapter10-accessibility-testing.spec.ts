@@ -69,9 +69,9 @@ const a11yPages: { name: string; factory: PageFactory }[] = [
 test.describe('Chapter 10 - Accessibility Testing (a11y)', { tag: ['@a11y'] }, () => {
   for (const { name, factory } of a11yPages) {
     test(`${name} - should have no accessibility violations`, async ({ page }) => {
-      feature('Accessibility Testing');
-      story('WCAG 2.1 AA Compliance');
-      severity('normal');
+      await feature('Accessibility Testing');
+      await story('WCAG 2.1 AA Compliance');
+      await severity('normal');
       await factory(page).actions.goto();
       const results = await runA11yScan(page);
       if (results.violations.length > 0) {

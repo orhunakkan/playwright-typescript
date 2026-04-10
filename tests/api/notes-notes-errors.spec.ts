@@ -7,10 +7,10 @@ import { feature, story, severity } from 'allure-js-commons';
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Notes Notes API Error Handling', { tag: ['@regression'] }, () => {
-  test.beforeEach(() => {
-    feature('Notes API');
-    story('Notes CRUD – Error Handling');
-    severity('normal');
+  test.beforeEach(async () => {
+    await feature('Notes API');
+    await story('Notes CRUD – Error Handling');
+    await severity('normal');
   });
 
   const registerUrl = `${config.apiUrl}/users/register`;
