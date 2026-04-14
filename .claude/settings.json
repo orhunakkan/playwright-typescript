@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__atlassian__getAccessibleAtlassianResources",
+      "mcp__atlassian__getVisibleJiraProjects"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {

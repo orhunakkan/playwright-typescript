@@ -3,6 +3,6 @@
     "allow": ["*"],
     "deny": []
   },
-  "enabledMcpjsonServers": ["playwright-test"],
+  "enabledMcpjsonServers": ["playwright-test", "atlassian"],
   "enableAllProjectMcpServers": true
 }
