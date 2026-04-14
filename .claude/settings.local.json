@@ -2,5 +2,7 @@
   "permissions": {
     "allow": ["*"],
     "deny": []
-  }
+  },
+  "enabledMcpjsonServers": ["playwright-test"],
+  "enableAllProjectMcpServers": true
 }
