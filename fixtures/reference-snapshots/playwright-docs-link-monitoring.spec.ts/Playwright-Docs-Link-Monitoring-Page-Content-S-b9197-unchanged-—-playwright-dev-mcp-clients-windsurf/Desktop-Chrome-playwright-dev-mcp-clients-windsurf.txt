@@ -1,0 +1,1 @@
+Getting StartedClient SetupWindsurfOn this pageWindsurf Installation​ Follow the Windsurf MCP documentation and use the standard configuration: { "mcpServers": { "playwright": { "command": "npx", "args": ["@playwright/mcp@latest"] } }}

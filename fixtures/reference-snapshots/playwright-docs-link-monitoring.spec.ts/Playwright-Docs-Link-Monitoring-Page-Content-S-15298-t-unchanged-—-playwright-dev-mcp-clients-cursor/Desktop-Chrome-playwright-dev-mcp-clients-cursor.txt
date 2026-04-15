@@ -1,0 +1,1 @@
+Getting StartedClient SetupCursorOn this pageCursor One-click install​ Manual setup​ Go to Cursor Settings → MCP → Add new MCP Server. Name: playwright Type: command Command: npx @playwright/mcp@latest You can also verify the config or add arguments by clicking Edit.
