@@ -1,31 +1,7 @@
 import { test, expect } from '@playwright/test';
-import fs from 'fs';
-import path from 'path';
+import sidebarLinks from '../../fixtures/playwright-docs-links/sidebar-links.json' with { type: 'json' };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const MD_FILE = path.resolve('playwright-docs-sidebar-links.md');
-
-/**
- * Parses playwright-docs-sidebar-links.md and returns a Map of
- * sourcePage URL → array of sidebar URLs stored for that page.
- */
-function parseMarkdownLinks(): Map<string, string[]> {
-  const content = fs.readFileSync(MD_FILE, 'utf-8');
-  const groups = new Map<string, string[]>();
-  let current = '';
-
-  for (const line of content.split('\n')) {
-    const sourceMatch = line.match(/^## `(https:\/\/[^`]+)`/);
-    if (sourceMatch) {
-      current = sourceMatch[1];
-      groups.set(current, []);
-    } else if (line.startsWith('- https://') && current) {
-      groups.get(current)!.push(line.slice(2).trim());
-    }
-  }
-  return groups;
-}
 
 /** Converts a URL into a safe filesystem slug for snapshot file names. */
 function urlToSlug(url: string): string {
@@ -37,15 +13,13 @@ function urlToSlug(url: string): string {
 }
 
 // Parsed once at module level so dynamic test titles are available at collection time.
-const storedLinks = parseMarkdownLinks();
-const allStoredUrls = [...new Set([...storedLinks.values()].flat())];
+const storedLinks = new Map<string, string[]>(Object.entries(sidebarLinks));
+const allStoredUrls = [...new Set(Object.values(sidebarLinks).flat())];
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// Full-screen viewport + maximized window — launchOptions must be file-level.
-// viewport: null conflicts with the deviceScaleFactor set by the Desktop Chrome device profile,
-// so we use an explicit 1920x1080 viewport instead.
-test.use({ viewport: { width: 1920, height: 1080 }, launchOptions: { args: ['--start-maximized'] } });
+// Wide viewport so the sidebar is fully visible in headed mode.
+test.use({ viewport: { width: 1920, height: 1080 }, launchOptions: { args: ['--window-size=1920,1080'] } });
 
 test.describe('Playwright Docs Link Monitoring', () => {
   test.beforeEach(({}, testInfo) => {
@@ -57,11 +31,11 @@ test.describe('Playwright Docs Link Monitoring', () => {
   //
   //  For each of the 4 source pages, navigates to the live page and reads
   //  every link from the "Docs sidebar" ARIA region. Soft-asserts that the
-  //  live set exactly matches the baseline in playwright-docs-sidebar-links.md.
+  //  live set exactly matches the baseline in sidebar-links.json.
   //
   //  Failures mean:
-  //    • "URLs added"   → a new link appeared; add it to the MD file.
-  //    • "URLs removed" → an existing link was taken down; remove it from the MD file.
+  //    • "URLs added"   → a new link appeared; add it to sidebar-links.json.
+  //    • "URLs removed" → an existing link was taken down; remove it from sidebar-links.json.
   // ────────────────────────────────────────────────────────────────────────────
   test.describe('Sidebar URL Drift', { tag: ['@regression'] }, () => {
     for (const [sourcePage, storedUrls] of storedLinks) {
@@ -91,9 +65,9 @@ test.describe('Playwright Docs Link Monitoring', () => {
         const added = liveSet.filter((u) => !storedSet.includes(u));
         const removed = storedSet.filter((u) => !liveSet.includes(u));
 
-        expect.soft(added, `URLs added to sidebar — add to playwright-docs-sidebar-links.md:\n  ${added.join('\n  ')}`).toHaveLength(0);
+        expect.soft(added, `URLs added to sidebar — add to sidebar-links.json:\n  ${added.join('\n  ')}`).toHaveLength(0);
 
-        expect.soft(removed, `URLs removed from sidebar — remove from playwright-docs-sidebar-links.md:\n  ${removed.join('\n  ')}`).toHaveLength(0);
+        expect.soft(removed, `URLs removed from sidebar — remove from sidebar-links.json:\n  ${removed.join('\n  ')}`).toHaveLength(0);
       });
     }
   });
