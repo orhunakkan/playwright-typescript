@@ -73,6 +73,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
             npx playwright test tests/e2e/chapter[3-9]*.spec.ts --project="Desktop Chrome" --project="Desktop Firefox" --project="Desktop Edge" --grep "@smoke|@critical"
+            npx playwright test tests/e2e/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
           else
             npx playwright test tests/e2e/chapter[3-9]*.spec.ts --project="Desktop Chrome" --project="Desktop Firefox" --project="Desktop Edge"
           fi

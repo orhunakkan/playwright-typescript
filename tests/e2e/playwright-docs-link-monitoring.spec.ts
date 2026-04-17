@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import fs from 'fs';
 import sidebarLinks from '../../fixtures/playwright-docs-links/sidebar-links.json' with { type: 'json' };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -10,6 +11,21 @@ function urlToSlug(url: string): string {
     .replace(/[^a-zA-Z0-9]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
+}
+
+/** Produces a readable sentence-level diff between two normalized text strings. */
+function computeTextDiff(before: string, after: string): string {
+  const split = (t: string) => t.split(/(?<=[.!?])\s+/).filter(Boolean);
+  const beforeParts = split(before);
+  const afterParts = split(after);
+  const beforeSet = new Set(beforeParts);
+  const afterSet = new Set(afterParts);
+  const removed = beforeParts.filter((s) => !afterSet.has(s));
+  const added = afterParts.filter((s) => !beforeSet.has(s));
+  const lines: string[] = [`Baseline sentences: ${beforeParts.length}`, `Live sentences:     ${afterParts.length}`, ''];
+  if (removed.length) lines.push('━━━ REMOVED ━━━', ...removed.map((s) => `- ${s}`), '');
+  if (added.length) lines.push('━━━ ADDED ━━━', ...added.map((s) => `+ ${s}`));
+  return lines.join('\n');
 }
 
 // Parsed once at module level so dynamic test titles are available at collection time.
@@ -89,13 +105,21 @@ test.describe('Playwright Docs Link Monitoring', () => {
     test.setTimeout(60_000);
 
     for (const url of allStoredUrls) {
-      test(`content unchanged — ${urlToSlug(url)}`, async ({ page }) => {
+      test(`content unchanged — ${urlToSlug(url)}`, async ({ page }, testInfo) => {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
 
         const mainArticle = page.locator('article:not(.yt-lite)');
         await mainArticle.waitFor({ state: 'visible' });
         const raw = (await mainArticle.textContent()) ?? '';
         const normalized = raw.replace(/\s+/g, ' ').trim();
+
+        const snapshotPath = testInfo.snapshotPath(`${urlToSlug(url)}.txt`);
+        if (fs.existsSync(snapshotPath)) {
+          const baseline = fs.readFileSync(snapshotPath, 'utf-8').trim();
+          if (baseline !== normalized) {
+            await testInfo.attach('content-diff.txt', { body: computeTextDiff(baseline, normalized), contentType: 'text/plain' });
+          }
+        }
 
         expect.soft(normalized).toMatchSnapshot(`${urlToSlug(url)}.txt`);
       });
