@@ -12,9 +12,9 @@
 import { test, expect } from '@playwright/test';
 
 test('basic test', async ({ page }, testInfo) => {
-	expect(testInfo.title).toBe('basic test');
+  expect(testInfo.title).toBe('basic test');
 
-	await page.screenshot({ path: testInfo.outputPath('screenshot.png') });
+  await page.screenshot({ path: testInfo.outputPath('screenshot.png') });
 });
 ```
 
@@ -30,9 +30,9 @@ Either path or body must be specified, but not both.
 
 For example, you can attach a screenshot to the test: import { test, expect } from '@playwright/test';test('basic test', async ({ page }, testInfo) => { await page.goto('https://playwright.dev');
 const screenshot = await page.screenshot();
- await testInfo.attach('screenshot', { body: screenshot, contentType: 'image/png' });});
+await testInfo.attach('screenshot', { body: screenshot, contentType: 'image/png' });});
 Or you can attach files returned by your APIs: import { test, expect } from '@playwright/test';import { download } from './my-custom-helpers';test('basic test', async ({}, testInfo) => { const tmpPath = await download('a');
- await testInfo.attach('downloaded', { path: tmpPath });});
+await testInfo.attach('downloaded', { path: tmpPath });});
 notetestInfo.attach() automatically takes care of copying attached files to a location that is accessible to reporters.
 
 You can safely remove the attachment after awaiting the attach call
@@ -91,7 +91,7 @@ Returns a path inside the testInfo.outputDir where the test can safely put a tem
 Guarantees that tests running in parallel will not interfere with each other.
 
 import { test, expect } from '@playwright/test';import fs from 'fs';test('example test', async ({}, testInfo) => { const file = testInfo.outputPath('dir', 'temporary-file.txt');
- await fs.promises.writeFile(file, 'Put some data to the dir/temporary-file.txt', 'utf8');});
+await fs.promises.writeFile(file, 'Put some data to the dir/temporary-file.txt', 'utf8');});
 Note that pathSegments accepts path segments to the test output directory such as testInfo.outputPath('relative', 'path', 'to', 'output').
 
 However, this path must stay within the testInfo.outputDir directory for each test (i.e.

@@ -105,9 +105,9 @@ await apiContext.dispose();});
 
 test('last created issue should be first in the list', async ({ page }) => { const newIssue = await apiContext.post(`/repos/${USER}/${REPO}/issues`, { data: { title: '[Feature] request 1', } });
 expect(newIssue.ok()).toBeTruthy();
- await page.goto(`https://github.com/${USER}/${REPO}/issues`);
+await page.goto(`https://github.com/${USER}/${REPO}/issues`);
 const firstIssue = page.locator(`a[data-hovercard-type='issue']`).first();
- await expect(firstIssue).toHaveText('[Feature] request 1');});
+await expect(firstIssue).toHaveText('[Feature] request 1');});
 
 ## Validating postconditions
 
@@ -124,10 +124,10 @@ baseURL: 'https://api.github.com', extraHTTPHeaders: { // We set this header per
 await apiContext.dispose();});
 
 test('last created issue should be on the server', async ({ page }) => { await page.goto(`https://github.com/${USER}/${REPO}/issues`);
- await page.getByText('New Issue').click();
- await page.getByRole('textbox', { name: 'Title' }).fill('Bug report 1');
- await page.getByRole('textbox', { name: 'Comment body' }).fill('Bug description');
- await page.getByText('Submit new issue').click();
+await page.getByText('New Issue').click();
+await page.getByRole('textbox', { name: 'Title' }).fill('Bug report 1');
+await page.getByRole('textbox', { name: 'Comment body' }).fill('Bug description');
+await page.getByText('Submit new issue').click();
 const issueId = new URL(page.url()).pathname.split('/').pop();
 const newIssue = await apiContext.get( `https://api.github.com/repos/${USER}/${REPO}/issues/${issueId}` );
 expect(newIssue.ok()).toBeTruthy();
@@ -164,13 +164,13 @@ const contextCookies = await context.cookies();
 // The browser context will already contain all the cookies from the API response.
 
 expect(new Map(contextCookies.map(({ name, value }) => [name, value]) )).toEqual(responseCookies);
- await route.fulfill({ response, headers: { ...responseHeaders, foo: 'bar' }, });
+await route.fulfill({ response, headers: { ...responseHeaders, foo: 'bar' }, });
 });
- await page.goto('https://www.github.com/');});
+await page.goto('https://www.github.com/');});
 If you don't want APIRequestContext to use and update cookies from the browser context, you can manually create a new instance of APIRequestContext which will have its own isolated cookies: test('global context request has isolated cookie storage', async ({ page, context, browser, playwright}) => { // Create a new instance of APIRequestContext with isolated cookie storage.
 
 const request = await playwright.request.newContext();
- await context.route('https://www.github.com/', async route => { const response = await request.fetch(route.request());
+await context.route('https://www.github.com/', async route => { const response = await request.fetch(route.request());
 const responseHeaders = response.headers();
 const responseCookies = new Map(responseHeaders['set-cookie'] .split('\n') .map(c => c.split(';', 2)[0].split('=')));
 // The response will have 3 cookies in 'Set-Cookie' header.
@@ -190,7 +190,7 @@ const contextCookies2 = await browserContext2.cookies();
 // The new browser context will already contain all the cookies from the API response.
 
 expect( new Map(contextCookies2.map(({ name, value }) => [name, value])) ).toEqual(responseCookies);
- await route.fulfill({ response, headers: { ...responseHeaders, foo: 'bar' }, });
+await route.fulfill({ response, headers: { ...responseHeaders, foo: 'bar' }, });
 });
- await page.goto('https://www.github.com/');
- await request.dispose();});
+await page.goto('https://www.github.com/');
+await request.dispose();});

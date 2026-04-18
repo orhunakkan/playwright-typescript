@@ -12,10 +12,10 @@ The **PageAssertions** class provides assertion methods that can be used to make
 import { test, expect } from '@playwright/test';
 
 test('navigates to login', async ({ page }) => {
-	// ...
-	await page.getByText('Sign in').click();
+  // ...
+  await page.getByText('Sign in').click();
 
-	await expect(page).toHaveURL(/.*\/login/);
+  await expect(page).toHaveURL(/.*\/login/);
 });
 ```
 

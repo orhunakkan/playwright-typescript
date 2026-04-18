@@ -12,10 +12,10 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-	timeout: 30000,
-	globalTimeout: 600000,
-	reporter: 'list',
-	testDir: './tests',
+  timeout: 30000,
+  globalTimeout: 600000,
+  reporter: 'list',
+  testDir: './tests',
 });
 ```
 
@@ -216,7 +216,7 @@ This directory can be accessed by testInfo.outputDir and testInfo.outputPath().
 Here is an example that uses testInfo.outputPath() to create a temporary file.
 
 import { test, expect } from '@playwright/test';import fs from 'fs';test('example test', async ({}, testInfo) => { const file = testInfo.outputPath('temporary-file.txt');
- await fs.promises.writeFile(file, 'Put some data to the file', 'utf8');});
+await fs.promises.writeFile(file, 'Put some data to the file', 'utf8');});
 preserve
 
 ## Output

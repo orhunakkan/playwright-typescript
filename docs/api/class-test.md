@@ -12,9 +12,9 @@ Playwright Test provides a `test` function to declare tests and `expect` to writ
 import { test, expect } from '@playwright/test';
 
 test('basic test', async ({ page }) => {
-	await page.goto('https://playwright.dev/');
-	const name = await page.innerText('.navbar__title');
-	expect(name).toBe('Playwright');
+  await page.goto('https://playwright.dev/');
+  const name = await page.innerText('.navbar__title');
+  expect(name).toBe('Playwright');
 });
 ```
 
@@ -145,13 +145,13 @@ You can use test.afterEach() to teardown any resources set up in beforeEach.
 test.beforeEach(hookFunction) test.beforeEach(title, hookFunction)
 
 Usage example.spec.tsimport { test, expect } from '@playwright/test';test.beforeEach(async ({ page }) => { console.log(`Running ${test.info().title}`);
- await page.goto('https://my.start.url/');});
+await page.goto('https://my.start.url/');});
 
 test('my test', async ({ page }) => { expect(page.url()).toBe('https://my.start.url/');});
 Alternatively, you can declare a hook with a title.
 
 example.spec.tstest.beforeEach('Open start URL', async ({ page }) => { console.log(`Running ${test.info().title}`);
- await page.goto('https://my.start.url/');});
+await page.goto('https://my.start.url/');});
 
 Arguments title string (optional)
 
@@ -177,7 +177,7 @@ test.describe('two tests', () => { test('one', async ({ page }) => { // ...
 
 });
 
- test('two', async ({ page }) => { // ...
+test('two', async ({ page }) => { // ...
 
 });});
 Anonymous group You can also declare a test group without a title.
@@ -186,11 +186,11 @@ This is convenient to give a group of tests a common option with test.use().
 
 test.describe(() => { test.use({ colorScheme: 'dark' });
 
- test('one', async ({ page }) => { // ...
+test('one', async ({ page }) => { // ...
 
 });
 
- test('two', async ({ page }) => { // ...
+test('two', async ({ page }) => { // ...
 
 });});
 Tags You can tag all tests in a group by providing additional details.
@@ -201,7 +201,7 @@ import { test, expect } from '@playwright/test';test.describe('two tagged tests'
 
 });
 
- test('two', async ({ page }) => { // ...
+test('two', async ({ page }) => { // ...
 
 });});
 Learn more about tagging.
@@ -212,7 +212,7 @@ import { test, expect } from '@playwright/test';test.describe('two annotated tes
 
 });
 
- test('two', async ({ page }) => { // ...
+test('two', async ({ page }) => { // ...
 
 });});
 Learn more about test annotations
@@ -281,13 +281,13 @@ Run multiple describes in parallel, but tests inside each describe in order.
 
 test.describe.configure({ mode: 'parallel' });test.describe('A, runs in parallel with B', () => { test.describe.configure({ mode: 'default' });
 
- test('in order A1', async ({ page }) => {});
+test('in order A1', async ({ page }) => {});
 
- test('in order A2', async ({ page }) => {});});test.describe('B, runs in parallel with A', () => { test.describe.configure({ mode: 'default' });
+test('in order A2', async ({ page }) => {});});test.describe('B, runs in parallel with A', () => { test.describe.configure({ mode: 'default' });
 
- test('in order B1', async ({ page }) => {});
+test('in order B1', async ({ page }) => {});
 
- test('in order B2', async ({ page }) => {});});
+test('in order B2', async ({ page }) => {});});
 
 Arguments options Object (optional) mode "default" | "parallel" | "serial" (optional)# Execution mode.
 
@@ -380,9 +380,7 @@ Added in: v1.10 test.test.extend Extends the test object by defining fixtures an
 
 First define a fixture and/or an option.
 
-
-
- TypeScriptJavaScriptimport { test as base } from '@playwright/test';import { TodoPage } from './todo-page';export type Options = { defaultItem: string };// Extend basic test by providing a "defaultItem" option and a "todoPage" fixture.export const test = base.extend<Options & { todoPage: TodoPage }>({ // Define an option and provide a default value.
+TypeScriptJavaScriptimport { test as base } from '@playwright/test';import { TodoPage } from './todo-page';export type Options = { defaultItem: string };// Extend basic test by providing a "defaultItem" option and a "todoPage" fixture.export const test = base.extend<Options & { todoPage: TodoPage }>({ // Define an option and provide a default value.
 
 // We can later override it in the config.
 
@@ -391,10 +389,10 @@ defaultItem: ['Do stuff', { option: true }], // Define a fixture.
 Note that it can use built-in fixture "page" // and a new option "defaultItem".
 
 todoPage: async ({ page, defaultItem }, use) => { const todoPage = new TodoPage(page);
- await todoPage.goto();
- await todoPage.addToDo(defaultItem);
- await use(todoPage);
- await todoPage.removeAll();
+await todoPage.goto();
+await todoPage.addToDo(defaultItem);
+await use(todoPage);
+await todoPage.removeAll();
 },});my-test.jsconst base = require('@playwright/test');const { TodoPage } = require('./todo-page');// Extend basic test by providing a "defaultItem" option and a "todoPage" fixture.exports.test = base.test.extend({ // Define an option and provide a default value.
 
 // We can later override it in the config.
@@ -404,10 +402,10 @@ defaultItem: ['Do stuff', { option: true }], // Define a fixture.
 Note that it can use built-in fixture "page" // and a new option "defaultItem".
 
 todoPage: async ({ page, defaultItem }, use) => { const todoPage = new TodoPage(page);
- await todoPage.goto();
- await todoPage.addToDo(defaultItem);
- await use(todoPage);
- await todoPage.removeAll();
+await todoPage.goto();
+await todoPage.addToDo(defaultItem);
+await use(todoPage);
+await todoPage.removeAll();
 },});
 Then use the fixture in the test.
 
@@ -415,9 +413,7 @@ example.spec.tsimport { test } from './my-test';test('test 1', async ({ todoPage
 // ...});
 Configure the option in config file.
 
-
-
- TypeScriptJavaScriptplaywright.config.tsimport { defineConfig } from '@playwright/test';import type { Options } from './my-test';export default defineConfig<Options>({ projects: [ { name: 'shopping', use: { defaultItem: 'Buy milk' }, }, { name: 'wellbeing', use: { defaultItem: 'Exercise!' }, }, ]});playwright.config.ts// @ts-checkmodule.exports = defineConfig({ projects: [ { name: 'shopping', use: { defaultItem: 'Buy milk' }, }, { name: 'wellbeing', use: { defaultItem: 'Exercise!' }, }, ]});
+TypeScriptJavaScriptplaywright.config.tsimport { defineConfig } from '@playwright/test';import type { Options } from './my-test';export default defineConfig<Options>({ projects: [ { name: 'shopping', use: { defaultItem: 'Buy milk' }, }, { name: 'wellbeing', use: { defaultItem: 'Exercise!' }, }, ]});playwright.config.ts// @ts-checkmodule.exports = defineConfig({ projects: [ { name: 'shopping', use: { defaultItem: 'Buy milk' }, }, { name: 'wellbeing', use: { defaultItem: 'Exercise!' }, }, ]});
 Learn more about fixtures and parametrizing tests
 
 fixtures Object# An object containing fixtures and/or options. Learn more about fixtures format
@@ -600,17 +596,17 @@ test.describe('group', () => { // Applies to all tests in this group.
 
 test.describe.configure({ timeout: 60000 });
 
- test('test one', async () => { /_ ...
+test('test one', async () => { /\_ ...
 
-_/ });
+\_/ });
 
- test('test two', async () => { /_ ...
+test('test two', async () => { /\_ ...
 
-_/ });
+\_/ });
 
- test('test three', async () => { /_ ...
+test('test three', async () => { /\_ ...
 
-_/ });});
+\_/ });});
 
 Arguments timeout number#
 
@@ -712,7 +708,7 @@ Added in: v1.10 test.test.step Declares a test step that is shown in the report
 import { test, expect } from '@playwright/test';test('test', async ({ page }) => { await test.step('Log in', async () => { // ...
 
 });
- await test.step('Outer step', async () => { // ...
+await test.step('Outer step', async () => { // ...
 
 // You can nest steps inside each other.
 
@@ -766,21 +762,21 @@ function step(target: Function, context: ClassMethodDecoratorContext) { return f
 return test.step(name, async () => { return await target.call(this, ...args);
 }, { box: true });
 };}class LoginPage { constructor(readonly page: Page) {} @step async login() { const account = { username: 'Alice', password: 's3cr3t' };
- await this.page.getByLabel('Username or email address').fill(account.username);
- await this.page.getByLabel('Password').fill(account.password);
- await this.page.getByRole('button', { name: 'Sign in' }).click();
- await expect(this.page.getByRole('button', { name: 'View profile and more' })).toBeVisible();
+await this.page.getByLabel('Username or email address').fill(account.username);
+await this.page.getByLabel('Password').fill(account.password);
+await this.page.getByRole('button', { name: 'Sign in' }).click();
+await expect(this.page.getByRole('button', { name: 'View profile and more' })).toBeVisible();
 }}test('example', async ({ page }) => { const loginPage = new LoginPage(page);
- await loginPage.login();});
+await loginPage.login();});
 Boxing When something inside a step fails, you would usually see the error pointing to the exact action that failed.
 
 For example, consider the following login step: async function login(page) { await test.step('login', async () => { const account = { username: 'Alice', password: 's3cr3t' };
- await page.getByLabel('Username or email address').fill(account.username);
- await page.getByLabel('Password').fill(account.password);
- await page.getByRole('button', { name: 'Sign in' }).click();
- await expect(page.getByRole('button', { name: 'View profile and more' })).toBeVisible();
+await page.getByLabel('Username or email address').fill(account.username);
+await page.getByLabel('Password').fill(account.password);
+await page.getByRole('button', { name: 'Sign in' }).click();
+await expect(page.getByRole('button', { name: 'View profile and more' })).toBeVisible();
 });}test('example', async ({ page }) => { await page.goto('https://github.com/login');
- await login(page);});
+await login(page);});
 Error: Timed out 5000ms waiting for expect(locator).toBeVisible() ...
 
 error details omitted ...
@@ -810,7 +806,7 @@ return test.step(name, async () => { return await target.call(this, ...args);
 };}class LoginPage { constructor(readonly page: Page) {} @boxedStep async login() { // ....
 
 }}test('example', async ({ page }) => { const loginPage = new LoginPage(page);
- await loginPage.login();
+await loginPage.login();
 // <-- Error will be reported on this line.});
 test.step.skip​
 
@@ -861,7 +857,7 @@ test('test with locale', async ({ page }) => { // Default context and page have 
 Arguments options TestOptions# An object with local options
 
 test.use can be called either in the global scope or inside test.describe. It is an error to call it within beforeEach or beforeAll. It is also possible to override a fixture by providing a function. import { test, expect } from '@playwright/test';test.use({ locale: async ({}, use) => { // Read locale from some configuration file. const locale = await fs.promises.readFile('test-locale', 'utf-8');
- await use(locale); },});
+await use(locale); },});
 
 test('test with locale', async ({ page }) => { // Default context and page have locale as specified});
 
@@ -891,7 +887,7 @@ test.describe.parallel(title, callback) test.describe.parallel(callback) test.de
 
 Usage test.describe.parallel('group', () => { test('runs in parallel 1', async ({ page }) => {});
 
- test('runs in parallel 2', async ({ page }) => {});});
+test('runs in parallel 2', async ({ page }) => {});});
 Note that parallel tests are executed in separate processes and cannot share any state or global variables.
 
 Each of the parallel tests executes all relevant hooks.
@@ -924,7 +920,7 @@ test.describe.parallel.only(title, callback) test.describe.parallel.only(callbac
 
 Usage test.describe.parallel.only('group', () => { test('runs in parallel 1', async ({ page }) => {});
 
- test('runs in parallel 2', async ({ page }) => {});});
+test('runs in parallel 2', async ({ page }) => {});});
 You can also omit the title.
 
 test.describe.parallel.only(() => { // ...});
@@ -957,7 +953,7 @@ test.describe.serial(title, callback) test.describe.serial(title) test.describe.
 
 Usage test.describe.serial('group', () => { test('runs first', async ({ page }) => {});
 
- test('runs second', async ({ page }) => {});});
+test('runs second', async ({ page }) => {});});
 You can also omit the title.
 
 test.describe.serial(() => { // ...});
@@ -992,7 +988,7 @@ test.describe.serial.only(title, callback) test.describe.serial.only(title) test
 
 Usage test.describe.serial.only('group', () => { test('runs first', async ({ page }) => { });
 
- test('runs second', async ({ page }) => { });});
+test('runs second', async ({ page }) => { });});
 You can also omit the title.
 
 test.describe.serial.only(() => { // ...});
