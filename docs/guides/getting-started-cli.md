@@ -1,0 +1,119 @@
+# 💻 Playwright — Getting Started CLI
+
+> **Source:** [playwright.dev/docs/getting-started-cli](https://playwright.dev/docs/getting-started-cli)
+
+---
+
+## Introduction
+
+Playwright comes with playwright-cli, a command-line interface for browser automation designed for coding agents. It provides token-efficient browser control through concise CLI commands and installable skills, making it ideal for agents that need to balance browser automation with large codebases and reasoning within limited context windows. playwright-cli vs
+
+## Playwright MCP
+
+playwright-cli is best for coding agents (Claude Code, GitHub Copilot, etc.) that favor token-efficient, skill-based workflows. CLI commands avoid loading large tool schemas and verbose accessibility trees into the model context. MCP is best for specialized agentic loops that benefit from persistent state and iterative reasoning over page structure, such as exploratory automation or long-running autonomous workflows.
+
+## See the MCP getting started guide. Prerequisites
+
+Before you begin, make sure you have the following installed: Node.js 18 or newer
+
+## A coding agent: Claude Code, GitHub Copilot, or similar Installation
+
+Install playwright-cli globally: npm install -g @playwright/cli@latestplaywright-cli --help Alternatively, install @playwright/cli as a local dependency and use npx: npx playwright-cli --help
+
+## Installing skills
+
+Coding agents like Claude Code and GitHub Copilot can use locally installed skills for richer context about available commands: playwright-cli install --skills
+
+## Skills-less operation
+
+You can also point your agent at the CLI directly and let it discover commands on its own: Test the "add todo" flow on https://demo.playwright.dev/todomvc using playwright-cli.
+
+## Check playwright-cli --help for available commands. First Steps
+
+## Interactive demo
+
+Try asking your coding agent: Use playwright skills to test https://demo.playwright.dev/todomvc/.
+
+## Take screenshots for all successful and failing scenarios. Manual walkthrough
+
+You can also run commands manually to see how the CLI works: playwright-cli open https://demo.playwright.dev/todomvc/ --headedplaywright-cli type "Buy groceries"playwright-cli press Enterplaywright-cli type "Water flowers"playwright-cli press Enterplaywright-cli check e21playwright-cli screenshot After each command, the CLI outputs a snapshot of the current page state: ### Page- Page URL: https://demo.playwright.dev/todomvc/#/- Page Title: React • TodoMVC### Snapshot[
+
+## Snapshot](.playwright-cli/page-2026-02-14T19-22-42-679Z.yml) Core Commands
+
+## Interacting with pages
+
+playwright-cli open [url] # open browser, optionally navigate to urlplaywright-cli goto <url> # navigate to a urlplaywright-cli click <ref> [button] # click an elementplaywright-cli type <text> # type text into editable elementplaywright-cli fill <ref> <text> # fill text into editable elementplaywright-cli select <ref> <value> # select an option in a dropdownplaywright-cli check <ref> # check a checkbox or radio buttonplaywright-cli uncheck <ref> # uncheck a checkboxplaywright-cli hover <ref> # hover over elementplaywright-cli drag <startRef> <endRef> # drag and drop between elementsplaywright-cli upload <file> # upload filesplaywright-cli close # close the page
+
+## Targeting elements
+
+Use element refs from snapshots to target elements: playwright-cli snapshot # get snapshot with element refsplaywright-cli click e15 # click using a ref You can also use CSS or role selectors: playwright-cli click "#main > button.submit"playwright-cli click "role=button[name=Submit]"playwright-cli click "#footer >> role=button[name=
+
+## Submit]" Screenshots and snapshots
+
+playwright-cli snapshot # capture page snapshotplaywright-cli snapshot --filename=f # save snapshot to specific fileplaywright-cli screenshot # screenshot of the current pageplaywright-cli screenshot [ref] # screenshot of a specific elementplaywright-cli screenshot --filename=f # save with specific filenameplaywright-cli pdf # save page as
+
+## PDF Navigation
+
+playwright-cli go-back # go backplaywright-cli go-forward # go forwardplaywright-cli reload # reload the page
+
+## Keyboard and mouse
+
+playwright-cli press <key> # press a key (e.g. Enter, ArrowLeft)playwright-cli keydown <key> # key downplaywright-cli keyup <key> # key upplaywright-cli mousemove <x> <y> # move mouseplaywright-cli mousedown [button] # mouse button downplaywright-cli mouseup [button] # mouse button upplaywright-cli mousewheel <dx> <dy> # scroll
+
+## Tabs
+
+playwright-cli tab-list # list all tabsplaywright-cli tab-new [url] # create a new tabplaywright-cli tab-select <index> # select a tabplaywright-cli tab-close [index] # close a tab
+
+## Network
+
+playwright-cli network # list network requests since page loadplaywright-cli route <pattern> [opts] # mock network requestsplaywright-cli route-list # list active routesplaywright-cli unroute [pattern] # remove routes
+
+## Storage
+
+playwright-cli state-save [filename] # save storage state (cookies, localStorage)playwright-cli state-load <filename> # load storage state# Cookiesplaywright-cli cookie-list [--domain] # list cookiesplaywright-cli cookie-get <name> # get a cookieplaywright-cli cookie-set <name> <val> # set a cookieplaywright-cli cookie-delete <name> # delete a cookieplaywright-cli cookie-clear # clear all cookies# localStorageplaywright-cli localstorage-list # list entriesplaywright-cli localstorage-get <key> # get valueplaywright-cli localstorage-set <k> <v> # set valueplaywright-cli localstorage-delete <k> # delete entryplaywright-cli localstorage-clear # clear all
+
+## DevTools
+
+playwright-cli console [min-level] # list console messagesplaywright-cli eval <func> [ref] # evaluate JavaScript on pageplaywright-cli run-code <code> # run Playwright code snippetplaywright-cli tracing-start # start trace recordingplaywright-cli tracing-stop # stop trace recordingplaywright-cli video-start # start video recordingplaywright-cli video-chapter <title> # add chapter marker to videoplaywright-cli video-stop --filename=f # stop video recording
+
+## Sessions
+
+The CLI keeps the browser profile in memory by default — cookies and storage state are preserved between calls within a session but lost when the browser closes.
+
+## Use --persistent to save the profile to disk. Named sessions
+
+Run multiple browser instances for different projects: playwright-cli open https://playwright.devplaywright-cli -s=example open https://example.com --persistentplaywright-cli list # list all sessions You can configure your coding agent to use a specific session: PLAYWRIGHT_CLI_SESSION=todo-app claude .
+
+## Session management
+
+playwright-cli list # list all sessionsplaywright-cli close-all # close all browsersplaywright-cli kill-all # forcefully kill all browser processesplaywright-cli -s=name delete-data # delete user data for a named session
+
+## Monitoring
+
+Use playwright-cli show to open a visual dashboard for observing and controlling all running browser sessions: playwright-cli show The dashboard provides: Session grid — all active sessions grouped by workspace, each with a live screencast preview, session name, current URL, and page title. Click any session to zoom in. Session detail — a live view of the selected session with tab bar, navigation controls, and full remote control. Click into the viewport to take over mouse and keyboard; press
+
+## Escape to release. Configuration
+
+## Headed mode
+
+The CLI runs headless by default. To see the browser: playwright-cli open https://playwright.dev --headed
+
+## Browser selection
+
+playwright-cli open --browser=chrome # use specific browserplaywright-cli open --browser=firefoxplaywright-cli open --browser=webkitplaywright-cli open --browser=msedge
+
+## Configuration file
+
+For advanced settings, use a JSON config file: playwright-cli --config path/to/config.json open example.com The CLI also loads .playwright/cli.config.json automatically if present. The config file supports browser options, context options, network rules, timeouts, and more.
+
+## Run playwright-cli --help for the full list of options. Browser extension
+
+Connect to your existing browser tabs instead of launching a new browser: playwright-cli open --extension This requires the
+
+## Playwright MCP Bridge browser extension to be installed. Quick Reference
+
+ActionCommandInstall CLInpm install -g @playwright/cli@latestInstall skillsplaywright-cli install --skillsOpen a pageplaywright-cli open https://example.comClick an elementplaywright-cli click e15Type textplaywright-cli type "hello world"Take a screenshotplaywright-cli screenshotGet page snapshotplaywright-cli snapshotRun headedplaywright-cli open https://example.com --headedUse Firefoxplaywright-cli open --browser=firefox
+
+## Monitor sessionsplaywright-cli show What's Next
+
+Write tests using web-first assertions, page fixtures, and locators Run your tests on CI Learn more about the Trace Viewer

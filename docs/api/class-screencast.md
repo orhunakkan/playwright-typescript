@@ -1,0 +1,61 @@
+# 📦 Playwright — Screencast
+
+> **Source:** [playwright.dev/docs/api/class-screencast](https://playwright.dev/docs/api/class-screencast)
+
+---
+
+## ScreencastInterface for capturing screencast frames from a page
+
+hide
+
+## Actions
+
+Added in: v1.59 screencast.hideActions Removes action decorations
+
+await screencast.hideActions(); Returns Promise<void># hide
+
+## Overlays
+
+Added in: v1.59 screencast.hideOverlays Hides overlays without removing them
+
+await screencast.hideOverlays(); Returns Promise<void># show
+
+## Actions
+
+Added in: v1.59 screencast.showActions Enables visual annotations on interacted elements
+
+a disposable that stops showing actions when disposed
+
+await screencast.showActions();await screencast.showActions(options); Arguments options Object (optional) duration number (optional)# How long each annotation is displayed in milliseconds. Defaults to 500. fontSize number (optional)# Font size of the action title in pixels. Defaults to 24. position "top-left" | "top" | "top-right" | "bottom-left" | "bottom" | "bottom-right" (optional)# Position of the action title overlay. Defaults to "top-right"
+
+Promise<Disposable># show
+
+## Chapter
+
+Added in: v1.59 screencast.showChapter Shows a chapter overlay with a title and optional description, centered on the page with a blurred backdrop. Useful for narrating video recordings. The overlay is removed after the specified duration, or 2000ms
+
+await screencast.showChapter(title);await screencast.showChapter(title, options); Arguments title string# Title text displayed prominently in the overlay. options Object (optional) description string (optional)# Optional description text displayed below the title. duration number (optional)# Duration in milliseconds after which the overlay is automatically removed. Defaults to 2000
+
+Promise<void># show
+
+## Overlay
+
+Added in: v1.59 screencast.showOverlay Adds an overlay with the given HTML content. The overlay is displayed on top of the page until removed
+
+a disposable that removes the overlay when disposed
+
+await screencast.showOverlay(html);await screencast.showOverlay(html, options); Arguments html string# HTML content for the overlay. options Object (optional) duration number (optional)# Duration in milliseconds after which the overlay is automatically removed. Overlay stays until dismissed if not provided
+
+Promise<Disposable># show
+
+## Overlays
+
+Added in: v1.59 screencast.showOverlays Shows overlays
+
+await screencast.showOverlays(); Returns Promise<void># start​ Added in: v1.59 screencast.start Starts the screencast. When path is provided, it saves video recording to the specified file. When onFrame is provided, delivers JPEG-encoded frames to the callback. Both can be used together
+
+// Record videoawait page.screencast.start({ path: 'video.webm', size: { width: 1280, height: 800 } });// ... perform actions ...await page.screencast.stop(); // Capture framesawait page.screencast.start({ onFrame: ({ data }) => console.log(`frame size: ${data.length}`), size: { width: 800, height: 600 },});// ... perform actions ...await page.screencast.stop(); Arguments options Object (optional) onFrame function(Object):Promise (optional)# data Buffer JPEG-encoded frame data. Callback that receives JPEG-encoded frame data. path string (optional)# Path where the video should be saved when the screencast is stopped. When provided, video recording is started. quality number (optional)# The quality of the image, between 0-100. size Object (optional)# width number Max frame width in pixels. height number Max frame height in pixels. Specifies the dimensions of screencast frames. The actual frame is scaled to preserve the page's aspect ratio and may be smaller than these bounds. If a screencast is already active (e.g. started by tracing or video recording), the existing configuration takes precedence and the frame size may exceed these bounds or this option may be ignored. If not specified the size will be equal to page viewport scaled down to fit into 800×800
+
+Promise<Disposable># stop​ Added in: v1.59 screencast.stop Stops the screencast and video recording if active. If a video was being recorded, saves it to the path specified in screencast.start()
+
+await screencast.stop(); Returns Promise<void>#

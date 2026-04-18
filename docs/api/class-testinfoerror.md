@@ -1,0 +1,25 @@
+# 📦 Playwright — Testinfoerror
+
+> **Source:** [playwright.dev/docs/api/class-testinfoerror](https://playwright.dev/docs/api/class-testinfoerror)
+
+---
+
+## TestInfoErrorInformation about an error thrown during test execution
+
+cause​ Added in: v1.49 testInfoError.cause Error cause. Set when there is a cause for the error. Will be undefined if there is no cause or if the cause is not an instance of
+
+## Error
+
+testInfoError.cause Type TestInfoError message
+
+Added in: v1.10 testInfoError.message Error message. Set when Error (or its subclass) has been thrown.
+
+## Usage testInfoError.message Type string stack
+
+Added in: v1.10 testInfoError.stack Error stack. Set when Error (or its subclass) has been thrown.
+
+## Usage testInfoError.stack Type string value
+
+Added in: v1.10 testInfoError.value The value that was thrown. Set when anything except the Error (or its subclass) has been thrown
+
+testInfoError.value Type string
