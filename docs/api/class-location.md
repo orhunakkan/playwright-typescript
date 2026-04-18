@@ -12,9 +12,7 @@ Represents a location in the source code where `TestCase` or `Suite` is defined.
 
 ## Properties
 
-### column
-
-**Added in:** v1.10
+### `location.column` — Added in: v1.10
 
 Column number in the source file.
 
@@ -26,9 +24,7 @@ location.column;
 
 ---
 
-### file
-
-**Added in:** v1.10
+### `location.file` — Added in: v1.10
 
 Path to the source file.
 
@@ -40,9 +36,7 @@ location.file;
 
 ---
 
-### line
-
-**Added in:** v1.10
+### `location.line` — Added in: v1.10
 
 Line number in the source file.
 

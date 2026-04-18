@@ -6,7 +6,7 @@
 
 ## Overview
 
-Playwright Test provides a `test` function to declare tests and `expect` to write assertions.
+**Playwright Test** provides a `test` function to declare tests and `expect` function to write assertions.
 
 ```ts
 import { test, expect } from '@playwright/test';
@@ -18,987 +18,753 @@ test('basic test', async ({ page }) => {
 });
 ```
 
-## Methods
+---
 
-test​
+### `test(title, body)` — Added in: v1.10
 
-Added in: v1.10 test.test Declares a test.
+Declares a test.
 
-test(title, body) test(title, details, body)
+```ts
+import { test, expect } from '@playwright/test';
 
-Usage import { test, expect } from '@playwright/test';test('basic test', async ({ page }) => { await page.goto('https://playwright.dev/');
-// ...});
-Tags You can tag tests by providing additional test details.
-
-Alternatively, you can include tags in the test title.
-
-Note that each tag must start with @ symbol.
-
-import { test, expect } from '@playwright/test';test('basic test', { tag: '@smoke',}, async ({ page }) => { await page.goto('https://playwright.dev/');
-// ...});
-
-test('another test @smoke', async ({ page }) => { await page.goto('https://playwright.dev/');
-// ...});
-Test tags are displayed in the test report, and are available to a custom reporter via TestCase.tags property.
-
-You can also filter tests by their tags during test execution: in the command line;
-in the config with testConfig.grep and testProject.grep;
-Learn more about tagging.
-
-Annotations You can annotate tests by providing additional test details.
-
-import { test, expect } from '@playwright/test';test('basic test', { annotation: { type: 'issue', description: 'https://github.com/microsoft/playwright/issues/23180', },}, async ({ page }) => { await page.goto('https://playwright.dev/');
-// ...});
-Test annotations are displayed in the test report, and are available to a custom reporter via TestCase.annotations property.
-
-You can also add annotations during runtime by manipulating testInfo.annotations.
-
-Learn more about test annotations
-
-title string# Test title. details Object (optional)
-
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string Annotation type, for example 'issue'. description string (optional) Optional annotation description, for example an issue url. Additional test details. body function(Fixtures, TestInfo)# Test body that takes one or two arguments: an object with fixtures and optional
-
-## TestInfo. test.afterAll
-
-Added in: v1.10 test.test.afterAll Declares an afterAll hook that is executed once per worker after all tests. When called in the scope of a test file, runs after all tests in the file. When called inside a test.describe() group, runs after all tests in the group
-
-test.afterAll(async () => { console.log('Done with tests'); // ...}); Alternatively, you can declare a hook with a title. test.afterAll('Teardown', async () => { console.log('Done with tests'); // ...});
-
-Arguments title string (optional)
-
-Added in: v1.38# Hook title. hookFunction function(Fixtures, TestInfo)# Hook function that takes one or two arguments: an object with worker fixtures and optional TestInfo
-
-When multiple afterAll hooks are added, they will run in the order of their registration. Note that worker process is restarted on test failures, and afterAll hook runs again in the new worker. Learn more about workers and failures. Playwright will continue running all applicable hooks even if some of them have failed. test.after
-
-## All(hookFunction) test.afterAll(title, hookFunction) test.afterEach
-
-Added in: v1.10 test.test.afterEach Declares an afterEach hook that is executed after each test.
-
-When called in the scope of a test file, runs after each test in the file.
-
-When called inside a test.describe() group, runs after each test in the group.
-
-You can access all the same Fixtures as the test body itself, and also the TestInfo object that gives a lot of useful information.
-
-For example, you can check whether the test succeeded or failed.
-
-test.afterEach(hookFunction) test.afterEach(title, hookFunction)
-
-Usage example.spec.tsimport { test, expect } from '@playwright/test';test.afterEach(async ({ page }) => { console.log(`Finished ${test.info().title} with status ${test.info().status}`);
-if (test.info().status !== test.info().expectedStatus) console.log(`Did not run as expected, ended up at ${page.url()}`);});
-
-test('my test', async ({ page }) => { // ...});
-Alternatively, you can declare a hook with a title.
-
-example.spec.tstest.afterEach('Status check', async ({ page }) => { if (test.info().status !== test.info().expectedStatus) console.log(`Did not run as expected, ended up at ${page.url()}`);});
-
-Arguments title string (optional)
-
-Added in: v1.38# Hook title.
-
-hookFunction function(Fixtures, TestInfo)# Hook function that takes one or two arguments: an object with fixtures and optional TestInfo
-
-When multiple afterEach hooks are added, they will run in the order of their registration. Playwright will continue running all applicable hooks even if some of them have failed. test.before
-
-## All
-
-Added in: v1.10 test.test.beforeAll Declares a beforeAll hook that is executed once per worker process before all tests.
-
-When called in the scope of a test file, runs before all tests in the file.
-
-When called inside a test.describe() group, runs before all tests in the group.
-
-You can use test.afterAll() to teardown any resources set up in beforeAll.
-
-test.beforeAll(hookFunction) test.beforeAll(title, hookFunction)
-
-Usage example.spec.tsimport { test, expect } from '@playwright/test';test.beforeAll(async () => { console.log('Before tests');});test.afterAll(async () => { console.log('After tests');});
-
-test('my test', async ({ page }) => { // ...});
-Alternatively, you can declare a hook with a title.
-
-example.spec.tstest.beforeAll('Setup', async () => { console.log('Before tests');});
-
-Arguments title string (optional)
-
-Added in: v1.38# Hook title.
-
-hookFunction function(Fixtures, TestInfo)# Hook function that takes one or two arguments: an object with worker fixtures and optional TestInfo
-
-When multiple beforeAll hooks are added, they will run in the order of their registration. Note that worker process is restarted on test failures, and beforeAll hook runs again in the new worker. Learn more about workers and failures. Playwright will continue running all applicable hooks even if some of them have failed. test.before
-
-## Each
-
-Added in: v1.10 test.test.beforeEach Declares a beforeEach hook that is executed before each test.
-
-When called in the scope of a test file, runs before each test in the file.
-
-When called inside a test.describe() group, runs before each test in the group.
-
-You can access all the same Fixtures as the test body itself, and also the TestInfo object that gives a lot of useful information.
-
-For example, you can navigate the page before starting the test.
-
-You can use test.afterEach() to teardown any resources set up in beforeEach.
-
-test.beforeEach(hookFunction) test.beforeEach(title, hookFunction)
-
-Usage example.spec.tsimport { test, expect } from '@playwright/test';test.beforeEach(async ({ page }) => { console.log(`Running ${test.info().title}`);
-await page.goto('https://my.start.url/');});
-
-test('my test', async ({ page }) => { expect(page.url()).toBe('https://my.start.url/');});
-Alternatively, you can declare a hook with a title.
-
-example.spec.tstest.beforeEach('Open start URL', async ({ page }) => { console.log(`Running ${test.info().title}`);
-await page.goto('https://my.start.url/');});
-
-Arguments title string (optional)
-
-Added in: v1.38# Hook title.
-
-hookFunction function(Fixtures, TestInfo)# Hook function that takes one or two arguments: an object with fixtures and optional TestInfo
-
-When multiple beforeEach hooks are added, they will run in the order of their registration.
-
-Playwright will continue running all applicable hooks even if some of them have failed.
-
-test.describe​
-
-Added in: v1.10 test.test.describe Declares a group of tests.
-
-test.describe(title, callback) test.describe(callback) test.describe(title, details, callback)
-
-Usage You can declare a group of tests with a title.
-
-The title will be visible in the test report as a part of each test's title.
-
-test.describe('two tests', () => { test('one', async ({ page }) => { // ...
-
+test('basic test', async ({ page }) => {
+  await page.goto('https://playwright.dev/');
+  // ...
 });
+```
 
-test('two', async ({ page }) => { // ...
+**Tags and annotations:**
 
-});});
-Anonymous group You can also declare a test group without a title.
+```ts
+import { test, expect } from '@playwright/test';
 
-This is convenient to give a group of tests a common option with test.use().
+test(
+  'basic test',
+  {
+    tag: '@smoke',
+    annotation: { type: 'issue', description: 'https://github.com/microsoft/playwright/issues/23180' },
+  },
+  async ({ page }) => {
+    await page.goto('https://playwright.dev/');
+    // ...
+  }
+);
+```
 
-test.describe(() => { test.use({ colorScheme: 'dark' });
+**Arguments:**
 
-test('one', async ({ page }) => { // ...
+| Parameter            | Type                                 | Description                                                                                     |
+| -------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `title`              | `string`                             | Test title.                                                                                     |
+| `details`            | `Object` (optional)                  | Additional test details.                                                                        |
+| `details.tag`        | `string \| Array<string>` (optional) | Tag or tags to filter tests by. Tags must start with `@`.                                       |
+| `details.annotation` | `Object \| Array<Object>` (optional) | Annotations to add to the test.                                                                 |
+| `body`               | `function(fixtures): Promise<void>`  | Test function that takes one or two arguments: an object with fixtures and optional `TestInfo`. |
 
+---
+
+### `test.afterAll(hookFunction)` — Added in: v1.10
+
+Declares an `afterAll` hook that is executed once per worker after all tests. When called in the scope of a test file, runs after all tests in the file. When called inside a `test.describe()` group, runs after all tests in the group.
+
+```ts
+test.afterAll(async () => {
+  console.log('Done with tests');
+  // cleanup logic here
 });
+```
 
-test('two', async ({ page }) => { // ...
+**With title:**
 
-});});
-Tags You can tag all tests in a group by providing additional details.
-
-Note that each tag must start with @ symbol.
-
-import { test, expect } from '@playwright/test';test.describe('two tagged tests', { tag: '@smoke',}, () => { test('one', async ({ page }) => { // ...
-
+```ts
+test.afterAll('cleanup db', async () => {
+  // cleanup logic here
 });
+```
 
-test('two', async ({ page }) => { // ...
+**Arguments:**
 
-});});
-Learn more about tagging.
+| Parameter      | Type                                | Description                                                                            |
+| -------------- | ----------------------------------- | -------------------------------------------------------------------------------------- |
+| `title`        | `string` (optional)                 | Hook title for debugging.                                                              |
+| `hookFunction` | `function(fixtures): Promise<void>` | Hook function that takes an object with worker-level fixtures and optional `TestInfo`. |
 
-Annotations You can annotate all tests in a group by providing additional details.
+---
 
-import { test, expect } from '@playwright/test';test.describe('two annotated tests', { annotation: { type: 'issue', description: 'https://github.com/microsoft/playwright/issues/23180', },}, () => { test('one', async ({ page }) => { // ...
+### `test.afterEach(hookFunction)` — Added in: v1.10
 
+Declares an `afterEach` hook that is executed after each test. When called in the scope of a test file, runs after each test in the file. When called inside a `test.describe()` group, runs after each test in the group.
+
+```ts
+test.afterEach(async ({ page }, testInfo) => {
+  console.log(`Finished ${testInfo.title} with status ${testInfo.status}`);
+  if (testInfo.status !== testInfo.expectedStatus) console.log(`Did not run as expected, ended up at ${page.url()}`);
 });
+```
 
-test('two', async ({ page }) => { // ...
+**Arguments:**
 
-});});
-Learn more about test annotations
+| Parameter      | Type                                | Description                                                               |
+| -------------- | ----------------------------------- | ------------------------------------------------------------------------- |
+| `title`        | `string` (optional)                 | Hook title for debugging.                                                 |
+| `hookFunction` | `function(fixtures): Promise<void>` | Hook function that takes an object with fixtures and optional `TestInfo`. |
 
-title string (optional)# Group title.
+---
 
-details Object (optional)
+### `test.beforeAll(hookFunction)` — Added in: v1.10
 
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) Additional details for all tests in the group.
+Declares a `beforeAll` hook that is executed once per worker before all tests. When called in the scope of a test file, runs before all tests in the file. When called inside a `test.describe()` group, runs before all tests in the group.
 
-callback function# A callback that is run immediately when calling test.describe().
-
-Any tests declared in this callback will belong to the group.
-
-test.describe.configure​
-
-Added in: v1.10 test.test.describe.configure Configures the enclosing scope.
-
-Can be executed either on the top level or inside a describe.
-
-Configuration applies to the entire scope, regardless of whether it run before or after the test declaration.
-
-Learn more about the execution modes here
-
-Running tests in parallel.
-
-// Run all the tests in the file concurrently using parallel workers.test.describe.configure({ mode: 'parallel' });
-
-test('runs in parallel 1', async ({ page }) => {});
-
-test('runs in parallel 2', async ({ page }) => {});
-Running tests in order, retrying each failed test independently.
-
-This is the default mode.
-
-It can be useful to set it explicitly to override project configuration that uses fullyParallel.
-
-// Tests in this file run in order.
-
-Retries, if any, run independently.test.describe.configure({ mode: 'default' });
-
-test('runs first', async ({ page }) => {});
-
-test('runs second', async ({ page }) => {});
-Running tests serially, retrying from the start.
-
-If one of the serial tests fails, all subsequent tests are skipped.
-
-noteRunning serially is not recommended.
-
-It is usually better to make your tests isolated, so they can be run independently.
-
-// Annotate tests as inter-dependent.test.describe.configure({ mode: 'serial' });
-
-test('runs first', async ({ page }) => {});
-
-test('runs second', async ({ page }) => {});
-Configuring retries and timeout for each test.
-
-// Each test in the file will be retried twice and have a timeout of 20 seconds.test.describe.configure({ retries: 2, timeout: 20_000 });
-
-test('runs first', async ({ page }) => {});
-
-test('runs second', async ({ page }) => {});
-Run multiple describes in parallel, but tests inside each describe in order.
-
-test.describe.configure({ mode: 'parallel' });test.describe('A, runs in parallel with B', () => { test.describe.configure({ mode: 'default' });
-
-test('in order A1', async ({ page }) => {});
-
-test('in order A2', async ({ page }) => {});});test.describe('B, runs in parallel with A', () => { test.describe.configure({ mode: 'default' });
-
-test('in order B1', async ({ page }) => {});
-
-test('in order B2', async ({ page }) => {});});
-
-Arguments options Object (optional) mode "default" | "parallel" | "serial" (optional)# Execution mode.
-
-Learn more about the execution modes here.
-
-retries number (optional)
-
-Added in: v1.28# The number of retries for each test.
-
-timeout number (optional)
-
-Added in: v1.28# Timeout for each test in milliseconds.
-
-## Overrides testProject.timeout and testConfig.timeout.
-
-test.describe.fixme
-
-Added in: v1.25 test.test.describe.fixme Declares a test group similarly to test.describe().
-
-Tests in this group are marked as "fixme" and will not be executed.
-
-test.describe.fixme(title, callback) test.describe.fixme(callback) test.describe.fixme(title, details, callback)
-
-Usage test.describe.fixme('broken tests that should be fixed', () => { test('example', async ({ page }) => { // This test will not run });});
-You can also omit the title.
-
-test.describe.fixme(() => { // ...});
-
-Arguments title string (optional)# Group title.
-
-details Object (optional)
-
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test.describe() for details description.
-
-callback function# A callback that is run immediately when calling test.describe.fixme().
-
-Any tests added in this callback will belong to the group, and will not be run.
-
-test.describe.only​
-
-Added in: v1.10 test.test.describe.only Declares a focused group of tests.
-
-If there are some focused tests or suites, all of them will be run but nothing else.
-
-test.describe.only(title, callback) test.describe.only(callback) test.describe.only(title, details, callback)
-
-Usage test.describe.only('focused group', () => { test('in the focused group', async ({ page }) => { // This test will run });});
-
-test('not in the focused group', async ({ page }) => { // This test will not run});
-You can also omit the title.
-
-test.describe.only(() => { // ...});
-
-Arguments title string (optional)# Group title.
-
-details Object (optional)
-
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test.describe() for details description.
-
-callback function# A callback that is run immediately when calling test.describe.only().
-
-## Any tests added in this callback will belong to the group.
-
-test.describe.skip
-
-Added in: v1.10 test.test.describe.skip Declares a skipped test group, similarly to test.describe().
-
-Tests in the skipped group are never run.
-
-test.describe.skip(title, callback) test.describe.skip(title) test.describe.skip(title, details, callback)
-
-Usage test.describe.skip('skipped group', () => { test('example', async ({ page }) => { // This test will not run });});
-You can also omit the title.
-
-test.describe.skip(() => { // ...});
-
-Arguments title string# Group title.
-
-details Object (optional)
-
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test.describe() for details description.
-
-callback function# A callback that is run immediately when calling test.describe.skip().
-
-Any tests added in this callback will belong to the group, and will not be run.
-
-test.extend​
-
-Added in: v1.10 test.test.extend Extends the test object by defining fixtures and/or options that can be used in the tests
-
-First define a fixture and/or an option.
-
-TypeScriptJavaScriptimport { test as base } from '@playwright/test';import { TodoPage } from './todo-page';export type Options = { defaultItem: string };// Extend basic test by providing a "defaultItem" option and a "todoPage" fixture.export const test = base.extend<Options & { todoPage: TodoPage }>({ // Define an option and provide a default value.
-
-// We can later override it in the config.
-
-defaultItem: ['Do stuff', { option: true }], // Define a fixture.
-
-Note that it can use built-in fixture "page" // and a new option "defaultItem".
-
-todoPage: async ({ page, defaultItem }, use) => { const todoPage = new TodoPage(page);
-await todoPage.goto();
-await todoPage.addToDo(defaultItem);
-await use(todoPage);
-await todoPage.removeAll();
-},});my-test.jsconst base = require('@playwright/test');const { TodoPage } = require('./todo-page');// Extend basic test by providing a "defaultItem" option and a "todoPage" fixture.exports.test = base.test.extend({ // Define an option and provide a default value.
-
-// We can later override it in the config.
-
-defaultItem: ['Do stuff', { option: true }], // Define a fixture.
-
-Note that it can use built-in fixture "page" // and a new option "defaultItem".
-
-todoPage: async ({ page, defaultItem }, use) => { const todoPage = new TodoPage(page);
-await todoPage.goto();
-await todoPage.addToDo(defaultItem);
-await use(todoPage);
-await todoPage.removeAll();
-},});
-Then use the fixture in the test.
-
-example.spec.tsimport { test } from './my-test';test('test 1', async ({ todoPage }) => { await todoPage.addToDo('my todo');
-// ...});
-Configure the option in config file.
-
-TypeScriptJavaScriptplaywright.config.tsimport { defineConfig } from '@playwright/test';import type { Options } from './my-test';export default defineConfig<Options>({ projects: [ { name: 'shopping', use: { defaultItem: 'Buy milk' }, }, { name: 'wellbeing', use: { defaultItem: 'Exercise!' }, }, ]});playwright.config.ts// @ts-checkmodule.exports = defineConfig({ projects: [ { name: 'shopping', use: { defaultItem: 'Buy milk' }, }, { name: 'wellbeing', use: { defaultItem: 'Exercise!' }, }, ]});
-Learn more about fixtures and parametrizing tests
-
-fixtures Object# An object containing fixtures and/or options. Learn more about fixtures format
-
-Test# test.fail​
-
-Added in: v1.10 test.test.fail Marks a test as "should fail".
-
-Playwright runs this test and ensures that it is actually failing.
-
-This is useful for documentation purposes to acknowledge that some functionality is broken until it is fixed.
-
-To declare a "failing" test: test.fail(title, body) test.fail(title, details, body) To annotate test as "failing" at runtime: test.fail(condition, description) test.fail(callback, description) test.fail()
-
-Usage You can declare a test as failing, so that Playwright ensures it actually fails.
-
-import { test, expect } from '@playwright/test';test.fail('not yet ready', async ({ page }) => { // ...});
-If your test fails in some configurations, but not all, you can mark the test as failing inside the test body based on some condition.
-
-We recommend passing a description argument in this case.
-
-import { test, expect } from '@playwright/test';test('fail in WebKit', async ({ page, browserName }) => { test.fail(browserName === 'webkit', 'This feature is not implemented for Mac yet');
-// ...});
-You can mark all tests in a file or test.describe() group as "should fail" based on some condition with a single test.fail(callback, description) call.
-
-import { test, expect } from '@playwright/test';test.fail(({ browserName }) => browserName === 'webkit', 'not implemented yet');test('fail in WebKit 1', async ({ page }) => { // ...});
-
-test('fail in WebKit 2', async ({ page }) => { // ...});
-You can also call test.fail() without arguments inside the test body to always mark the test as failed.
-
-We recommend declaring a failing test with test.fail(title, body) instead.
-
-import { test, expect } from '@playwright/test';test('less readable', async ({ page }) => { test.fail();
-// ...});
-
-Arguments title string (optional)
-
-Added in: v1.42# Test title.
-
-details Object (optional)
-
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test() for test details description.
-
-body function(Fixtures, TestInfo) (optional)
-
-Added in: v1.42# Test body that takes one or two arguments: an object with fixtures and optional TestInfo.
-
-condition boolean (optional)# Test is marked as "should fail" when the condition is true.
-
-callback function(Fixtures):boolean (optional)# A function that returns whether to mark as "should fail", based on test fixtures.
-
-Test or tests are marked as "should fail" when the return value is true.
-
-description string (optional)#
-
-## Optional description that will be reflected in a test report.
-
-test.fail.only
-
-Added in: v1.49 test.test.fail.only You can use test.fail.only to focus on a specific test that is expected to fail.
-
-This is particularly useful when debugging a failing test or working on a specific issue.
-
-To declare a focused "failing" test: test.fail.only(title, body) test.fail.only(title, details, body)
-
-Usage You can declare a focused failing test, so that Playwright runs only this test and ensures it actually fails.
-
-import { test, expect } from '@playwright/test';test.fail.only('focused failing test', async ({ page }) => { // This test is expected to fail});
-
-test('not in the focused group', async ({ page }) => { // This test will not run});
-
-Arguments title string (optional)# Test title.
-
-details Object (optional)# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test.describe() for test details description.
-
-body function(Fixtures, TestInfo) (optional)# Test body that takes one or two arguments: an object with fixtures and optional
-
-## TestInfo.
-
-test.fixme
-
-Added in: v1.10 test.test.fixme Mark a test as "fixme", with the intention to fix it.
-
-Playwright will not run the test past the test.fixme() call.
-
-To declare a "fixme" test: test.fixme(title, body) test.fixme(title, details, body) To annotate test as "fixme" at runtime: test.fixme(condition, description) test.fixme(callback, description) test.fixme()
-
-Usage You can declare a test as to be fixed, and Playwright will not run it.
-
-import { test, expect } from '@playwright/test';test.fixme('to be fixed', async ({ page }) => { // ...});
-If your test should be fixed in some configurations, but not all, you can mark the test as "fixme" inside the test body based on some condition.
-
-We recommend passing a description argument in this case.
-
-Playwright will run the test, but abort it immediately after the test.fixme call.
-
-import { test, expect } from '@playwright/test';test('to be fixed in Safari', async ({ page, browserName }) => { test.fixme(browserName === 'webkit', 'This feature breaks in Safari for some reason');
-// ...});
-You can mark all tests in a file or test.describe() group as "fixme" based on some condition with a single test.fixme(callback, description) call.
-
-import { test, expect } from '@playwright/test';test.fixme(({ browserName }) => browserName === 'webkit', 'Should figure out the issue');test('to be fixed in Safari 1', async ({ page }) => { // ...});
-
-test('to be fixed in Safari 2', async ({ page }) => { // ...});
-You can also call test.fixme() without arguments inside the test body to always mark the test as failed.
-
-We recommend using test.fixme(title, body) instead.
-
-import { test, expect } from '@playwright/test';test('less readable', async ({ page }) => { test.fixme();
-// ...});
-
-Arguments title string (optional)# Test title.
-
-details Object (optional)
-
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test() for test details description.
-
-body function(Fixtures, TestInfo) (optional)# Test body that takes one or two arguments: an object with fixtures and optional TestInfo.
-
-condition boolean (optional)# Test is marked as "fixme" when the condition is true.
-
-callback function(Fixtures):boolean (optional)# A function that returns whether to mark as "fixme", based on test fixtures.
-
-Test or tests are marked as "fixme" when the return value is true.
-
-description string (optional)#
-
-## Optional description that will be reflected in a test report. test.info
-
-Added in: v1.10 test.test.info
-
-Returns information about the currently running test. This method can only be called during the test execution, otherwise it throws
-
-test('example test', async ({ page }) => { // ...
-
-await test.info().attach('screenshot', { body: await page.screenshot(), contentType: 'image/png', });});
-
-Returns TestInfo# test.only​
-
-Added in: v1.10 test.test.only Declares a focused test.
-
-If there are some focused tests or suites, all of them will be run but nothing else.
-
-test.only(title, body) test.only(title, details, body)
-
-Usage test.only('focus this test', async ({ page }) => { // Run only focused tests in the entire project.});
-
-Arguments title string# Test title.
-
-details Object (optional)
-
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test() for test details description.
-
-body function(Fixtures, TestInfo)# Test body that takes one or two arguments: an object with fixtures and optional
-
-## TestInfo. test.setTimeout
-
-Added in: v1.10 test.test.setTimeout Changes the timeout for the test. Zero means no timeout. Learn more about various timeouts. Timeout for the currently running test is available through testInfo.timeout
-
-Changing test timeout.
-
-test('very slow test', async ({ page }) => { test.setTimeout(120000);
-// ...});
-Changing timeout from a slow beforeEach hook.
-
-Note that this affects the test timeout that is shared with beforeEach hooks.
-
-test.beforeEach(async ({ page }, testInfo) => { // Extend timeout for all tests running this hook by 30 seconds.
-
-test.setTimeout(testInfo.timeout + 30000);});
-Changing timeout for a beforeAll or afterAll hook.
-
-Note this affects the hook's timeout, not the test timeout.
-
-test.beforeAll(async () => { // Set timeout for this hook.
-
-test.setTimeout(60000);});
-Changing timeout for all tests in a test.describe() group.
-
-test.describe('group', () => { // Applies to all tests in this group.
-
-test.describe.configure({ timeout: 60000 });
-
-test('test one', async () => { /\_ ...
-
-\_/ });
-
-test('test two', async () => { /\_ ...
-
-\_/ });
-
-test('test three', async () => { /\_ ...
-
-\_/ });});
-
-Arguments timeout number#
-
-## Timeout in milliseconds.
-
-test.skip
-
-Added in: v1.10 test.test.skip Skip a test.
-
-Playwright will not run the test past the test.skip() call.
-
-Skipped tests are not supposed to be ever run.
-
-If you intend to fix the test, use test.fixme() instead.
-
-To declare a skipped test: test.skip(title, body) test.skip(title, details, body) To skip a test at runtime: test.skip(condition, description) test.skip(callback, description) test.skip()
-
-Usage You can declare a skipped test, and Playwright will not run it.
-
-import { test, expect } from '@playwright/test';test.skip('never run', async ({ page }) => { // ...});
-If your test should be skipped in some configurations, but not all, you can skip the test inside the test body based on some condition.
-
-We recommend passing a description argument in this case.
-
-Playwright will run the test, but abort it immediately after the test.skip call.
-
-import { test, expect } from '@playwright/test';test('Safari-only test', async ({ page, browserName }) => { test.skip(browserName !== 'webkit', 'This feature is Safari-only');
-// ...});
-You can skip all tests in a file or test.describe() group based on some condition with a single test.skip(callback, description) call.
-
-import { test, expect } from '@playwright/test';test.skip(({ browserName }) => browserName !== 'webkit', 'Safari-only');test('Safari-only test 1', async ({ page }) => { // ...});
-
-test('Safari-only test 2', async ({ page }) => { // ...});
-You can also call test.skip() without arguments inside the test body to always skip the test.
-
-However, we recommend using test.skip(title, body) instead.
-
-import { test, expect } from '@playwright/test';test('less readable', async ({ page }) => { test.skip();
-// ...});
-
-Arguments title string (optional)# Test title.
-
-details Object (optional)
-
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test() for test details description.
-
-body function(Fixtures, TestInfo) (optional)# Test body that takes one or two arguments: an object with fixtures and optional TestInfo.
-
-condition boolean (optional)# Test is marked as "skipped" when the condition is true.
-
-callback function(Fixtures):boolean (optional)# A function that returns whether to mark as "skipped", based on test fixtures.
-
-Test or tests are marked as "skipped" when the return value is true.
-
-description string (optional)#
-
-## Optional description that will be reflected in a test report.
-
-test.slow
-
-Added in: v1.10 test.test.slow Marks a test as "slow".
-
-Slow test will be given triple the default timeout.
-
-Note that test.slow() cannot be used in a beforeAll or afterAll hook.
-
-Use test.setTimeout() instead.
-
-test.slow() test.slow(condition, description) test.slow(callback, description)
-
-Usage You can mark a test as slow by calling test.slow() inside the test body.
-
-import { test, expect } from '@playwright/test';test('slow test', async ({ page }) => { test.slow();
-// ...});
-If your test is slow in some configurations, but not all, you can mark it as slow based on a condition.
-
-We recommend passing a description argument in this case.
-
-import { test, expect } from '@playwright/test';test('slow in Safari', async ({ page, browserName }) => { test.slow(browserName === 'webkit', 'This feature is slow in Safari');
-// ...});
-You can mark all tests in a file or test.describe() group as "slow" based on some condition by passing a callback.
-
-import { test, expect } from '@playwright/test';test.slow(({ browserName }) => browserName === 'webkit', 'all tests are slow in Safari');test('slow in Safari 1', async ({ page }) => { // ...});
-
-test('fail in Safari 2', async ({ page }) => { // ...});
-
-Arguments condition boolean (optional)# Test is marked as "slow" when the condition is true.
-
-callback function(Fixtures):boolean (optional)# A function that returns whether to mark as "slow", based on test fixtures.
-
-Test or tests are marked as "slow" when the return value is true.
-
-description string (optional)#
-
-## Optional description that will be reflected in a test report. test.step
-
-Added in: v1.10 test.test.step Declares a test step that is shown in the report
-
-import { test, expect } from '@playwright/test';test('test', async ({ page }) => { await test.step('Log in', async () => { // ...
-
+```ts
+test.beforeAll(async () => {
+  // Start services.
 });
-await test.step('Outer step', async () => { // ...
+```
 
-// You can nest steps inside each other.
+**With title:**
 
-await test.step('Inner step', async () => { // ...
-
+```ts
+test.beforeAll('start server', async () => {
+  // Start services.
 });
-});});
+```
 
-Arguments title string# Step name.
+**Arguments:**
 
-body function(TestStepInfo):Promise<Object># Step body.
+| Parameter      | Type                                | Description                                                                            |
+| -------------- | ----------------------------------- | -------------------------------------------------------------------------------------- |
+| `title`        | `string` (optional)                 | Hook title for debugging.                                                              |
+| `hookFunction` | `function(fixtures): Promise<void>` | Hook function that takes an object with worker-level fixtures and optional `TestInfo`. |
 
-options Object (optional) box boolean (optional)
+> **Note:** `test.beforeAll()` is executed in the worker process. You can share data between `beforeAll` hooks and tests via worker-level fixtures (`scope: 'worker'`). Only test-level fixtures (default scope) are available in regular `test()` calls.
 
-Added in: v1.39# Whether to box the step in the report.
+---
 
-Defaults to false.
+### `test.beforeEach(hookFunction)` — Added in: v1.10
 
-When the step is boxed, errors thrown from the step internals point to the step call site.
+Declares a `beforeEach` hook that is executed before each test. When called in the scope of a test file, runs before each test in the file. When called inside a `test.describe()` group, runs before each test in the group.
 
-See below for more details.
-
-location Location (optional)
-
-Added in: v1.48# Specifies a custom location for the step to be shown in test reports and trace viewer.
-
-By default, location of the test.step() call is shown.
-
-timeout number (optional)
-
-Added in: v1.50# The maximum time, in milliseconds, allowed for the step to complete.
-
-If the step does not complete within the specified timeout, the test.step() method will throw a TimeoutError.
-
-Defaults to 0 (no timeout)
-
-Promise<Object>#
-
-Details The method returns the value returned by the step callback.
-
-import { test, expect } from '@playwright/test';test('test', async ({ page }) => { const user = await test.step('Log in', async () => { // ...
-
-return 'john';
+```ts
+test.beforeEach(async ({ page }, testInfo) => {
+  console.log(`Running ${testInfo.title}`);
+  await page.goto('https://my.start.url/');
 });
-expect(user).toBe('john');});
-Decorator You can use TypeScript method decorators to turn a method into a step.
+```
+
+**Arguments:**
+
+| Parameter      | Type                                | Description                                                               |
+| -------------- | ----------------------------------- | ------------------------------------------------------------------------- |
+| `title`        | `string` (optional)                 | Hook title for debugging.                                                 |
+| `hookFunction` | `function(fixtures): Promise<void>` | Hook function that takes an object with fixtures and optional `TestInfo`. |
+
+---
+
+### `test.describe(title, callback)` — Added in: v1.10
+
+Declares a group of tests.
+
+```ts
+test.describe('two tests', () => {
+  test('one', async ({ page }) => {
+    // ...
+  });
+  test('two', async ({ page }) => {
+    // ...
+  });
+});
+```
+
+**With tags and annotations:**
+
+```ts
+test.describe(
+  'two tests',
+  {
+    tag: '@smoke',
+  },
+  () => {
+    test('one', async ({ page }) => {
+      /* ... */
+    });
+    test('two', async ({ page }) => {
+      /* ... */
+    });
+  }
+);
+```
+
+**Anonymous describe:**
+
+```ts
+test.describe(() => {
+  let sharedVariable: string;
+  test.beforeAll(async () => {
+    sharedVariable = 'shared';
+  });
+  test('one', async ({ page }) => {
+    /* use sharedVariable */
+  });
+});
+```
+
+**Arguments:**
+
+| Parameter            | Type                                 | Description                              |
+| -------------------- | ------------------------------------ | ---------------------------------------- |
+| `title`              | `string`                             | Group title.                             |
+| `details`            | `Object` (optional)                  | Additional group details.                |
+| `details.tag`        | `string \| Array<string>` (optional) | Tags for all tests in this group.        |
+| `details.annotation` | `Object \| Array<Object>` (optional) | Annotations for all tests in this group. |
+| `callback`           | `function`                           | Group body.                              |
+
+---
+
+### `test.describe.configure(options?)` — Added in: v1.10
+
+Configures the enclosing scope. Can be executed either in the global scope or inside `test.describe()`.
+
+```ts
+// Set parallel mode for all tests in the file.
+test.describe.configure({ mode: 'parallel' });
+
+// Set retries for a group.
+test.describe('group', () => {
+  test.describe.configure({ retries: 2, timeout: 20_000 });
+  test('runs with retries and timeout', async ({ page }) => {
+    /* ... */
+  });
+});
+```
+
+**Arguments:**
+
+| Parameter               | Type                                             | Description                                 |
+| ----------------------- | ------------------------------------------------ | ------------------------------------------- |
+| `options.fullyParallel` | `boolean` (optional)                             | Whether tests in the group run in parallel. |
+| `options.mode`          | `"default" \| "parallel" \| "serial"` (optional) | Execution mode for this group.              |
+| `options.retries`       | `number` (optional, v1.28)                       | Number of retries for each test.            |
+| `options.timeout`       | `number` (optional, v1.28)                       | Timeout in milliseconds for each test.      |
+
+---
+
+### `test.describe.fixme(title, callback)` — Added in: v1.25
+
+Declares a group of tests to be fixed (marked as fixme). Tests inside are not run, but shown in reports as fixme. Behaves similarly to `test.describe()` but marks all tests as fixme.
+
+```ts
+test.describe.fixme('broken tests', () => {
+  test('one', async ({ page }) => {
+    /* won't run */
+  });
+  test('two', async ({ page }) => {
+    /* won't run */
+  });
+});
+```
 
-Each call to the decorated method will show up as a step in the report.
+**Arguments:**
 
-function step(target: Function, context: ClassMethodDecoratorContext) { return function replacementMethod(...args: any) { const name = this.constructor.name + '.' + (context.name as string);
-return test.step(name, async () => { return await target.call(this, ...args);
-}, { box: true });
-};}class LoginPage { constructor(readonly page: Page) {} @step async login() { const account = { username: 'Alice', password: 's3cr3t' };
-await this.page.getByLabel('Username or email address').fill(account.username);
-await this.page.getByLabel('Password').fill(account.password);
-await this.page.getByRole('button', { name: 'Sign in' }).click();
-await expect(this.page.getByRole('button', { name: 'View profile and more' })).toBeVisible();
-}}test('example', async ({ page }) => { const loginPage = new LoginPage(page);
-await loginPage.login();});
-Boxing When something inside a step fails, you would usually see the error pointing to the exact action that failed.
+| Parameter  | Type                | Description               |
+| ---------- | ------------------- | ------------------------- |
+| `title`    | `string`            | Group title.              |
+| `details`  | `Object` (optional) | Additional group details. |
+| `callback` | `function`          | Group body.               |
 
-For example, consider the following login step: async function login(page) { await test.step('login', async () => { const account = { username: 'Alice', password: 's3cr3t' };
-await page.getByLabel('Username or email address').fill(account.username);
-await page.getByLabel('Password').fill(account.password);
-await page.getByRole('button', { name: 'Sign in' }).click();
-await expect(page.getByRole('button', { name: 'View profile and more' })).toBeVisible();
-});}test('example', async ({ page }) => { await page.goto('https://github.com/login');
-await login(page);});
-Error: Timed out 5000ms waiting for expect(locator).toBeVisible() ...
+---
 
-error details omitted ...
+### `test.describe.only(title, callback)` — Added in: v1.10
+
+Declares a focused group of tests. If there are some focused tests or suites, all of them will be run but nothing else.
 
-8 | await page.getByRole('button', { name: 'Sign in' }).click();> 9 | await expect(page.getByRole('button', { name: 'View profile and more' })).toBeVisible();
-| ^ 10 | });
-As we see above, the test may fail with an error pointing inside the step.
+```ts
+test.describe.only('focused group', () => {
+  test('one', async ({ page }) => {
+    /* runs */
+  });
+  test('two', async ({ page }) => {
+    /* runs */
+  });
+});
+test('not in the focused group', async ({ page }) => {
+  /* won't run */
+});
+```
+
+**Arguments:**
 
-If you would like the error to highlight the "login" step instead of its internals, use the box option.
+| Parameter  | Type                | Description               |
+| ---------- | ------------------- | ------------------------- |
+| `title`    | `string`            | Group title.              |
+| `details`  | `Object` (optional) | Additional group details. |
+| `callback` | `function`          | Group body.               |
 
-An error inside a boxed step points to the step call site.
+---
 
-async function login(page) { await test.step('login', async () => { // ...
+### `test.describe.skip(title, callback)` — Added in: v1.10
 
-}, { box: true });
-// Note the "box" option here.} Error: Timed out 5000ms waiting for expect(locator).toBeVisible() ...
+Declares a skipped group of tests. Tests inside are not run, and shown in the report as skipped.
 
-error details omitted ...
+```ts
+test.describe.skip('skipped group', () => {
+  test('one', async ({ page }) => {
+    /* won't run */
+  });
+  test('two', async ({ page }) => {
+    /* won't run */
+  });
+});
+```
 
-14 | await page.goto('https://github.com/login');> 15 | await login(page);
-| ^ 16 | });
-You can also create a TypeScript decorator for a boxed step, similar to a regular step decorator above: function boxedStep(target: Function, context: ClassMethodDecoratorContext) { return function replacementMethod(...args: any) { const name = this.constructor.name + '.' + (context.name as string);
-return test.step(name, async () => { return await target.call(this, ...args);
-}, { box: true });
-// Note the "box" option here.
+**Arguments:**
 
-};}class LoginPage { constructor(readonly page: Page) {} @boxedStep async login() { // ....
+| Parameter  | Type                | Description               |
+| ---------- | ------------------- | ------------------------- |
+| `title`    | `string`            | Group title.              |
+| `details`  | `Object` (optional) | Additional group details. |
+| `callback` | `function`          | Group body.               |
 
-}}test('example', async ({ page }) => { const loginPage = new LoginPage(page);
-await loginPage.login();
-// <-- Error will be reported on this line.});
-test.step.skip​
+---
 
-Added in: v1.50 test.test.step.skip Mark a test step as "skip" to temporarily disable its execution, useful for steps that are currently failing and planned for a near-term fix.
+### `test.extend(fixtures)` — Added in: v1.10
 
-Playwright will not run the step.
+Extends the `test` object by defining fixtures and/or options that can be used in the tests.
 
-See also testStepInfo.skip().
+```ts
+import { test as base } from '@playwright/test';
 
-We recommend testStepInfo.skip() instead
+export const test = base.extend<{ admin: AdminPage; userPage: UserPage }>({
+  adminPage: async ({ page }, use) => {
+    await use(new AdminPage(page));
+  },
+  userPage: async ({ page }, use) => {
+    await use(new UserPage(page));
+  },
+});
+```
 
-You can declare a skipped step, and Playwright will not run it.
+**Arguments:**
 
-import { test, expect } from '@playwright/test';test('my test', async ({ page }) => { // ...
+| Parameter  | Type     | Description                                                                     |
+| ---------- | -------- | ------------------------------------------------------------------------------- |
+| `fixtures` | `Object` | An object containing fixtures and/or options. Learn more about fixtures format. |
 
-await test.step.skip('not yet ready', async () => { // ...
+**Returns:** `Test`
 
-});});
+---
 
-Arguments title string# Step name.
+### `test.fail(title, body)` — Added in: v1.10
 
-body function():Promise<Object># Step body.
+Marks a test as failing. Playwright Test runs this test and ensures that it is actually failing. This is useful for documentation purposes to acknowledge that some functionality is broken until it is fixed.
 
-options Object (optional) box boolean (optional)# Whether to box the step in the report.
+```ts
+import { test, expect } from '@playwright/test';
 
-Defaults to false.
+test.fail('not yet ready', async ({ page }) => {
+  // ...
+});
+```
 
-When the step is boxed, errors thrown from the step internals point to the step call site.
+**Runtime variant:**
 
-See below for more details.
+```ts
+test('sometimes fails', async ({ page }, testInfo) => {
+  const condition = // some condition
+    test.fail(condition, 'This feature is broken on this condition');
+  // ...
+});
+```
 
-location Location (optional)# Specifies a custom location for the step to be shown in test reports and trace viewer.
+**Arguments (declaration form):**
 
-By default, location of the test.step() call is shown.
+| Parameter | Type                                | Description              |
+| --------- | ----------------------------------- | ------------------------ |
+| `title`   | `string`                            | Test title.              |
+| `details` | `Object` (optional)                 | Additional test details. |
+| `body`    | `function(fixtures): Promise<void>` | Test function.           |
 
-timeout number (optional)# Maximum time in milliseconds for the step to finish.
+**Arguments (runtime form):**
 
-Defaults to 0 (no timeout)
+| Parameter     | Type                  | Description                                              |
+| ------------- | --------------------- | -------------------------------------------------------- |
+| `condition`   | `boolean` (optional)  | Test is marked as failing when condition is `true`.      |
+| `callback`    | `function` (optional) | Optional condition function called with test info.       |
+| `description` | `string` (optional)   | Optional description explaining why the test is failing. |
 
-Promise<void># test.use​
+---
 
-Added in: v1.10 test.test.use Specifies options or fixtures to use in a single test file or a test.describe() group. Most useful to set an option, for example set locale to configure context fixture
+### `test.fail.only(title, body)` — Added in: v1.49
 
-import { test, expect } from '@playwright/test';test.use({ locale: 'en-US' });
+Marks a test as failing and focuses it. Same as combining `test.fail()` and `test.only()`.
 
-test('test with locale', async ({ page }) => { // Default context and page have locale as specified});
+```ts
+test.fail.only('focused failing test', async ({ page }) => {
+  // expected to fail
+});
+```
 
-Arguments options TestOptions# An object with local options
+**Arguments:**
 
-test.use can be called either in the global scope or inside test.describe. It is an error to call it within beforeEach or beforeAll. It is also possible to override a fixture by providing a function. import { test, expect } from '@playwright/test';test.use({ locale: async ({}, use) => { // Read locale from some configuration file. const locale = await fs.promises.readFile('test-locale', 'utf-8');
-await use(locale); },});
+| Parameter | Type                                | Description              |
+| --------- | ----------------------------------- | ------------------------ |
+| `title`   | `string`                            | Test title.              |
+| `details` | `Object` (optional)                 | Additional test details. |
+| `body`    | `function(fixtures): Promise<void>` | Test function.           |
 
-test('test with locale', async ({ page }) => { // Default context and page have locale as specified});
+---
 
-##
+### `test.fixme(title, body)` — Added in: v1.10
 
-Properties
+Marks a test as fixme, with the intention to fix it. Test is immediately aborted when you call `test.fixme()`. Mark a test as fixme without running it:
 
-test.expect​
+```ts
+import { test, expect } from '@playwright/test';
 
-Added in: v1.10 test.test.expect expect function can be used to create test assertions. Read more about test assertions
+test.fixme('test to be fixed', async ({ page }) => {
+  // ...
+});
+```
 
-test('example', async ({ page }) => { await test.expect(page).toHaveTitle('Title');});
+**Runtime variant — call inside the test to abort immediately:**
 
-##
+```ts
+test('sometimes broken', async ({ page }) => {
+  const condition = // some condition
+    test.fixme(condition, 'This test is broken in this condition');
+  // ...
+});
+```
 
-Type Object Deprecated
+**Arguments (declaration form):**
 
-test.describe.parallel​
+| Parameter | Type                                | Description              |
+| --------- | ----------------------------------- | ------------------------ |
+| `title`   | `string`                            | Test title.              |
+| `details` | `Object` (optional)                 | Additional test details. |
+| `body`    | `function(fixtures): Promise<void>` | Test function.           |
 
-Added in: v1.10 test.test.describe.parallel DiscouragedSee test.describe.configure() for the preferred way of configuring the execution mode.
+**Arguments (runtime form):**
 
-Declares a group of tests that could be run in parallel.
+| Parameter     | Type                  | Description                                        |
+| ------------- | --------------------- | -------------------------------------------------- |
+| `condition`   | `boolean` (optional)  | Test is marked as fixme when condition is `true`.  |
+| `callback`    | `function` (optional) | Optional condition function called with test info. |
+| `description` | `string` (optional)   | Optional description.                              |
 
-By default, tests in a single test file run one after another, but using test.describe.parallel() allows them to run in parallel.
+---
 
-test.describe.parallel(title, callback) test.describe.parallel(callback) test.describe.parallel(title, details, callback)
+### `test.info()` — Added in: v1.10
 
-Usage test.describe.parallel('group', () => { test('runs in parallel 1', async ({ page }) => {});
+Returns information about the currently running test. This method can only be called during the test execution, otherwise it throws.
 
-test('runs in parallel 2', async ({ page }) => {});});
-Note that parallel tests are executed in separate processes and cannot share any state or global variables.
+```ts
+test('example test', async ({ page }) => {
+  const info = test.info();
+  console.log(info.title);
+  console.log(info.status);
+});
+```
 
-Each of the parallel tests executes all relevant hooks.
+**Returns:** `TestInfo`
 
-You can also omit the title.
+---
 
-test.describe.parallel(() => { // ...});
+### `test.only(title, body)` — Added in: v1.10
 
-Arguments title string (optional)# Group title.
+Declares a focused test. If there are some focused tests or suites, all of them will be run but nothing else.
 
-details Object (optional)
+```ts
+test.only('focus this test', async ({ page }) => {
+  // Run only focused tests in the entire project.
+});
+```
 
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test.describe() for details description.
+**Arguments:**
 
-callback function# A callback that is run immediately when calling test.describe.parallel().
+| Parameter | Type                                | Description              |
+| --------- | ----------------------------------- | ------------------------ |
+| `title`   | `string`                            | Test title.              |
+| `details` | `Object` (optional)                 | Additional test details. |
+| `body`    | `function(fixtures): Promise<void>` | Test function.           |
 
-Any tests added in this callback will belong to the group.
+---
 
-test.describe.parallel.only​
+### `test.setTimeout(timeout)` — Added in: v1.10
 
-Added in: v1.10 test.test.describe.parallel.only DiscouragedSee test.describe.configure() for the preferred way of configuring the execution mode.
+Changes the timeout for the currently running test. Zero means no timeout. Learn more about various timeouts.
 
-Declares a focused group of tests that could be run in parallel.
+```ts
+test('very slow test', async ({ page }) => {
+  test.setTimeout(120000);
+  // ...
+});
+```
 
-This is similar to test.describe.parallel(), but focuses the group.
+**Changing timeout from a slow `beforeEach` hook:**
 
-If there are some focused tests or suites, all of them will be run but nothing else.
+```ts
+test.beforeEach(async ({ page }, testInfo) => {
+  // Extend timeout for all tests running this hook
+  testInfo.setTimeout(testInfo.timeout + 30000);
+});
+```
 
-test.describe.parallel.only(title, callback) test.describe.parallel.only(callback) test.describe.parallel.only(title, details, callback)
+**Arguments:**
 
-Usage test.describe.parallel.only('group', () => { test('runs in parallel 1', async ({ page }) => {});
+| Parameter | Type     | Description              |
+| --------- | -------- | ------------------------ |
+| `timeout` | `number` | Timeout in milliseconds. |
 
-test('runs in parallel 2', async ({ page }) => {});});
-You can also omit the title.
+---
 
-test.describe.parallel.only(() => { // ...});
+### `test.skip(title, body)` — Added in: v1.10
 
-Arguments title string (optional)# Group title.
+Skips a test. Playwright Test will not run the test, but still reports it in the results.
 
-details Object (optional)
+```ts
+import { test, expect } from '@playwright/test';
 
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test.describe() for details description.
+test.skip('skip this test', async ({ page }) => {
+  // ...
+});
+```
 
-callback function# A callback that is run immediately when calling test.describe.parallel.only().
+**Runtime variant — conditionally skip inside a test:**
 
-## Any tests added in this callback will belong to the group.
+```ts
+test('conditionally skip', async ({ page }) => {
+  const condition = // some condition
+    test.skip(condition, 'This feature is not implemented yet');
+  // ...
+});
+```
 
-test.describe.serial
+**Arguments (declaration form):**
 
-Added in: v1.10 test.test.describe.serial DiscouragedSee test.describe.configure() for the preferred way of configuring the execution mode.
+| Parameter | Type                                | Description              |
+| --------- | ----------------------------------- | ------------------------ |
+| `title`   | `string`                            | Test title.              |
+| `details` | `Object` (optional)                 | Additional test details. |
+| `body`    | `function(fixtures): Promise<void>` | Test function.           |
 
-Declares a group of tests that should always be run serially.
+**Arguments (runtime form):**
 
-If one of the tests fails, all subsequent tests are skipped.
+| Parameter     | Type                  | Description                                        |
+| ------------- | --------------------- | -------------------------------------------------- |
+| `condition`   | `boolean` (optional)  | Test is skipped when condition is `true`.          |
+| `callback`    | `function` (optional) | Optional condition function called with test info. |
+| `description` | `string` (optional)   | Optional description.                              |
 
-All tests in a group are retried together.
+---
 
-noteUsing serial is not recommended.
+### `test.slow()` — Added in: v1.10
 
-It is usually better to make your tests isolated, so they can be run independently.
+Marks a test as slow. Slow test will be given triple the default timeout.
 
-test.describe.serial(title, callback) test.describe.serial(title) test.describe.serial(title, details, callback)
+```ts
+test('slow test', async ({ page }) => {
+  test.slow();
+  // ...
+});
+```
 
-Usage test.describe.serial('group', () => { test('runs first', async ({ page }) => {});
+**Conditional variant:**
 
-test('runs second', async ({ page }) => {});});
-You can also omit the title.
+```ts
+test('conditionally slow', async ({ page }) => {
+  const condition = // some condition
+    test.slow(condition, 'This test is slow on this condition');
+  // ...
+});
+```
 
-test.describe.serial(() => { // ...});
+**Arguments:**
 
-Arguments title string (optional)# Group title.
+| Parameter     | Type                  | Description                                        |
+| ------------- | --------------------- | -------------------------------------------------- |
+| `condition`   | `boolean` (optional)  | Test is marked as slow when condition is `true`.   |
+| `callback`    | `function` (optional) | Optional condition function called with test info. |
+| `description` | `string` (optional)   | Optional description.                              |
 
-details Object (optional)
+---
 
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test.describe() for details description.
+### `test.step(title, body, options?)` — Added in: v1.10
 
-callback function# A callback that is run immediately when calling test.describe.serial().
+Declares a test step that is shown in the report.
 
-Any tests added in this callback will belong to the group.
+```ts
+import { test, expect } from '@playwright/test';
 
-test.describe.serial.only​
+test('test', async ({ page }) => {
+  await test.step('Log in', async () => {
+    // ...
+  });
+  await test.step('Purchase item', async () => {
+    // ...
+  });
+});
+```
 
-Added in: v1.10 test.test.describe.serial.only DiscouragedSee test.describe.configure() for the preferred way of configuring the execution mode.
+**Returning a value from a step:**
 
-Declares a focused group of tests that should always be run serially.
+```ts
+const user = await test.step('Log in', async () => {
+  // ...
+  return { username: 'John' };
+});
+```
 
-If one of the tests fails, all subsequent tests are skipped.
+**Arguments:**
 
-All tests in a group are retried together.
+| Parameter          | Type                         | Description                                                                                                                                           |
+| ------------------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`            | `string`                     | Step name.                                                                                                                                            |
+| `body`             | `function(): Promise<T>`     | Step body.                                                                                                                                            |
+| `options.box`      | `boolean` (optional, v1.39)  | Whether to box the step. Errors thrown in a boxed step are not reported inside the step and instead point to the step call site. Defaults to `false`. |
+| `options.location` | `Location` (optional, v1.48) | Specifies a custom location for the step to be shown in test reports and error messages.                                                              |
+| `options.timeout`  | `number` (optional, v1.50)   | Maximum time in milliseconds for this step. Defaults to 0 (no timeout).                                                                               |
 
-If there are some focused tests or suites, all of them will be run but nothing else.
+**Returns:** `Promise<T>`
 
-noteUsing serial is not recommended.
+---
 
-It is usually better to make your tests isolated, so they can be run independently.
+### `test.step.skip(title, body, options?)` — Added in: v1.50
 
-test.describe.serial.only(title, callback) test.describe.serial.only(title) test.describe.serial.only(title, details, callback)
+Declares a skipped test step. Similar to `test.step()` but the step is always skipped.
 
-Usage test.describe.serial.only('group', () => { test('runs first', async ({ page }) => { });
+```ts
+await test.step.skip('not ready yet', async () => {
+  // this step won't run
+});
+```
 
-test('runs second', async ({ page }) => { });});
-You can also omit the title.
+**Arguments:**
 
-test.describe.serial.only(() => { // ...});
+| Parameter          | Type                     | Description                   |
+| ------------------ | ------------------------ | ----------------------------- |
+| `title`            | `string`                 | Step name.                    |
+| `body`             | `function(): Promise<T>` | Step body.                    |
+| `options.box`      | `boolean` (optional)     | Whether to box the step.      |
+| `options.location` | `Location` (optional)    | Custom location for the step. |
+| `options.timeout`  | `number` (optional)      | Maximum time in milliseconds. |
 
-Arguments title string# Group title.
+**Returns:** `Promise<T>`
 
-details Object (optional)
+---
 
-Added in: v1.42# tag string | Array<string> (optional) annotation Object | Array<Object> (optional) type string description string (optional) See test.describe() for details description.
+### `test.use(options)` — Added in: v1.10
 
-callback function# A callback that is run immediately when calling test.describe.serial.only().
+Specifies options or fixtures to use in a single test file or a `test.describe()` group. Most useful to set an option like `locale` for a set of tests.
 
-Any tests added in this callback will belong to the group.
+```ts
+import { test, expect } from '@playwright/test';
+
+test.use({ locale: 'en-US' });
+
+test('test with locale', async ({ page }) => {
+  // ...
+});
+```
+
+**Arguments:**
+
+| Parameter | Type     | Description                   |
+| --------- | -------- | ----------------------------- |
+| `options` | `Object` | An object with local options. |
+
+> **Note:** `test.use()` can only be called in a test file or in a `test.describe()` block. It cannot be called from a fixture or a hook. Use `test.extend()` to configure fixtures.
+
+---
+
+## Properties
+
+### `test.expect` — Added in: v1.10
+
+`expect` function can be used to create test assertions. Read expect guide for more details.
+
+```ts
+test('example', async ({ page }) => {
+  const locator = page.locator('.some-element');
+  await expect(locator).toBeVisible();
+});
+```
+
+**Type:** `Object`
+
+---
+
+## Deprecated
+
+### `test.describe.parallel(title, callback)` — Added in: v1.10
+
+> **Note:** Please use `test.describe.configure({ mode: 'parallel' })` instead.
+
+Declares a group of tests that could be run in parallel. By default, tests in a single test file run one after another, but using `test.describe.parallel()` allows them to run in parallel.
+
+```ts
+test.describe.parallel('group', () => {
+  test('runs in parallel 1', async ({ page }) => {
+    /* ... */
+  });
+  test('runs in parallel 2', async ({ page }) => {
+    /* ... */
+  });
+});
+```
+
+---
+
+### `test.describe.parallel.only(title, callback)` — Added in: v1.10
+
+> **Note:** Please use `test.describe.configure({ mode: 'parallel' })` instead.
+
+Declares a focused group of tests that could be run in parallel. Same behavior as `test.describe.parallel()` combined with `test.describe.only()`.
+
+```ts
+test.describe.parallel.only('focused parallel group', () => {
+  test('runs in parallel 1', async ({ page }) => {
+    /* ... */
+  });
+  test('runs in parallel 2', async ({ page }) => {
+    /* ... */
+  });
+});
+```
+
+---
+
+### `test.describe.serial(title, callback)` — Added in: v1.10
+
+> **Note:** Please use `test.describe.configure({ mode: 'serial' })` instead.
+
+Declares a group of tests that should always be run serially. If one of the tests fails, all subsequent tests are skipped. All tests in a group are retried together. Useful for tests that cannot be run independently of each other.
+
+```ts
+test.describe.serial('group', () => {
+  test('runs first', async ({ page }) => {
+    /* ... */
+  });
+  test('runs second', async ({ page }) => {
+    /* ... */
+  });
+});
+```
+
+---
+
+### `test.describe.serial.only(title, callback)` — Added in: v1.10
+
+> **Note:** Please use `test.describe.configure({ mode: 'serial' })` instead.
+
+Declares a focused group of tests that should always be run serially. Same behavior as `test.describe.serial()` combined with `test.describe.only()`.
+
+```ts
+test.describe.serial.only('focused serial group', () => {
+  test('runs first', async ({ page }) => {
+    /* ... */
+  });
+  test('runs second', async ({ page }) => {
+    /* ... */
+  });
+});
+```

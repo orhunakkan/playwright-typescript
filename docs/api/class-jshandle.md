@@ -21,9 +21,7 @@ JSHandle instances can be used as an argument in `page.$eval()`, `page.evaluate(
 
 ## Methods
 
-### asElement
-
-**Added before:** v1.9
+### `jsHandle.asElement()` — Added before: v1.9
 
 Returns either `null` or the object handle itself, if the object handle is an instance of `ElementHandle`.
 
@@ -35,9 +33,7 @@ jsHandle.asElement();
 
 ---
 
-### dispose
-
-**Added before:** v1.9
+### `jsHandle.dispose()` — Added before: v1.9
 
 The `jsHandle.dispose` method stops referencing the element handle.
 
@@ -49,9 +45,7 @@ await jsHandle.dispose();
 
 ---
 
-### evaluate
-
-**Added before:** v1.9
+### `jsHandle.evaluate(pageFunction, arg?)` — Added before: v1.9
 
 Returns the return value of `pageFunction`. This method passes this handle as the first argument to `pageFunction`.
 
@@ -64,16 +58,16 @@ expect(await tweetHandle.evaluate((node) => node.innerText)).toBe('10 retweets')
 
 **Arguments:**
 
-- `pageFunction` function | string — Function to be evaluated in the page context.
-- `arg` EvaluationArgument (optional) — Optional argument to pass to `pageFunction`.
+| Parameter      | Type                            | Description                                   |
+| -------------- | ------------------------------- | --------------------------------------------- |
+| `pageFunction` | `function \| string`            | Function to be evaluated in the page context. |
+| `arg`          | `EvaluationArgument` (optional) | Optional argument to pass to `pageFunction`.  |
 
 **Returns:** `Promise<Serializable>`
 
 ---
 
-### evaluateHandle
-
-**Added before:** v1.9
+### `jsHandle.evaluateHandle(pageFunction, arg?)` — Added before: v1.9
 
 Returns the return value of `pageFunction` as a `JSHandle`. This method passes this handle as the first argument to `pageFunction`.
 
@@ -86,16 +80,16 @@ await jsHandle.evaluateHandle(pageFunction, arg);
 
 **Arguments:**
 
-- `pageFunction` function | string — Function to be evaluated in the page context.
-- `arg` EvaluationArgument (optional) — Optional argument to pass to `pageFunction`.
+| Parameter      | Type                            | Description                                   |
+| -------------- | ------------------------------- | --------------------------------------------- |
+| `pageFunction` | `function \| string`            | Function to be evaluated in the page context. |
+| `arg`          | `EvaluationArgument` (optional) | Optional argument to pass to `pageFunction`.  |
 
 **Returns:** `Promise<JSHandle>`
 
 ---
 
-### getProperties
-
-**Added before:** v1.9
+### `jsHandle.getProperties()` — Added before: v1.9
 
 The method returns a map with own property names as keys and JSHandle instances for the property values.
 
@@ -111,9 +105,7 @@ await handle.dispose();
 
 ---
 
-### getProperty
-
-**Added before:** v1.9
+### `jsHandle.getProperty(propertyName)` — Added before: v1.9
 
 Fetches a single property from the referenced object.
 
@@ -123,15 +115,15 @@ await jsHandle.getProperty(propertyName);
 
 **Arguments:**
 
-- `propertyName` string — Property to get.
+| Parameter      | Type     | Description      |
+| -------------- | -------- | ---------------- |
+| `propertyName` | `string` | Property to get. |
 
 **Returns:** `Promise<JSHandle>`
 
 ---
 
-### jsonValue
-
-**Added before:** v1.9
+### `jsHandle.jsonValue()` — Added before: v1.9
 
 Returns a JSON representation of the object. If the object has a `toJSON` function, it will not be called.
 

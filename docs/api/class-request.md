@@ -4,106 +4,304 @@
 
 ---
 
-## RequestWhenever the page sends a request for a network resource the following sequence of events are emitted by Page: page.on('request') emitted when the request is issued by the page. page.on('response') emitted when/if the response status and headers are received for the request. page.on('requestfinished') emitted when the response body is downloaded and the request is complete. If request fails at some point, then instead of 'requestfinished' event (and possibly instead of 'response' event), the page.on('requestfailed') event is emitted. noteHTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with 'requestfinished' event. If request gets a 'redirect' response, the request is successfully finished with the requestfinished event, and a new request is issued to a redirected url
+## Overview
 
-all
+Whenever the page sends a request for a network resource the following sequence of events are emitted by `Page`:
 
-## Headers
+- `page.on('request')` — emitted when the request is issued by the page.
+- `page.on('response')` — emitted when/if the response status and headers are received for the request.
+- `page.on('requestfinished')` — emitted when the response body is downloaded and the request is complete.
+- `page.on('requestfailed')` — emitted if the request fails at some point.
 
-Added in: v1.15 request.allHeaders An object with all the request HTTP headers associated with this request. The header names are lower-cased
+> **Note:** HTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with `'requestfinished'` event. If request gets a `'redirect'` response, the request is successfully finished with the `requestfinished` event, and a new request is issued to a redirected url.
 
-await request.allHeaders(); Returns Promise<Object<string, string>># existing
+---
 
-## Response
+### `request.allHeaders()` — Added in: v1.15
 
-Added in: v1.59 request.existingResponse Returns the Response object if the response has already been received, null otherwise. Unlike request.response(), this method does not wait for the response to arrive. It returns immediately with the response object if the response has been received, or null if the response has not been received yet
+An object with all the request HTTP headers associated with this request. The header names are lower-cased.
 
-request.existingResponse(); Returns null | Response# failure​ Added before v1.9 request.failure The method returns null unless this request has failed, as reported by requestfailed event
+```ts
+await request.allHeaders();
+```
 
-Example of logging of all the failed requests: page.on('requestfailed', request => { console.log(request.url() + ' ' + request.failure().errorText);}); Returns null | Object# errorText string Human-readable error message, e.g. 'net::ERR\_
+**Returns:** `Promise<Object<string, string>>`
 
-## FAILED'. frame
+---
 
-Added before v1.9 request.frame Returns the Frame that initiated this request
+### `request.existingResponse()` — Added in: v1.59
 
-const frameUrl = request.frame().url(); Returns Frame# Details Note that in some cases the frame is not available, and this method will throw. When request originates in the Service Worker. You can use request.serviceWorker() to check that. When navigation request is issued before the corresponding frame is created. You can use request.isNavigationRequest() to check that. Here is an example that handles all the cases: if (request.serviceWorker()) console.log(`request ${request.url()} from a service worker`);else if (request.isNavigationRequest()) console.log(`request ${request.url()} is a navigation request`);else console.log(`request ${request.url()} from a frame ${request.frame().url()}`); header
+Returns the `Response` object if the response has already been received, `null` otherwise. Unlike `request.response()`, this method does not wait for the response to arrive.
 
-## Value
+```ts
+request.existingResponse();
+```
 
-Added in: v1.15 request.headerValue Returns the value of the header matching the name. The name is case-insensitive
+**Returns:** `null | Response`
 
-await request.headerValue(name); Arguments name string# Name of the header
+---
 
-Promise<null | string># headers​ Added before v1.9 request.headers An object with the request HTTP headers. The header names are lower-cased. Note that this method does not return security-related headers, including cookie-related ones. You can use request.allHeaders() for complete list of headers that include cookie information
+### `request.failure()` — Added before v1.9
 
-request.headers(); Returns Object<string, string># headers
+The method returns `null` unless this request has failed, as reported by `requestfailed` event.
 
-## Array
+```ts
+page.on('requestfailed', (request) => {
+  console.log(request.url() + ' ' + request.failure().errorText);
+});
+```
 
-Added in: v1.15 request.headersArray An array with all the request HTTP headers associated with this request. Unlike request.allHeaders(), header names are NOT lower-cased. Headers with multiple entries, such as Set-Cookie, appear in the array multiple times
+**Returns:** `null | Object`
 
-await request.headersArray(); Returns Promise<Array<Object>># name string
+| Property    | Type     | Description                                             |
+| ----------- | -------- | ------------------------------------------------------- |
+| `errorText` | `string` | Human-readable error message, e.g. `'net::ERR_FAILED'`. |
 
-## Name of the header. value string Value of the header. isNavigationRequest
+---
 
-Added before v1.9 request.isNavigationRequest Whether this request is driving frame's navigation. Some navigation requests are issued before the corresponding frame is created, and therefore do not have request.frame() available
+### `request.frame()` — Added before v1.9
 
-request.isNavigationRequest(); Returns boolean# method​ Added before v1.9 request.method Request's method (GET, POST, etc.) Usage request.method(); Returns string# post
+Returns the `Frame` that initiated this request.
 
-## Data
+```ts
+const frameUrl = request.frame().url();
+```
 
-Added before v1.9 request.postData Request's post body, if any
+**Returns:** `Frame`
 
-request.postData(); Returns null | string# post
+> **Note:** In some cases the frame is not available and this method will throw: when request originates in the Service Worker (use `request.serviceWorker()` to check), or when navigation request is issued before the corresponding frame is created (use `request.isNavigationRequest()` to check).
 
-## DataBuffer
+```ts
+if (request.serviceWorker()) console.log(`request ${request.url()} from a service worker`);
+else if (request.isNavigationRequest()) console.log(`request ${request.url()} is a navigation request`);
+else console.log(`request ${request.url()} from a frame ${request.frame().url()}`);
+```
 
-Added before v1.9 request.postDataBuffer Request's post body in a binary form, if any
+---
 
-request.postDataBuffer(); Returns null | Buffer# post
+### `request.headerValue(name)` — Added in: v1.15
 
-## DataJSON
+Returns the value of the header matching the name. The name is case-insensitive.
 
-Added before v1.9 request.postDataJSON Returns parsed request's body for form-urlencoded and JSON as a fallback if any. When the response is application/x-www-form-urlencoded then a key/value object of the values will be returned. Otherwise it will be parsed as JSON
+```ts
+await request.headerValue(name);
+```
 
-request.postDataJSON(); Returns null | Serializable# redirected
+**Arguments:**
 
-## From
+| Parameter | Type     | Description         |
+| --------- | -------- | ------------------- |
+| `name`    | `string` | Name of the header. |
 
-Added before v1.9 request.redirectedFrom Request that was redirected by the server to this one, if any. When the server responds with a redirect, Playwright creates a new Request object. The two requests are connected by redirectedFrom() and redirectedTo() methods. When multiple server redirects has happened, it is possible to construct the whole redirect chain by repeatedly calling redirectedFrom()
+**Returns:** `Promise<null | string>`
 
-For example, if the website http://example.com redirects to https://example.com: const response = await page.goto('http://example.com');console.log(response.request().redirectedFrom().url()); // 'http://example.com' If the website https://google.com has no redirects: const response = await page.goto('https://google.com');console.log(response.request().redirectedFrom()); // null Returns null | Request# redirectedTo​ Added before v1.9 request.redirectedTo New request issued by the browser if the server responded with redirect
+---
 
-This method is the opposite of request.redirectedFrom(): console.log(request.redirectedFrom().redirectedTo() === request); // true Returns null | Request# resource
+### `request.headers()` — Added before v1.9
 
-## Type
+An object with the request HTTP headers. The header names are lower-cased. Note that this method does not return security-related headers, including cookie-related ones. You can use `request.allHeaders()` for complete list of headers that include cookie information.
 
-Added before v1.9 request.resourceType Contains the request's resource type as it was perceived by the rendering engine. ResourceType will be one of the following: document, stylesheet, image, media, font, script, texttrack, xhr, fetch, eventsource, websocket, manifest, other
+```ts
+request.headers();
+```
 
-request.resourceType(); Returns string# response​ Added before v1.9 request.response Returns the matching Response object, or null if the response was not received due to error
+**Returns:** `Object<string, string>`
 
-await request.response(); Returns Promise<null | Response># service
+---
 
-## Worker
+### `request.headersArray()` — Added in: v1.15
 
-Added in: v1.24 request.serviceWorker The Service Worker that is performing the request
+An array with all the request HTTP headers associated with this request. Unlike `request.allHeaders()`, header names are NOT lower-cased. Headers with multiple entries, such as `Set-Cookie`, appear in the array multiple times.
 
-request.serviceWorker(); Returns null | Worker# Details This method is Chromium only. It's safe to call when using other browsers, but it will always be null. Requests originated in a
+```ts
+await request.headersArray();
+```
 
-## Service Worker do not have a request.frame() available. sizes
+**Returns:** `Promise<Array<Object>>`
 
-Added in: v1.15 request.sizes Returns resource size information for given request
+| Property | Type     | Description          |
+| -------- | -------- | -------------------- |
+| `name`   | `string` | Name of the header.  |
+| `value`  | `string` | Value of the header. |
 
-await request.sizes(); Returns Promise<Object># requestBodySize number Size of the request body (POST data payload) in bytes. Set to 0 if there was no body. requestHeadersSize number Total number of bytes from the start of the HTTP request message until (and including) the double CRLF before the body. responseBodySize number Size of the received response body (encoded) in bytes. responseHeadersSize number Total number of bytes from the start of the HT
+---
 
-## TP response message until (and including) the double CRLF before the body. timing
+### `request.isNavigationRequest()` — Added before v1.9
 
-Added before v1.9 request.timing Returns resource timing information for given request. Most of the timing values become available upon the response, responseEnd becomes available when request finishes. Find more information at Resource Timing API
+Whether this request is driving frame's navigation. Some navigation requests are issued before the corresponding frame is created, and therefore do not have `request.frame()` available.
 
-const requestFinishedPromise = page.waitForEvent('requestfinished');await page.goto('http://example.com');const request = await requestFinishedPromise;console.log(request.timing()); Returns Object# startTime number Request start time in milliseconds elapsed since January 1, 1970 00:00:00 UTC domainLookupStart number Time immediately before the browser starts the domain name lookup for the resource. The value is given in milliseconds relative to startTime, -1 if not available. domainLookupEnd number Time immediately after the browser starts the domain name lookup for the resource. The value is given in milliseconds relative to startTime, -1 if not available. connectStart number Time immediately before the user agent starts establishing the connection to the server to retrieve the resource. The value is given in milliseconds relative to startTime, -1 if not available. secureConnectionStart number Time immediately before the browser starts the handshake process to secure the current connection. The value is given in milliseconds relative to startTime, -1 if not available. connectEnd number Time immediately before the user agent starts establishing the connection to the server to retrieve the resource. The value is given in milliseconds relative to startTime, -1 if not available. requestStart number Time immediately before the browser starts requesting the resource from the server, cache, or local resource. The value is given in milliseconds relative to startTime, -1 if not available. responseStart number Time immediately after the browser receives the first byte of the response from the server, cache, or local resource. The value is given in milliseconds relative to startTime, -1 if not available. responseEnd number Time immediately after the browser receives the last byte of the resource or immediately before the transport connection is closed, whichever comes first. The value is given in milliseconds relative to start
+```ts
+request.isNavigationRequest();
+```
 
-## Time, -1 if not available. url
+**Returns:** `boolean`
 
-Added before v1.9 request.url URL of the request
+---
 
-request.url(); Returns string#
+### `request.method()` — Added before v1.9
+
+Request's method (GET, POST, etc.)
+
+```ts
+request.method();
+```
+
+**Returns:** `string`
+
+---
+
+### `request.postData()` — Added before v1.9
+
+Request's post body, if any.
+
+```ts
+request.postData();
+```
+
+**Returns:** `null | string`
+
+---
+
+### `request.postDataBuffer()` — Added before v1.9
+
+Request's post body in a binary form, if any.
+
+```ts
+request.postDataBuffer();
+```
+
+**Returns:** `null | Buffer`
+
+---
+
+### `request.postDataJSON()` — Added before v1.9
+
+Returns parsed request's body for `form-urlencoded` and JSON as a fallback if any. When the response is `application/x-www-form-urlencoded` then a key/value object of the values will be returned. Otherwise it will be parsed as JSON.
+
+```ts
+request.postDataJSON();
+```
+
+**Returns:** `null | Serializable`
+
+---
+
+### `request.redirectedFrom()` — Added before v1.9
+
+Request that was redirected by the server to this one, if any. When the server responds with a redirect, Playwright creates a new `Request` object. The two requests are connected by `redirectedFrom()` and `redirectedTo()` methods.
+
+```ts
+// If the website http://example.com redirects to https://example.com:
+const response = await page.goto('http://example.com');
+console.log(response.request().redirectedFrom().url()); // 'http://example.com'
+```
+
+**Returns:** `null | Request`
+
+---
+
+### `request.redirectedTo()` — Added before v1.9
+
+New request issued by the browser if the server responded with redirect. This method is the opposite of `request.redirectedFrom()`.
+
+```ts
+console.log(request.redirectedFrom().redirectedTo() === request); // true
+```
+
+**Returns:** `null | Request`
+
+---
+
+### `request.resourceType()` — Added before v1.9
+
+Contains the request's resource type as it was perceived by the rendering engine. ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
+
+```ts
+request.resourceType();
+```
+
+**Returns:** `string`
+
+---
+
+### `request.response()` — Added before v1.9
+
+Returns the matching `Response` object, or `null` if the response was not received due to error.
+
+```ts
+await request.response();
+```
+
+**Returns:** `Promise<null | Response>`
+
+---
+
+### `request.serviceWorker()` — Added in: v1.24
+
+The Service Worker that is performing the request.
+
+```ts
+request.serviceWorker();
+```
+
+**Returns:** `null | Worker`
+
+> **Note:** This method is Chromium only. It's safe to call when using other browsers, but it will always be `null`. Requests originated in a Service Worker do not have a `request.frame()` available.
+
+---
+
+### `request.sizes()` — Added in: v1.15
+
+Returns resource size information for given request.
+
+```ts
+await request.sizes();
+```
+
+**Returns:** `Promise<Object>`
+
+| Property              | Type     | Description                                                                                                              |
+| --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `requestBodySize`     | `number` | Size of the request body (POST data payload) in bytes. Set to 0 if there was no body.                                    |
+| `requestHeadersSize`  | `number` | Total number of bytes from the start of the HTTP request message until (and including) the double CRLF before the body.  |
+| `responseBodySize`    | `number` | Size of the received response body (encoded) in bytes.                                                                   |
+| `responseHeadersSize` | `number` | Total number of bytes from the start of the HTTP response message until (and including) the double CRLF before the body. |
+
+---
+
+### `request.timing()` — Added before v1.9
+
+Returns resource timing information for given request. Most of the timing values become available upon the response, `responseEnd` becomes available when request finishes.
+
+```ts
+const requestFinishedPromise = page.waitForEvent('requestfinished');
+await page.goto('http://example.com');
+const request = await requestFinishedPromise;
+console.log(request.timing());
+```
+
+**Returns:** `Object`
+
+| Property                | Type     | Description                                                                                                                                                                       |
+| ----------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `startTime`             | `number` | Request start time in milliseconds elapsed since January 1, 1970 00:00:00 UTC.                                                                                                    |
+| `domainLookupStart`     | `number` | Time immediately before the browser starts the domain name lookup. Relative to `startTime`, -1 if not available.                                                                  |
+| `domainLookupEnd`       | `number` | Time immediately after the browser starts the domain name lookup. Relative to `startTime`, -1 if not available.                                                                   |
+| `connectStart`          | `number` | Time immediately before the user agent starts establishing the connection to the server. Relative to `startTime`, -1 if not available.                                            |
+| `secureConnectionStart` | `number` | Time immediately before the browser starts the handshake process to secure the current connection. Relative to `startTime`, -1 if not available.                                  |
+| `connectEnd`            | `number` | Time immediately before the user agent starts establishing the connection to the server to retrieve the resource. Relative to `startTime`, -1 if not available.                   |
+| `requestStart`          | `number` | Time immediately before the browser starts requesting the resource from the server, cache, or local resource. Relative to `startTime`, -1 if not available.                       |
+| `responseStart`         | `number` | Time immediately after the browser receives the first byte of the response. Relative to `startTime`, -1 if not available.                                                         |
+| `responseEnd`           | `number` | Time immediately after the browser receives the last byte of the resource or immediately before the transport connection is closed. Relative to `startTime`, -1 if not available. |
+
+---
+
+### `request.url()` — Added before v1.9
+
+URL of the request.
+
+```ts
+request.url();
+```
+
+**Returns:** `string`

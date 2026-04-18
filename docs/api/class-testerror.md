@@ -1,37 +1,57 @@
-# 📦 Playwright — Testerror
+# 📦 Playwright — TestError
 
 > **Source:** [playwright.dev/docs/api/class-testerror](https://playwright.dev/docs/api/class-testerror)
 
 ---
 
-## TestErrorInformation about an error thrown during test execution
+## Overview
 
-cause​ Added in: v1.49 testError.cause Error cause. Set when there is a cause for the error. Will be undefined if there is no cause or if the cause is not an instance of
+**TestError** contains information about an error thrown during test execution.
 
-## Error
+## Properties
 
-testError.cause Type TestError location
+### `testError.cause` — Added in: v1.49
 
-Added in: v1.30 testError.location
+Error cause. Set when there is a cause for the error. Will be `undefined` if there is no cause or if the cause is not an instance of `Error`.
 
-## Error location in the source code
+**Type:** `TestError`
 
-testError.location Type Location message
+---
 
-Added in: v1.10 testError.message Error message. Set when Error (or its subclass) has been thrown.
+### `testError.location` — Added in: v1.30
 
-## Usage testError.message Type string snippet
+Error location in the source code.
 
-Added in: v1.33 testError.snippet Source code snippet with highlighted error.
+**Type:** `Location`
 
-## Usage testError.snippet Type string stack
+---
 
-Added in: v1.10 testError.stack Error stack. Set when
+### `testError.message` — Added in: v1.10
 
-## Error (or its subclass) has been thrown
+Error message. Set when `Error` (or its subclass) has been thrown.
 
-testError.stack Type string value
+**Type:** `string`
 
-Added in: v1.10 testError.value The value that was thrown. Set when anything except the Error (or its subclass) has been thrown
+---
 
-testError.value Type string
+### `testError.snippet` — Added in: v1.33
+
+Source code snippet with highlighted error.
+
+**Type:** `string`
+
+---
+
+### `testError.stack` — Added in: v1.10
+
+Error stack. Set when `Error` (or its subclass) has been thrown.
+
+**Type:** `string`
+
+---
+
+### `testError.value` — Added in: v1.10
+
+The value that was thrown. Set when anything except the `Error` (or its subclass) has been thrown.
+
+**Type:** `string`

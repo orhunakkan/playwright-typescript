@@ -1,67 +1,119 @@
-# 📦 Playwright — Teststep
+# 📦 Playwright — TestStep
 
 > **Source:** [playwright.dev/docs/api/class-teststep](https://playwright.dev/docs/api/class-teststep)
 
 ---
 
-## TestStepRepresents a step in the [TestRun]
+## Overview
 
-title
+**TestStep** represents a step in the `TestRun`.
 
-## Path
+## Methods
 
-Added in: v1.10 testStep.titlePath Returns a list of step titles from the root step down to this step
+### `testStep.titlePath()` — Added in: v1.10
 
-testStep.titlePath(); Returns Array<string>#
+Returns a list of titles from the root down to this step.
+
+```ts
+testStep.titlePath();
+```
+
+**Returns:** `Array<string>`
+
+---
 
 ## Properties
 
-annotations​ Added in: v1.51 testStep.annotations The list of annotations applicable to the current test step
+### `testStep.annotations` — Added in: v1.51
 
-testStep.annotations Type Array<Object> type string Annotation type, for example 'skip'. description string (optional) Optional description. location Location (optional)
+The list of annotations applicable to the current step.
 
-## Optional location in the source where the annotation is added. attachments
+**Type:** `Array<Object>`
 
-Added in: v1.50 testStep.attachments The list of files or buffers attached in the step execution through testInfo.attach()
+- `type` `string` — Annotation type, for example `'skip'` or `'fail'`.
+- `description` `string` (optional) — Optional description.
+- `location` `Location` (optional) — Optional location in the source where the annotation is added.
 
-testStep.attachments Type Array<Object> name string Attachment name. contentType string Content type of this attachment to properly present in the report, for example 'application/json' or 'image/png'. path string (optional) Optional path on the filesystem to the attached file. body
+---
 
-## Buffer (optional) Optional attachment body used instead of a file. category
+### `testStep.attachments` — Added in: v1.50
 
-Added in: v1.10 testStep.category Step category to differentiate steps with different origin and verbosity. Built-in categories are: expect for expect calls fixture for fixtures setup and teardown hook for hooks initialization and teardown pw:api for Playwright API calls. test.step for test.step API calls. test.attach for test
+The list of files or buffers attached to the current step.
 
-## Info.attach API calls
+**Type:** `Array<Object>`
 
-testStep.category Type string duration
+- `name` `string` — Attachment name.
+- `contentType` `string` — Content type of this attachment to properly present in the report, for example `'application/json'` or `'image/png'`.
+- `path` `string` (optional) — Optional path on the filesystem to the attached file.
+- `body` `Buffer` (optional) — Optional attachment body used instead of a file.
 
-Added in: v1.10 testStep.duration
+---
 
-## Running time in milliseconds
+### `testStep.category` — Added in: v1.10
 
-testStep.duration Type number error
+Step category to differentiate steps with different origins and verbosity. Built-in categories are:
 
-Added in: v1.10 testStep.error Error thrown during the step execution, if any.
+- `expect` for `expect()` calls.
+- `fixture` for fixture setup/teardown.
+- `hook` for `beforeAll`, `beforeEach`, `afterEach`, `afterAll` hooks.
+- `pw:api` for Playwright API calls.
+- `test.step` for `test.step()` calls.
+- `test.attach` for `testInfo.attach()` calls.
 
-## Usage testStep.error Type TestError location
+**Type:** `string`
 
-Added in: v1.10 testStep.location Optional location in the source where the step is defined.
+---
 
-## Usage testStep.location Type Location parent
+### `testStep.duration` — Added in: v1.10
 
-Added in: v1.10 test
+Running time in milliseconds.
 
-## Step.parent Parent step, if any
+**Type:** `number`
 
-testStep.parent Type TestStep startTime
+---
 
-Added in: v1.10 testStep.startTime
+### `testStep.error` — Added in: v1.10
 
-## Start time of this particular test step
+Error thrown during the step execution, if any.
 
-testStep.startTime Type Date steps
+**Type:** `TestError`
 
-Added in: v1.10 testStep.steps List of steps inside this step
+---
 
-testStep.steps Type Array<TestStep> title​ Added in: v1.10 testStep.title User-friendly test step title
+### `testStep.location` — Added in: v1.10
 
-testStep.title Type string
+Optional location in the source where the step is defined.
+
+**Type:** `Location`
+
+---
+
+### `testStep.parent` — Added in: v1.10
+
+Parent step, if any.
+
+**Type:** `TestStep`
+
+---
+
+### `testStep.startTime` — Added in: v1.10
+
+Start time of this particular test step.
+
+**Type:** `Date`
+
+---
+
+### `testStep.steps` — Added in: v1.10
+
+List of steps inside this step.
+
+**Type:** `Array<TestStep>`
+
+---
+
+### `testStep.title` — Added in: v1.10
+
+User-visible title of the step.
+
+**Type:** `string`

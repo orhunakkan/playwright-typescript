@@ -4,88 +4,264 @@
 
 ---
 
-## ResponseResponse class represents responses which are received by page
+## Overview
 
-all
+**Response** class represents responses which are received by page.
 
-## Headers
+---
 
-Added in: v1.15 response.allHeaders An object with all the response HTTP headers associated with this response
+### `response.allHeaders()` — Added in: v1.15
 
-await response.allHeaders(); Returns Promise<Object<string, string>># body​ Added before v1.9 response.body Returns the buffer with response body
+An object with all the response HTTP headers associated with this response.
 
-await response.body(); Returns Promise<Buffer># finished​ Added before v1.9 response.finished Waits for this response to finish, returns always null
+```ts
+await response.allHeaders();
+```
 
-await response.finished(); Returns Promise<null | Error># frame​ Added before v1.9 response.frame Returns the Frame that initiated this response
+**Returns:** `Promise<Object<string, string>>`
 
-response.frame(); Returns Frame# from
+---
 
-## ServiceWorker
+### `response.body()` — Added before v1.9
 
-Added in: v1.23 response.fromServiceWorker Indicates whether this Response was fulfilled by a Service Worker's Fetch Handler (i.e. via FetchEvent.respondWith)
+Returns the buffer with response body.
 
-response.fromServiceWorker(); Returns boolean# header
+```ts
+await response.body();
+```
 
-## Value
+**Returns:** `Promise<Buffer>`
 
-Added in: v1.15 response.headerValue Returns the value of the header matching the name. The name is case-insensitive. If multiple headers have the same name (except set-cookie), they are returned as a list separated by , . For set-cookie, the \n separator is used. If no headers are found, null is returned
+---
 
-await response.headerValue(name); Arguments name string# Name of the header
+### `response.finished()` — Added before v1.9
 
-Promise<null | string># header
+Waits for this response to finish, returns always `null`.
 
-## Values
+```ts
+await response.finished();
+```
 
-Added in: v1.15 response.headerValues Returns all values of the headers matching the name, for example set-cookie. The name is case-insensitive
+**Returns:** `Promise<null | Error>`
 
-await response.headerValues(name); Arguments name string# Name of the header
+---
 
-Promise<Array<string>># headers​ Added before v1.9 response.headers An object with the response HTTP headers. The header names are lower-cased. Note that this method does not return security-related headers, including cookie-related ones. You can use response.allHeaders() for complete list of headers that include cookie information
+### `response.frame()` — Added before v1.9
 
-response.headers(); Returns Object<string, string># headers
+Returns the `Frame` that initiated this response.
 
-## Array
+```ts
+response.frame();
+```
 
-Added in: v1.15 response.headersArray An array with all the request HTTP headers associated with this response. Unlike response.allHeaders(), header names are NOT lower-cased. Headers with multiple entries, such as Set-Cookie, appear in the array multiple times
+**Returns:** `Frame`
 
-await response.headersArray(); Returns Promise<Array<Object>># name string
+---
 
-## Name of the header. value string Value of the header. httpVersion
+### `response.fromServiceWorker()` — Added in: v1.23
 
-Added in: v1.59 response.httpVersion Returns the http version used by the response
+Indicates whether this Response was fulfilled by a Service Worker's Fetch Handler (i.e. via `FetchEvent.respondWith`).
 
-await response.httpVersion(); Returns Promise<string># json​ Added before v1.9 response.json Returns the JSON representation of response body. This method will throw if the response body is not parsable via JSON.parse
+```ts
+response.fromServiceWorker();
+```
 
-await response.json(); Returns Promise<Serializable># ok​ Added before v1.9 response.ok Contains a boolean stating whether the response was successful (status in the range 200-299) or not
+**Returns:** `boolean`
 
-response.ok(); Returns boolean# request​ Added before v1.9 response.request Returns the matching Request object
+---
 
-response.request(); Returns Request# security
+### `response.headerValue(name)` — Added in: v1.15
 
-## Details
+Returns the value of the header matching the name. The name is case-insensitive. If multiple headers have the same name (except `set-cookie`), they are returned as a list separated by `, `. For `set-cookie`, the `\n` separator is used. If no headers are found, `null` is returned.
 
-Added in: v1.13 response.securityDetails Returns SSL and other security information
+```ts
+await response.headerValue(name);
+```
 
-await response.securityDetails(); Returns Promise<null | Object># issuer string (optional) Common Name component of the Issuer field. from the certificate. This should only be used for informational purposes. Optional. protocol string (optional) The specific TLS protocol used. (e.g. TLS 1.3). Optional. subjectName string (optional) Common Name component of the Subject field from the certificate. This should only be used for informational purposes. Optional. validFrom number (optional) Unix timestamp (in seconds) specifying when this cert becomes valid. Optional. validTo number (optional) Unix timestamp (in seconds) specifying when this cert becomes invalid.
+**Arguments:**
 
-## Optional. serverAddr
+| Parameter | Type     | Description         |
+| --------- | -------- | ------------------- |
+| `name`    | `string` | Name of the header. |
 
-Added in: v1.13 response.serverAddr Returns the IP address and port of the server
+**Returns:** `Promise<null | string>`
 
-await response.serverAddr(); Returns Promise<null | Object># ip
+---
 
-## Address string IPv4 or IPV6 address of the server. port number status
+### `response.headerValues(name)` — Added in: v1.15
 
-Added before v1.9 response.status Contains the status code of the response (e.g., 200 for a success)
+Returns all values of the headers matching the name, for example `set-cookie`. The name is case-insensitive.
 
-response.status(); Returns number# status
+```ts
+await response.headerValues(name);
+```
 
-## Text
+**Arguments:**
 
-Added before v1.9 response.statusText Contains the status text of the response (e.g. usually an "OK" for a success)
+| Parameter | Type     | Description         |
+| --------- | -------- | ------------------- |
+| `name`    | `string` | Name of the header. |
 
-response.statusText(); Returns string# text​ Added before v1.9 response.text Returns the text representation of response body
+**Returns:** `Promise<Array<string>>`
 
-await response.text(); Returns Promise<string># url​ Added before v1.9 response.url Contains the URL of the response
+---
 
-response.url(); Returns string#
+### `response.headers()` — Added before v1.9
+
+An object with the response HTTP headers. The header names are lower-cased. Note that this method does not return security-related headers, including cookie-related ones. You can use `response.allHeaders()` for complete list of headers that include cookie information.
+
+```ts
+response.headers();
+```
+
+**Returns:** `Object<string, string>`
+
+---
+
+### `response.headersArray()` — Added in: v1.15
+
+An array with all the request HTTP headers associated with this response. Unlike `response.allHeaders()`, header names are NOT lower-cased. Headers with multiple entries, such as `Set-Cookie`, appear in the array multiple times.
+
+```ts
+await response.headersArray();
+```
+
+**Returns:** `Promise<Array<Object>>`
+
+| Property | Type     | Description          |
+| -------- | -------- | -------------------- |
+| `name`   | `string` | Name of the header.  |
+| `value`  | `string` | Value of the header. |
+
+---
+
+### `response.httpVersion()` — Added in: v1.59
+
+Returns the http version used by the response.
+
+```ts
+await response.httpVersion();
+```
+
+**Returns:** `Promise<string>`
+
+---
+
+### `response.json()` — Added before v1.9
+
+Returns the JSON representation of response body. This method will throw if the response body is not parsable via `JSON.parse`.
+
+```ts
+await response.json();
+```
+
+**Returns:** `Promise<Serializable>`
+
+---
+
+### `response.ok()` — Added before v1.9
+
+Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
+
+```ts
+response.ok();
+```
+
+**Returns:** `boolean`
+
+---
+
+### `response.request()` — Added before v1.9
+
+Returns the matching `Request` object.
+
+```ts
+response.request();
+```
+
+**Returns:** `Request`
+
+---
+
+### `response.securityDetails()` — Added in: v1.13
+
+Returns SSL and other security information.
+
+```ts
+await response.securityDetails();
+```
+
+**Returns:** `Promise<null | Object>`
+
+| Property      | Type                | Description                                                            |
+| ------------- | ------------------- | ---------------------------------------------------------------------- |
+| `issuer`      | `string` (optional) | Common Name component of the Issuer field from the certificate.        |
+| `protocol`    | `string` (optional) | The specific TLS protocol used (e.g. `TLS 1.3`).                       |
+| `subjectName` | `string` (optional) | Common Name component of the Subject field from the certificate.       |
+| `validFrom`   | `number` (optional) | Unix timestamp (in seconds) specifying when this cert becomes valid.   |
+| `validTo`     | `number` (optional) | Unix timestamp (in seconds) specifying when this cert becomes invalid. |
+
+---
+
+### `response.serverAddr()` — Added in: v1.13
+
+Returns the IP address and port of the server.
+
+```ts
+await response.serverAddr();
+```
+
+**Returns:** `Promise<null | Object>`
+
+| Property    | Type     | Description                         |
+| ----------- | -------- | ----------------------------------- |
+| `ipAddress` | `string` | IPv4 or IPv6 address of the server. |
+| `port`      | `number` | Port number.                        |
+
+---
+
+### `response.status()` — Added before v1.9
+
+Contains the status code of the response (e.g., 200 for a success).
+
+```ts
+response.status();
+```
+
+**Returns:** `number`
+
+---
+
+### `response.statusText()` — Added before v1.9
+
+Contains the status text of the response (e.g. usually an `"OK"` for a success).
+
+```ts
+response.statusText();
+```
+
+**Returns:** `string`
+
+---
+
+### `response.text()` — Added before v1.9
+
+Returns the text representation of response body.
+
+```ts
+await response.text();
+```
+
+**Returns:** `Promise<string>`
+
+---
+
+### `response.url()` — Added before v1.9
+
+Contains the URL of the response.
+
+```ts
+response.url();
+```
+
+**Returns:** `string`

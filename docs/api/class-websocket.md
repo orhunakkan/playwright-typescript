@@ -1,53 +1,109 @@
-# 📦 Playwright — Websocket
+# 📦 Playwright — WebSocket
 
 > **Source:** [playwright.dev/docs/api/class-websocket](https://playwright.dev/docs/api/class-websocket)
 
 ---
 
-## WebSocketThe WebSocket class represents WebSocket connections within a page. It provides the ability to inspect and manipulate the data being transmitted and received. If you want to intercept or modify WebSocket frames, consider using WebSocketRoute
+## Overview
 
-is
+The **WebSocket** class represents WebSocket connections within a page. It provides the ability to inspect and manipulate the data being transmitted and received.
 
-## Closed
+> **Note:** If you want to intercept or modify WebSocket frames, consider using `WebSocketRoute`.
 
-Added before v1.9 webSocket.isClosed Indicates that the web socket has been closed
+## Methods
 
-webSocket.isClosed(); Returns boolean# url​ Added before v1.9 webSocket.url Contains the URL of the WebSocket
+### `isClosed()` — Added before v1.9
 
-webSocket.url(); Returns string# wait
+Indicates that the web socket has been closed.
 
-## ForEvent
+```ts
+webSocket.isClosed();
+```
 
-Added before v1.9 webSocket.waitForEvent Waits for event to fire and passes its value into the predicate function
+**Returns:** `boolean`
 
-when the predicate returns truthy value. Will throw an error if the webSocket is closed before the event is fired
+---
 
-the event data value
+### `url()` — Added before v1.9
 
-await webSocket.waitForEvent(event);await webSocket.waitForEvent(event, optionsOrPredicate, options); Arguments event string# Event name, same one would pass into webSocket.on(event). optionsOrPredicate function | Object (optional)# predicate function Receives the event data and resolves to truthy value when the waiting should resolve. timeout number (optional) Maximum time to wait for in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. Either a predicate that receives an event or an options object. Optional. options Object (optional) predicate function (optional)# Receives the event data and resolves to truthy value when the waiting should resolve
+Contains the URL of the WebSocket.
 
-Promise<Object>#
+```ts
+webSocket.url();
+```
+
+**Returns:** `string`
+
+---
+
+### `waitForEvent()` — Added before v1.9
+
+Waits for event to fire and passes its value into the predicate function. Returns when the predicate returns truthy value. Will throw an error if the webSocket is closed before the event is fired. Returns the event data value.
+
+```ts
+await webSocket.waitForEvent(event);
+await webSocket.waitForEvent(event, optionsOrPredicate, options);
+```
+
+**Arguments:**
+
+- `event` `string` — Event name, same one would pass into `webSocket.on(event)`.
+- `optionsOrPredicate` `function | Object` _(optional)_ — Either a predicate that receives an event or an options object.
+  - `predicate` `function` — Receives the event data and resolves to truthy value when the waiting should resolve.
+  - `timeout` `number` _(optional)_ — Maximum time to wait for in milliseconds. Defaults to `0` (no timeout). The default value can be changed via `actionTimeout` option in the config, or by using `browserContext.setDefaultTimeout()` or `page.setDefaultTimeout()`.
+- `options` `Object` _(optional)_
+  - `predicate` `function` _(optional)_ — Receives the event data and resolves to truthy value when the waiting should resolve.
+
+**Returns:** `Promise<Object>`
 
 ## Events
 
-on('close')​ Added before v1.9 webSocket.on('close') Fired when the websocket closes
+### `on('close')` — Added before v1.9
 
-webSocket.on('close', data => {});
+Fired when the websocket closes.
 
-## Event data WebSocket on('framereceived')
+```ts
+webSocket.on('close', (data) => {});
+```
 
-Added in: v1.9 webSocket.on('framereceived') Fired when the websocket receives a frame
+**Event data:** `WebSocket`
 
-webSocket.on('framereceived', data => {}); Event data Object payload string |
+---
 
-## Buffer frame payload on('framesent')
+### `on('framereceived')` — Added in: v1.9
 
-Added in: v1.9 webSocket.on('framesent') Fired when the websocket sends a frame
+Fired when the websocket receives a frame.
 
-webSocket.on('framesent', data => {}); Event data Object payload string |
+```ts
+webSocket.on('framereceived', (data) => {});
+```
 
-## Buffer frame payload on('socketerror')
+**Event data:** `Object`
 
-Added in: v1.9 webSocket.on('socketerror') Fired when the websocket has an error
+- `payload` `string | Buffer` — Frame payload.
 
-webSocket.on('socketerror', data => {}); Event data string
+---
+
+### `on('framesent')` — Added in: v1.9
+
+Fired when the websocket sends a frame.
+
+```ts
+webSocket.on('framesent', (data) => {});
+```
+
+**Event data:** `Object`
+
+- `payload` `string | Buffer` — Frame payload.
+
+---
+
+### `on('socketerror')` — Added in: v1.9
+
+Fired when the websocket has an error.
+
+```ts
+webSocket.on('socketerror', (data) => {});
+```
+
+**Event data:** `string`

@@ -6,79 +6,53 @@
 
 ## Overview
 
-Playwright provides methods for comparing page and element screenshots with expected values stored in files.
+**SnapshotAssertions** provides assertion methods that compare values with stored snapshots. The snapshots are stored in a dedicated folder alongside the test file (configurable by `snapshotDir` and `snapshotPathTemplate` in playwright.config.ts).
 
 ```ts
-expect(screenshot).toMatchSnapshot('landing-page.png');
+// Basic snapshot assertion
+expect(results).toMatchSnapshot('results.txt');
 ```
-
-⚠️ **Note:** To compare screenshots, use `expect(page).toHaveScreenshot()` instead.
 
 ---
 
-## Methods
-
-### toMatchSnapshot(name)
-
-**Added in:** v1.22
+### `snapshotAssertions.toMatchSnapshot(name, options?)` — Added in: v1.22
 
 Ensures that passed value, either a string or a Buffer, matches the expected snapshot stored in the test snapshots directory.
 
 ```ts
-// Basic usage
-expect(await page.screenshot()).toMatchSnapshot('landing-page.png');
-
-// Pass options to customize snapshot comparison
-expect(await page.screenshot()).toMatchSnapshot('landing-page.png', {
-  maxDiffPixels: 27, // allow no more than 27 different pixels
-});
-
-// Configure image matching threshold
-expect(await page.screenshot()).toMatchSnapshot('landing-page.png', {
-  threshold: 0.3,
-});
-
-// Structure snapshot files with path segments
-expect(await page.screenshot()).toMatchSnapshot(['landing', 'step2.png']);
-expect(await page.screenshot()).toMatchSnapshot(['landing', 'step3.png']);
+// Pass snapshot name as a string
+expect(await page.title()).toMatchSnapshot('page-title.txt');
 ```
 
 **Arguments:**
 
-- `name` string | Array<string> — Snapshot name
-- `options` Object (optional)
-  - `maxDiffPixelRatio` number (optional) — An acceptable ratio of pixels that are different to the total amount of pixels, between 0 and 1. Default is configurable with **TestConfig.expect**. Unset by default
-  - `maxDiffPixels` number (optional) — An acceptable amount of pixels that could be different. Default is configurable with **TestConfig.expect**. Unset by default
-  - `threshold` number (optional) — An acceptable perceived color difference in the YIQ color space between the same pixel in compared images, between zero (strict) and one (lax). Default is configurable with **TestConfig.expect**. Defaults to **0.2**
+| Parameter                   | Type                      | Description                                                                                                                                                              |
+| --------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`                      | `string \| Array<string>` | Snapshot name.                                                                                                                                                           |
+| `options.maxDiffPixelRatio` | `number` (optional)       | An acceptable ratio of pixels that are different to the total amount of pixels, between 0 and 1. Default is configurable with `TestConfig.expect`.                       |
+| `options.maxDiffPixels`     | `number` (optional)       | An acceptable number of pixels that could be different. Default is configurable with `TestConfig.expect`.                                                                |
+| `options.threshold`         | `number` (optional)       | An acceptable perceived color difference between the same pixel in compared images, ranges from 0 (strict) to 1 (lax). Default is configurable with `TestConfig.expect`. |
+
+**Returns:** `void`
 
 ---
 
-### toMatchSnapshot(options)
-
-**Added in:** v1.22
+### `snapshotAssertions.toMatchSnapshot(options?)` — Added in: v1.22
 
 Ensures that passed value, either a string or a Buffer, matches the expected snapshot stored in the test snapshots directory.
 
 ```ts
-// Basic usage with auto-generated name from test
-expect(await page.screenshot()).toMatchSnapshot();
-
-// Pass options to customize snapshot comparison
-expect(await page.screenshot()).toMatchSnapshot({
-  maxDiffPixels: 27, // allow no more than 27 different pixels
-});
-
-// Configure image matching threshold and snapshot name
-expect(await page.screenshot()).toMatchSnapshot({
-  name: 'landing-page.png',
-  threshold: 0.3,
-});
+// Instead of a name, pass options with a name property
+expect(await page.title()).toMatchSnapshot({ name: 'page-title.txt' });
 ```
 
 **Arguments:**
 
-- `options` Object (optional)
-  - `maxDiffPixelRatio` number (optional) — An acceptable ratio of pixels that are different to the total amount of pixels, between 0 and 1. Default is configurable with **TestConfig.expect**. Unset by default
-  - `maxDiffPixels` number (optional) — An acceptable amount of pixels that could be different. Default is configurable with **TestConfig.expect**. Unset by default
-  - `name` string | Array<string> (optional) — Snapshot name. If not passed, the test name and ordinals are used when called multiple times
-  - `threshold` number (optional) — An acceptable perceived color difference in the YIQ color space between the same pixel in compared images, between zero (strict) and one (lax). Default is configurable with **TestConfig.expect**. Defaults to **0.2**
+| Parameter                   | Type                                 | Description                                                                                                                                                              |
+| --------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `options.maxDiffPixelRatio` | `number` (optional)                  | An acceptable ratio of pixels that are different to the total amount of pixels, between 0 and 1. Default is configurable with `TestConfig.expect`.                       |
+| `options.maxDiffPixels`     | `number` (optional)                  | An acceptable number of pixels that could be different. Default is configurable with `TestConfig.expect`.                                                                |
+| `options.name`              | `string \| Array<string>` (optional) | Snapshot name. If not passed, the test name and ordinals are used when called multiple times.                                                                            |
+| `options.threshold`         | `number` (optional)                  | An acceptable perceived color difference between the same pixel in compared images, ranges from 0 (strict) to 1 (lax). Default is configurable with `TestConfig.expect`. |
+
+**Returns:** `void`

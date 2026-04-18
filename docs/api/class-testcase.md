@@ -1,75 +1,150 @@
-# 📦 Playwright — Testcase
+# 📦 Playwright — TestCase
 
 > **Source:** [playwright.dev/docs/api/class-testcase](https://playwright.dev/docs/api/class-testcase)
 
 ---
 
-## TestCaseTestCase corresponds to every test() call in a test file. When a single test() is running in multiple projects or repeated multiple times, it will have multiple TestCase objects in corresponding projects' suites
+## Overview
 
-ok​ Added in: v1.10 testCase.ok Whether the test is considered running fine. Non-ok tests fail the test run with non-zero exit code
+**TestCase** corresponds to every `test()` call in a test file. When a single `test()` is running in multiple projects or repeated multiple times, it will have multiple **TestCase** objects in corresponding projects' suites.
 
-testCase.ok(); Returns boolean# outcome​ Added in: v1.10 testCase.outcome Testing outcome for this test. Note that outcome is not the same as testResult.status: Test that is expected to fail and actually fails is 'expected'. Test that passes on a second retry is 'flaky'
+## Methods
 
-testCase.outcome(); Returns "skipped" | "expected" | "unexpected" | "flaky"# title
+### `testCase.ok()` — Added in: v1.10
 
-## Path
+Whether the test is considered running fine. Non-ok tests fail the test run with a non-zero exit code.
 
-Added in: v1.10 testCase.titlePath Returns a list of titles from the root down to this test
+```ts
+testCase.ok();
+```
 
-testCase.titlePath(); Returns Array<string>#
+**Returns:** `boolean`
+
+---
+
+### `testCase.outcome()` — Added in: v1.10
+
+Testing outcome for this test. Note that outcome is not the same as `testResult.status`:
+
+- Test that is expected to fail and actually fails is `'expected'`.
+- Test that passes on a second retry is `'flaky'`.
+
+```ts
+testCase.outcome();
+```
+
+**Returns:** `"skipped" | "expected" | "unexpected" | "flaky"`
+
+---
+
+### `testCase.titlePath()` — Added in: v1.10
+
+Returns a list of titles from the root down to this test.
+
+```ts
+testCase.titlePath();
+```
+
+**Returns:** `Array<string>`
+
+---
 
 ## Properties
 
-annotations​ Added in: v1.10 testCase.annotations testResult.annotations of the last test run
+### `testCase.annotations` — Added in: v1.10
 
-testCase.annotations Type Array<Object> type string Annotation type, for example 'skip' or 'fail'. description string (optional) Optional description. location Location (optional)
+`testResult.annotations` of the last test run.
 
-## Optional location in the source where the annotation is added. expectedStatus
+**Type:** `Array<Object>`
 
-Added in: v1.10 testCase.expectedStatus Expected test status. Tests marked as test.skip() or test.fixme() are expected to be 'skipped'. Tests marked as test.fail() are expected to be 'failed'. Other tests are expected to be 'passed'. See also testResult.status for the actual status
+- `type` `string` — Annotation type, for example `'skip'` or `'fail'`.
+- `description` `string` (optional) — Optional description.
+- `location` `Location` (optional) — Optional location in the source where the annotation is added.
 
-testCase.expectedStatus Type "passed" | "failed" | "timedOut" | "skipped" | "interrupted" id​ Added in: v1.25 testCase.id A test ID that is computed based on the test file name, test title and project name. The
+---
 
-## ID is unique within Playwright session
+### `testCase.expectedStatus` — Added in: v1.10
 
-testCase.id Type string location
+Expected test status. Tests marked as `test.skip()` or `test.fixme()` are expected to be `'skipped'`. Tests marked as `test.fail()` are expected to be `'failed'`. Other tests are expected to be `'passed'`. See also `testResult.status` for the actual status.
 
-Added in: v1.10 testCase.location Location in the source where the test is defined.
+**Type:** `"passed" | "failed" | "timedOut" | "skipped" | "interrupted"`
 
-## Usage testCase.location Type Location parent
+---
 
-Added in: v1.10 testCase.parent
+### `testCase.id` — Added in: v1.25
 
-## Suite this test case belongs to
+A test ID that is computed based on the test file name, test title and project name. The ID is unique within a Playwright session.
 
-testCase.parent Type Suite repeatEachIndex
+**Type:** `string`
 
-Added in: v1.10 testCase.repeatEachIndex Contains the repeat index when running in "repeat each" mode. This mode is enabled by passing --repeat-each to the command line.
+---
 
-## Usage testCase.repeatEachIndex Type number results
+### `testCase.location` — Added in: v1.10
 
-Added in: v1.10 testCase.results Results for each run of this test
+Location in the source where the test is defined.
 
-testCase.results Type Array<TestResult> retries​ Added in: v1.10 testCase.retries The maximum number of retries given to this test in the configuration.
+**Type:** `Location`
 
-## Learn more about test retries
+---
 
-testCase.retries Type number tags
+### `testCase.parent` — Added in: v1.10
 
-Added in: v1.42 testCase.tags The list of tags defined on the test or suite via test() or test.describe(), as well as @-tokens extracted from test and suite titles. Learn more about test tags
+Suite this test case belongs to.
 
-testCase.tags Type Array<string> timeout​ Added in: v1.10 testCase.timeout The timeout given to the test. Affected by testConfig.timeout, testProject.timeout, test.setTimeout(), test.slow() and test
+**Type:** `Suite`
 
-## Info.setTimeout()
+---
 
-testCase.timeout Type number title
+### `testCase.repeatEachIndex` — Added in: v1.10
 
-Added in: v1.10 testCase.title
+Contains the repeat index when running in "repeat each" mode. This mode is enabled by passing `--repeat-each` to the command line.
 
-## Test title as passed to the test() call
+**Type:** `number`
 
-testCase.title Type string type
+---
 
-Added in: v1.44 testCase.type Returns "test". Useful for detecting test cases in suite.entries()
+### `testCase.results` — Added in: v1.10
 
-testCase.type Type "test"
+Results for each run of this test.
+
+**Type:** `Array<TestResult>`
+
+---
+
+### `testCase.retries` — Added in: v1.10
+
+The maximum number of retries given to this test in the configuration. Learn more about test retries.
+
+**Type:** `number`
+
+---
+
+### `testCase.tags` — Added in: v1.42
+
+The list of tags defined on the test or suite via `test()` or `test.describe()`, as well as `@`-tokens extracted from test and suite titles. Learn more about test tags.
+
+**Type:** `Array<string>`
+
+---
+
+### `testCase.timeout` — Added in: v1.10
+
+The timeout given to the test. Affected by `testConfig.timeout`, `testProject.timeout`, `test.setTimeout()`, `test.slow()` and `testInfo.setTimeout()`.
+
+**Type:** `number`
+
+---
+
+### `testCase.title` — Added in: v1.10
+
+Test title as passed to the `test()` call.
+
+**Type:** `string`
+
+---
+
+### `testCase.type` — Added in: v1.44
+
+Returns `"test"`. Useful for detecting test cases in `suite.entries()`.
+
+**Type:** `"test"`

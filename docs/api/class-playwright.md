@@ -4,38 +4,100 @@
 
 ---
 
-## Playwright LibraryPlaywright module provides a method to launch a browser instance. The following is a typical example of using Playwright to drive automation: const { chromium, firefox, webkit } = require('playwright');(async () => { const browser = await chromium.launch(); // Or 'firefox' or 'webkit'. const page = await browser.newPage(); await page.goto('http://example.com'); // other actions... await browser.close();})(); Properties
+## Overview
 
-chromium​ Added before v1.9 playwright.chromium This object can be used to launch or connect to Chromium, returning instances of
+**Playwright** module provides a method to launch a browser instance. The following is a typical example of using Playwright to drive automation:
 
-## Browser
+```ts
+const { chromium, firefox, webkit } = require('playwright');
 
-playwright.chromium Type BrowserType devices
+(async () => {
+  const browser = await chromium.launch(); // Or 'firefox' or 'webkit'.
+  const page = await browser.newPage();
+  await page.goto('http://example.com');
+  // other actions...
+  await browser.close();
+})();
+```
 
-Added before v1.9 playwright.devices Returns a dictionary of devices to be used with browser.newContext() or browser.newPage(). const { webkit, devices } = require('playwright');const iPhone = devices['iPhone 6'];(async () => { const browser = await webkit.launch(); const context = await browser.newContext({ ...iPhone }); const page = await context.newPage(); await page.goto('http://example.com'); // other actions... await browser.close();})();
+## Properties
 
-## Usage playwright.devices Type Object errors
+### `playwright.chromium` — Added before v1.9
 
-Added before v1.9 playwright.errors Playwright methods might throw errors if they are unable to fulfill a request. For example, locator.waitFor() might fail if the selector doesn't match any nodes during the given timeframe. For certain types of errors Playwright uses specific error classes. These classes are available via playwright.errors. An example of handling a timeout error: try { await page.locator('.foo').waitFor();} catch (e) { if (e instanceof playwright.errors.TimeoutError) { // Do something if this is a timeout. }} Usage playwright.errors
+This object can be used to launch or connect to Chromium, returning instances of `Browser`.
 
-## Type Object TimeoutError function A class of TimeoutError. firefox
+**Type:** `BrowserType`
 
-Added before v1.9 playwright.firefox This object can be used to launch or connect to Firefox, returning instances of
+---
 
-## Browser
+### `playwright.devices` — Added before v1.9
 
-playwright.firefox Type BrowserType request
+Returns a dictionary of devices to be used with `browser.newContext()` or `browser.newPage()`.
 
-Added in: v1.16 playwright.request Exposes API that can be used for the
+```ts
+const { webkit, devices } = require('playwright');
+const iPhone = devices['iPhone 6'];
 
-## Web API testing
+(async () => {
+  const browser = await webkit.launch();
+  const context = await browser.newContext({ ...iPhone });
+  const page = await context.newPage();
+  await page.goto('http://example.com');
+  // other actions...
+  await browser.close();
+})();
+```
 
-playwright.request Type APIRequest selectors
+**Type:** `Object`
 
-Added before v1.9 playwright.selectors Selectors can be used to install custom selector engines. See extensibility for more information.
+---
 
-## Usage playwright.selectors Type Selectors webkit
+### `playwright.errors` — Added before v1.9
 
-Added before v1.9 playwright.webkit This object can be used to launch or connect to WebKit, returning instances of Browser
+Playwright methods might throw errors if they are unable to fulfill a request. For example, `locator.waitFor()` might fail if the selector doesn't match any nodes during the given timeframe. For certain types of errors Playwright uses specific error classes. These classes are available via `playwright.errors`.
 
-playwright.webkit Type BrowserType
+```ts
+try {
+  await page.locator('.foo').waitFor();
+} catch (e) {
+  if (e instanceof playwright.errors.TimeoutError) {
+    // Do something if this is a timeout.
+  }
+}
+```
+
+**Type:** `Object`
+
+- `TimeoutError` `function` — A class of `TimeoutError`.
+
+---
+
+### `playwright.firefox` — Added before v1.9
+
+This object can be used to launch or connect to Firefox, returning instances of `Browser`.
+
+**Type:** `BrowserType`
+
+---
+
+### `playwright.request` — Added in: v1.16
+
+Exposes API that can be used for the Web API testing.
+
+**Type:** `APIRequest`
+
+---
+
+### `playwright.selectors` — Added before v1.9
+
+Selectors can be used to install custom selector engines. See extensibility for more information.
+
+**Type:** `Selectors`
+
+---
+
+### `playwright.webkit` — Added before v1.9
+
+This object can be used to launch or connect to WebKit, returning instances of `Browser`.
+
+**Type:** `BrowserType`

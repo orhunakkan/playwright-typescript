@@ -4,48 +4,119 @@
 
 ---
 
-## SuiteSuite is a group of tests. All tests in Playwright Test form the following hierarchy: Root suite has a child suite for each FullProject. Project suite #1. Has a child suite for each test file in the project. File suite #1 TestCase #1 TestCase #2 Suite corresponding to a test.describe() group TestCase #1 in a group TestCase #2 in a group < more test cases ... > File suite #2 < more file suites ... > Project suite #2 < more project suites ... > Reporter is given a root suite in the reporter.onBegin() method
+## Overview
 
-all
+**Suite** is a group of tests. All tests in Playwright Test form the following hierarchy:
 
-## Tests
+- Root suite has a child suite for each `FullProject`.
+- Project suite `#root` has a child suite for each test file in the project.
+- File suite has a child suite for each `test.describe()` group in the file.
+- Describe suite has `TestCase` instances for each `test()` call.
 
-Added in: v1.10 suite.allTests Returns the list of all test cases in this suite and its descendants, as opposite to suite.tests
+Reporter receives suite objects via the `reporter.onBegin()` call.
 
-suite.allTests(); Returns Array<TestCase># entries​ Added in: v1.44 suite.entries Test cases and suites defined directly in this suite. The elements are returned in their declaration order. You can differentiate between various entry types by using testCase.type and suite.type
+---
 
-suite.entries(); Returns Array<TestCase | Suite># project​ Added in: v1.10 suite.project Configuration of the project this suite belongs to, or void for the root suite
+### `suite.allTests()` — Added in: v1.10
 
-suite.project(); Returns FullProject | [undefined]# title
+Returns the list of all test cases in this suite and its descendants, as opposed to `suite.tests` that only includes direct children.
 
-## Path
+```ts
+suite.allTests();
+```
 
-Added in: v1.10 suite.titlePath Returns a list of titles from the root down to this suite
+**Returns:** `Array<TestCase>`
 
-suite.titlePath(); Returns Array<string>#
+---
+
+### `suite.entries()` — Added in: v1.44
+
+Iterates over all entries (suites and test cases) in this suite in their declaration order.
+
+```ts
+for (const entry of suite.entries()) {
+  if (entry instanceof TestCase) console.log('Test:', entry.title);
+  else console.log('Suite:', entry.title);
+}
+```
+
+**Returns:** `Array<TestCase | Suite>`
+
+---
+
+### `suite.project()` — Added in: v1.10
+
+Configuration of the project this suite belongs to, or `undefined` for the root suite.
+
+```ts
+suite.project();
+```
+
+**Returns:** `FullProject | undefined`
+
+---
+
+### `suite.titlePath()` — Added in: v1.10
+
+Returns a list of titles from the root down to this suite.
+
+```ts
+suite.titlePath();
+```
+
+**Returns:** `Array<string>`
+
+---
 
 ## Properties
 
-location​ Added in: v1.10 suite.location Location in the source where the suite is defined.
+### `suite.location` — Added in: v1.10
 
-## Missing for root and project suites
+Location in the source where the suite is defined. Missing for root and project suites.
 
-suite.location Type Location parent
+**Type:** `Location`
 
-Added in: v1.10 suite.parent
+---
 
-## Parent suite, missing for the root suite
+### `suite.parent` — Added in: v1.10
 
-suite.parent Type Suite suites
+Parent suite, missing for the root suite.
 
-Added in: v1.10 suite.suites Child suites. See Suite for the hierarchy of suites
+**Type:** `Suite`
 
-suite.suites Type Array<Suite> tests​ Added in: v1.10 suite.tests Test cases in the suite. Note that only test cases defined directly in this suite are in the list. Any test cases defined in nested test.describe() groups are listed in the child suite.suites
+---
 
-suite.tests Type Array<TestCase> title​ Added in: v1.10 suite.title Suite title. Empty for root suite. Project name for project suite. File path for file suite. Title passed to test.describe() for a group suite.
+### `suite.suites` — Added in: v1.10
 
-## Usage suite.title Type string type
+Child suites. See `Suite` for the hierarchy of suites.
 
-Added in: v1.44 suite.type Returns the type of the suite. The Suites form the following hierarchy: root -> project -> file -> describe -> ...describe -> test
+**Type:** `Array<Suite>`
 
-suite.type Type "root" | "project" | "file" | "describe"
+---
+
+### `suite.tests` — Added in: v1.10
+
+Test cases in the suite. Note that only test cases directly belonging to this suite are in the list. Any test cases defined in nested `test.describe()` groups are listed in the child `suite.suites`.
+
+**Type:** `Array<TestCase>`
+
+---
+
+### `suite.title` — Added in: v1.10
+
+Suite title:
+
+- Empty string for root suite.
+- Project name for project suite.
+- File path for file suite.
+- `test.describe()` title for group suite.
+
+**Type:** `string`
+
+---
+
+### `suite.type` — Added in: v1.44
+
+Returns the type of the suite: `"root"`, `"project"`, `"file"`, or `"describe"`.
+
+**Type:** `"root" | "project" | "file" | "describe"`

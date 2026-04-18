@@ -38,9 +38,7 @@ await page.keyboard.press('ControlOrMeta+A');
 
 ## Methods
 
-### down
-
-**Added before:** v1.9
+### `keyboard.down(key)` — Added before: v1.9
 
 Dispatches a `keydown` event. `key` can specify the intended `keyboardEvent.key` value or a single character to generate the text for. Examples of the keys are: `F1`–`F12`, `Digit0`–`Digit9`, `KeyA`–`KeyZ`, `Backquote`, `Minus`, `Equal`, `Backslash`, `Backspace`, `Tab`, `Delete`, `Escape`, `ArrowDown`, `End`, `Enter`, `Home`, `Insert`, `PageDown`, `PageUp`, `ArrowRight`, `ArrowUp`, etc.
 
@@ -54,35 +52,35 @@ await keyboard.down(key);
 
 **Arguments:**
 
-- `key` string — Name of the key to press or a character to generate, such as `ArrowLeft` or `a`.
+| Parameter | Type     | Description                                                                      |
+| --------- | -------- | -------------------------------------------------------------------------------- |
+| `key`     | `string` | Name of the key to press or a character to generate, such as `ArrowLeft` or `a`. |
 
 **Returns:** `Promise<void>`
 
 ---
 
-### insertText
-
-**Added before:** v1.9
+### `keyboard.insertText(text)` — Added before: v1.9
 
 Dispatches only `input` event, does not emit the `keydown`, `keyup` or `keypress` events.
 
 > **Note:** Modifier keys DO NOT affect `keyboard.insertText`. Holding down `Shift` will not type the text in upper case.
 
 ```ts
-page.keyboard.insertText('嗨');
+page.keyboard.insertText('咆');
 ```
 
 **Arguments:**
 
-- `text` string — Sets input to the specified text value.
+| Parameter | Type     | Description                             |
+| --------- | -------- | --------------------------------------- |
+| `text`    | `string` | Sets input to the specified text value. |
 
 **Returns:** `Promise<void>`
 
 ---
 
-### press
-
-**Added before:** v1.9
+### `keyboard.press(key, options?)` — Added before: v1.9
 
 > **Tip:** In most cases, you should use `locator.press()` instead.
 
@@ -104,17 +102,16 @@ await browser.close();
 
 **Arguments:**
 
-- `key` string — Name of the key to press or a character to generate, such as `ArrowLeft` or `a`.
-- `options` Object (optional)
-  - `delay` number (optional) — Time to wait between `keydown` and `keyup` in milliseconds. Defaults to `0`.
+| Parameter       | Type                | Description                                                                      |
+| --------------- | ------------------- | -------------------------------------------------------------------------------- |
+| `key`           | `string`            | Name of the key to press or a character to generate, such as `ArrowLeft` or `a`. |
+| `options.delay` | `number` (optional) | Time to wait between `keydown` and `keyup` in milliseconds. Defaults to `0`.     |
 
 **Returns:** `Promise<void>`
 
 ---
 
-### type
-
-**Added before:** v1.9
+### `keyboard.type(text, options?)` — Added before: v1.9
 
 > **Caution:** In most cases, you should use `locator.fill()` instead. You only need to press keys one by one if there is special keyboard handling on the page — in this case use `locator.pressSequentially()`.
 
@@ -131,17 +128,16 @@ await page.keyboard.type('World', { delay: 100 }); // Types slower, like a user
 
 **Arguments:**
 
-- `text` string — A text to type into a focused element.
-- `options` Object (optional)
-  - `delay` number (optional) — Time to wait between key presses in milliseconds. Defaults to `0`.
+| Parameter       | Type                | Description                                                        |
+| --------------- | ------------------- | ------------------------------------------------------------------ |
+| `text`          | `string`            | A text to type into a focused element.                             |
+| `options.delay` | `number` (optional) | Time to wait between key presses in milliseconds. Defaults to `0`. |
 
 **Returns:** `Promise<void>`
 
 ---
 
-### up
-
-**Added before:** v1.9
+### `keyboard.up(key)` — Added before: v1.9
 
 Dispatches a `keyup` event.
 
@@ -151,6 +147,8 @@ await keyboard.up(key);
 
 **Arguments:**
 
-- `key` string — Name of the key to press or a character to generate, such as `ArrowLeft` or `a`.
+| Parameter | Type     | Description                                                                      |
+| --------- | -------- | -------------------------------------------------------------------------------- |
+| `key`     | `string` | Name of the key to press or a character to generate, such as `ArrowLeft` or `a`. |
 
 **Returns:** `Promise<void>`

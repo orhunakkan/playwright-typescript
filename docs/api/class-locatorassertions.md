@@ -6,641 +6,678 @@
 
 ## Overview
 
-The **LocatorAssertions** class provides assertion methods that can be used to make assertions about **Locator** state in tests.
+The **LocatorAssertions** class provides assertion methods for the **Locator** state in tests.
 
 ```ts
 import { test, expect } from '@playwright/test';
 
 test('status becomes submitted', async ({ page }) => {
-  // ...
   await page.getByRole('button').click();
-
   await expect(page.locator('.status')).toHaveText('Submitted');
 });
 ```
 
+---
+
 ## Methods
 
-### toBeAttached
+### `locatorAssertions.toBeAttached(options?)` — Added in: v1.33
 
-Added in: v1.33 locatorAssertions.toBeAttached Ensures that Locator points to an element that is connected to a Document or a ShadowRoot
+Ensures that the Locator points to an element connected to a Document or a ShadowRoot.
 
+```ts
 await expect(page.getByText('Hidden text')).toBeAttached();
+```
 
-Arguments options Object (optional) attached boolean (optional)# timeout number (optional)# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Arguments:**
 
-Promise<void># to
+| Parameter          | Type                 | Description                                                                 |
+| ------------------ | -------------------- | --------------------------------------------------------------------------- |
+| `options.attached` | `boolean` (optional) | Whether to assert element is attached (default) or detached.                |
+| `options.timeout`  | `number` (optional)  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-## BeChecked
+**Returns:** `Promise<void>`
 
-Added in: v1.20 locatorAssertions.toBeChecked Ensures the Locator points to a checked input
+---
 
+### `locatorAssertions.toBeChecked(options?)` — Added in: v1.20
+
+Ensures the Locator points to a checked input.
+
+```ts
 const locator = page.getByLabel('Subscribe to newsletter');
 await expect(locator).toBeChecked();
+```
 
-Arguments options Object (optional) checked boolean (optional)
+**Arguments:**
 
-Added in: v1.18# Provides state to assert for. Asserts for input to be checked by default. This option can't be used when indeterminate is set to true. indeterminate boolean (optional)
+| Parameter               | Type                                 | Description                                                                                             |
+| ----------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `options.checked`       | `boolean` (optional, Added in v1.18) | Asserts the checked state. Cannot be used when `indeterminate` is `true`.                               |
+| `options.indeterminate` | `boolean` (optional, Added in v1.50) | Asserts the element is in the indeterminate (mixed) state. Cannot be `true` when `checked` is provided. |
+| `options.timeout`       | `number` (optional, Added in v1.18)  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout.                             |
 
-Added in: v1.50# Asserts that the element is in the indeterminate (mixed) state. Only supported for checkboxes and radio buttons. This option can't be true when checked is provided. timeout number (optional)
+**Returns:** `Promise<void>`
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+---
 
-Promise<void># to
+### `locatorAssertions.toBeDisabled(options?)` — Added in: v1.20
 
-## BeDisabled
+Ensures the Locator points to a disabled element. An element is disabled if it has the `disabled` attribute or is disabled via `aria-disabled`.
 
-Added in: v1.20 locatorAssertions.toBeDisabled Ensures the Locator points to a disabled element. Element is disabled if it has "disabled" attribute or is disabled via 'aria-disabled'. Note that only native control elements such as HTML button, input, select, textarea, option, optgroup can be disabled by setting "disabled" attribute. "disabled" attribute on other elements is ignored by the browser
-
+```ts
 const locator = page.locator('button.submit');
 await expect(locator).toBeDisabled();
+```
 
-Arguments options Object (optional) timeout number (optional)
+**Arguments:**
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Promise<void># to
+**Returns:** `Promise<void>`
 
-## BeEditable
+---
 
-Added in: v1.20 locatorAssertions.toBeEditable Ensures the Locator points to an editable element
+### `locatorAssertions.toBeEditable(options?)` — Added in: v1.20
 
+Ensures the Locator points to an editable element.
+
+```ts
 const locator = page.getByRole('textbox');
 await expect(locator).toBeEditable();
+```
 
-Arguments options Object (optional) editable boolean (optional)
+**Arguments:**
 
-Added in: v1.26# timeout number (optional)
+| Parameter          | Type                                 | Description                                                                 |
+| ------------------ | ------------------------------------ | --------------------------------------------------------------------------- |
+| `options.editable` | `boolean` (optional, Added in v1.26) | Whether to assert element is editable (default) or not.                     |
+| `options.timeout`  | `number` (optional)                  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Returns:** `Promise<void>`
 
-Promise<void># to
+---
 
-## BeEmpty
+### `locatorAssertions.toBeEmpty(options?)` — Added in: v1.20
 
-Added in: v1.20 locatorAssertions.toBeEmpty Ensures the Locator points to an empty editable element or to a DOM node that has no text
+Ensures the Locator points to an empty editable element or a DOM node with no text.
 
+```ts
 const locator = page.locator('div.warning');
 await expect(locator).toBeEmpty();
+```
 
-Arguments options Object (optional) timeout number (optional)
+**Arguments:**
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Promise<void># to
+**Returns:** `Promise<void>`
 
-## BeEnabled
+---
 
-Added in: v1.20 locatorAssertions.toBeEnabled Ensures the Locator points to an enabled element
+### `locatorAssertions.toBeEnabled(options?)` — Added in: v1.20
 
+Ensures the Locator points to an enabled element.
+
+```ts
 const locator = page.locator('button.submit');
 await expect(locator).toBeEnabled();
+```
 
-Arguments options Object (optional) enabled boolean (optional)
+**Arguments:**
 
-Added in: v1.26# timeout number (optional)
+| Parameter         | Type                                 | Description                                                                 |
+| ----------------- | ------------------------------------ | --------------------------------------------------------------------------- |
+| `options.enabled` | `boolean` (optional, Added in v1.26) | Whether to assert element is enabled (default) or disabled.                 |
+| `options.timeout` | `number` (optional)                  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Returns:** `Promise<void>`
 
-Promise<void># to
+---
 
-## BeFocused
+### `locatorAssertions.toBeFocused(options?)` — Added in: v1.20
 
-Added in: v1.20 locatorAssertions.toBeFocused Ensures the Locator points to a focused DOM node
+Ensures the Locator points to a focused DOM node.
 
+```ts
 const locator = page.getByRole('textbox');
 await expect(locator).toBeFocused();
+```
 
-Arguments options Object (optional) timeout number (optional)
+**Arguments:**
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Promise<void># to
+**Returns:** `Promise<void>`
 
-## BeHidden
+---
 
-Added in: v1.20 locatorAssertions.toBeHidden Ensures that Locator either does not resolve to any DOM node, or resolves to a non-visible one
+### `locatorAssertions.toBeHidden(options?)` — Added in: v1.20
 
+Ensures the Locator either does not resolve to any DOM node, or resolves to a non-visible one.
+
+```ts
 const locator = page.locator('.my-element');
 await expect(locator).toBeHidden();
+```
 
-Arguments options Object (optional) timeout number (optional)
+**Arguments:**
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Promise<void># to
+**Returns:** `Promise<void>`
 
-## BeInViewport
+---
 
-Added in: v1.31 locatorAssertions.toBeInViewport Ensures the Locator points to an element that intersects viewport, according to the intersection observer API
+### `locatorAssertions.toBeInViewport(options?)` — Added in: v1.31
 
-const locator = page.getByRole('button');// Make sure at least some part of element intersects viewport.await expect(locator).toBeInViewport();// Make sure element is fully outside of viewport.await expect(locator).not.toBeInViewport();// Make sure that at least half of the element intersects viewport.await expect(locator).toBeInViewport({ ratio: 0.5 });
+Ensures the Locator points to an element that intersects the viewport, according to the Intersection Observer API.
 
-Arguments options Object (optional) ratio number (optional)# The minimal ratio of the element to intersect viewport. If equals to 0, then element should intersect viewport at any positive ratio. Defaults to 0. timeout number (optional)# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+```ts
+const locator = page.getByRole('button');
+await expect(locator).toBeInViewport();
+await expect(locator).not.toBeInViewport();
+await expect(locator).toBeInViewport({ ratio: 0.5 });
+```
 
-Promise<void># to
+**Arguments:**
 
-## BeVisible
+| Parameter         | Type                | Description                                                                                                   |
+| ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `options.ratio`   | `number` (optional) | Minimum ratio of the element to intersect the viewport. `0` means any positive intersection. Defaults to `0`. |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout.                                   |
 
-Added in: v1.20 locatorAssertions.toBeVisible Ensures that Locator points to an attached and visible DOM node. To check that at least one element from the list is visible, use locator.first()
+**Returns:** `Promise<void>`
 
-// A specific element is visible.await expect(page.getByText('Welcome')).toBeVisible();// At least one item in the list is visible.await expect(page.getByTestId('todo-item').first()).toBeVisible();// At least one of the two elements is visible, possibly both.await expect( page.getByRole('button', { name: 'Sign in' }) .or(page.getByRole('button', { name: 'Sign up' })) .first()).toBeVisible();
+---
 
-Arguments options Object (optional) timeout number (optional)
+### `locatorAssertions.toBeVisible(options?)` — Added in: v1.20
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect. visible boolean (optional)
+Ensures the Locator points to an attached and visible DOM node.
 
-Added in: v1.26#
+```ts
+await expect(page.getByText('Welcome')).toBeVisible();
+await expect(page.getByTestId('todo-item').first()).toBeVisible();
+```
 
-Returns Promise<void># to
+**Arguments:**
 
-## ContainClass
+| Parameter         | Type                                 | Description                                                                 |
+| ----------------- | ------------------------------------ | --------------------------------------------------------------------------- |
+| `options.visible` | `boolean` (optional, Added in v1.26) | Whether to assert element is visible (default) or hidden.                   |
+| `options.timeout` | `number` (optional)                  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Added in: v1.52 locatorAssertions.toContainClass Ensures the Locator points to an element with given CSS classes. All classes from the asserted value, separated by spaces, must be present in the Element.classList in any order
+**Returns:** `Promise<void>`
 
- <div class='middle selected row' id='component'></div> const locator = page.locator('#component');
+---
+
+### `locatorAssertions.toContainClass(expected, options?)` — Added in: v1.52
+
+Ensures the Locator points to an element with the given CSS classes. All classes in the asserted value must be present in `Element.classList` in any order.
+
+```ts
+const locator = page.locator('#component');
 await expect(locator).toContainClass('middle selected row');
 await expect(locator).toContainClass('selected');
-await expect(locator).toContainClass('row middle');
-When an array is passed, the method asserts that the list of elements located matches the corresponding list of expected class lists.
+```
 
-Each element's class attribute is matched against the corresponding class in the array: <div class='list'> <div class='component inactive'></div> <div class='component active'></div> <div class='component inactive'></div></div> const locator = page.locator('.list > .component');
+When an array is passed, asserts each element against the corresponding expected class string:
+
+```ts
+const locator = page.locator('.list > .component');
 await expect(locator).toContainClass(['inactive', 'active', 'inactive']);
+```
 
-Arguments expected string | Array<string># A string containing expected class names, separated by spaces, or a list of such strings to assert multiple elements.
+**Arguments:**
 
-options Object (optional) timeout number (optional)# Time to retry the assertion for in milliseconds.
+| Parameter         | Type                      | Description                                                                    |
+| ----------------- | ------------------------- | ------------------------------------------------------------------------------ |
+| `expected`        | `string \| Array<string>` | Expected CSS class names (space-separated), or an array for multiple elements. |
+| `options.timeout` | `number` (optional)       | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout.    |
 
-Defaults to timeout in TestConfig.expect
+**Returns:** `Promise<void>`
 
-Promise<void># to
+---
 
-## ContainText
+### `locatorAssertions.toContainText(expected, options?)` — Added in: v1.20
 
-Added in: v1.20 locatorAssertions.toContainText Ensures the Locator points to an element that contains the given text. All nested elements will be considered when computing the text content of the element. You can use regular expressions for the value as well
+Ensures the Locator points to an element that contains the given text. All nested elements are considered when computing text content.
 
+```ts
 const locator = page.locator('.title');
 await expect(locator).toContainText('substring');
 await expect(locator).toContainText(/\d messages/);
-If you pass an array as an expected value, the expectations are: Locator resolves to a list of elements.
+```
 
-Elements from a subset of this list contain text from the expected array, respectively.
+When an array is passed, a matching subset of elements (in the same order) must each contain the corresponding text.
 
-The matching subset of elements has the same order as the expected array.
+**Arguments:**
 
-Each text value from the expected array is matched by some element from the list.
+| Parameter              | Type                                          | Description                                                                    |
+| ---------------------- | --------------------------------------------- | ------------------------------------------------------------------------------ |
+| `expected`             | `string \| RegExp \| Array<string \| RegExp>` | Expected substring, RegExp, or list of those.                                  |
+| `options.ignoreCase`   | `boolean` (optional, Added in v1.23)          | Perform case-insensitive match. Takes precedence over regex flags.             |
+| `options.timeout`      | `number` (optional)                           | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout.    |
+| `options.useInnerText` | `boolean` (optional)                          | Use `element.innerText` instead of `element.textContent` when retrieving text. |
 
-For example, consider the following list: <ul> <li>Item Text 1</li> <li>Item Text 2</li> <li>Item Text 3</li></ul> Let's see how we can use the assertion: // ✓ Contains the right items in the right orderawait expect(page.locator('ul > li')).toContainText(['Text 1', 'Text 3']);// ✖ Wrong orderawait expect(page.locator('ul > li')).toContainText(['Text 3', 'Text 2']);// ✖ No item contains this textawait expect(page.locator('ul > li')).toContainText(['Some 33']);// ✖ Locator points to the outer list element, not to the list itemsawait expect(page.locator('ul')).toContainText(['Text 3']);
+**Returns:** `Promise<void>`
 
-Arguments expected string | RegExp | Array<string | RegExp>
+> **Note:** When `expected` is a string, Playwright normalizes whitespaces and line breaks before matching. RegExp is matched as-is.
 
-Added in: v1.18# Expected substring or RegExp or a list of those.
+---
 
-options Object (optional) ignoreCase boolean (optional)
+### `locatorAssertions.toHaveAccessibleDescription(description, options?)` — Added in: v1.44
 
-Added in: v1.23# Whether to perform case-insensitive match.
+Ensures the Locator points to an element with a given accessible description.
 
-ignoreCase option takes precedence over the corresponding regular expression flag if specified.
-
-timeout number (optional)
-
-Added in: v1.18# Time to retry the assertion for in milliseconds.
-
-Defaults to timeout in TestConfig.expect.
-
-useInnerText boolean (optional)
-
-Added in: v1.18# Whether to use element.innerText instead of element.textContent when retrieving DOM node text
-
-Promise<void>#
-
-Details When expected parameter is a string, Playwright will normalize whitespaces and line breaks both in the actual text and in the expected string before matching. When regular expression is used, the actual text is matched as is. to
-
-## HaveAccessibleDescription
-
-Added in: v1.44 locatorAssertions.toHaveAccessibleDescription Ensures the Locator points to an element with a given accessible description
-
+```ts
 const locator = page.getByTestId('save-button');
 await expect(locator).toHaveAccessibleDescription('Save results to disk');
+```
 
-Arguments description string | RegExp# Expected accessible description. options Object (optional) ignoreCase boolean (optional)# Whether to perform case-insensitive match. ignoreCase option takes precedence over the corresponding regular expression flag if specified. timeout number (optional)# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Arguments:**
 
-Promise<void># to
+| Parameter            | Type                 | Description                                                                 |
+| -------------------- | -------------------- | --------------------------------------------------------------------------- |
+| `description`        | `string \| RegExp`   | Expected accessible description.                                            |
+| `options.ignoreCase` | `boolean` (optional) | Perform case-insensitive match. Takes precedence over regex flags.          |
+| `options.timeout`    | `number` (optional)  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-## HaveAccessibleErrorMessage
+**Returns:** `Promise<void>`
 
-Added in: v1.50 locatorAssertions.toHaveAccessibleErrorMessage Ensures the Locator points to an element with a given aria errormessage
+---
 
+### `locatorAssertions.toHaveAccessibleErrorMessage(errorMessage, options?)` — Added in: v1.50
+
+Ensures the Locator points to an element with a given ARIA error message.
+
+```ts
 const locator = page.getByTestId('username-input');
 await expect(locator).toHaveAccessibleErrorMessage('Username is required.');
+```
 
-Arguments errorMessage string | RegExp# Expected accessible error message. options Object (optional) ignoreCase boolean (optional)# Whether to perform case-insensitive match. ignoreCase option takes precedence over the corresponding regular expression flag if specified. timeout number (optional)# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Arguments:**
 
-Promise<void># to
+| Parameter            | Type                 | Description                                                                 |
+| -------------------- | -------------------- | --------------------------------------------------------------------------- |
+| `errorMessage`       | `string \| RegExp`   | Expected accessible error message.                                          |
+| `options.ignoreCase` | `boolean` (optional) | Perform case-insensitive match. Takes precedence over regex flags.          |
+| `options.timeout`    | `number` (optional)  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-## HaveAccessibleName
+**Returns:** `Promise<void>`
 
-Added in: v1.44 locatorAssertions.toHaveAccessibleName Ensures the Locator points to an element with a given accessible name
+---
 
+### `locatorAssertions.toHaveAccessibleName(name, options?)` — Added in: v1.44
+
+Ensures the Locator points to an element with a given accessible name.
+
+```ts
 const locator = page.getByTestId('save-button');
 await expect(locator).toHaveAccessibleName('Save to disk');
+```
 
-Arguments name string | RegExp# Expected accessible name. options Object (optional) ignoreCase boolean (optional)# Whether to perform case-insensitive match. ignoreCase option takes precedence over the corresponding regular expression flag if specified. timeout number (optional)# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Arguments:**
 
-Promise<void># to
+| Parameter            | Type                 | Description                                                                 |
+| -------------------- | -------------------- | --------------------------------------------------------------------------- |
+| `name`               | `string \| RegExp`   | Expected accessible name.                                                   |
+| `options.ignoreCase` | `boolean` (optional) | Perform case-insensitive match. Takes precedence over regex flags.          |
+| `options.timeout`    | `number` (optional)  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-## HaveAttribute(name, value)
+**Returns:** `Promise<void>`
 
-Added in: v1.20 locatorAssertions.toHaveAttribute(name, value) Ensures the Locator points to an element with given attribute
+---
 
+### `locatorAssertions.toHaveAttribute(name, value, options?)` — Added in: v1.20
+
+Ensures the Locator points to an element with the given attribute and value.
+
+```ts
 const locator = page.locator('input');
 await expect(locator).toHaveAttribute('type', 'text');
+```
 
-Arguments name string
+**Arguments:**
 
-Added in: v1.18# Attribute name. value string | RegExp
+| Parameter            | Type                                 | Description                                                                 |
+| -------------------- | ------------------------------------ | --------------------------------------------------------------------------- |
+| `name`               | `string`                             | Attribute name.                                                             |
+| `value`              | `string \| RegExp`                   | Expected attribute value.                                                   |
+| `options.ignoreCase` | `boolean` (optional, Added in v1.40) | Perform case-insensitive match. Takes precedence over regex flags.          |
+| `options.timeout`    | `number` (optional)                  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Added in: v1.18# Expected attribute value. options Object (optional) ignoreCase boolean (optional)
+**Returns:** `Promise<void>`
 
-Added in: v1.40# Whether to perform case-insensitive match. ignoreCase option takes precedence over the corresponding regular expression flag if specified. timeout number (optional)
+---
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+### `locatorAssertions.toHaveAttribute(name, options?)` — Added in: v1.39
 
-Promise<void># to
+Ensures the Locator points to an element with the given attribute (presence check only).
 
-## HaveAttribute(name)
-
-Added in: v1.39 locatorAssertions.toHaveAttribute(name) Ensures the Locator points to an element with given attribute. The method will assert attribute presence. const locator = page.locator('input');// Assert attribute existence.await expect(locator).toHaveAttribute('disabled');
+```ts
+const locator = page.locator('input');
+await expect(locator).toHaveAttribute('disabled');
 await expect(locator).not.toHaveAttribute('open');
+```
 
-Usage await expect(locator).toHaveAttribute(name);
-await expect(locator).toHaveAttribute(name, options);
+**Arguments:**
 
-Arguments name string# Attribute name. options Object (optional) timeout number (optional)# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `name`            | `string`            | Attribute name.                                                             |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Promise<void># to
+**Returns:** `Promise<void>`
 
-## HaveClass
+---
 
-Added in: v1.20 locatorAssertions.toHaveClass Ensures the Locator points to an element with given CSS classes. When a string is provided, it must fully match the element's class attribute. To match individual classes use expect(locator).toContainClass()
+### `locatorAssertions.toHaveClass(expected, options?)` — Added in: v1.20
 
- <div class='middle selected row' id='component'></div> const locator = page.locator('#component');
+Ensures the Locator points to an element with the given CSS classes. When a string is provided, it must fully match the element's `class` attribute.
+
+```ts
+const locator = page.locator('#component');
 await expect(locator).toHaveClass('middle selected row');
 await expect(locator).toHaveClass(/(^|\s)selected(\s|$)/);
-When an array is passed, the method asserts that the list of elements located matches the corresponding list of expected class values.
+```
 
-Each element's class attribute is matched against the corresponding string or regular expression in the array: const locator = page.locator('.list > .component');
-await expect(locator).toHaveClass(['component', 'component selected', 'component']);
+When an array is passed, asserts each element against the corresponding expected class value.
 
-Arguments expected string | RegExp | Array<string | RegExp>
+**Arguments:**
 
-Added in: v1.18# Expected class or RegExp or a list of those.
+| Parameter         | Type                                          | Description                                                                 |
+| ----------------- | --------------------------------------------- | --------------------------------------------------------------------------- |
+| `expected`        | `string \| RegExp \| Array<string \| RegExp>` | Expected class, RegExp, or list of those.                                   |
+| `options.timeout` | `number` (optional)                           | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-options Object (optional) timeout number (optional)
+**Returns:** `Promise<void>`
 
-Added in: v1.18# Time to retry the assertion for in milliseconds.
+---
 
-Defaults to timeout in TestConfig.expect
+### `locatorAssertions.toHaveCount(count, options?)` — Added in: v1.20
 
-Promise<void># to
+Ensures the Locator resolves to an exact number of DOM nodes.
 
-## HaveCount
-
-Added in: v1.20 locatorAssertions.toHaveCount Ensures the Locator resolves to an exact number of DOM nodes
-
+```ts
 const list = page.locator('list > .component');
 await expect(list).toHaveCount(3);
+```
 
-Arguments count number
+**Arguments:**
 
-Added in: v1.18# Expected count. options Object (optional) timeout number (optional)
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `count`           | `number`            | Expected count.                                                             |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Returns:** `Promise<void>`
 
-Promise<void># to
+---
 
-## HaveCSS
+### `locatorAssertions.toHaveCSS(name, value, options?)` — Added in: v1.20
 
-Added in: v1.20 locatorAssertions.toHaveCSS Ensures the Locator resolves to an element with the given computed CSS style
+Ensures the Locator resolves to an element with the given computed CSS style.
 
+```ts
 const locator = page.getByRole('button');
 await expect(locator).toHaveCSS('display', 'flex');
+```
 
-Arguments name string
+**Arguments:**
 
-Added in: v1.18# CSS property name. value string | RegExp
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `name`            | `string`            | CSS property name.                                                          |
+| `value`           | `string \| RegExp`  | CSS property value.                                                         |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Added in: v1.18# CSS property value. options Object (optional) timeout number (optional)
+**Returns:** `Promise<void>`
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+---
 
-Promise<void># to
+### `locatorAssertions.toHaveId(id, options?)` — Added in: v1.20
 
-## HaveId
+Ensures the Locator points to an element with the given DOM Node ID.
 
-Added in: v1.20 locatorAssertions.toHaveId Ensures the Locator points to an element with the given DOM Node ID
-
+```ts
 const locator = page.getByRole('textbox');
 await expect(locator).toHaveId('lastname');
+```
 
-Arguments id string | RegExp
+**Arguments:**
 
-Added in: v1.18# Element id. options Object (optional) timeout number (optional)
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `id`              | `string \| RegExp`  | Element ID.                                                                 |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Returns:** `Promise<void>`
 
-Promise<void># to
+---
 
-## HaveJSProperty
+### `locatorAssertions.toHaveJSProperty(name, value, options?)` — Added in: v1.20
 
-Added in: v1.20 locatorAssertions.toHaveJSProperty Ensures the Locator points to an element with given JavaScript property. Note that this property can be of a primitive type as well as a plain serializable JavaScript object
+Ensures the Locator points to an element with the given JavaScript property. Supports primitive types and plain serializable objects.
 
+```ts
 const locator = page.locator('.component');
 await expect(locator).toHaveJSProperty('loaded', true);
+```
 
-Arguments name string
+**Arguments:**
 
-Added in: v1.18# Property name. value Object
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `name`            | `string`            | Property name.                                                              |
+| `value`           | `Object`            | Property value.                                                             |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Added in: v1.18# Property value. options Object (optional) timeout number (optional)
+**Returns:** `Promise<void>`
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+---
 
-Promise<void># to
+### `locatorAssertions.toHaveRole(role, options?)` — Added in: v1.44
 
-## HaveRole
+Ensures the Locator points to an element with the given ARIA role. Role is matched as a string; ARIA role hierarchy is not considered.
 
-Added in: v1.44 locatorAssertions.toHaveRole Ensures the Locator points to an element with a given ARIA role. Note that role is matched as a string, disregarding the ARIA role hierarchy. For example, asserting a superclass role "checkbox" on an element with a subclass role "switch" will fail
-
+```ts
 const locator = page.getByTestId('save-button');
 await expect(locator).toHaveRole('button');
+```
 
-Arguments
+**Arguments:**
 
-role
-"alert" | "alertdialog" | "application" | "article" | "banner" | "blockquote" | "button" | "caption" | "cell" | "checkbox" | "code" | "columnheader" | "combobox" | "complementary" | "contentinfo" | "definition" | "deletion" | "dialog" | "directory" | "document" | "emphasis" | "feed" | "figure" | "form" | "generic" | "grid" | "gridcell" | "group" | "heading" | "img" | "insertion" | "link" | "list" | "listbox" | "listitem" | "log" | "main" | "marquee" | "math" | "meter" | "menu" | "menubar" | "menuitem" | "menuitemcheckbox" | "menuitemradio" | "navigation" | "none" | "note" | "option" | "paragraph" | "presentation" |
-"progressbar" | "radio" | "radiogroup" | "region" | "row" | "rowgroup" | "rowheader" | "scrollbar" | "search" | "searchbox" | "separator" | "slider" | "spinbutton" | "status" | "strong" | "subscript" | "superscript" | "switch" | "tab" | "table" | "tablist" | "tabpanel" | "term" | "textbox" | "time" | "timer" | "toolbar" | "tooltip" | "tree" | "treegrid" | "treeitem"
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `role`            | `AriaRole`          | Required ARIA role (e.g. `"button"`, `"checkbox"`, `"textbox"`, etc.).      |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-# Required aria role.
+**Returns:** `Promise<void>`
 
-options Object (optional) timeout number (optional)# Time to retry the assertion for in milliseconds.
+---
 
-Defaults to timeout in TestConfig.expect
+### `locatorAssertions.toHaveScreenshot(name, options?)` — Added in: v1.23
 
-Promise<void># to
+Waits until two consecutive locator screenshots yield the same result, then compares the last screenshot with the expectation.
 
-## HaveScreenshot(name)
-
-Added in: v1.23 locatorAssertions.toHaveScreenshot(name) This function will wait until two consecutive locator screenshots yield the same result, and then compare the last screenshot with the expectation
-
+```ts
 const locator = page.getByRole('button');
-await expect(locator).toHaveScreenshot('image.png'); Note that screenshot assertions only work with Playwright test runner
+await expect(locator).toHaveScreenshot('image.png');
+```
 
-name string | Array<string># Snapshot name.
+> **Note:** Screenshot assertions only work with the Playwright test runner.
 
-options Object (optional) animations "disabled" | "allow" (optional)# When set to "disabled", stops CSS animations, CSS transitions and Web Animations.
+**Arguments:**
 
-Animations get different treatment depending on their duration: finite animations are fast-forwarded to completion, so they'll fire transitionend event.
+| Parameter                   | Type                                                 | Description                                                                           |
+| --------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `name`                      | `string \| Array<string>`                            | Snapshot name.                                                                        |
+| `options.animations`        | `"disabled" \| "allow"` (optional)                   | Stops CSS/Web animations when `"disabled"`. Defaults to `"disabled"`.                 |
+| `options.caret`             | `"hide" \| "initial"` (optional)                     | Hides text caret when `"hide"`. Defaults to `"hide"`.                                 |
+| `options.mask`              | `Array<Locator>` (optional)                          | Locators to mask with a pink `#FF00FF` overlay.                                       |
+| `options.maskColor`         | `string` (optional, Added in v1.35)                  | CSS color for mask overlay. Default is `#FF00FF`.                                     |
+| `options.maxDiffPixelRatio` | `number` (optional)                                  | Acceptable ratio of different pixels (0–1). Configurable via `TestConfig.expect`.     |
+| `options.maxDiffPixels`     | `number` (optional)                                  | Acceptable number of different pixels. Configurable via `TestConfig.expect`.          |
+| `options.omitBackground`    | `boolean` (optional)                                 | Hides white background for transparency. Not applicable to JPEG. Defaults to `false`. |
+| `options.scale`             | `"css" \| "device"` (optional)                       | `"css"` = 1px per CSS pixel; `"device"` = 1px per device pixel. Defaults to `"css"`.  |
+| `options.stylePath`         | `string \| Array<string>` (optional, Added in v1.41) | Path to stylesheet to apply during capture.                                           |
+| `options.threshold`         | `number` (optional)                                  | Acceptable YIQ color space difference (0–1). Defaults to `0.2`.                       |
+| `options.timeout`           | `number` (optional)                                  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout.           |
 
-infinite animations are canceled to initial state, and then played over after the screenshot.
+**Returns:** `Promise<void>`
 
-Defaults to "disabled" that disables animations.
+---
 
-caret "hide" | "initial" (optional)# When set to "hide", screenshot will hide text caret.
+### `locatorAssertions.toHaveScreenshot(options?)` — Added in: v1.23
 
-When set to "initial", text caret behavior will not be changed.
+Waits until two consecutive locator screenshots yield the same result, then compares the last screenshot with the expectation.
 
-Defaults to "hide".
-
-mask Array<Locator> (optional)# Specify locators that should be masked when the screenshot is taken.
-
-Masked elements will be overlaid with a pink box #FF00FF (customized by maskColor) that completely covers its bounding box.
-
-The mask is also applied to invisible elements, see Matching only visible elements to disable that.
-
-maskColor string (optional)
-
-Added in: v1.35# Specify the color of the overlay box for masked elements, in CSS color format.
-
-Default color is pink #FF00FF.
-
-maxDiffPixelRatio number (optional)# An acceptable ratio of pixels that are different to the total amount of pixels, between 0 and 1.
-
-Default is configurable with TestConfig.expect.
-
-Unset by default.
-
-maxDiffPixels number (optional)# An acceptable amount of pixels that could be different.
-
-Default is configurable with TestConfig.expect.
-
-Unset by default.
-
-omitBackground boolean (optional)# Hides default white background and allows capturing screenshots with transparency.
-
-Not applicable to jpeg images.
-
-Defaults to false.
-
-scale "css" | "device" (optional)# When set to "css", screenshot will have a single pixel per each css pixel on the page.
-
-For high-dpi devices, this will keep screenshots small.
-
-Using "device" option will produce a single pixel per each device pixel, so screenshots of high-dpi devices will be twice as large or even larger.
-
-Defaults to "css".
-
-stylePath string | Array<string> (optional)
-
-Added in: v1.41# File name containing the stylesheet to apply while making the screenshot.
-
-This is where you can hide dynamic elements, make elements invisible or change their properties to help you creating repeatable screenshots.
-
-This stylesheet pierces the Shadow DOM and applies to the inner frames.
-
-threshold number (optional)# An acceptable perceived color difference in the YIQ color space between the same pixel in compared images, between zero (strict) and one (lax), default is configurable with TestConfig.expect.
-
-Defaults to 0.2.
-
-timeout number (optional)# Time to retry the assertion for in milliseconds.
-
-Defaults to timeout in TestConfig.expect
-
-Promise<void># to
-
-## HaveScreenshot(options)
-
-Added in: v1.23 locatorAssertions.toHaveScreenshot(options) This function will wait until two consecutive locator screenshots yield the same result, and then compare the last screenshot with the expectation
-
+```ts
 const locator = page.getByRole('button');
-await expect(locator).toHaveScreenshot(); Note that screenshot assertions only work with Playwright test runner
+await expect(locator).toHaveScreenshot();
+```
 
-options Object (optional) animations "disabled" | "allow" (optional)# When set to "disabled", stops CSS animations, CSS transitions and Web Animations.
+> **Note:** Screenshot assertions only work with the Playwright test runner.
 
-Animations get different treatment depending on their duration: finite animations are fast-forwarded to completion, so they'll fire transitionend event.
+**Arguments:**
 
-infinite animations are canceled to initial state, and then played over after the screenshot.
+| Parameter | Type                | Description                                                   |
+| --------- | ------------------- | ------------------------------------------------------------- |
+| `options` | `Object` (optional) | Same option properties as `toHaveScreenshot(name, options?)`. |
 
-Defaults to "disabled" that disables animations.
+**Returns:** `Promise<void>`
 
-caret "hide" | "initial" (optional)# When set to "hide", screenshot will hide text caret.
+---
 
-When set to "initial", text caret behavior will not be changed.
+### `locatorAssertions.toHaveText(expected, options?)` — Added in: v1.20
 
-Defaults to "hide".
+Ensures the Locator points to an element with the given text. All nested elements are considered. Supports regular expressions.
 
-mask Array<Locator> (optional)# Specify locators that should be masked when the screenshot is taken.
-
-Masked elements will be overlaid with a pink box #FF00FF (customized by maskColor) that completely covers its bounding box.
-
-The mask is also applied to invisible elements, see Matching only visible elements to disable that.
-
-maskColor string (optional)
-
-Added in: v1.35# Specify the color of the overlay box for masked elements, in CSS color format.
-
-Default color is pink #FF00FF.
-
-maxDiffPixelRatio number (optional)# An acceptable ratio of pixels that are different to the total amount of pixels, between 0 and 1.
-
-Default is configurable with TestConfig.expect.
-
-Unset by default.
-
-maxDiffPixels number (optional)# An acceptable amount of pixels that could be different.
-
-Default is configurable with TestConfig.expect.
-
-Unset by default.
-
-omitBackground boolean (optional)# Hides default white background and allows capturing screenshots with transparency.
-
-Not applicable to jpeg images.
-
-Defaults to false.
-
-scale "css" | "device" (optional)# When set to "css", screenshot will have a single pixel per each css pixel on the page.
-
-For high-dpi devices, this will keep screenshots small.
-
-Using "device" option will produce a single pixel per each device pixel, so screenshots of high-dpi devices will be twice as large or even larger.
-
-Defaults to "css".
-
-stylePath string | Array<string> (optional)
-
-Added in: v1.41# File name containing the stylesheet to apply while making the screenshot.
-
-This is where you can hide dynamic elements, make elements invisible or change their properties to help you creating repeatable screenshots.
-
-This stylesheet pierces the Shadow DOM and applies to the inner frames.
-
-threshold number (optional)# An acceptable perceived color difference in the YIQ color space between the same pixel in compared images, between zero (strict) and one (lax), default is configurable with TestConfig.expect.
-
-Defaults to 0.2.
-
-timeout number (optional)# Time to retry the assertion for in milliseconds.
-
-Defaults to timeout in TestConfig.expect
-
-Promise<void># to
-
-## HaveText
-
-Added in: v1.20 locatorAssertions.toHaveText Ensures the Locator points to an element with the given text. All nested elements will be considered when computing the text content of the element. You can use regular expressions for the value as well
-
+```ts
 const locator = page.locator('.title');
 await expect(locator).toHaveText(/Welcome, Test User/);
-await expect(locator).toHaveText(/Welcome, .\*/);
-If you pass an array as an expected value, the expectations are: Locator resolves to a list of elements.
+await expect(locator).toHaveText(/Welcome, .*/);
+```
 
-The number of elements equals the number of expected values in the array.
+When an array is passed, the locator resolves to a list of elements where each element's text matches the corresponding array value in order.
 
-Elements from the list have text matching expected array values, one by one, in order.
+**Arguments:**
 
-For example, consider the following list: <ul> <li>Text 1</li> <li>Text 2</li> <li>Text 3</li></ul> Let's see how we can use the assertion: // ✓ Has the right items in the right orderawait expect(page.locator('ul > li')).toHaveText(['Text 1', 'Text 2', 'Text 3']);// ✖ Wrong orderawait expect(page.locator('ul > li')).toHaveText(['Text 3', 'Text 2', 'Text 1']);// ✖ Last item does not matchawait expect(page.locator('ul > li')).toHaveText(['Text 1', 'Text 2', 'Text']);// ✖ Locator points to the outer list element, not to the list itemsawait expect(page.locator('ul')).toHaveText(['Text 1', 'Text 2', 'Text 3']);
+| Parameter              | Type                                          | Description                                                                    |
+| ---------------------- | --------------------------------------------- | ------------------------------------------------------------------------------ |
+| `expected`             | `string \| RegExp \| Array<string \| RegExp>` | Expected string, RegExp, or list of those.                                     |
+| `options.ignoreCase`   | `boolean` (optional, Added in v1.23)          | Perform case-insensitive match. Takes precedence over regex flags.             |
+| `options.timeout`      | `number` (optional)                           | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout.    |
+| `options.useInnerText` | `boolean` (optional)                          | Use `element.innerText` instead of `element.textContent` when retrieving text. |
 
-Arguments expected string | RegExp | Array<string | RegExp>
+**Returns:** `Promise<void>`
 
-Added in: v1.18# Expected string or RegExp or a list of those.
+> **Note:** When `expected` is a string, Playwright normalizes whitespaces and line breaks before matching. RegExp is matched as-is.
 
-options Object (optional) ignoreCase boolean (optional)
+---
 
-Added in: v1.23# Whether to perform case-insensitive match.
+### `locatorAssertions.toHaveValue(value, options?)` — Added in: v1.20
 
-ignoreCase option takes precedence over the corresponding regular expression flag if specified.
+Ensures the Locator points to an element with the given input value. Supports regular expressions.
 
-timeout number (optional)
-
-Added in: v1.18# Time to retry the assertion for in milliseconds.
-
-Defaults to timeout in TestConfig.expect.
-
-useInnerText boolean (optional)
-
-Added in: v1.18# Whether to use element.innerText instead of element.textContent when retrieving DOM node text
-
-Promise<void>#
-
-Details When expected parameter is a string, Playwright will normalize whitespaces and line breaks both in the actual text and in the expected string before matching.
-
-## When regular expression is used, the actual text is matched as is. toHaveValue
-
-Added in: v1.20 locatorAssertions.toHaveValue Ensures the Locator points to an element with the given input value. You can use regular expressions for the value as well
-
+```ts
 const locator = page.locator('input[type=number]');
 await expect(locator).toHaveValue(/[0-9]/);
+```
 
-Arguments value string | RegExp
+**Arguments:**
 
-Added in: v1.18# Expected value. options Object (optional) timeout number (optional)
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `value`           | `string \| RegExp`  | Expected value.                                                             |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-Added in: v1.18# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Returns:** `Promise<void>`
 
-Promise<void># to
+---
 
-## HaveValues
+### `locatorAssertions.toHaveValues(values, options?)` — Added in: v1.23
 
-Added in: v1.23 locatorAssertions.toHaveValues Ensures the Locator points to multi-select/combobox (i.e. a select with the multiple attribute) and the specified values are selected
+Ensures the Locator points to a multi-select/combobox (`<select multiple>`) and the specified values are selected.
 
-For example, given the following element: <select id="favorite-colors" multiple> <option value="R">Red</option> <option value="G">Green</option> <option value="B">Blue</option></select> const locator = page.locator('id=favorite-colors');
+```ts
+const locator = page.locator('id=favorite-colors');
 await locator.selectOption(['R', 'G']);
 await expect(locator).toHaveValues([/R/, /G/]);
+```
 
-Arguments values Array<string | RegExp># Expected options currently selected. options Object (optional) timeout number (optional)# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Arguments:**
 
-Promise<void># to
+| Parameter         | Type                      | Description                                                                 |
+| ----------------- | ------------------------- | --------------------------------------------------------------------------- |
+| `values`          | `Array<string \| RegExp>` | Expected selected option values.                                            |
+| `options.timeout` | `number` (optional)       | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-## MatchAriaSnapshot(expected)
+**Returns:** `Promise<void>`
 
-Added in: v1.49 locatorAssertions.toMatchAriaSnapshot(expected) Asserts that the target element matches the given accessibility snapshot
+---
 
+### `locatorAssertions.toMatchAriaSnapshot(expected, options?)` — Added in: v1.49
+
+Asserts that the target element matches the given accessibility snapshot.
+
+```ts
 await page.goto('https://demo.playwright.dev/todomvc/');
-await expect(page.locator('body')).toMatchAriaSnapshot(` - heading "todos" - textbox "What needs to be done?"`);
+await expect(page.locator('body')).toMatchAriaSnapshot(`
+  - heading "todos"
+  - textbox "What needs to be done?"`);
+```
 
-Arguments expected string# options Object (optional) timeout number (optional)# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Arguments:**
 
-Promise<void># to
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `expected`        | `string`            | Expected accessibility snapshot string.                                     |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-## MatchAriaSnapshot(options)
+**Returns:** `Promise<void>`
 
-Added in: v1.50 locatorAssertions.toMatchAriaSnapshot(options) Asserts that the target element matches the given accessibility snapshot. Snapshot is stored in a separate .aria.yml file in a location configured by expect.toMatchAriaSnapshot.pathTemplate and/or snapshotPathTemplate properties in the configuration file
+---
 
+### `locatorAssertions.toMatchAriaSnapshot(options?)` — Added in: v1.50
+
+Asserts that the target element matches a stored accessibility snapshot in a `.aria.yml` file.
+
+```ts
 await expect(page.locator('body')).toMatchAriaSnapshot();
 await expect(page.locator('body')).toMatchAriaSnapshot({ name: 'body.aria.yml' });
+```
 
-Arguments options Object (optional) name string (optional)# Name of the snapshot to store in the snapshot folder corresponding to this test. Generates sequential names if not specified. timeout number (optional)# Time to retry the assertion for in milliseconds. Defaults to timeout in TestConfig.expect
+**Arguments:**
 
-Promise<void>#
+| Parameter         | Type                | Description                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------- |
+| `options.name`    | `string` (optional) | Name of the snapshot file. Sequential names are generated if not specified. |
+| `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
-##
+**Returns:** `Promise<void>`
 
-Properties
+---
 
-not​
+## Properties
 
-Added in: v1.20 locatorAssertions.not Makes the assertion check for the opposite condition
+### `locatorAssertions.not` — Added in: v1.20
 
-For example, this code tests that the Locator doesn't contain text "error": await expect(locator).not.toContainText('error');
+Makes the assertion check for the opposite condition.
 
-Type LocatorAssertions
+```ts
+await expect(locator).not.toContainText('error');
+```
+
+**Type:** `LocatorAssertions`
+
+---

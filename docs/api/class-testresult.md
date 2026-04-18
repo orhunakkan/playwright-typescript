@@ -1,69 +1,122 @@
-# 📦 Playwright — Testresult
+# 📦 Playwright — TestResult
 
 > **Source:** [playwright.dev/docs/api/class-testresult](https://playwright.dev/docs/api/class-testresult)
 
 ---
 
-## TestResultA result of a single TestCase run
+## Overview
 
-annotations​ Added in: v1.52 testResult.annotations The list of annotations applicable to the current test. Includes: annotations defined on the test or suite via test() and test.describe(); annotations implicitly added by methods test.skip(), test.fixme() and test.fail(); annotations appended to testInfo.annotations during the test execution. Annotations are available during test execution through testInfo.annotations. Learn more about test annotations
+**TestResult** is a result of a single `TestCase` run.
 
-testResult.annotations Type Array<Object> type string Annotation type, for example 'skip' or 'fail'. description string (optional) Optional description. location Location (optional)
+## Properties
 
-## Optional location in the source where the annotation is added. attachments
+### `testResult.annotations` — Added in: v1.52
 
-Added in: v1.10 testResult.attachments The list of files or buffers attached during the test execution through testInfo.attachments
+Annotations collected during the test run.
 
-testResult.attachments Type Array<Object> name string Attachment name. contentType string Content type of this attachment to properly present in the report, for example 'application/json' or 'image/png'. path string (optional) Optional path on the filesystem to the attached file. body
+**Type:** `Array<Object>`
 
-## Buffer (optional) Optional attachment body used instead of a file. duration
+- `type` `string` — Annotation type, for example `'skip'` or `'fail'`.
+- `description` `string` (optional) — Optional description.
+- `location` `Location` (optional) — Optional location in the source where the annotation is added.
 
-Added in: v1.10 testResult.duration
+---
 
-## Running time in milliseconds
+### `testResult.attachments` — Added in: v1.10
 
-testResult.duration Type number error
+The list of files or buffers attached to the test result. Some reporters show test attachments.
 
-Added in: v1.10 testResult.error First error thrown during test execution, if any. This is equal to the first element in test
+**Type:** `Array<Object>`
 
-## Result.errors
+- `name` `string` — Attachment name.
+- `contentType` `string` — Content type of this attachment to properly present in the report, for example `'application/json'` or `'image/png'`.
+- `path` `string` (optional) — Optional path on the filesystem to the attached file.
+- `body` `Buffer` (optional) — Optional attachment body used instead of a file.
 
-testResult.error Type TestError errors
+---
 
-Added in: v1.10 testResult.errors Errors thrown during the test execution
+### `testResult.duration` — Added in: v1.10
 
-testResult.errors Type Array<TestError> parallel
+Running time in milliseconds.
 
-## Index
+**Type:** `number`
 
-Added in: v1.30 testResult.parallelIndex The index of the worker between 0 and workers - 1. It is guaranteed that workers running at the same time have a different parallel
+---
 
-## Index
+### `testResult.error` — Added in: v1.10
 
-testResult.parallelIndex Type number retry
+First error thrown during test execution, if any.
 
-Added in: v1.10 testResult.retry When test is retried multiple times, each retry attempt is given a sequential number.
+**Type:** `TestError`
 
-## Learn more about test retries
+---
 
-testResult.retry Type number startTime
+### `testResult.errors` — Added in: v1.10
 
-Added in: v1.10 testResult.startTime Start time of this particular test run.
+Errors thrown during test execution, if any.
 
-## Usage testResult.startTime Type Date status
+**Type:** `Array<TestError>`
 
-Added in: v1.10 testResult.status The status of this test result. See also testCase.expectedStatus
+---
 
-testResult.status Type "passed" | "failed" | "timedOut" | "skipped" | "interrupted" stderr​ Added in: v1.10 testResult.stderr Anything written to the standard error during the test run
+### `testResult.parallelIndex` — Added in: v1.30
 
-testResult.stderr Type Array<string | Buffer> stdout​ Added in: v1.10 testResult.stdout Anything written to the standard output during the test run
+The index of the worker between `0` and `workers - 1`. It is guaranteed that workers running at the same time have a different `parallelIndex`. This is useful to distinguish resources used by different workers, e.g. can be used as index for a port in the server.
 
-testResult.stdout Type Array<string | Buffer> steps​ Added in: v1.10 testResult.steps List of steps inside this test run
+**Type:** `number`
 
-testResult.steps Type Array<TestStep> worker
+---
 
-## Index
+### `testResult.retry` — Added in: v1.10
 
-Added in: v1.10 testResult.workerIndex Index of the worker where the test was run. If the test was not run a single time, for example when the user interrupted testing, the only result will have a workerIndex equal to -1. Learn more about parallelism and sharding with Playwright Test
+When test is retried multiple times, each retry attempt is given a sequential number. See `testConfig.retries` to configure the number of retries.
 
-testResult.workerIndex Type number
+**Type:** `number`
+
+---
+
+### `testResult.startTime` — Added in: v1.10
+
+Start time of this particular test run.
+
+**Type:** `Date`
+
+---
+
+### `testResult.status` — Added in: v1.10
+
+Actual test result. See also `testCase.expectedStatus`.
+
+**Type:** `"passed" | "failed" | "timedOut" | "skipped" | "interrupted"`
+
+---
+
+### `testResult.stderr` — Added in: v1.10
+
+Anything written to the standard error during the test run.
+
+**Type:** `Array<string | Buffer>`
+
+---
+
+### `testResult.stdout` — Added in: v1.10
+
+Anything written to the standard output during the test run.
+
+**Type:** `Array<string | Buffer>`
+
+---
+
+### `testResult.steps` — Added in: v1.10
+
+List of steps inside this test run.
+
+**Type:** `Array<TestStep>`
+
+---
+
+### `testResult.workerIndex` — Added in: v1.10
+
+Index of the worker where the test was run. If the test was not run a single time (e.g. due to test retries), it is still a single `workerIndex`.
+
+**Type:** `number`

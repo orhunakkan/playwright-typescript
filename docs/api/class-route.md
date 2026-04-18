@@ -4,34 +4,179 @@
 
 ---
 
-## RouteWhenever a network route is set up with page.route() or browserContext.route(), the Route object allows to handle the route. Learn more about networking
+## Overview
 
-abort​ Added before v1.9 route.abort Aborts the route's request
+Whenever a network route is set up with `page.route()` or `browserContext.route()`, the **Route** object allows to handle the route. Learn more about networking.
 
-await route.abort();await route.abort(errorCode); Arguments errorCode string (optional)# Optional error code. Defaults to failed, could be one of the following: 'aborted' - An operation was aborted (due to user action) 'accessdenied' - Permission to access a resource, other than the network, was denied 'addressunreachable' - The IP address is unreachable. This usually means that there is no route to the specified host or network. 'blockedbyclient' - The client chose to block the request. 'blockedbyresponse' - The request failed because the response was delivered along with requirements which are not met ('X-Frame-Options' and 'Content-Security-Policy' ancestor checks, for instance). 'connectionaborted' - A connection timed out as a result of not receiving an ACK for data sent. 'connectionclosed' - A connection was closed (corresponding to a TCP FIN). 'connectionfailed' - A connection attempt failed. 'connectionrefused' - A connection attempt was refused. 'connectionreset' - A connection was reset (corresponding to a TCP RST). 'internetdisconnected' - The Internet connection has been lost. 'namenotresolved' - The host name could not be resolved. 'timedout' - An operation timed out. 'failed' - A generic failure occurred
+---
 
-Promise<void># continue​ Added before v1.9 route.continue Sends route's request to the network with optional overrides
+### `route.abort(errorCode?)` — Added before v1.9
 
-await page.route('\*_/_', async (route, request) => { // Override headers const headers = { ...request.headers(), foo: 'foo-value', // set "foo" header bar: undefined, // remove "bar" header }; await route.continue({ headers });}); Arguments options Object (optional) headers Object<string, string> (optional)# If set changes the request HTTP headers. Header values will be converted to a string. method string (optional)# If set changes the request method (e.g. GET or POST). postData string | Buffer | Serializable (optional)# If set changes the post data of request. url string (optional)# If set changes the request URL. New URL must have same protocol as original one
+Aborts the route's request.
 
-Promise<void># Details The headers option applies to both the routed request and any redirects it initiates. However, url, method, and postData only apply to the original request and are not carried over to redirected requests. route.continue() will immediately send the request to the network, other matching handlers won't be invoked. Use route.fallback() If you want next matching handler in the chain to be invoked. warningSome request headers are forbidden and cannot be overridden (for example, Cookie, Host, Content-Length and others, see this MDN page for full list). If an override is provided for a forbidden header, it will be ignored and the original request header will be used.
+```ts
+await route.abort();
+await route.abort(errorCode);
+```
 
-## To set custom cookies, use browserContext.addCookies(). fallback
+**Arguments:**
 
-Added in: v1.23 route.fallback Continues route's request with optional overrides. The method is similar to route.continue() with the difference that other matching handlers will be invoked before sending the request
+| Parameter   | Type                | Description                                                                                                                                                                                                                                                                                                                            |
+| ----------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `errorCode` | `string` (optional) | Error code. Defaults to `'failed'`. One of: `'aborted'`, `'accessdenied'`, `'addressunreachable'`, `'blockedbyclient'`, `'blockedbyresponse'`, `'connectionaborted'`, `'connectionclosed'`, `'connectionfailed'`, `'connectionrefused'`, `'connectionreset'`, `'internetdisconnected'`, `'namenotresolved'`, `'timedout'`, `'failed'`. |
 
-When several routes match the given pattern, they run in the order opposite to their registration. That way the last registered route can always override all the previous ones. In the example below, request will be handled by the bottom-most handler first, then it'll fall back to the previous one and in the end will be aborted by the first registered route. await page.route('**/\*', async route => { // Runs last. await route.abort();});await page.route('**/_', async route => { // Runs second. await route.fallback();});await page.route('\*\*/_', async route => { // Runs first. await route.fallback();}); Registering multiple routes is useful when you want separate handlers to handle different kinds of requests, for example API calls vs page resources or GET requests vs POST requests as in the example below. // Handle GET requests.await page.route('**/\*', async route => { if (route.request().method() !== 'GET') { await route.fallback(); return; } // Handling GET only. // ...});// Handle POST requests.await page.route('**/_', async route => { if (route.request().method() !== 'POST') { await route.fallback(); return; } // Handling POST only. // ...}); One can also modify request while falling back to the subsequent handler, that way intermediate route handler can modify url, method, headers and postData of the request. await page.route('\*\*/_', async (route, request) => { // Override headers const headers = { ...request.headers(), foo: 'foo-value', // set "foo" header bar: undefined, // remove "bar" header }; await route.fallback({ headers });}); Use route.continue() to immediately send the request to the network, other matching handlers won't be invoked in that case
+**Returns:** `Promise<void>`
 
-options Object (optional) headers Object<string, string> (optional)# If set changes the request HTTP headers. Header values will be converted to a string. method string (optional)# If set changes the request method (e.g. GET or POST). postData string | Buffer | Serializable (optional)# If set changes the post data of request. url string (optional)# If set changes the request URL. New URL must have same protocol as original one. Changing the URL won't affect the route matching, all the routes are matched using the original request URL
+---
 
-Promise<void># fetch​ Added in: v1.29 route.fetch Performs the request and fetches result without fulfilling it, so that the response could be modified and then fulfilled
+### `route.continue(options?)` — Added before v1.9
 
-await page.route('https://dog.ceo/api/breeds/list/all', async route => { const response = await route.fetch(); const json = await response.json(); json.message['big_red_dog'] = []; await route.fulfill({ response, json });}); Arguments options Object (optional) headers Object<string, string> (optional)# If set changes the request HTTP headers. Header values will be converted to a string. maxRedirects number (optional) Added in: v1.31# Maximum number of request redirects that will be followed automatically. An error will be thrown if the number is exceeded. Defaults to 20. Pass 0 to not follow redirects. maxRetries number (optional) Added in: v1.46# Maximum number of times network errors should be retried. Currently only ECONNRESET error is retried. Does not retry based on HTTP response codes. An error will be thrown if the limit is exceeded. Defaults to 0 - no retries. method string (optional)# If set changes the request method (e.g. GET or POST). postData string | Buffer | Serializable (optional)# Allows to set post data of the request. If the data parameter is an object, it will be serialized to json string and content-type header will be set to application/json if not explicitly set. Otherwise the content-type header will be set to application/octet-stream if not explicitly set. timeout number (optional) Added in: v1.33# Request timeout in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout. url string (optional)# If set changes the request URL. New URL must have same protocol as original one
+Sends route's request to the network with optional overrides.
 
-Promise<APIResponse># Details Note that headers option will apply to the fetched request as well as any redirects initiated by it. If you want to only apply headers to the original request, but not to redirects, look into route.continue() instead. fulfill​ Added before v1.9 route.fulfill Fulfills route's request with given response
+```ts
+await page.route('**/*', async (route, request) => {
+  // Override headers
+  const headers = {
+    ...request.headers(),
+    foo: 'foo-value', // set "foo" header
+    bar: undefined, // remove "bar" header
+  };
+  await route.continue({ headers });
+});
+```
 
-An example of fulfilling all requests with 404 responses: await page.route('**/\*', async route => { await route.fulfill({ status: 404, contentType: 'text/plain', body: 'Not Found!' });}); An example of serving static file: await page.route('**/xhr_endpoint', route => route.fulfill({ path: 'mock_data.json' })); Arguments options Object (optional) body string | Buffer (optional)# Response body. contentType string (optional)# If set, equals to setting Content-Type response header. headers Object<string, string> (optional)# Response headers. Header values will be converted to a string. json Serializable (optional) Added in: v1.29# JSON response. This method will set the content type to application/json if not set. path string (optional)# File path to respond with. The content type will be inferred from file extension. If path is a relative path, then it is resolved relative to the current working directory. response APIResponse (optional) Added in: v1.15# APIResponse to fulfill route's request with. Individual fields of the response (such as headers) can be overridden using fulfill options. status number (optional)# Response status code, defaults to 200
+**Arguments:**
 
-Promise<void># request​ Added before v1.9 route.request A request to be routed
+| Parameter          | Type                                          | Description                                                                            |
+| ------------------ | --------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `options.headers`  | `Object<string, string>` (optional)           | If set, changes the request HTTP headers. Header values will be converted to a string. |
+| `options.method`   | `string` (optional)                           | If set, changes the request method (e.g. GET or POST).                                 |
+| `options.postData` | `string \| Buffer \| Serializable` (optional) | If set, changes the post data of request.                                              |
+| `options.url`      | `string` (optional)                           | If set, changes the request URL. New URL must have same protocol as original one.      |
 
-route.request(); Returns Request#
+**Returns:** `Promise<void>`
+
+> **Note:** The `headers` option applies to both the routed request and any redirects it initiates. However, `url`, `method`, and `postData` only apply to the original request and are not carried over to redirected requests. `route.continue()` will immediately send the request to the network, other matching handlers won't be invoked. Use `route.fallback()` if you want the next matching handler in the chain to be invoked.
+
+> **Warning:** Some request headers are forbidden and cannot be overridden (for example, `Cookie`, `Host`, `Content-Length` and others). If an override is provided for a forbidden header, it will be ignored and the original request header will be used. To set custom cookies, use `browserContext.addCookies()`.
+
+---
+
+### `route.fallback(options?)` — Added in: v1.23
+
+Continues route's request with optional overrides. The method is similar to `route.continue()` with the difference that other matching handlers will be invoked before sending the request.
+
+```ts
+await page.route('**/*', async (route) => {
+  // Runs last.
+  await route.abort();
+});
+await page.route('**/*', async (route) => {
+  // Runs second.
+  await route.fallback();
+});
+await page.route('**/*', async (route) => {
+  // Runs first.
+  await route.fallback();
+});
+```
+
+```ts
+// Modify request while falling back to the subsequent handler
+await page.route('**/*', async (route, request) => {
+  const headers = {
+    ...request.headers(),
+    foo: 'foo-value',
+    bar: undefined,
+  };
+  await route.fallback({ headers });
+});
+```
+
+**Arguments:**
+
+| Parameter          | Type                                          | Description                                                                        |
+| ------------------ | --------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `options.headers`  | `Object<string, string>` (optional)           | If set, changes the request HTTP headers.                                          |
+| `options.method`   | `string` (optional)                           | If set, changes the request method.                                                |
+| `options.postData` | `string \| Buffer \| Serializable` (optional) | If set, changes the post data of request.                                          |
+| `options.url`      | `string` (optional)                           | If set, changes the request URL. Changing the URL won't affect the route matching. |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `route.fetch(options?)` — Added in: v1.29
+
+Performs the request and fetches result without fulfilling it, so that the response could be modified and then fulfilled.
+
+```ts
+await page.route('https://dog.ceo/api/breeds/list/all', async (route) => {
+  const response = await route.fetch();
+  const json = await response.json();
+  json.message['big_red_dog'] = [];
+  await route.fulfill({ response, json });
+});
+```
+
+**Arguments:**
+
+| Parameter              | Type                                          | Description                                                                                                                         |
+| ---------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `options.headers`      | `Object<string, string>` (optional)           | If set, changes the request HTTP headers.                                                                                           |
+| `options.maxRedirects` | `number` (optional, v1.31)                    | Maximum number of request redirects that will be followed automatically. Defaults to 20. Pass 0 to not follow redirects.            |
+| `options.maxRetries`   | `number` (optional, v1.46)                    | Maximum number of times network errors should be retried. Currently only `ECONNRESET` error is retried. Defaults to 0 (no retries). |
+| `options.method`       | `string` (optional)                           | If set, changes the request method.                                                                                                 |
+| `options.postData`     | `string \| Buffer \| Serializable` (optional) | Allows to set post data of the request.                                                                                             |
+| `options.timeout`      | `number` (optional, v1.33)                    | Request timeout in milliseconds. Defaults to 30000. Pass 0 to disable timeout.                                                      |
+| `options.url`          | `string` (optional)                           | If set, changes the request URL. New URL must have same protocol as original one.                                                   |
+
+**Returns:** `Promise<APIResponse>`
+
+> **Note:** The `headers` option will apply to the fetched request as well as any redirects initiated by it. If you want to only apply headers to the original request but not to redirects, look into `route.continue()` instead.
+
+---
+
+### `route.fulfill(options?)` — Added before v1.9
+
+Fulfills route's request with given response.
+
+```ts
+// Fulfill all requests with 404 responses:
+await page.route('**/*', async (route) => {
+  await route.fulfill({
+    status: 404,
+    contentType: 'text/plain',
+    body: 'Not Found!',
+  });
+});
+
+// Serve a static file:
+await page.route('**/xhr_endpoint', (route) => route.fulfill({ path: 'mock_data.json' }));
+```
+
+**Arguments:**
+
+| Parameter             | Type                                | Description                                                                                               |
+| --------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `options.body`        | `string \| Buffer` (optional)       | Response body.                                                                                            |
+| `options.contentType` | `string` (optional)                 | If set, equals to setting `Content-Type` response header.                                                 |
+| `options.headers`     | `Object<string, string>` (optional) | Response headers. Header values will be converted to a string.                                            |
+| `options.json`        | `Serializable` (optional, v1.29)    | JSON response. Sets `content-type` to `application/json` if not set.                                      |
+| `options.path`        | `string` (optional)                 | File path to respond with. The content type will be inferred from file extension.                         |
+| `options.response`    | `APIResponse` (optional, v1.15)     | `APIResponse` to fulfill route's request with. Individual fields can be overridden using fulfill options. |
+| `options.status`      | `number` (optional)                 | Response status code, defaults to 200.                                                                    |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `route.request()` — Added before v1.9
+
+A request to be routed.
+
+```ts
+route.request();
+```
+
+**Returns:** `Request`

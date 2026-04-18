@@ -6,372 +6,394 @@
 
 ## Overview
 
-**TestInfo** contains information about the currently running test. It is available to test functions, hooks, and test-scoped fixtures.
+**TestInfo** contains information about currently running tests. It is accessible to tests and hooks through built-in `testInfo` fixture. `TestInfo` provides utilities to control test execution: attach files, update test timeout, determine which project the test is running in, and so on.
 
 ```ts
 import { test, expect } from '@playwright/test';
 
 test('basic test', async ({ page }, testInfo) => {
   expect(testInfo.title).toBe('basic test');
-
   await page.screenshot({ path: testInfo.outputPath('screenshot.png') });
 });
 ```
 
 ## Methods
 
-attach​
+### `testInfo.attach(name, options?)` — Added in: v1.10
 
-Added in: v1.10 testInfo.attach Attach a value or a file from disk to the current test.
+Attach a value or a file from disk to the current test. Some reporters show test attachments. Either `path` or `body` must be specified, but not both.
 
-Some reporters show test attachments.
+**Returns:** `Promise<void>`
 
-Either path or body must be specified, but not both.
+| Parameter             | Type                          | Description                                                                                                |
+| --------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `name`                | `string`                      | Attachment name.                                                                                           |
+| `options.body`        | `string \| Buffer` (optional) | Attachment body. Mutually exclusive with `path`.                                                           |
+| `options.contentType` | `string` (optional)           | Content type of this attachment to properly present in the report. Defaults to `application/octet-stream`. |
+| `options.path`        | `string` (optional)           | Path on the filesystem to the attached file. Mutually exclusive with `body`.                               |
 
-For example, you can attach a screenshot to the test: import { test, expect } from '@playwright/test';test('basic test', async ({ page }, testInfo) => { await page.goto('https://playwright.dev');
-const screenshot = await page.screenshot();
-await testInfo.attach('screenshot', { body: screenshot, contentType: 'image/png' });});
-Or you can attach files returned by your APIs: import { test, expect } from '@playwright/test';import { download } from './my-custom-helpers';test('basic test', async ({}, testInfo) => { const tmpPath = await download('a');
-await testInfo.attach('downloaded', { path: tmpPath });});
-notetestInfo.attach() automatically takes care of copying attached files to a location that is accessible to reporters.
+---
 
-You can safely remove the attachment after awaiting the attach call
+### `testInfo.fail()` — Added in: v1.10
 
-await testInfo.attach(name);
-await testInfo.attach(name, options);
+Marks the currently running test as "should fail". Playwright Test runs this test and ensures that it is actually failing. This is useful for documentation purposes to acknowledge that some functionality is broken until it is fixed.
 
-Arguments name string# Attachment name.
+---
 
-The name will also be sanitized and used as the prefix of file name when saving to disk.
+### `testInfo.fail(condition, description?)` — Added in: v1.10
 
-options Object (optional) body string | Buffer (optional)# Attachment body.
+Conditionally mark the currently running test as "should fail" with an optional description.
 
-Mutually exclusive with path.
+| Parameter     | Type                | Description                                                   |
+| ------------- | ------------------- | ------------------------------------------------------------- |
+| `condition`   | `boolean`           | Test is marked as "should fail" when the condition is `true`. |
+| `description` | `string` (optional) | Optional description that will be reflected in a test report. |
 
-contentType string (optional)# Content type of this attachment to properly present in the report, for example 'application/json' or 'image/png'.
+---
 
-If omitted, content type is inferred based on the path, or defaults to text/plain for string attachments and application/octet-stream for Buffer attachments.
+### `testInfo.fixme()` — Added in: v1.10
 
-path string (optional)# Path on the filesystem to the attached file.
+Marks the currently running test as "fixme". The test will be skipped, but the intention is to fix it. This is functionally equivalent to `testInfo.skip()`.
 
-Mutually exclusive with body
+---
 
-Promise<void># fail()​
+### `testInfo.fixme(condition, description?)` — Added in: v1.10
 
-Added in: v1.10 testInfo.fail() Marks the currently running test as "should fail". Playwright Test runs this test and ensures that it is actually failing. This is useful for documentation purposes to acknowledge that some functionality is broken until it is fixed. This is similar to test.fail()
+Conditionally mark the currently running test as "fixme" with an optional description.
 
-testInfo.fail(); fail(condition)​
+| Parameter     | Type                | Description                                                   |
+| ------------- | ------------------- | ------------------------------------------------------------- |
+| `condition`   | `boolean`           | Test is marked as "fixme" when the condition is `true`.       |
+| `description` | `string` (optional) | Optional description that will be reflected in a test report. |
 
-Added in: v1.10 testInfo.fail(condition) Conditionally mark the currently running test as "should fail" with an optional description. This is similar to test.fail()
+---
 
-testInfo.fail(condition);testInfo.fail(condition, description);
+### `testInfo.outputPath(...pathSegments)` — Added in: v1.10
 
-Arguments condition boolean# Test is marked as "should fail" when the condition is true. description string (optional)#
+Returns a path inside the `testInfo.outputDir` where the test can safely put a temporary file. Guarantees that tests running in parallel will not interfere with each other.
 
-## Optional description that will be reflected in a test report. fixme()
+```ts
+test('example test', async ({}, testInfo) => {
+  const file = testInfo.outputPath('dir', 'temporary-file.txt');
+  await fs.promises.writeFile(file, 'Put some data here', 'utf8');
+});
+```
 
-Added in: v1.10 testInfo.fixme() Mark a test as "fixme", with the intention to fix it. Test is immediately aborted. This is similar to test.fixme()
+**Returns:** `string`
 
-testInfo.fixme(); fixme(condition)​
+| Parameter         | Type            | Description                                               |
+| ----------------- | --------------- | --------------------------------------------------------- |
+| `...pathSegments` | `Array<string>` | Path segments to append at the end of the resulting path. |
 
-Added in: v1.10 testInfo.fixme(condition) Conditionally mark the currently running test as "fixme" with an optional description. This is similar to test.fixme()
+---
 
-testInfo.fixme(condition);testInfo.fixme(condition, description);
+### `testInfo.setTimeout(timeout)` — Added in: v1.10
 
-Arguments condition boolean# Test is marked as "fixme" when the condition is true. description string (optional)#
+Changes the timeout for the currently running test. Zero means no timeout.
 
-## Optional description that will be reflected in a test report.
+**Returns:** `void`
 
-outputPath
+| Parameter | Type     | Description              |
+| --------- | -------- | ------------------------ |
+| `timeout` | `number` | Timeout in milliseconds. |
 
-Added in: v1.10 testInfo.outputPath
+---
 
-Returns a path inside the testInfo.outputDir where the test can safely put a temporary file.
+### `testInfo.skip()` — Added in: v1.10
 
-Guarantees that tests running in parallel will not interfere with each other.
+Unconditionally skips the currently running test. The test will be skipped and its annotations will say "skipped".
 
-import { test, expect } from '@playwright/test';import fs from 'fs';test('example test', async ({}, testInfo) => { const file = testInfo.outputPath('dir', 'temporary-file.txt');
-await fs.promises.writeFile(file, 'Put some data to the dir/temporary-file.txt', 'utf8');});
-Note that pathSegments accepts path segments to the test output directory such as testInfo.outputPath('relative', 'path', 'to', 'output').
+---
 
-However, this path must stay within the testInfo.outputDir directory for each test (i.e.
+### `testInfo.skip(condition, description?)` — Added in: v1.10
 
-test-results/a-test-title), otherwise it will throw
+Conditionally skips the currently running test with an optional description.
 
-testInfo.outputPath(...pathSegments);
+| Parameter     | Type                | Description                                                   |
+| ------------- | ------------------- | ------------------------------------------------------------- |
+| `condition`   | `boolean`           | Test is skipped when the condition is `true`.                 |
+| `description` | `string` (optional) | Optional description that will be reflected in a test report. |
 
-Arguments ...pathSegments Array<string># Path segments to append at the end of the resulting path
+---
 
-string# set
+### `testInfo.slow()` — Added in: v1.10
 
-## Timeout
+Marks the currently running test as "slow", giving it triple the default timeout.
 
-Added in: v1.10 testInfo.setTimeout Changes the timeout for the currently running test. Zero means no timeout. Learn more about various timeouts. Timeout is usually specified in the configuration file, but it could be useful to change the timeout in certain scenarios: import { test, expect } from '@playwright/test';test.beforeEach(async ({ page }, testInfo) => { // Extend timeout for all tests running this hook by 30 seconds. testInfo.setTimeout(testInfo.timeout + 30000);});
+---
 
-Usage testInfo.setTimeout(timeout);
+### `testInfo.slow(condition, description?)` — Added in: v1.10
 
-Arguments timeout number#
+Conditionally marks the currently running test as "slow" with an optional description.
 
-## Timeout in milliseconds. skip()
+| Parameter     | Type                | Description                                                   |
+| ------------- | ------------------- | ------------------------------------------------------------- |
+| `condition`   | `boolean`           | Test is marked as "slow" when the condition is `true`.        |
+| `description` | `string` (optional) | Optional description that will be reflected in a test report. |
 
-Added in: v1.10 testInfo.skip() Unconditionally skip the currently running test. Test is immediately aborted. This is similar to test.skip()
+---
 
-testInfo.skip(); skip(condition)​
+### `testInfo.snapshotPath(...name, options?)` — Added in: v1.10
 
-Added in: v1.10 testInfo.skip(condition) Conditionally skips the currently running test with an optional description. This is similar to test.skip()
+Returns a path to a snapshot file with the given `name`. Learn more about snapshots.
 
-testInfo.skip(condition);testInfo.skip(condition, description);
+**Returns:** `string`
 
-Arguments condition boolean# A skip condition. Test is skipped when the condition is true. description string (optional)#
+| Parameter      | Type                                              | Description                                     |
+| -------------- | ------------------------------------------------- | ----------------------------------------------- |
+| `...name`      | `Array<string>`                                   | Snapshot name.                                  |
+| `options.kind` | `"snapshot" \| "screenshot" \| "aria"` (optional) | The kind of snapshot. Defaults to `"snapshot"`. |
 
-## Optional description that will be reflected in a test report. slow()
+## Properties
 
-Added in: v1.10 testInfo.slow() Marks the currently running test as "slow", giving it triple the default timeout. This is similar to test.slow()
+### `testInfo.annotations` — Added in: v1.10
 
-testInfo.slow(); slow(condition)​
+The list of annotations applicable to the current test. Includes annotations from the test, annotations from all `test.describe()` groups the test belongs to and file-level annotations for the test file.
 
-Added in: v1.10 testInfo.slow(condition) Conditionally mark the currently running test as "slow" with an optional description, giving it triple the default timeout. This is similar to test.slow()
+**Type:** `Array<Object>`
 
-testInfo.slow(condition);testInfo.slow(condition, description);
+- `type` `string` — Annotation type.
+- `description` `string` (optional) — Annotation description.
+- `location` `Location` (optional) — Annotation location.
 
-Arguments condition boolean# Test is marked as "slow" when the condition is true. description string (optional)#
+---
 
-## Optional description that will be reflected in a test report. snapshotPath
+### `testInfo.attachments` — Added in: v1.10
 
-Added in: v1.10 testInfo.snapshotPath
+The list of files or buffers attached to the current test. Some reporters show test attachments. See `testInfo.attach()` to add attachments.
 
-Returns a path to a snapshot file with the given name. Pass kind to obtain a specific path: kind: 'screenshot' for expect(page).toHaveScreenshot(); kind: 'aria' for expect(locator).toMatchAriaSnapshot(); kind: 'snapshot' for expect(value).toMatchSnapshot()
+**Type:** `Array<Object>`
 
-await expect(page).toHaveScreenshot('header.png');// Screenshot assertion above expects screenshot at this path:const screenshotPath = test.info().snapshotPath('header.png', { kind: 'screenshot' });
-await expect(page.getByRole('main')).toMatchAriaSnapshot({ name: 'main.aria.yml' });// Aria snapshot assertion above expects snapshot at this path:const ariaSnapshotPath = test.info().snapshotPath('main.aria.yml', { kind: 'aria' });expect('some text').toMatchSnapshot('snapshot.txt');// Snapshot assertion above expects snapshot at this path:const snapshotPath = test.info().snapshotPath('snapshot.txt');expect('some text').toMatchSnapshot(['dir', 'subdir', 'snapshot.txt']);// Snapshot assertion above expects snapshot at this path:const nestedPath = test.info().snapshotPath('dir', 'subdir', 'snapshot.txt');
+- `name` `string` — Attachment name.
+- `contentType` `string` — Content type of this attachment to properly present in the report.
+- `path` `string` (optional) — Optional path on the filesystem to the attached file.
+- `body` `Buffer` (optional) — Optional attachment body used instead of a file.
 
-Arguments ...name Array<string># The name of the snapshot or the path segments to define the snapshot file path.
+---
 
-Snapshots with the same name in the same test file are expected to be the same.
+### `testInfo.column` — Added in: v1.10
 
-When passing kind, multiple name segments are not supported.
+Column number where the currently running test is declared.
 
-options Object (optional) kind "snapshot" | "screenshot" | "aria" (optional)
+**Type:** `number`
 
-Added in: v1.53# The snapshot kind controls which snapshot path template is used.
+---
 
-See testConfig.snapshotPathTemplate for more details.
+### `testInfo.config` — Added in: v1.10
 
-Defaults to 'snapshot'
+Processed configuration from the configuration file.
 
-string#
+**Type:** `FullConfig`
 
-##
+---
 
-Properties
+### `testInfo.duration` — Added in: v1.10
 
-annotations​
+The number of milliseconds the test took to finish. Always zero before the test finishes, either successfully or not. Can be used in `afterEach` hook.
 
-Added in: v1.10 testInfo.annotations The list of annotations applicable to the current test. Includes annotations from the test, annotations from all test.describe() groups the test belongs to and file-level annotations for the test file. Learn more about test annotations
+**Type:** `number`
 
-testInfo.annotations
+---
 
-Type Array<Object> type string Annotation type, for example 'skip' or 'fail'. description string (optional) Optional description. location Location (optional)
+### `testInfo.error` — Added in: v1.10
 
-## Optional location in the source where the annotation is added. attachments
+First error thrown during test execution, if any. This is equal to the first element in `testInfo.errors`.
 
-Added in: v1.10 testInfo.attachments The list of files or buffers attached to the current test. Some reporters show test attachments. To add an attachment, use testInfo.attach() instead of directly pushing onto this array
+**Type:** `TestInfoError`
 
-testInfo.attachments
+---
 
-Type Array<Object> name string Attachment name. contentType string Content type of this attachment to properly present in the report, for example 'application/json' or 'image/png'. path string (optional) Optional path on the filesystem to the attached file. body
+### `testInfo.errors` — Added in: v1.10
 
-## Buffer (optional) Optional attachment body used instead of a file. column
+Errors thrown during test execution, if any.
 
-Added in: v1.10 testInfo.column Column number where the currently running test is declared.
+**Type:** `Array<TestInfoError>`
 
-##
+---
 
-Usage testInfo.column
+### `testInfo.expectedStatus` — Added in: v1.10
 
-Type number config
+Expected status for the currently running test. This is usually `'passed'`, except for a few cases:
 
-Added in: v1.10 testInfo.config Processed configuration from the configuration file.
+- `'skipped'` for skipped tests, e.g. with `test.skip()`.
+- `'failed'` for tests marked as failing, e.g. with `test.fail()`.
 
-##
+Expected status is compared with `testInfo.status` in the end of the test to determine whether the test passed.
 
-Usage testInfo.config
+**Type:** `"passed" | "failed" | "timedOut" | "skipped" | "interrupted"`
 
-Type FullConfig duration
+---
 
-Added in: v1.10 testInfo.duration The number of milliseconds the test took to finish. Always zero before the test finishes, either successfully or not.
+### `testInfo.file` — Added in: v1.10
 
-## Can be used in test.afterEach() hook
+Absolute path to a file where the currently running test is declared.
 
-testInfo.duration
+**Type:** `string`
 
-Type number error
+---
 
-Added in: v1.10 testInfo.error First error thrown during test execution, if any. This is equal to the first element in test
+### `testInfo.fn` — Added in: v1.10
 
-## Info.errors
+Test function as passed to `test(title, testFunction)`.
 
-testInfo.error
+**Type:** `function`
 
-Type TestInfoError errors
+---
 
-Added in: v1.10 testInfo.errors Errors thrown during test execution, if any
+### `testInfo.line` — Added in: v1.10
 
-testInfo.errors
+Line number where the currently running test is declared.
 
-Type Array<TestInfoError> expected
+**Type:** `number`
 
-## Status
+---
 
-Added in: v1.10 testInfo.expectedStatus Expected status for the currently running test.
+### `testInfo.outputDir` — Added in: v1.10
 
-This is usually 'passed', except for a few cases: 'skipped' for skipped tests, e.g.
+Absolute path to the output directory for this specific test run. Each test run gets its own directory so they cannot conflict.
 
-with test.skip();
-'failed' for tests marked as failed with test.fail().
+**Type:** `string`
 
-Expected status is usually compared with the actual testInfo.status: import { test, expect } from '@playwright/test';test.afterEach(async ({}, testInfo) => { if (testInfo.status !== testInfo.expectedStatus) console.log(`${testInfo.title} did not run as expected!`);});
+---
 
-Usage testInfo.expectedStatus
+### `testInfo.parallelIndex` — Added in: v1.10
 
-Type "passed" | "failed" | "timedOut" | "skipped" | "interrupted" file​
+The index of the worker between `0` and `workers - 1`. It is guaranteed that workers running at the same time have a different `parallelIndex`. Use this to distinguish between multiple workers running at the same time.
 
-Added in: v1.10 testInfo.file Absolute path to a file where the currently running test is declared.
+**Type:** `number`
 
-##
+---
 
-Usage testInfo.file
+### `testInfo.project` — Added in: v1.10
 
-Type string fn
+Processed project configuration that this test belongs to.
 
-Added in: v1.10 testInfo.fn Test function as passed to test(title, test
+**Type:** `FullProject`
 
-## Function)
+---
 
-testInfo.fn
+### `testInfo.repeatEachIndex` — Added in: v1.10
 
-Type function line
+Specifies a unique repeat index when test was run multiple times via `--repeat-each` option.
 
-Added in: v1.10 testInfo.line Line number where the currently running test is declared.
+**Type:** `number`
 
-##
+---
 
-Usage testInfo.line
+### `testInfo.retry` — Added in: v1.10
 
-Type number outputDir
+Specifies the retry number when test is retried after a failure. The first test run has `testInfo.retry` equal to zero, the first retry has it equal to one, and so on. Learn more about retries.
 
-Added in: v1.10 testInfo.outputDir Absolute path to the output directory for this specific test run. Each test run gets its own directory so they cannot conflict.
+```ts
+import { test, expect } from '@playwright/test';
 
-##
+test.beforeEach(async ({}, testInfo) => {
+  // You can access testInfo.retry in any hook or fixture.
+  if (testInfo.retry > 0) {
+    console.log(`Retrying!`);
+  }
+});
+```
 
-Usage testInfo.outputDir
+**Type:** `number`
 
-Type string parallelIndex
+---
 
-Added in: v1.10 testInfo.parallelIndex The index of the worker between 0 and workers - 1. It is guaranteed that workers running at the same time have a different parallelIndex. When a worker is restarted, for example after a failure, the new worker process has the same parallelIndex. Also available as process.env.TEST_PARALLEL_INDEX. Learn more about parallelism and sharding with
+### `testInfo.snapshotDir` — Added in: v1.10
 
-## Playwright Test
+> **Note:** Use `testInfo.snapshotPath()` instead. This property does not account for `testProject.snapshotPathTemplate` option.
 
-testInfo.parallelIndex
+Absolute path to the snapshot output directory for the current test. Each test suite gets its own directory so they cannot conflict.
 
-Type number project
+**Type:** `string`
 
-Added in: v1.10 testInfo.project Processed project configuration from the configuration file.
+---
 
-##
+### `testInfo.snapshotSuffix` — Added in: v1.10
 
-Usage testInfo.project
+> **Note:** Use `testConfig.snapshotPathTemplate` to configure snapshot paths. This property is deprecated and will be removed in the future.
 
-Type FullProject repeatEachIndex
+Suffix used to differentiate snapshots between multiple test configurations. For example, if snapshots depend on the platform, you can set `testInfo.snapshotSuffix` equal to `process.platform`. In this case `expect(value).toMatchSnapshot(snapshotName)` will use different snapshots depending on the platform.
 
-Added in: v1.10 testInfo.repeatEachIndex Specifies a unique repeat index when running in "repeat each" mode. This mode is enabled by passing --repeat-each to the command line.
+**Type:** `string`
 
-##
+---
 
-Usage testInfo.repeatEachIndex
+### `testInfo.status` — Added in: v1.10
 
-Type number retry
+Actual status for the currently running test. Available after the test has finished in `afterEach` hook and fixtures.
 
-Added in: v1.10 testInfo.retry Specifies the retry number when the test is retried after a failure. The first test run has testInfo.retry equal to zero, the first retry has it equal to one, and so on. Learn more about retries. import { test, expect } from '@playwright/test';test.beforeEach(async ({}, testInfo) => { // You can access testInfo.retry in any hook or fixture. if (testInfo.retry > 0) console.log(`Retrying!`);});
+Status is usually compared with `testInfo.expectedStatus`:
 
-test('my test', async ({ page }, testInfo) => { // Here we clear some server-side state when retrying. if (testInfo.retry) await cleanSomeCachesOnTheServer(); // ...});
+```ts
+import { test, expect } from '@playwright/test';
 
-##
+test.afterEach(async ({}, testInfo) => {
+  if (testInfo.status !== testInfo.expectedStatus) {
+    console.log(`${testInfo.title} did not run as expected!`);
+  }
+});
+```
 
-Usage testInfo.retry
+**Type:** `"passed" | "failed" | "timedOut" | "skipped" | "interrupted"`
 
-Type number snapshotDir
+---
 
-Added in: v1.10 testInfo.snapshotDir Absolute path to the snapshot output directory for this specific test. Each test suite gets its own directory so they cannot conflict. This property does not account for the testProject.snapshot
+### `testInfo.tags` — Added in: v1.43
 
-## PathTemplate configuration
+Tags that apply to the test. Learn more about test tags.
 
-testInfo.snapshotDir
+> **Note:** Any changes made to `testInfo.tags` during the test run are not visible to test reporters.
 
-Type string snapshotSuffix
+**Type:** `Array<string>`
 
-Added in: v1.10 testInfo.snapshotSuffix noteUse of testInfo.snapshotSuffix is discouraged. Please use testConfig.snapshotPathTemplate to configure snapshot paths. Suffix used to differentiate snapshots between multiple test configurations. For example, if snapshots depend on the platform, you can set testInfo.snapshotSuffix equal to process.platform. In this case expect(value).toMatchSnapshot(snapshotName) will use different snapshots depending on the platform.
+---
 
-## Learn more about snapshots
+### `testInfo.testId` — Added in: v1.32
 
-testInfo.snapshotSuffix
+Unique identifier of the current test. This is different from `testCase.id`.
 
-Type string status
+**Type:** `string`
 
-Added in: v1.10 testInfo.status Actual status for the currently running test.
+---
 
-Available after the test has finished in test.afterEach() hook and fixtures.
+### `testInfo.timeout` — Added in: v1.10
 
-Status is usually compared with the testInfo.expectedStatus: import { test, expect } from '@playwright/test';test.afterEach(async ({}, testInfo) => { if (testInfo.status !== testInfo.expectedStatus) console.log(`${testInfo.title} did not run as expected!`);});
+Timeout in milliseconds for the currently running test. Zero means no timeout. Learn more about test timeouts.
 
-Usage testInfo.status
+To change timeout for the test, use `testInfo.setTimeout()`:
 
-Type "passed" | "failed" | "timedOut" | "skipped" | "interrupted" tags​
+```ts
+import { test, expect } from '@playwright/test';
 
-Added in: v1.43 testInfo.tags Tags that apply to the test.
+test.beforeEach(async ({}, testInfo) => {
+  // Extend timeout for all tests running this hook by 30 seconds.
+  testInfo.setTimeout(testInfo.timeout + 30000);
+});
+```
 
-Learn more about tags.
+**Type:** `number`
 
-noteAny changes made to this list while the test is running will not be visible to test reporters
+---
 
-testInfo.tags
+### `testInfo.title` — Added in: v1.10
 
-Type Array<string> testId​
+The title of the currently running test as passed to `test(title, testFunction)`.
 
-Added in: v1.32 testInfo.testId Test id matching the test case id in the reporter
+**Type:** `string`
 
-## API
+---
 
-testInfo.testId
+### `testInfo.titlePath` — Added in: v1.10
 
-Type string timeout
+The full title path starting with the project.
 
-Added in: v1.10 testInfo.timeout Timeout in milliseconds for the currently running test. Zero means no timeout. Learn more about various timeouts. Timeout is usually specified in the configuration file import { test, expect } from '@playwright/test';test.beforeEach(async ({ page }, testInfo) => { // Extend timeout for all tests running this hook by 30 seconds. testInfo.setTimeout(testInfo.timeout + 30000);});
+**Type:** `Array<string>`
 
-##
+---
 
-Usage testInfo.timeout
+### `testInfo.workerIndex` — Added in: v1.10
 
-Type number title
+The unique index of the worker process that is running the test. Also available as `process.env.TEST_WORKER_INDEX`. Learn more about parallelism and sharding with Playwright Test.
 
-Added in: v1.10 testInfo.title The title of the currently running test as passed to test(title, test
-
-## Function)
-
-testInfo.title
-
-Type string titlePath
-
-Added in: v1.10 testInfo.titlePath The full title path starting with the test file name
-
-testInfo.titlePath
-
-Type Array<string> worker
-
-## Index
-
-Added in: v1.10 testInfo.workerIndex The unique index of the worker process that is running the test. When a worker is restarted, for example after a failure, the new worker process gets a new unique workerIndex. Also available as process.env.TEST_WORKER_INDEX. Learn more about parallelism and sharding with Playwright Test
-
-testInfo.workerIndex
-
-Type number
+**Type:** `number`

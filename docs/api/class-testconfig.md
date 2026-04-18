@@ -6,527 +6,405 @@
 
 ## Overview
 
-**TestConfig** provides options to configure how tests are collected and executed, for example `timeout` or `testDir`. To access resolved configuration at runtime, use **FullConfig**.
+**TestConfig** is the object returned from `defineConfig()`. It represents the full resolved Playwright configuration. You usually do not need to interact with this class directly; see the config guide for more details.
 
 ```ts
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   timeout: 30000,
-  globalTimeout: 600000,
-  reporter: 'list',
-  testDir: './tests',
+  reporter: 'html',
+  use: {
+    browserName: 'chromium',
+  },
 });
 ```
 
-##
+## Properties
 
-Properties
+### `testConfig.build` — Added in: v1.50
 
-build​
+Playwright transpiler configuration.
 
-Added in: v1.35 testConfig.build Playwright transpiler configuration
+**Type:** `Object`
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ build: { external: ['**/*bundle.js'], },});
+- `env` `Object<string, string>` (optional) — Environment variables to be set for the transpiler.
+- `command` `string` (optional) — The command to run instead of Node.js standard compilation pipeline. The command should accept a list of source files via stdin and output a `sourcemap-sources` JSON on stdout.
+- `cwd` `string` (optional) — Current working directory of the build command.
+- `stdio` `"pipe" | "inherit"` (optional) — Defaults to `'pipe'`.
 
-Type Object external Array<string> (optional) Paths to exclude from the transpilation expressed as a list of glob patterns.
+---
 
-## Typically heavy JS bundles that your test uses are listed here. captureGitInfo
+### `testConfig.captureGitInfo` — Added in: v1.51
 
-Added in: v1.51 testConfig.captureGitInfo These settings control whether git information is captured and stored in the config testConfig.metadata
+Playwright Test includes git information in the test results when running inside a git repository. This information is used by some reporters to display test results in a more informative way.
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ captureGitInfo: { commit: true, diff: true }});
+**Type:** `Object`
 
-Type Object commit boolean (optional) Whether to capture commit and pull request information such as hash, author, timestamp. diff boolean (optional) Whether to capture commit diff
+- `git` `boolean` — Whether to capture git information.
 
-Capturing commit information is useful when you'd like to see it in your HTML (or a third party) report. Capturing diff information is useful to enrich the report with the actual source diff. This information can be used to provide intelligent advice on how to fix the test. noteDefault values for these settings depend on the environment. When tests run as a part of CI where it is safe to obtain git information, the default value is true, false otherwise. note
+---
 
-## The structure of the git commit metadata is subject to change. expect
+### `testConfig.expect` — Added in: v1.10
 
-Added in: v1.10 testConfig.expect Configuration for the expect assertion library. Learn more about various timeouts
+Configuration for the `expect` assertion library.
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ expect: { timeout: 10000, toMatchSnapshot: { maxDiffPixels: 10, }, },});
+**Type:** `Object`
 
-Type Object timeout number (optional) Default timeout for async expect matchers in milliseconds, defaults to 5000ms.
+- `timeout` `number` (optional) — Default timeout for async `expect` matchers in milliseconds. Defaults to `5000`.
+- `toHaveScreenshot` `Object` (optional) — Configuration for `expect(page).toHaveScreenshot()`.
+  - `animations` `"allow" | "disabled"` (optional) — See `animations` in `page.screenshot()`. Defaults to `"disabled"`.
+  - `caret` `"hide" | "initial"` (optional) — See `caret` in `page.screenshot()`. Defaults to `"hide"`.
+  - `comparator` `string` (optional) — A custom comparator function.
+  - `maxDiffPixelRatio` `number` (optional) — An acceptable ratio of pixels that are different to the total amount of pixels. Between `0` and `1`.
+  - `maxDiffPixels` `number` (optional) — An acceptable amount of pixels that could be different.
+  - `pathTemplate` `string` (optional) — Template controlling where screenshots are stored.
+  - `scale` `"css" | "device"` (optional) — See `scale` in `page.screenshot()`. Defaults to `"css"`.
+  - `stylePath` `string | Array<string>` (optional) — Stylesheet paths to apply when taking screenshots.
+  - `threshold` `number` (optional) — Configures the acceptable perceived color difference in the YIQ color space.
+- `toMatchAriaSnapshot` `Object` (optional) — Configuration for `expect(locator).toMatchAriaSnapshot()`.
+  - `pathTemplate` `string` (optional) — Template for snapshot path.
+- `toMatchSnapshot` `Object` (optional) — Configuration for `expect(value).toMatchSnapshot()`.
+  - `comparator` `string` (optional) — A custom comparator function.
+  - `maxDiffPixelRatio` `number` (optional) — An acceptable ratio of pixels that are different.
+  - `maxDiffPixels` `number` (optional) — An acceptable amount of pixels that could be different.
+  - `pathTemplate` `string` (optional) — Template for snapshot path.
+  - `threshold` `number` (optional) — Configures the acceptable perceived color difference.
+- `toPass` `Object` (optional) — Configuration for `expect(value).toPass()`.
+  - `intervals` `Array<number>` (optional) — Probe intervals for `toPass()`.
+  - `timeout` `number` (optional) — Maximum time for the `toPass()` assertion to pass.
 
-toHaveScreenshot Object (optional) animations "allow" | "disabled" (optional) See animations in page.screenshot().
+---
 
-Defaults to "disabled".
+### `testConfig.failOnFlakyTests` — Added in: v1.51
 
-caret "hide" | "initial" (optional) See caret in page.screenshot().
+Whether to fail the test run if any flaky tests are detected. A test is considered flaky when it passes on retry after previously failing. Defaults to `false`.
 
-Defaults to "hide".
+**Type:** `boolean`
 
-maxDiffPixels number (optional) An acceptable amount of pixels that could be different, unset by default.
+---
 
-maxDiffPixelRatio number (optional) An acceptable ratio of pixels that are different to the total amount of pixels, between 0 and 1 , unset by default.
+### `testConfig.forbidOnly` — Added in: v1.10
 
-scale "css" | "device" (optional) See scale in page.screenshot().
+Whether to exit with an error if any tests or groups are marked as `test.only`. Useful on CI. Defaults to `false`.
 
-Defaults to "css".
+**Type:** `boolean`
 
-stylePath string | Array<string> (optional) See style in page.screenshot().
+---
 
-threshold number (optional) An acceptable perceived color difference between the same pixel in compared images, ranging from 0 (strict) and 1 (lax).
+### `testConfig.fullyParallel` — Added in: v1.20
 
-"pixelmatch" comparator computes color difference in YIQ color space and defaults threshold value to 0.2.
+Playwright Test runs tests in parallel. In order to achieve that, it runs several worker processes that run at the same time. By default, **test files** are run in parallel. Tests in a single file are run in order, in the same worker process. You can configure entire test suite to concurrently run all tests in all files using this option.
 
-pathTemplate string (optional) A template controlling location of the screenshots.
+**Type:** `boolean`
 
-See testConfig.snapshotPathTemplate for details.
+---
 
-Configuration for the expect(page).toHaveScreenshot() method.
+### `testConfig.globalSetup` — Added in: v1.10
 
-toMatchAriaSnapshot Object (optional) pathTemplate string (optional) A template controlling location of the aria snapshots.
+Path to the global setup file. This file will be required and run before all the tests. It must export a single function. See also `testConfig.globalTeardown`.
 
-See testConfig.snapshotPathTemplate for details.
+**Type:** `string`
 
-children "contain" | "equal" | "deep-equal" (optional) Controls how children of the snapshot root are matched against the actual accessibility tree.
+---
 
-This is equivalent to adding a /children property at the top of every aria snapshot template.
+### `testConfig.globalTeardown` — Added in: v1.10
 
-Individual snapshots can override this by including an explicit /children property.
+Path to the global teardown file. This file will be required and run after all the tests. It must export a single function. See also `testConfig.globalSetup`.
 
-Configuration for the expect(locator).toMatchAriaSnapshot() method.
+**Type:** `string`
 
-toMatchSnapshot Object (optional) maxDiffPixels number (optional) An acceptable amount of pixels that could be different, unset by default.
+---
 
-maxDiffPixelRatio number (optional) An acceptable ratio of pixels that are different to the total amount of pixels, between 0 and 1 , unset by default.
+### `testConfig.globalTimeout` — Added in: v1.10
 
-threshold number (optional) An acceptable perceived color difference between the same pixel in compared images, ranging from 0 (strict) and 1 (lax).
+Maximum time in milliseconds the whole test suite can run. Zero means no limit. Defaults to `0`.
 
-"pixelmatch" comparator computes color difference in YIQ color space and defaults threshold value to 0.2.
+**Type:** `number`
 
-Configuration for the expect(value).toMatchSnapshot() method.
+---
 
-toPass Object (optional) intervals Array<number> (optional) Probe intervals for toPass method in milliseconds.
+### `testConfig.grep` — Added in: v1.10
 
-timeout number (optional) Timeout for toPass method in milliseconds.
+Filter to only run tests with a title matching one of the patterns. For example, passing `--grep=usage` on the command line would only run tests whose title includes `"usage"`.
 
-## Configuration for the expect(value).toPass() method. failOnFlakyTests
+**Type:** `RegExp | Array<RegExp>`
 
-Added in: v1.52 testConfig.failOnFlakyTests Whether to exit with an error if any tests are marked as flaky. Useful on CI. Also available in the command line with the --fail-on-flaky-tests option
+---
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ failOnFlakyTests: !!process.env.CI,});
+### `testConfig.grepInvert` — Added in: v1.10
 
-##
+Filter to only run tests with a title **not** matching one of the patterns. This is the opposite of `testConfig.grep`.
 
-Type boolean forbidOnly
+**Type:** `RegExp | Array<RegExp>`
 
-Added in: v1.10 testConfig.forbidOnly Whether to exit with an error if any tests or groups are marked as test.only() or test.describe.only(). Useful on CI
+---
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ forbidOnly: !!process.env.CI,});
+### `testConfig.ignoreSnapshots` — Added in: v1.26
 
-##
+Whether to skip snapshot expectations, such as `expect(value).toMatchSnapshot()` and `await expect(page).toHaveScreenshot()`. Defaults to `false`.
 
-Type boolean fullyParallel
+**Type:** `boolean`
 
-Added in: v1.20 testConfig.fullyParallel Playwright Test runs tests in parallel. In order to achieve that, it runs several worker processes that run at the same time. By default, test files are run in parallel. Tests in a single file are run in order, in the same worker process. You can configure entire test run to concurrently execute all tests in all files using this option
+---
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ fullyParallel: true,});
+### `testConfig.maxFailures` — Added in: v1.10
 
-##
+The maximum number of test failures for the whole test suite run. After reaching this number, testing will stop and exit with an error. Setting to zero (default) disables this behavior.
 
-Type boolean globalSetup
+**Type:** `number`
 
-Added in: v1.10 testConfig.globalSetup Path to the global setup file. This file will be required and run before all the tests. It must export a single function that takes a FullConfig argument. Pass an array of paths to specify multiple global setup files. Learn more about global setup and teardown
+---
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ globalSetup: './global-setup',});
+### `testConfig.metadata` — Added in: v1.10
 
-Type string | Array<string> global
+Any JSON-serializable metadata that will be put directly to the test report.
 
-## Teardown
+**Type:** `any`
 
-Added in: v1.10 testConfig.globalTeardown Path to the global teardown file. This file will be required and run after all the tests. It must export a single function. See also testConfig.globalSetup. Pass an array of paths to specify multiple global teardown files. Learn more about global setup and teardown
+---
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ globalTeardown: './global-teardown',});
+### `testConfig.name` — Added in: v1.10
 
-Type string | Array<string> global
+Config name is visible in the report.
 
-## Timeout
+**Type:** `string`
 
-Added in: v1.10 testConfig.globalTimeout Maximum time in milliseconds the whole test suite can run. Zero timeout (default) disables this behavior. Useful on CI to prevent broken setup from running too long and wasting resources. Learn more about various timeouts
+---
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ globalTimeout: process.env.CI ? 60 _ 60 _ 1000 : undefined,});
+### `testConfig.outputDir` — Added in: v1.10
 
-##
+The output directory for files created during test execution. Each test run gets its own directory so they cannot conflict. Defaults to `<package.json-directory>/test-results`.
 
-Type number grep
+**Type:** `string`
 
-Added in: v1.10 testConfig.grep Filter to only run tests with a title matching one of the patterns. For example, passing grep: /cart/ should only run tests with "cart" in the title. Also available in the command line with the -g option. The regular expression will be tested against the string that consists of the project name, the test file name, the test.describe name (if any), the test name and the test tags divided by spaces, e.g. chromium my-test.spec.ts my-suite my-test. grep option is also useful for tagging tests
+---
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ grep: /smoke/,});
+### `testConfig.preserveOutput` — Added in: v1.10
 
-Type RegExp | Array<RegExp> grep
+Whether to preserve test output in the `testConfig.outputDir`. Defaults to `'always'`.
 
-## Invert
+- `'always'` — Preserve output for all tests.
+- `'never'` — Do not preserve output for any tests.
+- `'failures-only'` — Only preserve output for failed tests.
 
-Added in: v1.10 testConfig.grepInvert Filter to only run tests with a title not matching one of the patterns. This is the opposite of testConfig.grep. Also available in the command line with the --grep-invert option. grepInvert option is also useful for tagging tests
+**Type:** `"always" | "never" | "failures-only"`
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ grepInvert: /manual/,});
+---
 
-Type RegExp | Array<RegExp> ignore
+### `testConfig.projects` — Added in: v1.10
 
-## Snapshots
+Playwright Test supports running multiple test projects at the same time. See `TestProject` for more information.
 
-Added in: v1.26 testConfig.ignoreSnapshots Whether to skip snapshot expectations, such as expect(value).toMatchSnapshot() and await expect(page).toHaveScreenshot()
+**Type:** `Array<TestProject>`
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ ignoreSnapshots: !process.env.CI,});
+---
 
-##
+### `testConfig.quiet` — Added in: v1.10
 
-Type boolean maxFailures
+Whether to suppress stdout and stderr from the tests. Defaults to `false`.
 
-Added in: v1.10 testConfig.maxFailures The maximum number of test failures for the whole test suite run. After reaching this number, testing will stop and exit with an error. Setting to zero (default) disables this behavior. Also available in the command line with the --max-failures and -x options
+**Type:** `boolean`
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ maxFailures: process.env.CI ? 1 : 0,});
+---
 
-##
+### `testConfig.repeatEach` — Added in: v1.10
 
-Type number metadata
+The number of times to repeat each test, useful for debugging flaky tests. Defaults to `0`.
 
-Added in: v1.10 testConfig.metadata Metadata contains key-value pairs to be included in the report. For example, the JSON report will include metadata serialized as JSON
+**Type:** `number`
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ metadata: { title: 'acceptance tests' },});
+---
 
-##
+### `testConfig.reportSlowTests` — Added in: v1.10
 
-Type Metadata name
+Whether to report slow test files. Pass `null` to disable this feature.
 
-Added in: v1.10 testConfig.name Config name is visible in the report and during test execution, unless overridden by testProject.name
+**Type:** `Object | null`
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ name: 'acceptance tests',});
+- `max` `number` — The maximum number of slow test files to report. Defaults to `5`.
+- `threshold` `number` — Test duration in milliseconds that is considered slow. Defaults to `15000`.
 
-##
+---
 
-Type string outputDir
+### `testConfig.reporter` — Added in: v1.10
 
-Added in: v1.10 testConfig.outputDir The output directory for files created during test execution. Defaults to <package.json-directory>/test-results
+The list of reporters to use. Each reporter can be:
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ outputDir: './test-results',});
+- A built-in reporter name like `'html'`, `'dot'`, `'line'`, `'json'`, `'junit'`.
+- A module name like `'allure-playwright'`.
+- A relative path to a custom reporter, e.g. `'./my-reporter.ts'`.
 
-Type string
+Each reporter can optionally receive options as a second argument.
 
-Details This directory is cleaned at the start.
+**Type:** `string | Array<[string, Object?]> | Object`
 
-When running a test, a unique subdirectory inside the testConfig.outputDir is created, guaranteeing that test running in parallel do not conflict.
+---
 
-This directory can be accessed by testInfo.outputDir and testInfo.outputPath().
+### `testConfig.respectGitIgnore` — Added in: v1.43
 
-Here is an example that uses testInfo.outputPath() to create a temporary file.
+Whether to use `.gitignore` file when searching for test files. Defaults to `true`.
 
-import { test, expect } from '@playwright/test';import fs from 'fs';test('example test', async ({}, testInfo) => { const file = testInfo.outputPath('temporary-file.txt');
-await fs.promises.writeFile(file, 'Put some data to the file', 'utf8');});
-preserve
+**Type:** `boolean`
 
-## Output
+---
 
-Added in: v1.10 testConfig.preserveOutput Whether to preserve test output in the testConfig.outputDir. Defaults to 'always'. 'always' - preserve output for all tests; 'never' - do not preserve output for any tests; 'failures-only' - only preserve output for failed tests
+### `testConfig.retries` — Added in: v1.10
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ preserveOutput: 'always',});
+The maximum number of retry attempts given to failed tests. Learn more about test retries. Defaults to `0`.
 
-Type "always" | "never" | "failures-only" projects​
+**Type:** `number`
 
-Added in: v1.10 testConfig.projects Playwright Test supports running multiple test projects at the same time. See TestProject for more information
+---
 
-playwright.config.tsimport { defineConfig, devices } from '@playwright/test';export default defineConfig({ projects: [ { name: 'chromium', use: devices['Desktop Chrome'] } ]});
+### `testConfig.shard` — Added in: v1.10
 
-Type Array<TestProject> quiet​
+Shard tests and execute only the selected shard. Specify in the one-based form like `{ total: 5, current: 2 }`. Learn about parallelism and sharding.
 
-Added in: v1.10 testConfig.quiet Whether to suppress stdio and stderr output from the tests
+**Type:** `Object | null`
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ quiet: !!process.env.CI,});
+- `current` `number` — The index of the shard to execute, one-based.
+- `total` `number` — The total number of shards.
 
-##
+---
 
-Type boolean repeatEach
+### `testConfig.snapshotPathTemplate` — Added in: v1.26
 
-Added in: v1.10 testConfig.repeatEach The number of times to repeat each test, useful for debugging flaky tests
+This option configures a template controlling location of snapshots generated by `expect(page).toHaveScreenshot()`, `expect(locator).toMatchAriaSnapshot()`, and `expect(value).toMatchSnapshot()`.
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ repeatEach: 3,});
+**Type:** `string`
 
-##
+Supported tokens:
 
-Type number reportSlowTests
+| Token            | Description                                                 |
+| ---------------- | ----------------------------------------------------------- |
+| `{arg}`          | Relative snapshot path without extension                    |
+| `{ext}`          | Snapshot extension (with leading dot)                       |
+| `{platform}`     | The value of `process.platform`                             |
+| `{projectName}`  | Project's file-system-sanitized name                        |
+| `{snapshotDir}`  | Project's `testProject.snapshotDir`                         |
+| `{testDir}`      | Project's `testProject.testDir`                             |
+| `{testFileDir}`  | Directories in relative path from `testDir` to test file    |
+| `{testFileName}` | Test file name with extension                               |
+| `{testFilePath}` | Relative path from `testDir` to test file                   |
+| `{testName}`     | File-system-sanitized test title including parent describes |
 
-Added in: v1.10 testConfig.reportSlowTests Whether to report slow test files. Pass null to disable this feature
+---
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ reportSlowTests: null,});
+### `testConfig.tag` — Added in: v1.43
 
-Type null | Object max number The maximum number of slow test files to report. Defaults to 5. threshold number Test file duration in milliseconds that is considered slow. Defaults to 5 minutes
+Allows filtering tests by tags. Accepts a tag name or a list of tag names. Only tests with at least one of the specified tags will run.
 
-Test files that took more than threshold milliseconds are considered slow, and the slowest ones are reported, no more than max number of them.
+**Type:** `string | Array<string>`
 
-## Passing zero as max reports all test files that exceed the threshold. reporter
+---
 
-Added in: v1.10 testConfig.reporter The list of reporters to use. Each reporter can be: A builtin reporter name like 'list' or 'json'. A module name like 'my-awesome-reporter'. A relative path to the reporter like './reporters/my-awesome-reporter.js'. You can pass options to the reporter in a tuple like ['json', { outputFile: './report.json' }]. If the property is not specified, Playwright uses the 'dot' reporter when the CI environment variable is set, and the 'list' reporter otherwise. Learn more in the reporters guide
+### `testConfig.testDir` — Added in: v1.10
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ reporter: 'line',});
+Directory that will be recursively scanned for test files. Defaults to the directory of the configuration file.
 
-Type string | Array<Object> | "list" | "dot" | "line" | "github" | "json" | "junit" | "null" | "html" 0 string Reporter name or module or file path 1
+**Type:** `string`
 
-## Object An object with reporter options if any respectGitIgnore
+---
 
-Added in: v1.45 testConfig.respectGitIgnore Whether to skip entries from .gitignore when searching for test files. By default, if neither testConfig.testDir nor testProject.testDir are explicitly specified, Playwright will ignore any test files matching .gitignore entries.
+### `testConfig.testIgnore` — Added in: v1.10
 
-##
+Files matching one of these patterns are not executed as test files. Matching is performed against the absolute file path. Strings are treated as glob patterns.
 
-Usage testConfig.respectGitIgnore
+**Type:** `string | RegExp | Array<string | RegExp>`
 
-Type boolean retries
+---
 
-Added in: v1.10 testConfig.retries The maximum number of retry attempts given to failed tests. By default failing tests are not retried. Learn more about test retries
+### `testConfig.testMatch` — Added in: v1.10
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ retries: 2,});
+Only the files matching one of these patterns are executed as test files. Matching is performed against the absolute file path. By default, Playwright looks for files matching `**/*.@(spec|test).?(c|m)[jt]s?(x)`.
 
-##
+**Type:** `string | RegExp | Array<string | RegExp>`
 
-Type number shard
+---
 
-Added in: v1.10 testConfig.shard Shard tests and execute only the selected shard. Specify in the one-based form like { total: 5, current: 2 }. Learn more about parallelism and sharding with Playwright Test
+### `testConfig.timeout` — Added in: v1.10
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ shard: { total: 10, current: 3 },});
+Timeout for each test in milliseconds. Defaults to `30000` (30 seconds).
 
-Type null | Object current number The index of the shard to execute, one-based. total number
+**Type:** `number`
 
-## The total number of shards. snapshotPathTemplate
+---
 
-Added in: v1.28 testConfig.snapshotPathTemplate This option configures a template controlling location of snapshots generated by expect(page).toHaveScreenshot(), expect(locator).toMatchAriaSnapshot() and expect(value).toMatchSnapshot(). You can configure templates for each assertion separately in testConfig.expect
+### `testConfig.tsconfig` — Added in: v1.26
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ testDir: './tests', // Single template for all assertions snapshotPathTemplate: '{testDir}/**screenshots**/{testFilePath}/{arg}{ext}', // Assertion-specific templates expect: { toHaveScreenshot: { pathTemplate: '{testDir}/**screenshots**{/projectName}/{testFilePath}/{arg}{ext}', }, toMatchAriaSnapshot: { pathTemplate: '{testDir}/**snapshots**/{testFilePath}/{arg}{ext}', }, },});
+Path to a custom tsconfig file to use when importing TypeScript test files, hooks, fixtures, and page objects. Useful when the `tsconfig.json` in the project is not suitable for test code.
 
-Type string
+**Type:** `string`
 
-Details The value might include some "tokens" that will be replaced with actual values during test execution.
+---
 
-Consider the following file structure: playwright.config.tstests/└── page/ └── page-click.spec.ts And the following page-click.spec.ts that uses toHaveScreenshot() call: page-click.spec.tsimport { test, expect } from '@playwright/test';test.describe('suite', () => { test('test should work', async ({ page }) => { await expect(page).toHaveScreenshot(['foo', 'bar', 'baz.png']);
-});});
-The list of supported tokens: {arg} - Relative snapshot path without extension.
+### `testConfig.updateSnapshots` — Added in: v1.10
 
-This comes from the arguments passed to toHaveScreenshot(), toMatchAriaSnapshot() or toMatchSnapshot();
-if called without arguments, this will be an auto-generated snapshot name.
+Whether to update expected snapshots with the actual results produced by the test run. Defaults to `'missing'`.
 
-Value: foo/bar/baz {ext} - Snapshot extension (with the leading dot).
+- `'all'` — All snapshots are updated.
+- `'changed'` — Snapshots that do not match are updated.
+- `'missing'` — Missing snapshots are created, existing ones are kept.
+- `'none'` — No snapshots are updated.
 
-Value: .png {platform} - The value of process.platform.
+**Type:** `"all" | "changed" | "missing" | "none"`
 
-{projectName} - Project's file-system-sanitized name, if any.
+---
 
-Value: '' (empty string).
+### `testConfig.updateSourceMethod` — Added in: v1.50
 
-{snapshotDir} - Project's testProject.snapshotDir.
+The method to use for updating snapshot sources when `--update-snapshots` is used. Defaults to `'overwrite'`.
 
-Value: /home/playwright/tests (since snapshotDir is not provided in config, it defaults to testDir) {testDir} - Project's testProject.testDir.
+- `'3way'` — Use 3-way merge to update snapshots.
+- `'overwrite'` — Overwrite existing source code with new expected value.
+- `'patch'` — Generate a patch file with the diff.
 
-Value: /home/playwright/tests (absolute path since testDir is resolved relative to directory with config) {testFileDir} - Directories in relative path from testDir to test file.
+**Type:** `"3way" | "overwrite" | "patch"`
 
-Value: page {testFileName} - Test file name with extension.
+---
 
-Value: page-click.spec.ts {testFilePath} - Relative path from testDir to test file.
+### `testConfig.use` — Added in: v1.10
 
-Value: page/page-click.spec.ts {testName} - File-system-sanitized test title, including parent describes but excluding file name.
+Global options for all tests, for example `testOptions.browserName`. Learn more about configuration and see available options.
 
-Value: suite-test-should-work Each token can be preceded with a single character that will be used only if this token has non-empty value.
+**Type:** `TestOptions`
 
-Consider the following config: playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ snapshotPathTemplate: '**screenshots**{/projectName}/{testFilePath}/{arg}{ext}', testMatch: 'example.spec.ts', projects: [ { use: { browserName: 'firefox' } }, { name: 'chromium', use: { browserName: 'chromium' } }, ],});
-In this config: First project does not have a name, so its snapshots will be stored in <configDir>/**screenshots**/example.spec.ts/....
+---
 
-Second project does have a name, so its snapshots will be stored in <configDir>/**screenshots**/chromium/example.spec.ts/...
+### `testConfig.webServer` — Added in: v1.10
 
-Since snapshotPathTemplate resolves to relative path, it will be resolved relative to config
+Launch a development web server (or multiple) during the tests. See `testConfig.webServer` for more details.
 
-## Dir. Forward slashes "/" can be used as path separators on any platform. tag
+**Type:** `Object | Array<Object>`
 
-Added in: v1.57 testConfig.tag Tag or tags prepended to each test in the report. Useful for tagging your test run to differentiate between CI environments. Note that each tag must start with @ symbol. Learn more about tagging
+- `command` `string` — Shell command to start. For example `npm run start`.
+- `url` `string` (optional) — The URL of your HTTP server. Playwright Test will wait for the URL to respond with a 200, 201, 202, 206, or 301/302/303/307/308 redirect before running the tests. Mutually exclusive with `port`.
+- `port` `number` (optional) — The port that your HTTP server is expected to appear on. Mutually exclusive with `url`.
+- `reuseExistingServer` `boolean` (optional) — If `true`, Playwright Test will reuse an existing server on the `url` when available. If no server is running on that `url`, it will run the command to start a new server. Defaults to `true` in CI environments, and `false` otherwise.
+- `cwd` `string` (optional) — Current working directory of the spawned process, default is the directory of the configuration file.
+- `env` `Object<string, string>` (optional) — Environment variables to set for the command.
+- `stdout` `"pipe" | "ignore"` (optional) — Whether to pipe the stdout of the command to the process stdout. Defaults to `'ignore'`.
+- `stderr` `"pipe" | "ignore"` (optional) — Whether to pipe the stderr of the command to the process stderr. Defaults to `'pipe'`.
+- `timeout` `number` (optional) — How long to wait for the server to start in milliseconds. Defaults to `60000`.
+- `gracefulShutdown` `Object` (optional) — How to gracefully shut down the server.
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ tag: process.env.CI_ENVIRONMENT_NAME, // for example "@APIv2"});
+---
 
-Type string | Array<string> test
+### `testConfig.workers` — Added in: v1.10
 
-## Dir
+The maximum number of concurrent worker processes to use for parallelizing tests. Can also be set as a percentage of logical CPU cores, e.g. `'50%'`. Playwright Test uses worker processes to run tests. There is always at least one worker process, but more can be used to speed up test execution.
 
-Added in: v1.10 testConfig.testDir Directory that will be recursively scanned for test files. Defaults to the directory of the configuration file
+Defaults to one half of the number of logical CPU cores. Learn more about parallelism and sharding with Playwright Test.
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ testDir: './tests/playwright',});
+**Type:** `number | string`
 
-##
+---
 
-Type string testIgnore
+### `testConfig.snapshotDir` — Added in: v1.10 (Deprecated)
 
-Added in: v1.10 testConfig.testIgnore Files matching one of these patterns are not executed as test files. Matching is performed against the absolute file path. Strings are treated as glob patterns. For example, '**/test-assets/**' will ignore any files in the test-assets directory
+> **Note:** Use `testConfig.snapshotPathTemplate` to configure snapshot paths. This property is deprecated.
 
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ testIgnore: '**/test-assets/**',});
+The base directory, relative to the config file, for snapshot files created with `toMatchSnapshot`. Defaults to `testConfig.testDir`.
 
-Type string | RegExp | Array<string | RegExp> test
-
-## Match
-
-Added in: v1.10 testConfig.testMatch Only the files matching one of these patterns are executed as test files. Matching is performed against the absolute file path. Strings are treated as glob patterns. By default, Playwright looks for files matching the following glob pattern: \*_/_.@(spec|test).?(c|m)[jt]s?(x). This means JavaScript or TypeScript files with ".test" or ".spec" suffix, for example login-screen.wrong-credentials.spec.ts
-
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ testMatch: /.\*\.e2e\.js/,});
-
-Type string | RegExp | Array<string | RegExp> timeout​
-
-Added in: v1.10 testConfig.timeout Timeout for each test in milliseconds. Defaults to 30 seconds. This is a base timeout for all tests. In addition, each test can configure its own timeout with test.setTimeout(). Learn more about various timeouts
-
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ timeout: 5 _ 60 _ 1000,});
-
-##
-
-Type number tsconfig
-
-Added in: v1.49 testConfig.tsconfig Path to a single tsconfig applicable to all imported files. By default, tsconfig for each imported file is looked up separately. Note that tsconfig property has no effect while the configuration file or any of its dependencies are loaded. Ignored when --tsconfig command line option is specified
-
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ tsconfig: './tsconfig.test.json',});
-
-##
-
-Type string updateSnapshots
-
-Added in: v1.10 testConfig.updateSnapshots Whether to update expected snapshots with the actual results produced by the test run. Defaults to 'missing'. 'all' - All tests that are executed will update snapshots. 'changed' - All tests that are executed will update snapshots that did not match. Matching snapshots will not be updated. Also creates missing snapshots. 'missing' - Missing snapshots are created, for example when authoring a new test and running it for the first time. This is the default. 'none' - No snapshots are updated. Learn more about snapshots
-
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ updateSnapshots: 'missing',});
-
-Type "all" | "changed" | "missing" | "none" update
-
-## SourceMethod
-
-Added in: v1.50 testConfig.updateSourceMethod Defines how to update snapshots in the source code. 'patch' - Create a unified diff file that can be used to update the source code later. This is the default. '3way' - Generate merge conflict markers in source code. This allows user to manually pick relevant changes, as if they are resolving a merge conflict in the IDE. 'overwrite' - Overwrite the source code with the new snapshot values
-
-testConfig.updateSourceMethod
-
-Type "overwrite" | "3way" | "patch" use​
-
-Added in: v1.10 testConfig.use Global options for all tests, for example testOptions.browserName. Learn more about configuration and see available options
-
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ use: { browserName: 'chromium', },});
-
-##
-
-Type TestOptions webServer
-
-Added in: v1.10 testConfig.webServer Launch a development web server (or multiple) during the tests
-
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ webServer: { command: 'npm run start', url: 'http://localhost:3000', timeout: 120 _ 1000, reuseExistingServer: !process.env.CI, }, use: { baseURL: 'http://localhost:3000/', },});
-Now you can use a relative path when navigating the page: test.spec.tsimport { test } from '@playwright/test';test('test', async ({ page }) => { // This will result in http://localhost:3000/foo await page.goto('/foo');});
-Multiple web servers (or background processes) can be launched: playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ webServer: [ { command: 'npm run start', url: 'http://localhost:3000', name: 'Frontend', timeout: 120 _ 1000, reuseExistingServer: !process.env.CI, }, { command: 'npm run backend', url: 'http://localhost:3333', name: 'Backend', timeout: 120 \* 1000, reuseExistingServer: !process.env.CI, } ], use: { baseURL: 'http://localhost:3000', },});
-If your webserver runs on varying ports, use wait to capture the port: import { defineConfig } from '@playwright/test';export default defineConfig({ webServer: { command: 'npm run start', wait: { stdout: /Listening on port (?<my_server_port>\d+)/ }, },});
-import { test, expect } from '@playwright/test';test.use({ baseUrl: `http://localhost:${process.env.MY_SERVER_PORT ??
-
-3000}` });
-
-test('homepage', async ({ page }) => { await page.goto('/');});
-
-Type Object | Array<Object> command string Shell command to start.
-
-For example npm run start..
-
-cwd string (optional) Current working directory of the spawned process, defaults to the directory of the configuration file.
-
-env Object<string, string> (optional) Environment variables to set for the command, process.env by default.
-
-gracefulShutdown Object (optional) signal "SIGINT" | "SIGTERM" timeout number How to shut down the process.
-
-If unspecified, the process group is forcefully SIGKILLed.
-
-If set to { signal: 'SIGTERM', timeout: 500 }, the process group is sent a SIGTERM signal, followed by SIGKILL if it doesn't exit within 500ms.
-
-You can also use SIGINT as the signal instead.
-
-A 0 timeout means no SIGKILL will be sent.
-
-Windows doesn't support SIGTERM and SIGINT signals, so this option is ignored on Windows.
-
-Note that shutting down a Docker container requires SIGTERM.
-
-ignoreHTTPSErrors boolean (optional) Whether to ignore HTTPS errors when fetching the url.
-
-Defaults to false.
-
-name string (optional) Specifies a custom name for the web server.
-
-This name will be prefixed to log messages.
-
-Defaults to [WebServer].
-
-port number (optional) The port that your http server is expected to appear on.
-
-It does wait until it accepts connections.
-
-Either port or url should be specified.
-
-reuseExistingServer boolean (optional) If true, it will re-use an existing server on the port or url when available.
-
-If no server is running on that port or url, it will run the command to start a new server.
-
-If false, it will throw if an existing process is listening on the port or url.
-
-This should be commonly set to !process.env.CI to allow the local dev server when running tests locally.
-
-stderr "pipe" | "ignore" (optional) Whether to pipe the stderr of the command to the process stderr or ignore it.
-
-Defaults to "pipe".
-
-stdout "pipe" | "ignore" (optional) If "pipe", it will pipe the stdout of the command to the process stdout.
-
-If "ignore", it will ignore the stdout of the command.
-
-Default to "ignore".
-
-wait Object (optional) stdout RegExp (optional) Regular expression to wait for in the stdout of the command output.
-
-Named capture groups are stored in the environment, for example /Listening on port (?<my_server_port>\d+)/ will store the port number in process.env['MY_SERVER_PORT'].
-
-stderr RegExp (optional) Regular expression to wait for in the stderr of the command output.
-
-Named capture groups are stored in the environment, for example /Listening on port (?<my_server_port>\d+)/ will store the port number in process.env['MY_SERVER_PORT'].
-
-Consider command started only when given output has been produced.
-
-timeout number (optional) How long to wait for the process to start up and be available in milliseconds.
-
-Defaults to 60000.
-
-url string (optional) The url on your http server that is expected to return a 2xx, 3xx, 400, 401, 402, or 403 status code when the server is ready to accept connections.
-
-Redirects (3xx status codes) are being followed and the new location is checked.
-
-Either port or url should be specified
-
-If the port is specified, Playwright Test will wait for it to be available on 127.0.0.1 or ::1, before running the tests.
-
-If the url is specified, Playwright Test will wait for the URL to return a 2xx, 3xx, 400, 401, 402, or 403 status code before running the tests.
-
-For continuous integration, you may want to use the reuseExistingServer: !process.env.CI option which does not use an existing server on the CI.
-
-To see the stdout, you can set the DEBUG=pw:webserver environment variable.
-
-The port (but not the url) gets passed over to Playwright as a testOptions.baseURL.
-
-For example port 8080 produces baseURL equal http://localhost:8080.
-
-If webServer is specified as an array, you must explicitly configure the baseURL (even if it only has one entry).
-
-noteIt is also recommended to specify test
-
-## Options.baseURL in the config, so that tests could use relative urls. workers
-
-Added in: v1.10 testConfig.workers The maximum number of concurrent worker processes to use for parallelizing tests. Can also be set as percentage of logical CPU cores, e.g. '50%'. Playwright Test uses worker processes to run tests. There is always at least one worker process, but more can be used to speed up test execution. Defaults to half of the number of logical CPU cores. Learn more about parallelism and sharding with Playwright Test
-
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ workers: 3,});
-
-Type number | string
-
-## Deprecated
-
-snapshot
-
-## Dir
-
-Added in: v1.10 testConfig.snapshotDir DiscouragedUse testConfig.snapshotPathTemplate to configure snapshot paths. The base directory, relative to the config file, for snapshot files created with toMatchSnapshot. Defaults to testConfig.testDir
-
-playwright.config.tsimport { defineConfig } from '@playwright/test';export default defineConfig({ snapshotDir: './snapshots',});
-
-Type string
-
-Details The directory for each test can be accessed by testInfo.snapshotDir and testInfo.snapshotPath(). This path will serve as the base directory for each test file snapshot directory. Setting snapshotDir to 'snapshots', the testInfo.snapshotDir would resolve to snapshots/a.spec.js-snapshots.
+**Type:** `string`

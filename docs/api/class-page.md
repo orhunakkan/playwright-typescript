@@ -4,1606 +4,2346 @@
 
 ---
 
-## Page
+## Overview
 
-Page provides methods to interact with a single tab in a Browser, or an extension background page in Chromium. One Browser instance might have multiple Page instances. This example creates a page, navigates it to a URL, and then saves a screenshot: const { webkit } = require('playwright'); // Or 'chromium' or 'firefox'.(async () => { const browser = await webkit.launch(); const context = await browser.newContext(); const page = await context.newPage(); await page.goto('https://example.com'); await page.screenshot({ path: 'screenshot.png' }); await browser.close();})(); The Page class emits various events (described below) which can be handled using any of Node's native EventEmitter methods, such as on, once or removeListener. This example logs a message for a single page load event: page.once('load', () => console.log('Page loaded!')); To unsubscribe from events use the removeListener method: function logRequest(interceptedRequest) { console.log('A request was made:', interceptedRequest.url());}page.on('request', logRequest);// Sometime later...page.removeListener('request', logRequest); Methods
+Page provides methods to interact with a single tab in a Browser, or an extension background page in Chromium. One Browser instance might have multiple Page instances.
 
-add
+```js
+const { webkit } = require('playwright');
+(async () => {
+  const browser = await webkit.launch();
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto('https://example.com');
+  await page.screenshot({ path: 'screenshot.png' });
+  await browser.close();
+})();
+```
 
-## InitScript
+The Page class emits various events which can be handled using Node's native EventEmitter methods (`on`, `once`, `removeListener`).
 
-Added before v1.9 page.addInitScript Adds a script which would be evaluated in one of the following scenarios: Whenever the page is navigated. Whenever the child frame is attached or navigated. In this case, the script is evaluated in the context of the newly attached frame. The script is evaluated after the document was created but before any of its scripts were run. This is useful to amend the JavaScript environment, e.g. to seed Math.random
+---
 
-An example of overriding Math.random before the page loads: // preload.jsMath.random = () => 42; // In your playwright script, assuming the preload.js file is in same directoryawait page.addInitScript({ path: './preload.js' }); await page.addInitScript(mock => { window.mock = mock;}, mock); noteThe order of evaluation of multiple scripts installed via browserContext.addInitScript() and page.addInitScript() is not defined
+## Methods
 
-script function | string | Object# path string (optional) Path to the JavaScript file. If path is a relative path, then it is resolved relative to the current working directory. Optional. content string (optional) Raw script content. Optional. Script to be evaluated in the page. arg Serializable (optional)# Optional argument to pass to script (only supported when passing a function)
+### `page.addInitScript()` — Added before v1.9
 
-Promise<Disposable># add
+Adds a script which would be evaluated in one of the following scenarios:
 
-## LocatorHandler
+- Whenever the page is navigated.
+- Whenever the child frame is attached or navigated.
 
-Added in: v1.42 page.addLocatorHandler When testing a web page, sometimes unexpected overlays like a "Sign up" dialog appear and block actions you want to automate, e.g. clicking a button. These overlays don't always show up in the same way or at the same time, making them tricky to handle in automated tests. This method lets you set up a special function, called a handler, that activates when it detects that overlay is visible. The handler's job is to remove the overlay, allowing your test to continue as if the overlay wasn't there. Things to keep in mind: When an overlay is shown predictably, we recommend explicitly waiting for it in your test and dismissing it as a part of your normal test flow, instead of using page.addLocatorHandler(). Playwright checks for the overlay every time before executing or retrying an action that requires an actionability check, or before performing an auto-waiting assertion check. When overlay is visible, Playwright calls the handler first, and then proceeds with the action/assertion. Note that the handler is only called when you perform an action/assertion - if the overlay becomes visible but you don't perform any actions, the handler will not be triggered. After executing the handler, Playwright will ensure that overlay that triggered the handler is not visible anymore. You can opt-out of this behavior with noWaitAfter. The execution time of the handler counts towards the timeout of the action/assertion that executed the handler. If your handler takes too long, it might cause timeouts. You can register multiple handlers. However, only a single handler will be running at a time. Make sure the actions within a handler don't depend on another handler. warningRunning the handler will alter your page state mid-test. For example it will change the currently focused element and move the mouse. Make sure that actions that run after the handler are self-contained and do not rely on the focus and mouse state being unchanged.For example, consider a test that calls locator.focus() followed by keyboard.press(). If your handler clicks a button between these two actions, the focused element most likely will be wrong, and key press will happen on the unexpected element. Use locator.press() instead to avoid this problem.Another example is a series of mouse actions, where mouse.move() is followed by mouse.down(). Again, when the handler runs between these two actions, the mouse position will be wrong during the mouse down. Prefer self-contained actions like locator.click() that do not rely on the state being unchanged by a handler
+The script is evaluated after the document was created but before any of its scripts ran.
 
-An example that closes a "Sign up to the newsletter" dialog when it appears: // Setup the handler.await page.addLocatorHandler(page.getByText('Sign up to the newsletter'), async () => { await page.getByRole('button', { name: 'No thanks' }).click();});// Write the test as usual.await page.goto('https://example.com');await page.getByRole('button', { name: 'Start here' }).click(); An example that skips the "Confirm your security details" page when it is shown: // Setup the handler.await page.addLocatorHandler(page.getByText('Confirm your security details'), async () => { await page.getByRole('button', { name: 'Remind me later' }).click();});// Write the test as usual.await page.goto('https://example.com');await page.getByRole('button', { name: 'Start here' }).click(); An example with a custom callback on every actionability check. It uses a <body> locator that is always visible, so the handler is called before every actionability check. It is important to specify noWaitAfter, because the handler does not hide the <body> element. // Setup the handler.await page.addLocatorHandler(page.locator('body'), async () => { await page.evaluate(() => window.removeObstructionsForTestIfNeeded());}, { noWaitAfter: true });// Write the test as usual.await page.goto('https://example.com');await page.getByRole('button', { name: 'Start here' }).click(); Handler takes the original locator as an argument. You can also automatically remove the handler after a number of invocations by setting times: await page.addLocatorHandler(page.getByLabel('Close'), async locator => { await locator.click();}, { times: 1 }); Arguments locator Locator# Locator that triggers the handler. handler function(Locator):Promise<Object># Function that should be run once locator appears. This function should get rid of the element that blocks actions like click. options Object (optional) noWaitAfter boolean (optional) Added in: v1.44# By default, after calling the handler Playwright will wait until the overlay becomes hidden, and only then Playwright will continue with the action/assertion that triggered the handler. This option allows to opt-out of this behavior, so that overlay can stay visible after the handler has run. times number (optional) Added in: v1.44# Specifies the maximum number of times this handler should be called. Unlimited by default
+```js
+await page.addInitScript({ path: './preload.js' });
+await page.addInitScript((mock) => {
+  window.mock = mock;
+}, mock);
+```
 
-Promise<void># add
+**Arguments:**
 
-## ScriptTag
+| Parameter | Type                           | Description                                                                   |
+| --------- | ------------------------------ | ----------------------------------------------------------------------------- |
+| `script`  | `function \| string \| Object` | Script to be evaluated. Object form: `{ path?: string, content?: string }`.   |
+| `arg`     | `Serializable` (optional)      | Optional argument to pass to script (only supported when passing a function). |
 
-Added before v1.9 page.addScriptTag Adds a <script> tag into the page with the desired url or content
+**Returns:** `Promise<Disposable>`
 
-the added tag when the script's onload fires or when the script content was injected into frame
+---
 
-await page.addScriptTag();await page.addScriptTag(options); Arguments options Object (optional) content string (optional)# Raw JavaScript content to be injected into frame. path string (optional)# Path to the JavaScript file to be injected into frame. If path is a relative path, then it is resolved relative to the current working directory. type string (optional)# Script type. Use 'module' in order to load a JavaScript ES6 module. See script for more details. url string (optional)# URL of a script to be added
+### `page.addLocatorHandler()` — Added in: v1.42
 
-Promise<ElementHandle># add
+Sets up a handler that activates when a specified locator (e.g., a "Sign up" overlay) becomes visible. The handler's job is to remove the overlay so the test can proceed.
 
-## StyleTag
+```js
+await page.addLocatorHandler(page.getByText('Sign up to the newsletter'), async () => {
+  await page.getByRole('button', { name: 'No thanks' }).click();
+});
+```
 
-Added before v1.9 page.addStyleTag Adds a <link rel="stylesheet"> tag into the page with the desired url or a <style type="text/css"> tag with the content
+**Arguments:**
 
-the added tag when the stylesheet's onload fires or when the CSS content was injected into frame
+| Parameter             | Type                                 | Description                                                                                                               |
+| --------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| `locator`             | `Locator`                            | Locator that triggers the handler.                                                                                        |
+| `handler`             | `function(Locator): Promise<Object>` | Function that should be run once locator appears.                                                                         |
+| `options.noWaitAfter` | `boolean` (optional)                 | Added in v1.44. By default Playwright waits until the overlay is hidden after the handler runs. Set to `true` to opt out. |
+| `options.times`       | `number` (optional)                  | Added in v1.44. Maximum number of times this handler should be called. Unlimited by default.                              |
 
-await page.addStyleTag();await page.addStyleTag(options); Arguments options Object (optional) content string (optional)# Raw CSS content to be injected into frame. path string (optional)# Path to the CSS file to be injected into frame. If path is a relative path, then it is resolved relative to the current working directory. url string (optional)# URL of the <link> tag
+**Returns:** `Promise<void>`
 
-Promise<ElementHandle># aria
+---
 
-## Snapshot
+### `page.addScriptTag()` — Added before v1.9
 
-Added in: v1.59 page.ariaSnapshot Captures the aria snapshot of the page. Read more about aria snapshots
+Adds a `<script>` tag into the page with the desired url or content. Returns the added tag when the script's onload fires or when the script content was injected.
 
-await page.ariaSnapshot();await page.ariaSnapshot(options); Arguments options Object (optional) depth number (optional)# When specified, limits the depth of the snapshot. mode "ai" | "default" (optional)# When set to "ai", returns a snapshot optimized for AI consumption: including element references like [ref=e2] and snapshots of <iframe>s. Defaults to "default". timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+```js
+await page.addScriptTag({ url: 'https://example.com/script.js' });
+await page.addScriptTag({ content: 'window.x = 1;' });
+```
 
-Promise<string># bring
+**Arguments:**
 
-## ToFront
+| Parameter         | Type                | Description                                       |
+| ----------------- | ------------------- | ------------------------------------------------- |
+| `options.content` | `string` (optional) | Raw JavaScript content to be injected into frame. |
+| `options.path`    | `string` (optional) | Path to the JavaScript file to be injected.       |
+| `options.type`    | `string` (optional) | Script type. Use `'module'` for ES6 modules.      |
+| `options.url`     | `string` (optional) | URL of a script to be added.                      |
 
-Added before v1.9 page.bringToFront Brings page to front (activates tab)
+**Returns:** `Promise<ElementHandle>`
 
-await page.bringToFront(); Returns Promise<void># cancel
+---
 
-## PickLocator
+### `page.addStyleTag()` — Added before v1.9
 
-Added in: v1.59 page.cancelPickLocator Cancels an ongoing page.pickLocator() call by deactivating pick locator mode. If no pick locator mode is active, this method is a no-op
+Adds a `<link rel="stylesheet">` tag or a `<style>` tag into the page. Returns the added tag when the stylesheet's onload fires.
 
-await page.cancelPickLocator(); Returns Promise<void># clear
+```js
+await page.addStyleTag({ url: 'https://example.com/style.css' });
+await page.addStyleTag({ content: 'body { background: red; }' });
+```
 
-## ConsoleMessages
+**Arguments:**
 
-Added in: v1.59 page.clearConsoleMessages Clears all stored console messages from this page. Subsequent calls to page.consoleMessages() will only return messages logged after the clear
+| Parameter         | Type                | Description                                |
+| ----------------- | ------------------- | ------------------------------------------ |
+| `options.content` | `string` (optional) | Raw CSS content to be injected into frame. |
+| `options.path`    | `string` (optional) | Path to the CSS file to be injected.       |
+| `options.url`     | `string` (optional) | URL of the `<link>` tag.                   |
 
-await page.clearConsoleMessages(); Returns Promise<void># clear
+**Returns:** `Promise<ElementHandle>`
 
-## PageErrors
+---
 
-Added in: v1.59 page.clearPageErrors Clears all stored page errors from this page. Subsequent calls to page.pageErrors() will only return errors thrown after the clear
+### `page.ariaSnapshot()` — Added in: v1.59
 
-await page.clearPageErrors(); Returns Promise<void># close​ Added before v1.9 page.close If runBeforeUnload is false, does not run any unload handlers and waits for the page to be closed. If runBeforeUnload is true the method will run unload handlers, but will not wait for the page to close. By default, page.close() does not run beforeunload handlers. noteif runBeforeUnload is passed as true, a beforeunload dialog might be summoned and should be handled manually via page.on('dialog') event
+Captures the aria snapshot of the page.
 
-await page.close();await page.close(options); Arguments options Object (optional) reason string (optional) Added in: v1.40# The reason to be reported to the operations interrupted by the page closure. runBeforeUnload boolean (optional)# Defaults to false. Whether to run the before unload page handlers
+```js
+const snapshot = await page.ariaSnapshot();
+```
 
-Promise<void># console
+**Arguments:**
 
-## Messages
+| Parameter         | Type                           | Description                                                                                   |
+| ----------------- | ------------------------------ | --------------------------------------------------------------------------------------------- |
+| `options.depth`   | `number` (optional)            | When specified, limits the depth of the snapshot.                                             |
+| `options.mode`    | `"ai" \| "default"` (optional) | When set to `"ai"`, returns a snapshot optimized for AI consumption. Defaults to `"default"`. |
+| `options.timeout` | `number` (optional)            | Maximum time in milliseconds. Defaults to 0 (no timeout).                                     |
 
-Added in: v1.56 page.consoleMessages Returns up to (currently) 200 last console messages from this page. See page.on('console') for more details
+**Returns:** `Promise<string>`
 
-await page.consoleMessages();await page.consoleMessages(options); Arguments options Object (optional) filter "all" | "since-navigation" (optional) Added in: v1.59# Controls which messages are returned: Returns Promise<Array<ConsoleMessage>># content​ Added before v1.9 page.content Gets the full HTML contents of the page, including the doctype
+---
 
-await page.content(); Returns Promise<string># context​ Added before v1.9 page.context Get the browser context that the page belongs to
+### `page.bringToFront()` — Added before v1.9
 
-page.context(); Returns BrowserContext# drag
+Brings page to front (activates tab).
 
-## AndDrop
+```js
+await page.bringToFront();
+```
 
-Added in: v1.13 page.dragAndDrop This method drags the source element to the target element. It will first move to the source element, perform a mousedown, then move to the target element and perform a mouseup
+**Returns:** `Promise<void>`
 
-await page.dragAndDrop('#source', '#target');// or specify exact positions relative to the top-left corners of the elements:await page.dragAndDrop('#source', '#target', { sourcePosition: { x: 34, y: 7 }, targetPosition: { x: 10, y: 20 },}); Arguments source string# A selector to search for an element to drag. If there are multiple elements satisfying the selector, the first will be used. target string# A selector to search for an element to drop onto. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. sourcePosition Object (optional) Added in: v1.14# x number y number Clicks on the source element at this point relative to the top-left corner of the element's padding box. If not specified, some visible point of the element is used. steps number (optional) Added in: v1.57# Defaults to 1. Sends n interpolated mousemove events to represent travel between the mousedown and mouseup of the drag. When set to 1, emits a single mousemove event at the destination location. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. targetPosition Object (optional) Added in: v1.14# x number y number Drops on the target element at this point relative to the top-left corner of the element's padding box. If not specified, some visible point of the element is used. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional)# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it
+---
 
-Promise<void># emulate
+### `page.cancelPickLocator()` — Added in: v1.59
 
-## Media
+Cancels an ongoing `page.pickLocator()` call by deactivating pick locator mode. If no pick locator mode is active, this method is a no-op.
 
-Added before v1.9 page.emulateMedia This method changes the CSS media type through the media argument, and/or the 'prefers-colors-scheme' media feature, using the colorScheme argument
+```js
+await page.cancelPickLocator();
+```
 
-await page.evaluate(() => matchMedia('screen').matches);// → trueawait page.evaluate(() => matchMedia('print').matches);// → falseawait page.emulateMedia({ media: 'print' });await page.evaluate(() => matchMedia('screen').matches);// → falseawait page.evaluate(() => matchMedia('print').matches);// → trueawait page.emulateMedia({});await page.evaluate(() => matchMedia('screen').matches);// → trueawait page.evaluate(() => matchMedia('print').matches);// → false await page.emulateMedia({ colorScheme: 'dark' });await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);// → trueawait page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);// → false Arguments options Object (optional) colorScheme null | "light" | "dark" | "no-preference" (optional) Added in: v1.9# Emulates prefers-colors-scheme media feature, supported values are 'light' and 'dark'. Passing null disables color scheme emulation. 'no-preference' is deprecated. contrast null | "no-preference" | "more" (optional) Added in: v1.51# Emulates 'prefers-contrast' media feature, supported values are 'no-preference', 'more'. Passing null disables contrast emulation. forcedColors null | "active" | "none" (optional) Added in: v1.15# Emulates 'forced-colors' media feature, supported values are 'active' and 'none'. Passing null disables forced colors emulation. media null | "screen" | "print" (optional) Added in: v1.9# Changes the CSS media type of the page. The only allowed values are 'screen', 'print' and null. Passing null disables CSS media emulation. reducedMotion null | "reduce" | "no-preference" (optional) Added in: v1.12# Emulates 'prefers-reduced-motion' media feature, supported values are 'reduce', 'no-preference'. Passing null disables reduced motion emulation
+**Returns:** `Promise<void>`
 
-Promise<void># evaluate​ Added before v1.9 page.evaluate Returns the value of the pageFunction invocation. If the function passed to the page.evaluate() returns a Promise, then page.evaluate() would wait for the promise to resolve and return its value. If the function passed to the page.evaluate() returns a non-Serializable value, then page.evaluate() resolves to undefined. Playwright also supports transferring some additional values that are not serializable by JSON: -0, NaN, Infinity, -Infinity
+---
 
-Passing argument to pageFunction: const result = await page.evaluate(([x, y]) => { return Promise.resolve(x \* y);}, [7, 8]);console.log(result); // prints "56" A string can also be passed in instead of a function: console.log(await page.evaluate('1 + 2')); // prints "3"const x = 10;console.log(await page.evaluate(`1 + ${x}`)); // prints "11" ElementHandle instances can be passed as an argument to the page.evaluate(): const bodyHandle = await page.evaluate('document.body');const html = await page.evaluate<string, HTMLElement>(([body, suffix]) => body.innerHTML + suffix, [bodyHandle, 'hello']);await bodyHandle.dispose(); Arguments pageFunction function | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction
+### `page.clearConsoleMessages()` — Added in: v1.59
 
-Promise<Serializable># evaluate
+Clears all stored console messages from this page. Subsequent calls to `page.consoleMessages()` will only return messages logged after the clear.
 
-## Handle
+```js
+await page.clearConsoleMessages();
+```
 
-Added before v1.9 page.evaluateHandle Returns the value of the pageFunction invocation as a JSHandle. The only difference between page.evaluate() and page.evaluateHandle() is that page.evaluateHandle() returns JSHandle. If the function passed to the page.evaluateHandle() returns a Promise, then page.evaluateHandle() would wait for the promise to resolve and return its value
+**Returns:** `Promise<void>`
 
-// Handle for the window object.const aWindowHandle = await page.evaluateHandle(() => Promise.resolve(window)); A string can also be passed in instead of a function: const aHandle = await page.evaluateHandle('document'); // Handle for the 'document' JSHandle instances can be passed as an argument to the page.evaluateHandle(): const aHandle = await page.evaluateHandle(() => document.body);const resultHandle = await page.evaluateHandle(body => body.innerHTML, aHandle);console.log(await resultHandle.jsonValue());await resultHandle.dispose(); Arguments pageFunction function | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction
+---
 
-Promise<JSHandle># expose
+### `page.clearPageErrors()` — Added in: v1.59
 
-## Binding
+Clears all stored page errors from this page. Subsequent calls to `page.pageErrors()` will only return errors thrown after the clear.
 
-Added before v1.9 page.exposeBinding The method adds a function called name on the window object of every frame in this page. When called, the function executes callback and returns a Promise which resolves to the return value of callback. If the callback returns a Promise, it will be awaited. The first argument of the callback function contains information about the caller: { browserContext: BrowserContext, page: Page, frame: Frame }. See browserContext.exposeBinding() for the context-wide version. noteFunctions installed via page.exposeBinding() survive navigations
+```js
+await page.clearPageErrors();
+```
 
-An example of exposing page URL to all frames in a page: const { webkit } = require('playwright'); // Or 'chromium' or 'firefox'.(async () => { const browser = await webkit.launch({ headless: false }); const context = await browser.newContext(); const page = await context.newPage(); await page.exposeBinding('pageURL', ({ page }) => page.url()); await page.setContent(`<script> async function onClick() { document.querySelector('div').textContent = await window.pageURL(); } </script> <button onclick="onClick()">Click me</button> <div></div>`); await page.click('button');})(); Arguments name string# Name of the function on the window object. callback function# Callback function that will be called in the Playwright's context. options Object (optional) handle boolean (optional)# DeprecatedThis option will be removed in the future. Whether to pass the argument as a handle, instead of passing by value. When passing a handle, only one argument is supported. When passing by value, multiple arguments are supported
+**Returns:** `Promise<void>`
 
-Promise<Disposable># expose
+---
 
-## Function
+### `page.close()` — Added before v1.9
 
-Added before v1.9 page.exposeFunction The method adds a function called name on the window object of every frame in the page. When called, the function executes callback and returns a Promise which resolves to the return value of callback. If the callback returns a Promise, it will be awaited. See browserContext.exposeFunction() for context-wide exposed function. noteFunctions installed via page.exposeFunction() survive navigations
+If `runBeforeUnload` is `false`, does not run any unload handlers and waits for the page to be closed. If `runBeforeUnload` is `true`, the method will run unload handlers but will not wait for the page to close.
 
-An example of adding a sha256 function to the page: const { webkit } = require('playwright'); // Or 'chromium' or 'firefox'.const crypto = require('crypto');(async () => { const browser = await webkit.launch({ headless: false }); const page = await browser.newPage(); await page.exposeFunction('sha256', text => crypto.createHash('sha256').update(text).digest('hex'), ); await page.setContent(`<script> async function onClick() { document.querySelector('div').textContent = await window.sha256('PLAYWRIGHT'); } </script> <button onclick="onClick()">Click me</button> <div></div>`); await page.click('button');})(); Arguments name string# Name of the function on the window object callback function# Callback function which will be called in Playwright's context
+```js
+await page.close();
+await page.close({ runBeforeUnload: true });
+```
 
-Promise<Disposable># frame​ Added before v1.9 page.frame Returns frame matching the specified criteria. Either name or url must be specified
+**Arguments:**
 
-const frame = page.frame('frame-name'); const frame = page.frame({ url: /._domain._/ }); Arguments frameSelector string | Object# name string (optional) Frame name specified in the iframe's name attribute. Optional. url string | RegExp | [URLPattern] | function(URL):boolean (optional) A glob pattern, regex pattern, URL pattern, or predicate receiving frame's url as a URL object. Optional. Frame name or other frame lookup options
+| Parameter                 | Type                 | Description                                                                        |
+| ------------------------- | -------------------- | ---------------------------------------------------------------------------------- |
+| `options.reason`          | `string` (optional)  | Added in v1.40. The reason reported to operations interrupted by the page closure. |
+| `options.runBeforeUnload` | `boolean` (optional) | Defaults to `false`. Whether to run the before unload page handlers.               |
 
-null | Frame# frame
+**Returns:** `Promise<void>`
 
-## Locator
+---
 
-Added in: v1.17 page.frameLocator When working with iframes, you can create a frame locator that will enter the iframe and allow selecting elements in that iframe
+### `page.consoleMessages()` — Added in: v1.56
 
-Following snippet locates element with text "Submit" in the iframe with id my-frame, like <iframe id="my-frame">: const locator = page.frameLocator('#my-iframe').getByText('Submit');await locator.click(); Arguments selector string# A selector to use when resolving DOM element
+Returns up to 200 last console messages from this page.
 
-FrameLocator# frames​ Added before v1.9 page.frames An array of all frames attached to the page
+```js
+const messages = await page.consoleMessages();
+```
 
-page.frames(); Returns Array<Frame># get
+**Arguments:**
 
-## ByAltText
+| Parameter        | Type                                     | Description                                           |
+| ---------------- | ---------------------------------------- | ----------------------------------------------------- |
+| `options.filter` | `"all" \| "since-navigation"` (optional) | Added in v1.59. Controls which messages are returned. |
 
-Added in: v1.27 page.getByAltText Allows locating elements by their alt text
+**Returns:** `Promise<Array<ConsoleMessage>>`
 
-For example, this method will find the image by alt text "Playwright logo": <img alt='Playwright logo'> await page.getByAltText('Playwright logo').click(); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+---
 
-Locator# get
+### `page.content()` — Added before v1.9
 
-## ByLabel
+Gets the full HTML contents of the page, including the doctype.
 
-Added in: v1.27 page.getByLabel Allows locating input elements by the text of the associated <label> or aria-labelledby element, or by the aria-label attribute
+```js
+const html = await page.content();
+```
 
-For example, this method will find inputs by label "Username" and "Password" in the following DOM: <input aria-label="Username"><label for="password-input">Password:</label><input id="password-input"> await page.getByLabel('Username').fill('john');await page.getByLabel('Password').fill('secret'); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+**Returns:** `Promise<string>`
 
-Locator# get
+---
 
-## ByPlaceholder
+### `page.context()` — Added before v1.9
 
-Added in: v1.27 page.getByPlaceholder Allows locating input elements by the placeholder text
+Get the browser context that the page belongs to.
 
-For example, consider the following DOM structure. <input type="email" placeholder="name@example.com" /> You can fill the input after locating it by the placeholder text: await page .getByPlaceholder('name@example.com') .fill('playwright@microsoft.com'); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+```js
+const context = page.context();
+```
 
-Locator# get
+**Returns:** `BrowserContext`
 
-## ByRole
+---
 
-Added in: v1.27 page.getByRole Allows locating elements by their ARIA role, ARIA attributes and accessible name
+### `page.dragAndDrop()` — Added in: v1.13
 
-Consider the following DOM structure. <h3>Sign up</h3><label> <input type="checkbox" /> Subscribe</label><br/><button>Submit</button> You can locate each element by its implicit role: await expect(page.getByRole('heading', { name: 'Sign up' })).toBeVisible();await page.getByRole('checkbox', { name: 'Subscribe' }).check();await page.getByRole('button', { name: /submit/i }).click(); Arguments role "alert" | "alertdialog" | "application" | "article" | "banner" | "blockquote" | "button" | "caption" | "cell" | "checkbox" | "code" | "columnheader" | "combobox" | "complementary" | "contentinfo" | "definition" | "deletion" | "dialog" | "directory" | "document" | "emphasis" | "feed" | "figure" | "form" | "generic" | "grid" | "gridcell" | "group" | "heading" | "img" | "insertion" | "link" | "list" | "listbox" | "listitem" | "log" | "main" | "marquee" | "math" | "meter" | "menu" | "menubar" | "menuitem" | "menuitemcheckbox" | "menuitemradio" | "navigation" | "none" | "note" | "option" | "paragraph" | "presentation" | "progressbar" | "radio" | "radiogroup" | "region" | "row" | "rowgroup" | "rowheader" | "scrollbar" | "search" | "searchbox" | "separator" | "slider" | "spinbutton" | "status" | "strong" | "subscript" | "superscript" | "switch" | "tab" | "table" | "tablist" | "tabpanel" | "term" | "textbox" | "time" | "timer" | "toolbar" | "tooltip" | "tree" | "treegrid" | "treeitem"# Required aria role. options Object (optional) checked boolean (optional)# An attribute that is usually set by aria-checked or native <input type=checkbox> controls. Learn more about aria-checked. disabled boolean (optional)# An attribute that is usually set by aria-disabled or disabled. noteUnlike most other attributes, disabled is inherited through the DOM hierarchy. Learn more about aria-disabled. exact boolean (optional) Added in: v1.28# Whether name is matched exactly: case-sensitive and whole-string. Defaults to false. Ignored when name is a regular expression. Note that exact match still trims whitespace. expanded boolean (optional)# An attribute that is usually set by aria-expanded. Learn more about aria-expanded. includeHidden boolean (optional)# Option that controls whether hidden elements are matched. By default, only non-hidden elements, as defined by ARIA, are matched by role selector. Learn more about aria-hidden. level number (optional)# A number attribute that is usually present for roles heading, listitem, row, treeitem, with default values for <h1>-<h6> elements. Learn more about aria-level. name string | RegExp (optional)# Option to match the accessible name. By default, matching is case-insensitive and searches for a substring, use exact to control this behavior. Learn more about accessible name. pressed boolean (optional)# An attribute that is usually set by aria-pressed. Learn more about aria-pressed. selected boolean (optional)# An attribute that is usually set by aria-selected. Learn more about aria-selected
+Drags the source element to the target element. First moves to the source, performs mousedown, then moves to target and performs mouseup.
 
-Locator# Details Role selector does not replace accessibility audits and conformance tests, but rather gives early feedback about the ARIA guidelines. Many html elements have an implicitly defined role that is recognized by the role selector. You can find all the supported roles here. ARIA guidelines do not recommend duplicating implicit roles and attributes by setting role and/or aria-\* attributes to default values. get
+```js
+await page.dragAndDrop('#source', '#target');
+await page.dragAndDrop('#source', '#target', {
+  sourcePosition: { x: 34, y: 7 },
+  targetPosition: { x: 10, y: 20 },
+});
+```
 
-## ByTestId
+**Arguments:**
 
-Added in: v1.27 page.getByTestId Locate element by the test id
+| Parameter                | Type                 | Description                                                              |
+| ------------------------ | -------------------- | ------------------------------------------------------------------------ |
+| `source`                 | `string`             | Selector for the element to drag.                                        |
+| `target`                 | `string`             | Selector for the element to drop onto.                                   |
+| `options.force`          | `boolean` (optional) | Whether to bypass actionability checks. Defaults to `false`.             |
+| `options.noWaitAfter`    | `boolean` (optional) | Deprecated. This option has no effect.                                   |
+| `options.sourcePosition` | `Object` (optional)  | Added in v1.14. `{ x, y }` relative to the element's padding box.        |
+| `options.steps`          | `number` (optional)  | Added in v1.57. Number of interpolated mousemove events. Defaults to 1.  |
+| `options.strict`         | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element.        |
+| `options.targetPosition` | `Object` (optional)  | Added in v1.14. `{ x, y }` relative to the target element's padding box. |
+| `options.timeout`        | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).                |
+| `options.trial`          | `boolean` (optional) | Only perform actionability checks without performing the action.         |
 
-Consider the following DOM structure. <button data-testid="directions">Itinéraire</button> You can locate the element by its test id: await page.getByTestId('directions').click(); Arguments testId string | RegExp# Id to locate the element by
+**Returns:** `Promise<void>`
 
-Locator# Details By default, the data-testid attribute is used as a test id. Use selectors.setTestIdAttribute() to configure a different test id attribute if necessary. // Set custom test id attribute from @playwright/test config:import { defineConfig } from '@playwright/test';export default defineConfig({ use: { testIdAttribute: 'data-pw' },}); get
+---
 
-## ByText
+### `page.emulateMedia()` — Added before v1.9
 
-Added in: v1.27 page.getByText Allows locating elements that contain given text. See also locator.filter() that allows to match by another criteria, like an accessible role, and then filter by the text content
+Changes the CSS media type and/or media features.
 
-Consider the following DOM structure: <div>Hello <span>world</span></div><div>Hello</div> You can locate by text substring, exact string, or a regular expression: // Matches <span>page.getByText('world');// Matches first <div>page.getByText('Hello world');// Matches second <div>page.getByText('Hello', { exact: true });// Matches both <div>spage.getByText(/Hello/);// Matches second <div>page.getByText(/^hello$/i); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+```js
+await page.emulateMedia({ media: 'print' });
+await page.emulateMedia({ colorScheme: 'dark' });
+```
 
-Locator# Details Matching by text always normalizes whitespace, even with exact match. For example, it turns multiple spaces into one, turns line breaks into spaces and ignores leading and trailing whitespace. Input elements of the type button and submit are matched by their value instead of the text content. For example, locating by text "Log in" matches <input type=button value="Log in">. get
+**Arguments:**
 
-## ByTitle
+| Parameter               | Type                                                      | Description                                                                        |
+| ----------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `options.colorScheme`   | `null \| "light" \| "dark" \| "no-preference"` (optional) | Added in v1.9. Emulates `prefers-color-scheme`. Passing `null` disables emulation. |
+| `options.contrast`      | `null \| "no-preference" \| "more"` (optional)            | Added in v1.51. Emulates `prefers-contrast`.                                       |
+| `options.forcedColors`  | `null \| "active" \| "none"` (optional)                   | Added in v1.15. Emulates `forced-colors`.                                          |
+| `options.media`         | `null \| "screen" \| "print"` (optional)                  | Added in v1.9. Changes the CSS media type. Passing `null` disables emulation.      |
+| `options.reducedMotion` | `null \| "reduce" \| "no-preference"` (optional)          | Added in v1.12. Emulates `prefers-reduced-motion`.                                 |
 
-Added in: v1.27 page.getByTitle Allows locating elements by their title attribute
+**Returns:** `Promise<void>`
 
-Consider the following DOM structure. <span title='Issues count'>25 issues</span> You can check the issues count after locating it by the title text: await expect(page.getByTitle('Issues count')).toHaveText('25 issues'); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+---
 
-Locator# go
+### `page.evaluate()` — Added before v1.9
 
-## Back
+Returns the value of the `pageFunction` invocation. If the function returns a Promise, it will be awaited. Non-serializable values resolve to `undefined`.
 
-Added before v1.9 page.goBack Returns the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If cannot go back, returns null. Navigate to the previous page in history
+```js
+const result = await page.evaluate(([x, y]) => Promise.resolve(x * y), [7, 8]);
+console.log(result); // 56
+```
 
-await page.goBack();await page.goBack(options); Arguments options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+**Arguments:**
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+| Parameter      | Type                            | Description                                   |
+| -------------- | ------------------------------- | --------------------------------------------- |
+| `pageFunction` | `function \| string`            | Function to be evaluated in the page context. |
+| `arg`          | `EvaluationArgument` (optional) | Optional argument to pass to `pageFunction`.  |
 
-Promise<null | Response># go
+**Returns:** `Promise<Serializable>`
 
-## Forward
+---
 
-Added before v1.9 page.goForward Returns the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If cannot go forward, returns null. Navigate to the next page in history
+### `page.evaluateHandle()` — Added before v1.9
 
-await page.goForward();await page.goForward(options); Arguments options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+Returns the value of the `pageFunction` invocation as a `JSHandle`. The only difference from `page.evaluate()` is that it returns a `JSHandle` instead of a serialized value.
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+```js
+const handle = await page.evaluateHandle(() => Promise.resolve(window));
+const docHandle = await page.evaluateHandle('document');
+```
 
-Promise<null | Response># goto​ Added before v1.9 page.goto Returns the main resource response. In case of multiple redirects, the navigation will resolve with the first non-redirect response. The method will throw an error if: there's an SSL error (e.g. in case of self-signed certificates). target URL is invalid. the timeout is exceeded during navigation. the remote server does not respond or is unreachable. the main resource failed to load. The method will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error". The status code for such responses can be retrieved by calling response.status(). noteThe method either throws an error or returns a main resource response. The only exceptions are navigation to about:blank or navigation to the same URL with a different hash, which would succeed and return null. noteHeadless mode doesn't support navigation to a PDF document. See the upstream issue
+**Arguments:**
 
-await page.goto(url);await page.goto(url, options); Arguments url string# URL to navigate page to. The url should include scheme, e.g. https://. When a baseURL via the context options was provided and the passed URL is a path, it gets merged via the new URL() constructor. options Object (optional) referer string (optional)# Referer header value. If provided it will take preference over the referer header value set by page.setExtraHTTPHeaders(). timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+| Parameter      | Type                            | Description                                   |
+| -------------- | ------------------------------- | --------------------------------------------- |
+| `pageFunction` | `function \| string`            | Function to be evaluated in the page context. |
+| `arg`          | `EvaluationArgument` (optional) | Optional argument to pass to `pageFunction`.  |
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+**Returns:** `Promise<JSHandle>`
 
-Promise<null | Response># is
+---
 
-## Closed
+### `page.exposeBinding()` — Added before v1.9
 
-Added before v1.9 page.isClosed Indicates that the page has been closed
+Adds a function called `name` on the `window` object of every frame. When called, the function executes `callback` and returns a Promise. The first argument of the callback contains caller info: `{ browserContext, page, frame }`.
 
-page.isClosed(); Returns boolean# locator​ Added in: v1.14 page.locator The method returns an element locator that can be used to perform actions on this page / frame. Locator is resolved to the element immediately before performing an action, so a series of actions on the same locator can in fact be performed on different DOM elements. That would happen if the DOM structure between those actions has changed. Learn more about locators
+```js
+await page.exposeBinding('pageURL', ({ page }) => page.url());
+```
 
-page.locator(selector);page.locator(selector, options); Arguments selector string# A selector to use when resolving DOM element. options Object (optional) has Locator (optional)# Narrows down the results of the method to those which contain elements matching this relative locator. For example, article that has text=Playwright matches <article><div>Playwright</div></article>. Inner locator must be relative to the outer locator and is queried starting with the outer locator match, not the document root. For example, you can find content that has div in <article><content><div>Playwright</div></content></article>. However, looking for content that has article div will fail, because the inner locator must be relative and should not use any elements outside the content. Note that outer and inner locators must belong to the same frame. Inner locator must not contain FrameLocators. hasNot Locator (optional) Added in: v1.33# Matches elements that do not contain an element that matches an inner locator. Inner locator is queried against the outer one. For example, article that does not have div matches <article><span>Playwright</span></article>. Note that outer and inner locators must belong to the same frame. Inner locator must not contain FrameLocators. hasNotText string | RegExp (optional) Added in: v1.33# Matches elements that do not contain specified text somewhere inside, possibly in a child or a descendant element. When passed a string, matching is case-insensitive and searches for a substring. hasText string | RegExp (optional)# Matches elements containing specified text somewhere inside, possibly in a child or a descendant element. When passed a string, matching is case-insensitive and searches for a substring. For example, "Playwright" matches <article><div>Playwright</div></article>
+**Arguments:**
 
-Locator# main
+| Parameter        | Type                 | Description                                                    |
+| ---------------- | -------------------- | -------------------------------------------------------------- |
+| `name`           | `string`             | Name of the function on the window object.                     |
+| `callback`       | `function`           | Callback function that will be called in Playwright's context. |
+| `options.handle` | `boolean` (optional) | Deprecated. Whether to pass the argument as a handle.          |
 
-## Frame
+**Returns:** `Promise<Disposable>`
 
-Added before v1.9 page.mainFrame The page's main frame. Page is guaranteed to have a main frame which persists during navigations
+---
 
-page.mainFrame(); Returns Frame# opener​ Added before v1.9 page.opener Returns the opener for popup pages and null for others. If the opener has been closed already the returns null
+### `page.exposeFunction()` — Added before v1.9
 
-await page.opener(); Returns Promise<null | Page># page
+Adds a function called `name` on the `window` object of every frame. When called, executes `callback` and returns a Promise. Functions survive navigations.
 
-## Errors
+```js
+await page.exposeFunction('sha256', (text) => crypto.createHash('sha256').update(text).digest('hex'));
+```
 
-Added in: v1.56 page.pageErrors Returns up to (currently) 200 last page errors from this page. See page.on('pageerror') for more details
+**Arguments:**
 
-await page.pageErrors();await page.pageErrors(options); Arguments options Object (optional) filter "all" | "since-navigation" (optional) Added in: v1.59# Controls which errors are returned: Returns Promise<Array<Error>># pause​ Added in: v1.9 page.pause Pauses script execution. Playwright will stop executing the script and wait for the user to either press the 'Resume' button in the page overlay or to call playwright.resume() in the DevTools console. User can inspect selectors or perform manual steps while paused. Resume will continue running the original script from the place it was paused. noteThis method requires Playwright to be started in a headed mode, with a falsy headless option
+| Parameter  | Type       | Description                                                     |
+| ---------- | ---------- | --------------------------------------------------------------- |
+| `name`     | `string`   | Name of the function on the window object.                      |
+| `callback` | `function` | Callback function which will be called in Playwright's context. |
 
-await page.pause(); Returns Promise<void># pdf​ Added before v1.9 page.pdf Returns the PDF buffer. page.pdf() generates a pdf of the page with print css media. To generate a pdf with screen media, call page.emulateMedia() before calling page.pdf(): noteBy default, page.pdf() generates a pdf with modified colors for printing. Use the -webkit-print-color-adjust property to force rendering of exact colors
+**Returns:** `Promise<Disposable>`
 
-// Generates a PDF with 'screen' media type.await page.emulateMedia({ media: 'screen' });await page.pdf({ path: 'page.pdf' }); The width, height, and margin options accept values labeled with units. Unlabeled values are treated as pixels. A few examples: page.pdf({width: 100}) - prints with width set to 100 pixels page.pdf({width: '100px'}) - prints with width set to 100 pixels page.pdf({width: '10cm'}) - prints with width set to 10 centimeters. All possible units are: px - pixel in - inch cm - centimeter mm - millimeter The format options are: Letter: 8.5in x 11in Legal: 8.5in x 14in Tabloid: 11in x 17in Ledger: 17in x 11in A0: 33.1in x 46.8in A1: 23.4in x 33.1in A2: 16.54in x 23.4in A3: 11.7in x 16.54in A4: 8.27in x 11.7in A5: 5.83in x 8.27in A6: 4.13in x 5.83in noteheaderTemplate and footerTemplate markup have the following limitations: > 1. Script tags inside templates are not evaluated. > 2. Page styles are not visible inside templates
+---
 
-options Object (optional) displayHeaderFooter boolean (optional)# Display header and footer. Defaults to false. footerTemplate string (optional)# HTML template for the print footer. Should use the same format as the headerTemplate. format string (optional)# Paper format. If set, takes priority over width or height options. Defaults to 'Letter'. headerTemplate string (optional)# HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: 'date' formatted print date 'title' document title 'url' document location 'pageNumber' current page number 'totalPages' total pages in the document height string | number (optional)# Paper height, accepts values labeled with units. landscape boolean (optional)# Paper orientation. Defaults to false. margin Object (optional)# top string | number (optional) Top margin, accepts values labeled with units. Defaults to 0. right string | number (optional) Right margin, accepts values labeled with units. Defaults to 0. bottom string | number (optional) Bottom margin, accepts values labeled with units. Defaults to 0. left string | number (optional) Left margin, accepts values labeled with units. Defaults to 0. Paper margins, defaults to none. outline boolean (optional) Added in: v1.42# Whether or not to embed the document outline into the PDF. Defaults to false. pageRanges string (optional)# Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages. path string (optional)# The file path to save the PDF to. If path is a relative path, then it is resolved relative to the current working directory. If no path is provided, the PDF won't be saved to the disk. preferCSSPageSize boolean (optional)# Give any CSS @page size declared in the page priority over what is declared in width and height or format options. Defaults to false, which will scale the content to fit the paper size. printBackground boolean (optional)# Print background graphics. Defaults to false. scale number (optional)# Scale of the webpage rendering. Defaults to 1. Scale amount must be between 0.1 and 2. tagged boolean (optional) Added in: v1.42# Whether or not to generate tagged (accessible) PDF. Defaults to false. width string | number (optional)# Paper width, accepts values labeled with units
+### `page.frame()` — Added before v1.9
 
-Promise<Buffer># pick
+Returns frame matching the specified criteria. Either `name` or `url` must be specified.
 
-## Locator
+```js
+const frame = page.frame('frame-name');
+const frame = page.frame({ url: /.*domain.*/ });
+```
 
-Added in: v1.59 page.pickLocator Enters pick locator mode where hovering over page elements highlights them and shows the corresponding locator. Once the user clicks an element, the mode is deactivated and the Locator for the picked element is returned
+**Arguments:**
 
-const locator = await page.pickLocator();console.log(locator); Returns Promise<Locator># reload​ Added before v1.9 page.reload This method reloads the current page, in the same way as if the user had triggered a browser refresh
+| Parameter       | Type               | Description                                                                                  |
+| --------------- | ------------------ | -------------------------------------------------------------------------------------------- |
+| `frameSelector` | `string \| Object` | Frame name string, or `{ name?: string, url?: string \| RegExp \| URLPattern \| function }`. |
 
-the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect
+**Returns:** `null | Frame`
 
-await page.reload();await page.reload(options); Arguments options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+---
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+### `page.frameLocator()` — Added in: v1.17
 
-Promise<null | Response># remove
+Creates a frame locator for working with iframes.
 
-## AllListeners
+```js
+const locator = page.frameLocator('#my-iframe').getByText('Submit');
+await locator.click();
+```
 
-Added in: v1.47 page.removeAllListeners Removes all the listeners of the given type (or all registered listeners if no type given). Allows to wait for async listeners to complete or to ignore subsequent errors from these listeners
+**Arguments:**
 
-page.on('request', async request => { const response = await request.response(); const body = await response.body(); console.log(body.byteLength);});await page.goto('https://playwright.dev', { waitUntil: 'domcontentloaded' });// Waits for all the reported 'request' events to resolve.await page.removeAllListeners('request', { behavior: 'wait' }); Arguments type string (optional)# options Object (optional) behavior "wait" | "ignoreErrors" | "default" (optional)# Specifies whether to wait for already running listeners and what to do if they throw errors: 'default' - do not wait for current listener calls (if any) to finish, if the listener throws, it may result in unhandled error 'wait' - wait for current listener calls (if any) to finish 'ignoreErrors' - do not wait for current listener calls (if any) to finish, all errors thrown by the listeners after removal are silently caught Returns Promise<void># remove
+| Parameter  | Type     | Description                                              |
+| ---------- | -------- | -------------------------------------------------------- |
+| `selector` | `string` | A selector to use when resolving the iframe DOM element. |
 
-## LocatorHandler
+**Returns:** `FrameLocator`
 
-Added in: v1.44 page.removeLocatorHandler Removes all locator handlers added by page.addLocatorHandler() for a specific locator
+---
 
-await page.removeLocatorHandler(locator); Arguments locator Locator# Locator passed to page.addLocatorHandler()
+### `page.frames()` — Added before v1.9
 
-Promise<void># requestGC​ Added in: v1.48 page.requestGC Request the page to perform garbage collection. Note that there is no guarantee that all unreachable objects will be collected. This is useful to help detect memory leaks. For example, if your page has a large object 'suspect' that might be leaked, you can check that it does not leak by using a WeakRef. // 1. In your page, save a WeakRef for the "suspect".await page.evaluate(() => globalThis.suspectWeakRef = new WeakRef(suspect));// 2. Request garbage collection.await page.requestGC();// 3. Check that weak ref does not deref to the original object.expect(await page.evaluate(() => !globalThis.suspectWeakRef.deref())).toBe(true); Usage await page.requestGC(); Returns Promise<void># requests​ Added in: v1.56 page.requests Returns up to (currently) 100 last network request from this page. See page.on('request') for more details. Returned requests should be accessed immediately, otherwise they might be collected to prevent unbounded memory growth as new requests come in. Once collected, retrieving most information about the request is impossible. Note that requests reported through the page.on('request') request are not collected, so there is a trade off between efficient memory usage with page.requests() and the amount of available information reported through page.on('request')
+An array of all frames attached to the page.
 
-await page.requests(); Returns Promise<Array<Request>># route​ Added before v1.9 page.route Routing provides the capability to modify network requests that are made by a page. Once routing is enabled, every request matching the url pattern will stall unless it's continued, fulfilled or aborted. noteThe handler will only be called for the first url if the response is a redirect. notepage.route() will not intercept requests intercepted by Service Worker. See this issue. We recommend disabling Service Workers when using request interception by setting serviceWorkers to 'block'. notepage.route() will not intercept the first request of a popup page. Use browserContext.route() instead
+```js
+const frames = page.frames();
+```
 
-An example of a naive handler that aborts all image requests: const page = await browser.newPage();await page.route('**/\*.{png,jpg,jpeg}', route => route.abort());await page.goto('https://example.com');await browser.close(); or the same snippet using a regex pattern instead: const page = await browser.newPage();await page.route(/(\.png$)|(\.jpg$)/, route => route.abort());await page.goto('https://example.com');await browser.close(); It is possible to examine the request to decide the route action. For example, mocking all requests that contain some post data, and leaving all other requests as is: await page.route('/api/**', async route => { if (route.request().postData().includes('my-string')) await route.fulfill({ body: 'mocked-data' }); else await route.continue();}); If a request matches multiple registered routes, the most recently registered route takes precedence. Page routes take precedence over browser context routes (set up with browserContext.route()) when request matches both handlers. To remove a route with its handler you can use page.unroute(). noteEnabling routing disables http cache
+**Returns:** `Array<Frame>`
 
-url string | RegExp | [URLPattern] | function(URL):boolean# A glob pattern, regex pattern, URL pattern, or predicate that receives a URL to match during routing. If baseURL is set in the context options and the provided URL is a string that does not start with \*, it is resolved using the new URL() constructor. handler function(Route, Request):Promise<Object> | Object# handler function to route the request. options Object (optional) times number (optional) Added in: v1.15# How often a route should be used. By default it will be used every time
+---
 
-Promise<Disposable># route
+### `page.getByAltText()` — Added in: v1.27
 
-## FromHAR
+Locates elements by their alt text.
 
-Added in: v1.23 page.routeFromHAR If specified the network requests that are made in the page will be served from the HAR file. Read more about Replaying from HAR. Playwright will not serve requests intercepted by Service Worker from the HAR file. See this issue. We recommend disabling Service Workers when using request interception by setting serviceWorkers to 'block'
+```js
+await page.getByAltText('Playwright logo').click();
+```
 
-await page.routeFromHAR(har);await page.routeFromHAR(har, options); Arguments har string# Path to a HAR file with prerecorded network data. If path is a relative path, then it is resolved relative to the current working directory. options Object (optional) notFound "abort" | "fallback" (optional)# If set to 'abort' any request not found in the HAR file will be aborted. If set to 'fallback' missing requests will be sent to the network. Defaults to abort. update boolean (optional)# If specified, updates the given HAR with the actual network information instead of serving from file. The file is written to disk when browserContext.close() is called. updateContent "embed" | "attach" (optional) Added in: v1.32# Optional setting to control resource content management. If attach is specified, resources are persisted as separate files or entries in the ZIP archive. If embed is specified, content is stored inline the HAR file. updateMode "full" | "minimal" (optional) Added in: v1.32# When set to minimal, only record information necessary for routing from HAR. This omits sizes, timing, page, cookies, security and other types of HAR information that are not used when replaying from HAR. Defaults to minimal. url string | RegExp (optional)# A glob pattern, regular expression or predicate to match the request URL. Only requests with URL matching the pattern will be served from the HAR file. If not specified, all requests are served from the HAR file
+**Arguments:**
 
-Promise<void># route
+| Parameter       | Type                 | Description                                                                         |
+| --------------- | -------------------- | ----------------------------------------------------------------------------------- |
+| `text`          | `string \| RegExp`   | Text to locate the element for.                                                     |
+| `options.exact` | `boolean` (optional) | Whether to find an exact match (case-sensitive, whole-string). Defaults to `false`. |
 
-## WebSocket
+**Returns:** `Locator`
 
-Added in: v1.48 page.routeWebSocket This method allows to modify websocket connections that are made by the page. Note that only WebSockets created after this method was called will be routed. It is recommended to call this method before navigating the page
+---
 
-Below is an example of a simple mock that responds to a single message. See WebSocketRoute for more details and examples. await page.routeWebSocket('/ws', ws => { ws.onMessage(message => { if (message === 'request') ws.send('response'); });}); Arguments url string | RegExp | [URLPattern] | function(URL):boolean# Only WebSockets with the url matching this pattern will be routed. A string pattern can be relative to the baseURL context option. handler function(WebSocketRoute):Promise<Object> | Object# Handler function to route the WebSocket
+### `page.getByLabel()` — Added in: v1.27
 
-Promise<void># screenshot​ Added before v1.9 page.screenshot Returns the buffer with the captured screenshot
+Locates input elements by the text of their associated `<label>` or `aria-labelledby` element, or by the `aria-label` attribute.
 
-await page.screenshot();await page.screenshot(options); Arguments options Object (optional) animations "disabled" | "allow" (optional)# When set to "disabled", stops CSS animations, CSS transitions and Web Animations. Animations get different treatment depending on their duration: finite animations are fast-forwarded to completion, so they'll fire transitionend event. infinite animations are canceled to initial state, and then played over after the screenshot. Defaults to "allow" that leaves animations untouched. caret "hide" | "initial" (optional)# When set to "hide", screenshot will hide text caret. When set to "initial", text caret behavior will not be changed. Defaults to "hide". clip Object (optional)# x number x-coordinate of top-left corner of clip area y number y-coordinate of top-left corner of clip area width number width of clipping area height number height of clipping area An object which specifies clipping of the resulting image. fullPage boolean (optional)# When true, takes a screenshot of the full scrollable page, instead of the currently visible viewport. Defaults to false. mask Array<Locator> (optional)# Specify locators that should be masked when the screenshot is taken. Masked elements will be overlaid with a pink box #FF00FF (customized by maskColor) that completely covers its bounding box. The mask is also applied to invisible elements, see Matching only visible elements to disable that. maskColor string (optional) Added in: v1.35# Specify the color of the overlay box for masked elements, in CSS color format. Default color is pink #FF00FF. omitBackground boolean (optional)# Hides default white background and allows capturing screenshots with transparency. Not applicable to jpeg images. Defaults to false. path string (optional)# The file path to save the image to. The screenshot type will be inferred from file extension. If path is a relative path, then it is resolved relative to the current working directory. If no path is provided, the image won't be saved to the disk. quality number (optional)# The quality of the image, between 0-100. Not applicable to png images. scale "css" | "device" (optional)# When set to "css", screenshot will have a single pixel per each css pixel on the page. For high-dpi devices, this will keep screenshots small. Using "device" option will produce a single pixel per each device pixel, so screenshots of high-dpi devices will be twice as large or even larger. Defaults to "device". style string (optional) Added in: v1.41# Text of the stylesheet to apply while making the screenshot. This is where you can hide dynamic elements, make elements invisible or change their properties to help you creating repeatable screenshots. This stylesheet pierces the Shadow DOM and applies to the inner frames. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. type "png" | "jpeg" (optional)# Specify screenshot type, defaults to png
+```js
+await page.getByLabel('Username').fill('john');
+await page.getByLabel('Password').fill('secret');
+```
 
-Promise<Buffer># set
+**Arguments:**
 
-## Content
+| Parameter       | Type                 | Description                                          |
+| --------------- | -------------------- | ---------------------------------------------------- |
+| `text`          | `string \| RegExp`   | Text to locate the element for.                      |
+| `options.exact` | `boolean` (optional) | Whether to find an exact match. Defaults to `false`. |
 
-Added before v1.9 page.setContent This method internally calls document.write(), inheriting all its specific characteristics and behaviors
+**Returns:** `Locator`
 
-await page.setContent(html);await page.setContent(html, options); Arguments html string# HTML markup to assign to the page. options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+---
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+### `page.getByPlaceholder()` — Added in: v1.27
 
-Promise<void># set
+Locates input elements by the placeholder text.
 
-## DefaultNavigationTimeout
+```js
+await page.getByPlaceholder('name@example.com').fill('playwright@microsoft.com');
+```
 
-Added before v1.9 page.setDefaultNavigationTimeout This setting will change the default maximum navigation time for the following methods and related shortcuts: page.goBack() page.goForward() page.goto() page.reload() page.setContent() page.waitForNavigation() page.waitForURL() notepage.setDefaultNavigationTimeout() takes priority over page.setDefaultTimeout(), browserContext.setDefaultTimeout() and browserContext.setDefaultNavigationTimeout()
+**Arguments:**
 
-page.setDefaultNavigationTimeout(timeout); Arguments timeout number#
+| Parameter       | Type                 | Description                                          |
+| --------------- | -------------------- | ---------------------------------------------------- |
+| `text`          | `string \| RegExp`   | Text to locate the element for.                      |
+| `options.exact` | `boolean` (optional) | Whether to find an exact match. Defaults to `false`. |
 
-## Maximum navigation time in milliseconds setDefaultTimeout
+**Returns:** `Locator`
 
-Added before v1.9 page.setDefaultTimeout This setting will change the default maximum time for all the methods accepting timeout option. notepage.setDefaultNavigationTimeout() takes priority over page.setDefaultTimeout()
+---
 
-page.setDefaultTimeout(timeout); Arguments timeout number#
+### `page.getByRole()` — Added in: v1.27
 
-## Maximum time in milliseconds. Pass 0 to disable timeout. setExtraHTTPHeaders
+Locates elements by their ARIA role, ARIA attributes and accessible name.
 
-Added before v1.9 page.setExtraHTTPHeaders The extra HTTP headers will be sent with every request the page initiates. notepage.setExtraHTTPHeaders() does not guarantee the order of headers in the outgoing requests
+```js
+await expect(page.getByRole('heading', { name: 'Sign up' })).toBeVisible();
+await page.getByRole('checkbox', { name: 'Subscribe' }).check();
+await page.getByRole('button', { name: /submit/i }).click();
+```
 
-await page.setExtraHTTPHeaders(headers); Arguments headers Object<string, string># An object containing additional HTTP headers to be sent with every request. All header values must be strings
+**Arguments:**
 
-Promise<void># set
+| Parameter               | Type                          | Description                                                             |
+| ----------------------- | ----------------------------- | ----------------------------------------------------------------------- |
+| `role`                  | `string`                      | Required ARIA role (e.g., `"button"`, `"heading"`, `"checkbox"`, etc.). |
+| `options.checked`       | `boolean` (optional)          | Matches `aria-checked` or native checkbox state.                        |
+| `options.disabled`      | `boolean` (optional)          | Matches `aria-disabled` or `disabled` attribute.                        |
+| `options.exact`         | `boolean` (optional)          | Added in v1.28. Whether `name` is matched exactly. Defaults to `false`. |
+| `options.expanded`      | `boolean` (optional)          | Matches `aria-expanded`.                                                |
+| `options.includeHidden` | `boolean` (optional)          | Whether to match hidden elements. Defaults to `false`.                  |
+| `options.level`         | `number` (optional)           | Number attribute for roles like `heading`.                              |
+| `options.name`          | `string \| RegExp` (optional) | Option to match the accessible name.                                    |
+| `options.pressed`       | `boolean` (optional)          | Matches `aria-pressed`.                                                 |
+| `options.selected`      | `boolean` (optional)          | Matches `aria-selected`.                                                |
 
-## ViewportSize
+**Returns:** `Locator`
 
-Added before v1.9 page.setViewportSize In the case of multiple pages in a single browser, each page can have its own viewport size. However, browser.newContext() allows to set viewport size (and more) for all pages in the context at once. page.setViewportSize() will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport size before navigating to the page. page.setViewportSize() will also reset screen size, use browser.newContext() with screen and viewport parameters if you need better control of these properties
+---
 
-const page = await browser.newPage();await page.setViewportSize({ width: 640, height: 480,});await page.goto('https://example.com'); Arguments viewportSize Object# width number page width in pixels. height number page height in pixels
+### `page.getByTestId()` — Added in: v1.27
 
-Promise<void># title​ Added before v1.9 page.title Returns the page's title
+Locates an element by its test id attribute (defaults to `data-testid`).
 
-await page.title(); Returns Promise<string># unroute​ Added before v1.9 page.unroute Removes a route created with page.route(). When handler is not specified, removes all routes for the url
+```js
+await page.getByTestId('directions').click();
+```
 
-await page.unroute(url);await page.unroute(url, handler); Arguments url string | RegExp | [URLPattern] | function(URL):boolean# A glob pattern, regex pattern, URL pattern, or predicate receiving URL to match while routing. handler function(Route, Request):Promise<Object> | Object (optional)# Optional handler function to route the request
+**Arguments:**
 
-Promise<void># unroute
+| Parameter | Type               | Description                  |
+| --------- | ------------------ | ---------------------------- |
+| `testId`  | `string \| RegExp` | Id to locate the element by. |
 
-## All
+**Returns:** `Locator`
 
-Added in: v1.41 page.unrouteAll Removes all routes created with page.route() and page.routeFromHAR()
+---
 
-await page.unrouteAll();await page.unrouteAll(options); Arguments options Object (optional) behavior "wait" | "ignoreErrors" | "default" (optional)# Specifies whether to wait for already running handlers and what to do if they throw errors: 'default' - do not wait for current handler calls (if any) to finish, if unrouted handler throws, it may result in unhandled error 'wait' - wait for current handler calls (if any) to finish 'ignoreErrors' - do not wait for current handler calls (if any) to finish, all errors thrown by the handlers after unrouting are silently caught Returns Promise<void># url​ Added before v1.9 page.url Usage page.url(); Returns string# video​ Added before v1.9 page.video Video object associated with this page. Can be used to access the video file when using the recordVideo context option
+### `page.getByText()` — Added in: v1.27
 
-page.video(); Returns null | Video# viewport
+Locates elements that contain the given text.
 
-## Size
+```js
+page.getByText('world');
+page.getByText('Hello', { exact: true });
+page.getByText(/^hello$/i);
+```
 
-Added before v1.9 page.viewportSize Usage page.viewportSize(); Returns null | Object# width number page width in pixels. height number page height in pixels. wait
+**Arguments:**
 
-## ForEvent
+| Parameter       | Type                 | Description                                          |
+| --------------- | -------------------- | ---------------------------------------------------- |
+| `text`          | `string \| RegExp`   | Text to locate the element for.                      |
+| `options.exact` | `boolean` (optional) | Whether to find an exact match. Defaults to `false`. |
 
-Added before v1.9 page.waitForEvent Waits for event to fire and passes its value into the predicate function
+**Returns:** `Locator`
 
-when the predicate returns truthy value. Will throw an error if the page is closed before the event is fired
+---
 
-the event data value
+### `page.getByTitle()` — Added in: v1.27
 
-// Start waiting for download before clicking. Note no await.const downloadPromise = page.waitForEvent('download');await page.getByText('Download file').click();const download = await downloadPromise; Arguments event string# Event name, same one typically passed into \*.on(event). optionsOrPredicate function | Object (optional)# predicate function Receives the event data and resolves to truthy value when the waiting should resolve. timeout number (optional) Maximum time to wait for in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. Either a predicate that receives an event or an options object. Optional. options Object (optional) predicate function (optional)# Receives the event data and resolves to truthy value when the waiting should resolve
+Locates elements by their `title` attribute.
 
-Promise<Object># wait
+```js
+await expect(page.getByTitle('Issues count')).toHaveText('25 issues');
+```
 
-## ForFunction
+**Arguments:**
 
-Added before v1.9 page.waitForFunction Returns when the pageFunction returns a truthy value. It resolves to a JSHandle of the truthy value
+| Parameter       | Type                 | Description                                          |
+| --------------- | -------------------- | ---------------------------------------------------- |
+| `text`          | `string \| RegExp`   | Text to locate the element for.                      |
+| `options.exact` | `boolean` (optional) | Whether to find an exact match. Defaults to `false`. |
 
-The page.waitForFunction() can be used to observe viewport size change: const { webkit } = require('playwright'); // Or 'chromium' or 'firefox'.(async () => { const browser = await webkit.launch(); const page = await browser.newPage(); const watchDog = page.waitForFunction(() => window.innerWidth < 100); await page.setViewportSize({ width: 50, height: 50 }); await watchDog; await browser.close();})(); To pass an argument to the predicate of page.waitForFunction() function: const selector = '.foo';await page.waitForFunction(selector => !!document.querySelector(selector), selector); Arguments pageFunction function | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction. options Object (optional) polling number | "raf" (optional)# If polling is 'raf', then pageFunction is constantly executed in requestAnimationFrame callback. If polling is a number, then it is treated as an interval in milliseconds at which the function would be executed. Defaults to raf. timeout number (optional)# Maximum time to wait for in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+**Returns:** `Locator`
 
-Promise<JSHandle># wait
+---
 
-## ForLoadState
+### `page.goBack()` — Added before v1.9
 
-Added before v1.9 page.waitForLoadState Returns when the required load state has been reached. This resolves when the page reaches a required load state, load by default. The navigation must have been committed when this method is called. If current document has already reached the required state, resolves immediately. noteMost of the time, this method is not needed because Playwright auto-waits before every action
+Navigate to the previous page in history. Returns the main resource response, or `null` if cannot go back.
 
-await page.getByRole('button').click(); // Click triggers navigation.await page.waitForLoadState(); // The promise resolves after 'load' event. const popupPromise = page.waitForEvent('popup');await page.getByRole('button').click(); // Click triggers a popup.const popup = await popupPromise;await popup.waitForLoadState('domcontentloaded'); // Wait for the 'DOMContentLoaded' event.console.log(await popup.title()); // Popup is ready to use
+```js
+await page.goBack();
+```
 
-state "load" | "domcontentloaded" | "networkidle" (optional)# Optional load state to wait for, defaults to load. If the state has been already reached while loading current document, the method resolves immediately. Can be one of: 'load' - wait for the load event to be fired. 'domcontentloaded' - wait for the DOMContentLoaded event to be fired. 'networkidle' - DISCOURAGED wait until there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods
+**Arguments:**
 
-Promise<void># wait
+| Parameter           | Type                                                                   | Description                                                         |
+| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `options.timeout`   | `number` (optional)                                                    | Maximum operation time in milliseconds. Defaults to 0 (no timeout). |
+| `options.waitUntil` | `"load" \| "domcontentloaded" \| "networkidle" \| "commit"` (optional) | When to consider operation succeeded. Defaults to `load`.           |
 
-## ForRequest
+**Returns:** `Promise<null | Response>`
 
-Added before v1.9 page.waitForRequest Waits for the matching request and returns it. See waiting for event for more details about events
+---
 
-// Start waiting for request before clicking. Note no await.const requestPromise = page.waitForRequest('https://example.com/resource');await page.getByText('trigger request').click();const request = await requestPromise;// Alternative way with a predicate. Note no await.const requestPromise = page.waitForRequest(request => request.url() === 'https://example.com' && request.method() === 'GET',);await page.getByText('trigger request').click();const request = await requestPromise; Arguments urlOrPredicate string | RegExp | function(Request):boolean | Promise<boolean># Request URL string, regex or predicate receiving Request object. options Object (optional) timeout number (optional)# Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the page.setDefaultTimeout() method
+### `page.goForward()` — Added before v1.9
 
-Promise<Request># wait
+Navigate to the next page in history. Returns the main resource response, or `null` if cannot go forward.
 
-## ForResponse
+```js
+await page.goForward();
+```
 
-Added before v1.9 page.waitForResponse Returns the matched response. See waiting for event for more details about events
+**Arguments:**
 
-// Start waiting for response before clicking. Note no await.const responsePromise = page.waitForResponse('https://example.com/resource');await page.getByText('trigger response').click();const response = await responsePromise;// Alternative way with a predicate. Note no await.const responsePromise = page.waitForResponse(response => response.url() === 'https://example.com' && response.status() === 200 && response.request().method() === 'GET');await page.getByText('trigger response').click();const response = await responsePromise; Arguments urlOrPredicate string | RegExp | function(Response):boolean | Promise<boolean># Request URL string, regex or predicate receiving Response object. When a baseURL via the context options was provided and the passed URL is a path, it gets merged via the new URL() constructor. options Object (optional) timeout number (optional)# Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+| Parameter           | Type                                                                   | Description                                                         |
+| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `options.timeout`   | `number` (optional)                                                    | Maximum operation time in milliseconds. Defaults to 0 (no timeout). |
+| `options.waitUntil` | `"load" \| "domcontentloaded" \| "networkidle" \| "commit"` (optional) | When to consider operation succeeded. Defaults to `load`.           |
 
-Promise<Response># wait
+**Returns:** `Promise<null | Response>`
 
-## ForURL
+---
 
-Added in: v1.11 page.waitForURL Waits for the main frame to navigate to the given URL
+### `page.goto()` — Added before v1.9
 
-await page.click('a.delayed-navigation'); // Clicking the link will indirectly cause a navigationawait page.waitForURL('\*\*/target.html'); Arguments url string | RegExp | [URLPattern] | function(URL):boolean# A glob pattern, regex pattern, URL pattern, or predicate receiving URL to match while waiting for the navigation. Note that if the parameter is a string without wildcard characters, the method will wait for navigation to URL that is exactly equal to the string. options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+Navigates to the given URL. Returns the main resource response.
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+```js
+await page.goto('https://example.com');
+await page.goto('https://example.com', { waitUntil: 'domcontentloaded' });
+```
 
-Promise<void># workers​ Added before v1.9 page.workers This method returns all of the dedicated WebWorkers associated with the page. noteThis does not contain ServiceWorkers Usage page.workers(); Returns Array<Worker>#
+**Arguments:**
+
+| Parameter           | Type                                                                   | Description                                                         |
+| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `url`               | `string`                                                               | URL to navigate page to. Must include scheme (e.g., `https://`).    |
+| `options.referer`   | `string` (optional)                                                    | Referer header value.                                               |
+| `options.timeout`   | `number` (optional)                                                    | Maximum operation time in milliseconds. Defaults to 0 (no timeout). |
+| `options.waitUntil` | `"load" \| "domcontentloaded" \| "networkidle" \| "commit"` (optional) | When to consider operation succeeded. Defaults to `load`.           |
+
+**Returns:** `Promise<null | Response>`
+
+---
+
+### `page.isClosed()` — Added before v1.9
+
+Indicates that the page has been closed.
+
+```js
+const closed = page.isClosed();
+```
+
+**Returns:** `boolean`
+
+---
+
+### `page.locator()` — Added in: v1.14
+
+Returns an element locator for use in performing actions on this page. Locator is resolved to the element immediately before each action.
+
+```js
+page.locator('css=button');
+page.locator('css=article', { hasText: 'Playwright' });
+```
+
+**Arguments:**
+
+| Parameter            | Type                          | Description                                                                               |
+| -------------------- | ----------------------------- | ----------------------------------------------------------------------------------------- |
+| `selector`           | `string`                      | A selector to use when resolving DOM element.                                             |
+| `options.has`        | `Locator` (optional)          | Narrows results to elements containing a matching child element.                          |
+| `options.hasNot`     | `Locator` (optional)          | Added in v1.33. Narrows results to elements that do not contain a matching child element. |
+| `options.hasNotText` | `string \| RegExp` (optional) | Added in v1.33. Narrows results to elements that do not contain specified text.           |
+| `options.hasText`    | `string \| RegExp` (optional) | Narrows results to elements containing specified text.                                    |
+
+**Returns:** `Locator`
+
+---
+
+### `page.mainFrame()` — Added before v1.9
+
+The page's main frame. Page is guaranteed to have a main frame which persists during navigations.
+
+```js
+const frame = page.mainFrame();
+```
+
+**Returns:** `Frame`
+
+---
+
+### `page.opener()` — Added before v1.9
+
+Returns the opener for popup pages and `null` for others. If the opener has been closed, returns `null`.
+
+```js
+const opener = await page.opener();
+```
+
+**Returns:** `Promise<null | Page>`
+
+---
+
+### `page.pageErrors()` — Added in: v1.56
+
+Returns up to 200 last page errors from this page.
+
+```js
+const errors = await page.pageErrors();
+```
+
+**Arguments:**
+
+| Parameter        | Type                                     | Description                                         |
+| ---------------- | ---------------------------------------- | --------------------------------------------------- |
+| `options.filter` | `"all" \| "since-navigation"` (optional) | Added in v1.59. Controls which errors are returned. |
+
+**Returns:** `Promise<Array<Error>>`
+
+---
+
+### `page.pause()` — Added in: v1.9
+
+Pauses script execution. Playwright will stop executing the script and wait for the user to press 'Resume' in the page overlay or call `playwright.resume()` in DevTools. Requires headed mode.
+
+```js
+await page.pause();
+```
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.pdf()` — Added before v1.9
+
+Returns the PDF buffer. Generates a PDF of the page with print CSS media.
+
+```js
+await page.emulateMedia({ media: 'screen' });
+await page.pdf({ path: 'page.pdf' });
+```
+
+**Arguments:**
+
+| Parameter                     | Type                          | Description                                                                       |
+| ----------------------------- | ----------------------------- | --------------------------------------------------------------------------------- |
+| `options.displayHeaderFooter` | `boolean` (optional)          | Display header and footer. Defaults to `false`.                                   |
+| `options.footerTemplate`      | `string` (optional)           | HTML template for the print footer.                                               |
+| `options.format`              | `string` (optional)           | Paper format (e.g., `'A4'`, `'Letter'`). Defaults to `'Letter'`.                  |
+| `options.headerTemplate`      | `string` (optional)           | HTML template for the print header.                                               |
+| `options.height`              | `string \| number` (optional) | Paper height with units.                                                          |
+| `options.landscape`           | `boolean` (optional)          | Paper orientation. Defaults to `false`.                                           |
+| `options.margin`              | `Object` (optional)           | Paper margins: `{ top, right, bottom, left }`.                                    |
+| `options.outline`             | `boolean` (optional)          | Added in v1.42. Whether to embed document outline in PDF. Defaults to `false`.    |
+| `options.pageRanges`          | `string` (optional)           | Paper ranges to print, e.g., `'1-5, 8, 11-13'`.                                   |
+| `options.path`                | `string` (optional)           | File path to save the PDF to.                                                     |
+| `options.preferCSSPageSize`   | `boolean` (optional)          | Give CSS `@page` size priority over `width`/`height`. Defaults to `false`.        |
+| `options.printBackground`     | `boolean` (optional)          | Print background graphics. Defaults to `false`.                                   |
+| `options.scale`               | `number` (optional)           | Scale of the webpage rendering. Defaults to 1.                                    |
+| `options.tagged`              | `boolean` (optional)          | Added in v1.42. Whether to generate tagged (accessible) PDF. Defaults to `false`. |
+| `options.width`               | `string \| number` (optional) | Paper width with units.                                                           |
+
+**Returns:** `Promise<Buffer>`
+
+---
+
+### `page.pickLocator()` — Added in: v1.59
+
+Enters pick locator mode where hovering over elements highlights them and shows the corresponding locator. Once the user clicks an element, the mode deactivates and returns the Locator.
+
+```js
+const locator = await page.pickLocator();
+console.log(locator);
+```
+
+**Returns:** `Promise<Locator>`
+
+---
+
+### `page.reload()` — Added before v1.9
+
+Reloads the current page, as if the user triggered a browser refresh. Returns the main resource response.
+
+```js
+await page.reload();
+```
+
+**Arguments:**
+
+| Parameter           | Type                                                                   | Description                                                         |
+| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `options.timeout`   | `number` (optional)                                                    | Maximum operation time in milliseconds. Defaults to 0 (no timeout). |
+| `options.waitUntil` | `"load" \| "domcontentloaded" \| "networkidle" \| "commit"` (optional) | When to consider operation succeeded. Defaults to `load`.           |
+
+**Returns:** `Promise<null | Response>`
+
+---
+
+### `page.removeAllListeners()` — Added in: v1.47
+
+Removes all the listeners of the given type (or all registered listeners if no type given). Allows waiting for async listeners to complete or ignoring errors from them.
+
+```js
+await page.removeAllListeners('request', { behavior: 'wait' });
+```
+
+**Arguments:**
+
+| Parameter          | Type                                               | Description                                                                 |
+| ------------------ | -------------------------------------------------- | --------------------------------------------------------------------------- |
+| `type`             | `string` (optional)                                | Event type to remove listeners for.                                         |
+| `options.behavior` | `"wait" \| "ignoreErrors" \| "default"` (optional) | Whether to wait for already running listeners and what to do if they throw. |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.removeLocatorHandler()` — Added in: v1.44
+
+Removes all locator handlers added by `page.addLocatorHandler()` for a specific locator.
+
+```js
+await page.removeLocatorHandler(locator);
+```
+
+**Arguments:**
+
+| Parameter | Type      | Description                                   |
+| --------- | --------- | --------------------------------------------- |
+| `locator` | `Locator` | Locator passed to `page.addLocatorHandler()`. |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.requestGC()` — Added in: v1.48
+
+Request the page to perform garbage collection. Useful for detecting memory leaks.
+
+```js
+await page.evaluate(() => (globalThis.suspectWeakRef = new WeakRef(suspect)));
+await page.requestGC();
+expect(await page.evaluate(() => !globalThis.suspectWeakRef.deref())).toBe(true);
+```
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.requests()` — Added in: v1.56
+
+Returns up to 100 last network requests from this page. Returned requests should be accessed immediately.
+
+```js
+const requests = await page.requests();
+```
+
+**Returns:** `Promise<Array<Request>>`
+
+---
+
+### `page.route()` — Added before v1.9
+
+Enables routing to modify network requests. Every request matching the url pattern will stall unless continued, fulfilled or aborted.
+
+```js
+await page.route('**/*.{png,jpg,jpeg}', (route) => route.abort());
+await page.route(/\.(png|jpg)$/, (route) => route.abort());
+```
+
+**Arguments:**
+
+| Parameter       | Type                                                       | Description                                                                |
+| --------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `url`           | `string \| RegExp \| URLPattern \| function(URL): boolean` | A glob pattern, regex, URL pattern, or predicate to match during routing.  |
+| `handler`       | `function(Route, Request): Promise<Object> \| Object`      | Handler function to route the request.                                     |
+| `options.times` | `number` (optional)                                        | Added in v1.15. How many times a route should be used. Defaults to always. |
+
+**Returns:** `Promise<Disposable>`
+
+---
+
+### `page.routeFromHAR()` — Added in: v1.23
+
+Serves matching network requests from the HAR file.
+
+```js
+await page.routeFromHAR('recording.har');
+await page.routeFromHAR('recording.har', { url: /api/ });
+```
+
+**Arguments:**
+
+| Parameter               | Type                               | Description                                                                                |
+| ----------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------ |
+| `har`                   | `string`                           | Path to a HAR file with prerecorded network data.                                          |
+| `options.notFound`      | `"abort" \| "fallback"` (optional) | What to do with requests not found in HAR. Defaults to `abort`.                            |
+| `options.update`        | `boolean` (optional)               | If specified, updates the given HAR with actual network info instead of serving from file. |
+| `options.updateContent` | `"embed" \| "attach"` (optional)   | Added in v1.32. Controls resource content management during update.                        |
+| `options.updateMode`    | `"full" \| "minimal"` (optional)   | Added in v1.32. Whether to record full or minimal HAR. Defaults to `minimal`.              |
+| `options.url`           | `string \| RegExp` (optional)      | Only requests matching this pattern are served from the HAR file.                          |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.routeWebSocket()` — Added in: v1.48
+
+Allows modifying WebSocket connections made by the page. Only WebSockets created after this method is called are routed.
+
+```js
+await page.routeWebSocket('/ws', (ws) => {
+  ws.onMessage((message) => {
+    if (message === 'request') ws.send('response');
+  });
+});
+```
+
+**Arguments:**
+
+| Parameter | Type                                                       | Description                                       |
+| --------- | ---------------------------------------------------------- | ------------------------------------------------- |
+| `url`     | `string \| RegExp \| URLPattern \| function(URL): boolean` | Only WebSockets with matching URL will be routed. |
+| `handler` | `function(WebSocketRoute): Promise<Object> \| Object`      | Handler function to route the WebSocket.          |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.screenshot()` — Added before v1.9
+
+Returns the buffer with the captured screenshot.
+
+```js
+await page.screenshot({ path: 'screenshot.png' });
+await page.screenshot({ fullPage: true });
+```
+
+**Arguments:**
+
+| Parameter                | Type                               | Description                                                            |
+| ------------------------ | ---------------------------------- | ---------------------------------------------------------------------- |
+| `options.animations`     | `"disabled" \| "allow"` (optional) | When set to `"disabled"`, stops CSS animations. Defaults to `"allow"`. |
+| `options.caret`          | `"hide" \| "initial"` (optional)   | Whether to hide text caret. Defaults to `"hide"`.                      |
+| `options.clip`           | `Object` (optional)                | `{ x, y, width, height }` clipping area.                               |
+| `options.fullPage`       | `boolean` (optional)               | Full scrollable page screenshot. Defaults to `false`.                  |
+| `options.mask`           | `Array<Locator>` (optional)        | Locators to mask with a pink box.                                      |
+| `options.maskColor`      | `string` (optional)                | Added in v1.35. Color of the mask overlay. Defaults to `#FF00FF`.      |
+| `options.omitBackground` | `boolean` (optional)               | Hide default white background for transparency. Defaults to `false`.   |
+| `options.path`           | `string` (optional)                | File path to save the image to.                                        |
+| `options.quality`        | `number` (optional)                | Image quality, 0-100. Not applicable to PNG.                           |
+| `options.scale`          | `"css" \| "device"` (optional)     | Pixel ratio for the screenshot. Defaults to `"device"`.                |
+| `options.style`          | `string` (optional)                | Added in v1.41. Stylesheet text to apply while taking the screenshot.  |
+| `options.timeout`        | `number` (optional)                | Maximum time in milliseconds. Defaults to 0 (no timeout).              |
+| `options.type`           | `"png" \| "jpeg"` (optional)       | Screenshot type. Defaults to `png`.                                    |
+
+**Returns:** `Promise<Buffer>`
+
+---
+
+### `page.setContent()` — Added before v1.9
+
+Sets the HTML content of the page (internally calls `document.write()`).
+
+```js
+await page.setContent('<h1>Hello world</h1>');
+```
+
+**Arguments:**
+
+| Parameter           | Type                                                                   | Description                                                         |
+| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `html`              | `string`                                                               | HTML markup to assign to the page.                                  |
+| `options.timeout`   | `number` (optional)                                                    | Maximum operation time in milliseconds. Defaults to 0 (no timeout). |
+| `options.waitUntil` | `"load" \| "domcontentloaded" \| "networkidle" \| "commit"` (optional) | When to consider operation succeeded. Defaults to `load`.           |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.setDefaultNavigationTimeout()` — Added before v1.9
+
+Changes the default maximum navigation time for navigation-related methods. Takes priority over `page.setDefaultTimeout()`, `browserContext.setDefaultTimeout()`, and `browserContext.setDefaultNavigationTimeout()`.
+
+```js
+page.setDefaultNavigationTimeout(30000);
+```
+
+**Arguments:**
+
+| Parameter | Type     | Description                              |
+| --------- | -------- | ---------------------------------------- |
+| `timeout` | `number` | Maximum navigation time in milliseconds. |
+
+**Returns:** `void`
+
+---
+
+### `page.setDefaultTimeout()` — Added before v1.9
+
+Changes the default maximum time for all methods accepting a `timeout` option. `page.setDefaultNavigationTimeout()` takes priority over this method.
+
+```js
+page.setDefaultTimeout(30000);
+```
+
+**Arguments:**
+
+| Parameter | Type     | Description                                                |
+| --------- | -------- | ---------------------------------------------------------- |
+| `timeout` | `number` | Maximum time in milliseconds. Pass `0` to disable timeout. |
+
+**Returns:** `void`
+
+---
+
+### `page.setExtraHTTPHeaders()` — Added before v1.9
+
+Sets extra HTTP headers sent with every request the page initiates.
+
+```js
+await page.setExtraHTTPHeaders({ 'X-Custom-Header': 'value' });
+```
+
+**Arguments:**
+
+| Parameter | Type                     | Description                                                                      |
+| --------- | ------------------------ | -------------------------------------------------------------------------------- |
+| `headers` | `Object<string, string>` | An object containing additional HTTP headers. All header values must be strings. |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.setViewportSize()` — Added before v1.9
+
+Sets the page viewport size. Should be set before navigating.
+
+```js
+await page.setViewportSize({ width: 640, height: 480 });
+await page.goto('https://example.com');
+```
+
+**Arguments:**
+
+| Parameter             | Type     | Description            |
+| --------------------- | -------- | ---------------------- |
+| `viewportSize.width`  | `number` | Page width in pixels.  |
+| `viewportSize.height` | `number` | Page height in pixels. |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.title()` — Added before v1.9
+
+Returns the page's title.
+
+```js
+const title = await page.title();
+```
+
+**Returns:** `Promise<string>`
+
+---
+
+### `page.unroute()` — Added before v1.9
+
+Removes a route created with `page.route()`. When `handler` is not specified, removes all routes for the URL.
+
+```js
+await page.unroute(url);
+await page.unroute(url, handler);
+```
+
+**Arguments:**
+
+| Parameter | Type                                                             | Description                                      |
+| --------- | ---------------------------------------------------------------- | ------------------------------------------------ |
+| `url`     | `string \| RegExp \| URLPattern \| function(URL): boolean`       | URL pattern matching the route to remove.        |
+| `handler` | `function(Route, Request): Promise<Object> \| Object` (optional) | Optional handler to match which route to remove. |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.unrouteAll()` — Added in: v1.41
+
+Removes all routes created with `page.route()` and `page.routeFromHAR()`.
+
+```js
+await page.unrouteAll();
+await page.unrouteAll({ behavior: 'wait' });
+```
+
+**Arguments:**
+
+| Parameter          | Type                                               | Description                             |
+| ------------------ | -------------------------------------------------- | --------------------------------------- |
+| `options.behavior` | `"wait" \| "ignoreErrors" \| "default"` (optional) | How to handle already running handlers. |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.url()` — Added before v1.9
+
+Returns the page's URL.
+
+```js
+const url = page.url();
+```
+
+**Returns:** `string`
+
+---
+
+### `page.video()` — Added before v1.9
+
+Video object associated with this page. Can be used to access the video file when using the `recordVideo` context option.
+
+```js
+const video = page.video();
+```
+
+**Returns:** `null | Video`
+
+---
+
+### `page.viewportSize()` — Added before v1.9
+
+Returns the page viewport size.
+
+```js
+const size = page.viewportSize();
+// { width: 1280, height: 720 }
+```
+
+**Returns:** `null | Object` — `{ width: number, height: number }`
+
+---
+
+### `page.waitForEvent()` — Added before v1.9
+
+Waits for the event to fire and passes its value to a predicate function. Resolves when predicate returns truthy.
+
+```js
+const downloadPromise = page.waitForEvent('download');
+await page.getByText('Download file').click();
+const download = await downloadPromise;
+```
+
+**Arguments:**
+
+| Parameter            | Type                            | Description                                                   |
+| -------------------- | ------------------------------- | ------------------------------------------------------------- |
+| `event`              | `string`                        | Event name (e.g., `'download'`, `'popup'`).                   |
+| `optionsOrPredicate` | `function \| Object` (optional) | A predicate or options object with `predicate` and `timeout`. |
+
+**Returns:** `Promise<Object>`
+
+---
+
+### `page.waitForFunction()` — Added before v1.9
+
+Returns when the `pageFunction` returns a truthy value. Resolves to a `JSHandle` of that value.
+
+```js
+const watchDog = page.waitForFunction(() => window.innerWidth < 100);
+await page.setViewportSize({ width: 50, height: 50 });
+await watchDog;
+```
+
+**Arguments:**
+
+| Parameter         | Type                            | Description                                               |
+| ----------------- | ------------------------------- | --------------------------------------------------------- |
+| `pageFunction`    | `function \| string`            | Function to be evaluated in the page context.             |
+| `arg`             | `EvaluationArgument` (optional) | Optional argument to pass to `pageFunction`.              |
+| `options.polling` | `number \| "raf"` (optional)    | Polling interval. Defaults to `"raf"`.                    |
+| `options.timeout` | `number` (optional)             | Maximum time in milliseconds. Defaults to 0 (no timeout). |
+
+**Returns:** `Promise<JSHandle>`
+
+---
+
+### `page.waitForLoadState()` — Added before v1.9
+
+Returns when the required load state has been reached.
+
+```js
+await page.getByRole('button').click();
+await page.waitForLoadState();
+```
+
+**Arguments:**
+
+| Parameter         | Type                                                       | Description                                                         |
+| ----------------- | ---------------------------------------------------------- | ------------------------------------------------------------------- |
+| `state`           | `"load" \| "domcontentloaded" \| "networkidle"` (optional) | Load state to wait for. Defaults to `"load"`.                       |
+| `options.timeout` | `number` (optional)                                        | Maximum operation time in milliseconds. Defaults to 0 (no timeout). |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.waitForRequest()` — Added before v1.9
+
+Waits for the matching request and returns it.
+
+```js
+const requestPromise = page.waitForRequest('https://example.com/resource');
+await page.getByText('trigger request').click();
+const request = await requestPromise;
+```
+
+**Arguments:**
+
+| Parameter         | Type                                                                 | Description                                                |
+| ----------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `urlOrPredicate`  | `string \| RegExp \| function(Request): boolean \| Promise<boolean>` | Request URL string, regex, or predicate.                   |
+| `options.timeout` | `number` (optional)                                                  | Maximum wait time in milliseconds. Defaults to 30 seconds. |
+
+**Returns:** `Promise<Request>`
+
+---
+
+### `page.waitForResponse()` — Added before v1.9
+
+Returns the matched response.
+
+```js
+const responsePromise = page.waitForResponse('https://example.com/resource');
+await page.getByText('trigger response').click();
+const response = await responsePromise;
+```
+
+**Arguments:**
+
+| Parameter         | Type                                                                  | Description                                                |
+| ----------------- | --------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `urlOrPredicate`  | `string \| RegExp \| function(Response): boolean \| Promise<boolean>` | Request URL string, regex, or predicate.                   |
+| `options.timeout` | `number` (optional)                                                   | Maximum wait time in milliseconds. Defaults to 30 seconds. |
+
+**Returns:** `Promise<Response>`
+
+---
+
+### `page.waitForURL()` — Added in: v1.11
+
+Waits for the main frame to navigate to the given URL.
+
+```js
+await page.click('a.delayed-navigation');
+await page.waitForURL('**/target.html');
+```
+
+**Arguments:**
+
+| Parameter           | Type                                                                   | Description                                                         |
+| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `url`               | `string \| RegExp \| URLPattern \| function(URL): boolean`             | A glob pattern, regex, URL pattern, or predicate.                   |
+| `options.timeout`   | `number` (optional)                                                    | Maximum operation time in milliseconds. Defaults to 0 (no timeout). |
+| `options.waitUntil` | `"load" \| "domcontentloaded" \| "networkidle" \| "commit"` (optional) | When to consider operation succeeded. Defaults to `load`.           |
+
+**Returns:** `Promise<void>`
+
+---
+
+### `page.workers()` — Added before v1.9
+
+Returns all dedicated WebWorkers associated with the page.
+
+```js
+const workers = page.workers();
+```
+
+**Returns:** `Array<Worker>`
+
+---
 
 ## Properties
 
-clock​ Added in: v1.45 page.clock Playwright has ability to mock clock and passage of time.
+### `page.clock` — Added in: v1.45
 
-## Usage page.clock Type Clock coverage
+Playwright has ability to mock clock and passage of time.
 
-Added before v1.9 page.coverage noteOnly available for Chromium atm. Browser-specific Coverage implementation.
+**Type:** `Clock`
 
-## See Coverage for more details
+---
 
-page.coverage Type Coverage keyboard
+### `page.coverage` — Added before v1.9
 
-## Added before v1.9 page.keyboard Usage page.keyboard Type Keyboard mouse
+Browser-specific Coverage implementation. Only available for Chromium.
 
-## Added before v1.9 page.mouse Usage page.mouse Type Mouse request
+**Type:** `Coverage`
 
-Added in: v1.16 page.request API testing helper associated with this page. This method returns the same instance as browserContext.request on the page's context. See browserContext.request for more details.
+---
 
-## Usage page.request Type APIRequestContext screencast
+### `page.keyboard` — Added before v1.9
 
-Added in: v1.59 page.screencast Screencast object associated with this page
+Keyboard interface for this page.
 
-page.screencast.on('screencastFrame', data => { console.log('received frame, jpeg size:', data.length);});await page.screencast.start();// ... perform actions ...await page.screencast.stop();
+**Type:** `Keyboard`
 
-## Type Screencast touchscreen
+---
 
-## Added before v1.9 page.touchscreen Usage page.touchscreen Type Touchscreen Events
+### `page.mouse` — Added before v1.9
 
-on('close')​ Added before v1.9 page.on('close') Emitted when the page closes
+Mouse interface for this page.
 
-page.on('close', data => {});
+**Type:** `Mouse`
 
-## Event data Page on('console')
+---
 
-Added before v1.9 page.on('console') Emitted when JavaScript within the page calls one of console API methods, e.g. console.log or console.dir. The arguments passed into console.log are available on the ConsoleMessage event handler argument
+### `page.request` — Added in: v1.16
 
-page.on('console', async msg => { const values = []; for (const arg of msg.args()) values.push(await arg.jsonValue()); console.log(...values);});await page.evaluate(() => console.log('hello', 5, { foo: 'bar' }));
+API testing helper associated with this page. Returns the same instance as `browserContext.request` on the page's context.
 
-## Event data ConsoleMessage on('crash')
+**Type:** `APIRequestContext`
 
-Added before v1.9 page.on('crash') Emitted when the page crashes. Browser pages might crash if they try to allocate too much memory. When the page crashes, ongoing and subsequent operations will throw. The most common way to deal with crashes is to catch an exception: try { // Crash might happen during a click. await page.click('button'); // Or while waiting for an event. await page.waitForEvent('popup');} catch (e) { // When the page crashes, exception message contains 'crash'.} Usage page.on('crash', data => {});
+---
 
-## Event data Page on('dialog')
+### `page.screencast` — Added in: v1.59
 
-Added before v1.9 page.on('dialog') Emitted when a JavaScript dialog appears, such as alert, prompt, confirm or beforeunload. Listener must either dialog.accept() or dialog.dismiss() the dialog - otherwise the page will freeze waiting for the dialog, and actions like click will never finish
+Screencast object associated with this page.
 
-page.on('dialog', dialog => dialog.accept()); noteWhen no page.on('dialog') or browserContext.on('dialog') listeners are present, all dialogs are automatically dismissed.
+```js
+page.screencast.on('screencastFrame', (data) => {
+  console.log('received frame, jpeg size:', data.length);
+});
+await page.screencast.start();
+await page.screencast.stop();
+```
 
-## Event data Dialog on('domcontentloaded')
+**Type:** `Screencast`
 
-Added in: v1.9 page.on('domcontentloaded') Emitted when the JavaScript DOMContentLoaded event is dispatched
+---
 
-page.on('domcontentloaded', data => {});
+### `page.touchscreen` — Added before v1.9
 
-## Event data Page on('download')
+Touchscreen interface for this page.
 
-Added before v1.9 page.on('download') Emitted when attachment download started. User can access basic file operations on downloaded content via the passed Download instance
+**Type:** `Touchscreen`
 
-page.on('download', data => {});
+---
 
-## Event data Download on('filechooser')
+## Events
 
-Added in: v1.9 page.on('filechooser') Emitted when a file chooser is supposed to appear, such as after clicking the <input type=file>. Playwright can respond to it via setting the input files using fileChooser.setFiles() that can be uploaded after that. page.on('filechooser', async fileChooser => { await fileChooser.setFiles(path.join(\_\_dirname, '/tmp/myfile.pdf'));}); Usage page.on('filechooser', data => {});
+### `page.on('close')` — Added before v1.9
 
-## Event data FileChooser on('frameattached')
+Emitted when the page closes.
 
-Added in: v1.9 page.on('frameattached') Emitted when a frame is attached
+```js
+page.on('close', (data) => {});
+```
 
-page.on('frameattached', data => {});
+**Event data:** `Page`
 
-## Event data Frame on('framedetached')
+---
 
-Added in: v1.9 page.on('framedetached') Emitted when a frame is detached
+### `page.on('console')` — Added before v1.9
 
-page.on('framedetached', data => {});
+Emitted when JavaScript calls a console API method (e.g., `console.log`).
 
-## Event data Frame on('framenavigated')
+```js
+page.on('console', async (msg) => {
+  const values = [];
+  for (const arg of msg.args()) values.push(await arg.jsonValue());
+  console.log(...values);
+});
+```
 
-Added in: v1.9 page.on('framenavigated') Emitted when a frame is navigated to a new url
+**Event data:** `ConsoleMessage`
 
-page.on('framenavigated', data => {});
+---
 
-## Event data Frame on('load')
+### `page.on('crash')` — Added before v1.9
 
-Added before v1.9 page.on('load') Emitted when the JavaScript load event is dispatched
+Emitted when the page crashes (e.g., out of memory).
 
-page.on('load', data => {});
+```js
+try {
+  await page.click('button');
+} catch (e) {
+  // exception message contains 'crash'
+}
+```
 
-## Event data Page on('pageerror')
+**Event data:** `Page`
 
-Added in: v1.9 page.on('pageerror') Emitted when an uncaught exception happens within the page. // Log all uncaught errors to the terminalpage.on('pageerror', exception => { console.log(`Uncaught exception: "${exception}"`);});// Navigate to a page with an exception.await page.goto('data:text/html,<script>throw new Error("Test")</script>'); Usage page.on('pageerror', data => {});
+---
 
-## Event data Error on('popup')
+### `page.on('dialog')` — Added before v1.9
 
-Added before v1.9 page.on('popup') Emitted when the page opens a new tab or window. This event is emitted in addition to the browserContext.on('page'), but only for popups relevant to this page. The earliest moment that page is available is when it has navigated to the initial url. For example, when opening a popup with window.open('http://example.com'), this event will fire when the network request to "http://example.com" is done and its response has started loading in the popup. If you would like to route/listen to this network request, use browserContext.route() and browserContext.on('request') respectively instead of similar methods on the Page. // Start waiting for popup before clicking. Note no await.const popupPromise = page.waitForEvent('popup');await page.getByText('open the popup').click();const popup = await popupPromise;console.log(await popup.evaluate('location.href')); noteUse page.waitForLoadState() to wait until the page gets to a particular state (you should not need it in most cases)
+Emitted when a JavaScript dialog appears (`alert`, `prompt`, `confirm`, `beforeunload`). Listener must either `dialog.accept()` or `dialog.dismiss()` the dialog.
 
-page.on('popup', data => {});
+```js
+page.on('dialog', (dialog) => dialog.accept());
+```
 
-## Event data Page on('request')
+**Event data:** `Dialog`
 
-Added before v1.9 page.on('request') Emitted when a page issues a request. The request object is read-only. In order to intercept and mutate requests, see page.route() or browserContext.route()
+---
 
-page.on('request', data => {});
+### `page.on('domcontentloaded')` — Added in: v1.9
 
-## Event data Request on('requestfailed')
+Emitted when the JavaScript `DOMContentLoaded` event is dispatched.
 
-Added in: v1.9 page.on('requestfailed') Emitted when a request fails, for example by timing out. page.on('requestfailed', request => { console.log(request.url() + ' ' + request.failure().errorText);}); noteHTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with page.on('requestfinished') event and not with page.on('requestfailed'). A request will only be considered failed when the client cannot get an HTTP response from the server, e.g. due to network error net::ERR_FAILED
+```js
+page.on('domcontentloaded', (data) => {});
+```
 
-page.on('requestfailed', data => {});
+**Event data:** `Page`
 
-## Event data Request on('requestfinished')
+---
 
-Added in: v1.9 page.on('requestfinished') Emitted when a request finishes successfully after downloading the response body. For a successful response, the sequence of events is request, response and requestfinished
+### `page.on('download')` — Added before v1.9
 
-page.on('requestfinished', data => {});
+Emitted when attachment download started.
 
-## Event data Request on('response')
+```js
+page.on('download', (data) => {});
+```
 
-Added before v1.9 page.on('response') Emitted when response status and headers are received for a request. For a successful response, the sequence of events is request, response and requestfinished
+**Event data:** `Download`
 
-page.on('response', data => {});
+---
 
-## Event data Response on('websocket')
+### `page.on('filechooser')` — Added in: v1.9
 
-Added in: v1.9 page.on('websocket') Emitted when WebSocket request is sent
+Emitted when a file chooser is supposed to appear.
 
-page.on('websocket', data => {});
+```js
+page.on('filechooser', async (fileChooser) => {
+  await fileChooser.setFiles(path.join(__dirname, '/tmp/myfile.pdf'));
+});
+```
 
-## Event data WebSocket on('worker')
+**Event data:** `FileChooser`
 
-Added before v1.9 page.on('worker') Emitted when a dedicated WebWorker is spawned by the page
+---
 
-page.on('worker', data => {});
+### `page.on('frameattached')` — Added in: v1.9
 
-## Event data Worker Deprecated
+Emitted when a frame is attached.
 
-$​ Added in: v1.9 page.$ DiscouragedUse locator-based page.locator() instead. Read more about locators. The method finds an element matching the specified selector within the page. If no elements match the selector, the return value resolves to null. To wait for an element on the page, use locator.waitFor()
+```js
+page.on('frameattached', (data) => {});
+```
 
-await page.$(selector);await page.$(selector, options); Arguments selector string# A selector to query for. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception
+**Event data:** `Frame`
 
-Promise<null | ElementHandle># $​ Added in: v1.9 page.$ DiscouragedUse locator-based page.locator() instead. Read more about locators. The method finds all elements matching the specified selector within the page. If no elements match the selector, the return value resolves to []
+---
 
-await page.$(selector); Arguments selector string# A selector to query for
+### `page.on('framedetached')` — Added in: v1.9
 
-Promise<Array<ElementHandle>># $eval​ Added in: v1.9 page.$eval DiscouragedThis method does not wait for the element to pass actionability checks and therefore can lead to the flaky tests. Use locator.evaluate(), other Locator helper methods or web-first assertions instead. The method finds an element matching the specified selector within the page and passes it as a first argument to pageFunction. If no elements match the selector, the method throws an error
+Emitted when a frame is detached.
 
-the value of pageFunction. If pageFunction returns a Promise, then page.$eval() would wait for the promise to resolve and return its value
+```js
+page.on('framedetached', (data) => {});
+```
 
-const searchValue = await page.$eval('#search', el => el.value);const preloadHref = await page.$eval('link[rel=preload]', el => el.href);const html = await page.$eval('.main-container', (e, suffix) => e.outerHTML + suffix, 'hello');// In TypeScript, this example requires an explicit type annotation (HTMLLinkElement) on el:const preloadHrefTS = await page.$eval('link[rel=preload]', (el: HTMLLinkElement) => el.href); Arguments selector string# A selector to query for. pageFunction function(Element) | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception
+**Event data:** `Frame`
 
-Promise<Serializable># $eval​ Added in: v1.9 page.$eval DiscouragedIn most cases, locator.evaluateAll(), other Locator helper methods and web-first assertions do a better job. The method finds all elements matching the specified selector within the page and passes an array of matched elements as a first argument to pageFunction
+---
 
-the result of pageFunction invocation. If pageFunction returns a Promise, then page.$eval() would wait for the promise to resolve and return its value
+### `page.on('framenavigated')` — Added in: v1.9
 
-const divCounts = await page.$eval('div', (divs, min) => divs.length >= min, 10); Arguments selector string# A selector to query for. pageFunction function(Array<Element>) | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction
+Emitted when a frame is navigated to a new URL.
 
-Promise<Serializable># check​ Added before v1.9 page.check DiscouragedUse locator-based locator.check() instead. Read more about locators. This method checks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Ensure that matched element is a checkbox or a radio input. If not, this method throws. If the element is already checked, this method returns immediately. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to click in the center of the element. Ensure that the element is now checked. If not, this method throws. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
+```js
+page.on('framenavigated', (data) => {});
+```
 
-await page.check(selector);await page.check(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional) Added in: v1.11# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it
+**Event data:** `Frame`
 
-Promise<void># click​ Added before v1.9 page.click DiscouragedUse locator-based locator.click() instead. Read more about locators. This method clicks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to click in the center of the element, or the specified position. Wait for initiated navigations to either succeed or fail, unless noWaitAfter option is set. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
+---
 
-await page.click(selector);await page.click(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) button "left" | "right" | "middle" (optional)# Defaults to left. clickCount number (optional)# defaults to 1. See UIEvent.detail. delay number (optional)# Time to wait between mousedown and mouseup in milliseconds. Defaults to 0. force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. modifiers Array<"Alt" | "Control" | "ControlOrMeta" | "Meta" | "Shift"> (optional)# Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current modifiers back. If not specified, currently pressed modifiers are used. "ControlOrMeta" resolves to "Control" on Windows and Linux and to "Meta" on macOS. noWaitAfter boolean (optional)# DeprecatedThis option will default to true in the future. Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as navigating to inaccessible pages. Defaults to false. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it. Note that keyboard modifiers will be pressed regardless of trial to allow testing elements which are only visible when those keys are pressed
+### `page.on('load')` — Added before v1.9
 
-Promise<void># dblclick​ Added before v1.9 page.dblclick DiscouragedUse locator-based locator.dblclick() instead. Read more about locators. This method double clicks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to double click in the center of the element, or the specified position. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this. notepage.dblclick() dispatches two click events and a single dblclick event
+Emitted when the JavaScript `load` event is dispatched.
 
-await page.dblclick(selector);await page.dblclick(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) button "left" | "right" | "middle" (optional)# Defaults to left. delay number (optional)# Time to wait between mousedown and mouseup in milliseconds. Defaults to 0. force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. modifiers Array<"Alt" | "Control" | "ControlOrMeta" | "Meta" | "Shift"> (optional)# Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current modifiers back. If not specified, currently pressed modifiers are used. "ControlOrMeta" resolves to "Control" on Windows and Linux and to "Meta" on macOS. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it. Note that keyboard modifiers will be pressed regardless of trial to allow testing elements which are only visible when those keys are pressed
+```js
+page.on('load', (data) => {});
+```
 
-Promise<void># dispatch
+**Event data:** `Page`
 
-## Event
+---
 
-Added before v1.9 page.dispatchEvent DiscouragedUse locator-based locator.dispatchEvent() instead. Read more about locators. The snippet below dispatches the click event on the element. Regardless of the visibility state of the element, click is dispatched. This is equivalent to calling element.click()
+### `page.on('pageerror')` — Added in: v1.9
 
-await page.dispatchEvent('button#submit', 'click'); Under the hood, it creates an instance of an event based on the given type, initializes it with eventInit properties and dispatches it on the element
+Emitted when an uncaught exception happens within the page.
 
-are composed, cancelable and bubble by default. Since eventInit is event-specific, please refer to the events documentation for the lists of initial properties: DeviceMotionEvent DeviceOrientationEvent DragEvent Event FocusEvent KeyboardEvent MouseEvent PointerEvent TouchEvent WheelEvent You can also specify JSHandle as the property value if you want live objects to be passed into the event: // Note you can only create DataTransfer in Chromium and Firefoxconst dataTransfer = await page.evaluateHandle(() => new DataTransfer());await page.dispatchEvent('#source', 'dragstart', { dataTransfer }); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. type string# DOM event type: "click", "dragstart", etc. eventInit EvaluationArgument (optional)# Optional event-specific initialization properties. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+```js
+page.on('pageerror', (exception) => {
+  console.log(`Uncaught exception: "${exception}"`);
+});
+```
 
-Promise<void># fill​ Added before v1.9 page.fill DiscouragedUse locator-based locator.fill() instead. Read more about locators. This method waits for an element matching selector, waits for actionability checks, focuses the element, fills it and triggers an input event after filling. Note that you can pass an empty string to clear the input field. If the target element is not an <input>, <textarea> or [contenteditable] element, this method throws an error. However, if the element is inside the <label> element that has an associated control, the control will be filled instead. To send fine-grained keyboard events, use locator.pressSequentially()
+**Event data:** `Error`
 
-await page.fill(selector, value);await page.fill(selector, value, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. value string# Value to fill for the <input>, <textarea> or [contenteditable] element. options Object (optional) force boolean (optional) Added in: v1.13# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+---
 
-Promise<void># focus​ Added before v1.9 page.focus DiscouragedUse locator-based locator.focus() instead. Read more about locators. This method fetches an element with selector and focuses it. If there's no element matching selector, the method waits until a matching element appears in the DOM
+### `page.on('popup')` — Added before v1.9
 
-await page.focus(selector);await page.focus(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+Emitted when the page opens a new tab or window.
 
-Promise<void># get
+```js
+const popupPromise = page.waitForEvent('popup');
+await page.getByText('open the popup').click();
+const popup = await popupPromise;
+console.log(await popup.evaluate('location.href'));
+```
 
-## Attribute
+**Event data:** `Page`
 
-Added before v1.9 page.getAttribute DiscouragedUse locator-based locator.getAttribute() instead. Read more about locators
+---
 
-element attribute value
+### `page.on('request')` — Added before v1.9
 
-await page.getAttribute(selector, name);await page.getAttribute(selector, name, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. name string# Attribute name to get the value for. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+Emitted when a page issues a request. The request object is read-only.
 
-Promise<null | string># hover​ Added before v1.9 page.hover DiscouragedUse locator-based locator.hover() instead. Read more about locators. This method hovers over an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to hover over the center of the element, or the specified position. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
+```js
+page.on('request', (data) => {});
+```
 
-await page.hover(selector);await page.hover(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. modifiers Array<"Alt" | "Control" | "ControlOrMeta" | "Meta" | "Shift"> (optional)# Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current modifiers back. If not specified, currently pressed modifiers are used. "ControlOrMeta" resolves to "Control" on Windows and Linux and to "Meta" on macOS. noWaitAfter boolean (optional) Added in: v1.28# DeprecatedThis option has no effect. This option has no effect. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it. Note that keyboard modifiers will be pressed regardless of trial to allow testing elements which are only visible when those keys are pressed
+**Event data:** `Request`
 
-Promise<void># inner
+---
 
-## HTML
+### `page.on('requestfailed')` — Added in: v1.9
 
-Added before v1.9 page.innerHTML DiscouragedUse locator-based locator.innerHTML() instead. Read more about locators
+Emitted when a request fails (e.g., by timing out).
 
-element.innerHTML
+```js
+page.on('requestfailed', (request) => {
+  console.log(request.url() + ' ' + request.failure().errorText);
+});
+```
 
-await page.innerHTML(selector);await page.innerHTML(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+**Event data:** `Request`
 
-Promise<string># inner
+---
 
-## Text
+### `page.on('requestfinished')` — Added in: v1.9
 
-Added before v1.9 page.innerText DiscouragedUse locator-based locator.innerText() instead. Read more about locators
+Emitted when a request finishes successfully after downloading the response body.
 
-element.innerText
+```js
+page.on('requestfinished', (data) => {});
+```
 
-await page.innerText(selector);await page.innerText(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+**Event data:** `Request`
 
-Promise<string># input
+---
 
-## Value
+### `page.on('response')` — Added before v1.9
 
-Added in: v1.13 page.inputValue DiscouragedUse locator-based locator.inputValue() instead. Read more about locators
+Emitted when response status and headers are received for a request.
 
-input.value for the selected <input> or <textarea> or <select> element. Throws for non-input elements. However, if the element is inside the <label> element that has an associated control, returns the value of the control
+```js
+page.on('response', (data) => {});
+```
 
-await page.inputValue(selector);await page.inputValue(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+**Event data:** `Response`
 
-Promise<string># is
+---
 
-## Checked
+### `page.on('websocket')` — Added in: v1.9
 
-Added before v1.9 page.isChecked DiscouragedUse locator-based locator.isChecked() instead. Read more about locators
+Emitted when WebSocket request is sent.
 
-whether the element is checked. Throws if the element is not a checkbox or radio input
+```js
+page.on('websocket', (data) => {});
+```
 
-await page.isChecked(selector);await page.isChecked(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+**Event data:** `WebSocket`
 
-Promise<boolean># is
+---
 
-## Disabled
+### `page.on('worker')` — Added before v1.9
 
-Added before v1.9 page.isDisabled DiscouragedUse locator-based locator.isDisabled() instead. Read more about locators
+Emitted when a dedicated WebWorker is spawned by the page.
 
-whether the element is disabled, the opposite of enabled
+```js
+page.on('worker', (data) => {});
+```
 
-await page.isDisabled(selector);await page.isDisabled(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+**Event data:** `Worker`
 
-Promise<boolean># is
+---
 
-## Editable
+## Deprecated Methods
 
-Added before v1.9 page.isEditable DiscouragedUse locator-based locator.isEditable() instead. Read more about locators
+### `page.$()` — Added in: v1.9
 
-whether the element is editable
+> **Discouraged:** Use locator-based `page.locator()` instead.
 
-await page.isEditable(selector);await page.isEditable(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+Finds an element matching the specified selector. Returns `null` if no elements match.
 
-Promise<boolean># is
+```js
+const element = await page.$('css=button');
+```
 
-## Enabled
+**Arguments:**
 
-Added before v1.9 page.isEnabled DiscouragedUse locator-based locator.isEnabled() instead. Read more about locators
+| Parameter        | Type                 | Description                                                       |
+| ---------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`       | `string`             | A selector to query for.                                          |
+| `options.strict` | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
 
-whether the element is enabled
+**Returns:** `Promise<null | ElementHandle>`
 
-await page.isEnabled(selector);await page.isEnabled(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+---
 
-Promise<boolean># is
+### `page.$$()` — Added in: v1.9
 
-## Hidden
+> **Discouraged:** Use locator-based `page.locator()` instead.
 
-Added before v1.9 page.isHidden DiscouragedUse locator-based locator.isHidden() instead. Read more about locators
+Finds all elements matching the specified selector. Returns `[]` if no elements match.
 
-whether the element is hidden, the opposite of visible. selector that does not match any elements is considered hidden
+```js
+const elements = await page.$$('css=button');
+```
 
-await page.isHidden(selector);await page.isHidden(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# DeprecatedThis option is ignored. page.isHidden() does not wait for the element to become hidden and returns immediately
+**Arguments:**
 
-Promise<boolean># is
+| Parameter  | Type     | Description              |
+| ---------- | -------- | ------------------------ |
+| `selector` | `string` | A selector to query for. |
 
-## Visible
+**Returns:** `Promise<Array<ElementHandle>>`
 
-Added before v1.9 page.isVisible DiscouragedUse locator-based locator.isVisible() instead. Read more about locators
+---
 
-whether the element is visible. selector that does not match any elements is considered not visible
+### `page.$eval()` — Added in: v1.9
 
-await page.isVisible(selector);await page.isVisible(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# DeprecatedThis option is ignored. page.isVisible() does not wait for the element to become visible and returns immediately
+> **Discouraged:** Use `locator.evaluate()` or web-first assertions instead.
 
-Promise<boolean># press​ Added before v1.9 page.press DiscouragedUse locator-based locator.press() instead. Read more about locators. Focuses the element, and then uses keyboard.down() and keyboard.up(). key can specify the intended keyboardEvent.key value or a single character to generate the text for. A superset of the key values can be found here. Examples of the keys are: F1 - F12, Digit0- Digit9, KeyA- KeyZ, Backquote, Minus, Equal, Backslash, Backspace, Tab, Delete, Escape, ArrowDown, End, Enter, Home, Insert, PageDown, PageUp, ArrowRight, ArrowUp, etc. Following modification shortcuts are also supported: Shift, Control, Alt, Meta, ShiftLeft, ControlOrMeta. ControlOrMeta resolves to Control on Windows and Linux and to Meta on macOS. Holding down Shift will type the text that corresponds to the key in the upper case. If key is a single character, it is case-sensitive, so the values a and A will generate different respective texts. Shortcuts such as key: "Control+o", key: "Control++ or key: "Control+Shift+T" are supported as well. When specified with the modifier, modifier is pressed and being held while the subsequent key is being pressed
+Finds an element matching the selector and passes it as the first argument to `pageFunction`.
 
-const page = await browser.newPage();await page.goto('https://keycode.info');await page.press('body', 'A');await page.screenshot({ path: 'A.png' });await page.press('body', 'ArrowLeft');await page.screenshot({ path: 'ArrowLeft.png' });await page.press('body', 'Shift+O');await page.screenshot({ path: 'O.png' });await browser.close(); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. key string# Name of the key to press or a character to generate, such as ArrowLeft or a. options Object (optional) delay number (optional)# Time to wait between keydown and keyup in milliseconds. Defaults to 0. noWaitAfter boolean (optional)# DeprecatedThis option will default to true in the future. Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as navigating to inaccessible pages. Defaults to false. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+```js
+const searchValue = await page.$eval('#search', (el) => el.value);
+```
 
-Promise<void># select
+**Arguments:**
 
-## Option
+| Parameter        | Type                            | Description                                                       |
+| ---------------- | ------------------------------- | ----------------------------------------------------------------- |
+| `selector`       | `string`                        | A selector to query for.                                          |
+| `pageFunction`   | `function(Element) \| string`   | Function to be evaluated in the page context.                     |
+| `arg`            | `EvaluationArgument` (optional) | Optional argument to pass to `pageFunction`.                      |
+| `options.strict` | `boolean` (optional)            | Added in v1.14. Requires selector to resolve to a single element. |
 
-Added before v1.9 page.selectOption DiscouragedUse locator-based locator.selectOption() instead. Read more about locators. This method waits for an element matching selector, waits for actionability checks, waits until all specified options are present in the <select> element and selects these options. If the target element is not a <select> element, this method throws an error. However, if the element is inside the <label> element that has an associated control, the control will be used instead
+**Returns:** `Promise<Serializable>`
 
-the array of option values that have been successfully selected. Triggers a change and input event once all the provided options have been selected
+---
 
-// Single selection matching the value or labelpage.selectOption('select#colors', 'blue');// single selection matching the labelpage.selectOption('select#colors', { label: 'Blue' });// multiple selectionpage.selectOption('select#colors', ['red', 'green', 'blue']); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. values null | string | ElementHandle | Array<string> | Object | Array<ElementHandle> | Array<Object># value string (optional) Matches by option.value. Optional. label string (optional) Matches by option.label. Optional. index number (optional) Matches by the index. Optional. Options to select. If the <select> has the multiple attribute, all matching options are selected, otherwise only the first option matching one of the passed options is selected. String values are matching both values and labels. Option is considered matching if all specified properties match. options Object (optional) force boolean (optional) Added in: v1.13# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+### `page.$$eval()` — Added in: v1.9
 
-Promise<Array<string>># set
+> **Discouraged:** Use `locator.evaluateAll()` or web-first assertions instead.
 
-## Checked
+Finds all elements matching the selector and passes them as the first argument to `pageFunction`.
 
-Added in: v1.15 page.setChecked DiscouragedUse locator-based locator.setChecked() instead. Read more about locators. This method checks or unchecks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Ensure that matched element is a checkbox or a radio input. If not, this method throws. If the element already has the right checked state, this method returns immediately. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to click in the center of the element. Ensure that the element is now checked or unchecked. If not, this method throws. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
+```js
+const divCounts = await page.$$eval('div', (divs, min) => divs.length >= min, 10);
+```
 
-await page.setChecked(selector, checked);await page.setChecked(selector, checked, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. checked boolean# Whether to check or uncheck the checkbox. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional)# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional)# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it
+**Arguments:**
 
-Promise<void># set
+| Parameter      | Type                                 | Description                                   |
+| -------------- | ------------------------------------ | --------------------------------------------- |
+| `selector`     | `string`                             | A selector to query for.                      |
+| `pageFunction` | `function(Array<Element>) \| string` | Function to be evaluated in the page context. |
+| `arg`          | `EvaluationArgument` (optional)      | Optional argument to pass to `pageFunction`.  |
 
-## InputFiles
+**Returns:** `Promise<Serializable>`
 
-Added before v1.9 page.setInputFiles DiscouragedUse locator-based locator.setInputFiles() instead. Read more about locators. Sets the value of the file input to these file paths or files. If some of the filePaths are relative paths, then they are resolved relative to the current working directory. For empty array, clears the selected files. For inputs with a [webkitdirectory] attribute, only a single directory path is supported. This method expects selector to point to an input element. However, if the element is inside the <label> element that has an associated control, targets the control instead
+---
 
-await page.setInputFiles(selector, files);await page.setInputFiles(selector, files, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. files string | Array<string> | Object | Array<Object># name string File name mimeType string File type buffer Buffer File content options Object (optional) noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+### `page.check()` — Added before v1.9
 
-Promise<void># tap​ Added before v1.9 page.tap DiscouragedUse locator-based locator.tap() instead. Read more about locators. This method taps an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.touchscreen to tap the center of the element, or the specified position. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this. notepage.tap() the method will throw if hasTouch option of the browser context is false
+> **Discouraged:** Use locator-based `locator.check()` instead.
 
-await page.tap(selector);await page.tap(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. modifiers Array<"Alt" | "Control" | "ControlOrMeta" | "Meta" | "Shift"> (optional)# Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current modifiers back. If not specified, currently pressed modifiers are used. "ControlOrMeta" resolves to "Control" on Windows and Linux and to "Meta" on macOS. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it. Note that keyboard modifiers will be pressed regardless of trial to allow testing elements which are only visible when those keys are pressed
+Checks an element matching `selector`.
 
-Promise<void># text
+```js
+await page.check('input[type=checkbox]');
+```
 
-## Content
+**Arguments:**
 
-Added before v1.9 page.textContent DiscouragedUse locator-based locator.textContent() instead. Read more about locators
+| Parameter             | Type                 | Description                                                         |
+| --------------------- | -------------------- | ------------------------------------------------------------------- |
+| `selector`            | `string`             | A selector to search for an element.                                |
+| `options.force`       | `boolean` (optional) | Whether to bypass actionability checks. Defaults to `false`.        |
+| `options.noWaitAfter` | `boolean` (optional) | Deprecated. No effect.                                              |
+| `options.position`    | `Object` (optional)  | Added in v1.11. `{ x, y }` point relative to element.               |
+| `options.strict`      | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element.   |
+| `options.timeout`     | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).           |
+| `options.trial`       | `boolean` (optional) | Added in v1.11. Only perform actionability checks, skip the action. |
 
-element.textContent
+**Returns:** `Promise<void>`
 
-await page.textContent(selector);await page.textContent(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+---
 
-Promise<null | string># type​ Added before v1.9 page.type DeprecatedIn most cases, you should use locator.fill() instead. You only need to press keys one by one if there is special keyboard handling on the page - in this case use locator.pressSequentially(). Sends a keydown, keypress/input, and keyup event for each character in the text. page.type can be used to send fine-grained keyboard events. To fill values in form fields, use page.fill(). To press a special key, like Control or ArrowDown, use keyboard.press()
+### `page.click()` — Added before v1.9
 
-Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. text string# A text to type into a focused element. options Object (optional) delay number (optional)# Time to wait between key presses in milliseconds. Defaults to 0. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+> **Discouraged:** Use locator-based `locator.click()` instead.
 
-Promise<void># uncheck​ Added before v1.9 page.uncheck DiscouragedUse locator-based locator.uncheck() instead. Read more about locators. This method unchecks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Ensure that matched element is a checkbox or a radio input. If not, this method throws. If the element is already unchecked, this method returns immediately. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to click in the center of the element. Ensure that the element is now unchecked. If not, this method throws. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
+Clicks an element matching `selector`.
 
-await page.uncheck(selector);await page.uncheck(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional) Added in: v1.11# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it
+```js
+await page.click('button#submit');
+```
 
-Promise<void># wait
+**Arguments:**
 
-## ForNavigation
+| Parameter             | Type                                       | Description                                                         |
+| --------------------- | ------------------------------------------ | ------------------------------------------------------------------- |
+| `selector`            | `string`                                   | A selector to search for an element.                                |
+| `options.button`      | `"left" \| "right" \| "middle"` (optional) | Defaults to `left`.                                                 |
+| `options.clickCount`  | `number` (optional)                        | Number of clicks. Defaults to 1.                                    |
+| `options.delay`       | `number` (optional)                        | Time between mousedown and mouseup in milliseconds. Defaults to 0.  |
+| `options.force`       | `boolean` (optional)                       | Whether to bypass actionability checks. Defaults to `false`.        |
+| `options.modifiers`   | `Array<string>` (optional)                 | Modifier keys to press during the operation.                        |
+| `options.noWaitAfter` | `boolean` (optional)                       | Deprecated.                                                         |
+| `options.position`    | `Object` (optional)                        | `{ x, y }` point relative to element.                               |
+| `options.strict`      | `boolean` (optional)                       | Added in v1.14. Requires selector to resolve to a single element.   |
+| `options.timeout`     | `number` (optional)                        | Maximum time in milliseconds. Defaults to 0 (no timeout).           |
+| `options.trial`       | `boolean` (optional)                       | Added in v1.11. Only perform actionability checks, skip the action. |
 
-Added before v1.9 page.waitForNavigation DeprecatedThis method is inherently racy, please use page.waitForURL() instead. Waits for the main frame navigation and returns the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with null
+**Returns:** `Promise<void>`
 
-This resolves when the page navigates to a new URL or reloads. It is useful for when you run code which will indirectly cause the page to navigate. e.g. The click target has an onclick handler that triggers navigation from a setTimeout. Consider this example: // Start waiting for navigation before clicking. Note no await.const navigationPromise = page.waitForNavigation();await page.getByText('Navigate after timeout').click();await navigationPromise; noteUsage of the History API to change the URL is considered a navigation
+---
 
-options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. url string | RegExp | [URLPattern] | function(URL):boolean (optional)# A glob pattern, regex pattern, URL pattern, or predicate receiving URL to match while waiting for the navigation. Note that if the parameter is a string without wildcard characters, the method will wait for navigation to URL that is exactly equal to the string. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+### `page.dblclick()` — Added before v1.9
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+> **Discouraged:** Use locator-based `locator.dblclick()` instead.
 
-Promise<null | Response># wait
+Double clicks an element matching `selector`.
 
-## ForSelector
+```js
+await page.dblclick('button#edit');
+```
 
-Added before v1.9 page.waitForSelector DiscouragedUse web assertions that assert visibility or a locator-based locator.waitFor() instead. Read more about locators
+**Arguments:**
 
-when element specified by selector satisfies state option
+| Parameter             | Type                                       | Description                                                         |
+| --------------------- | ------------------------------------------ | ------------------------------------------------------------------- |
+| `selector`            | `string`                                   | A selector to search for an element.                                |
+| `options.button`      | `"left" \| "right" \| "middle"` (optional) | Defaults to `left`.                                                 |
+| `options.delay`       | `number` (optional)                        | Time between mousedown and mouseup in milliseconds. Defaults to 0.  |
+| `options.force`       | `boolean` (optional)                       | Whether to bypass actionability checks. Defaults to `false`.        |
+| `options.modifiers`   | `Array<string>` (optional)                 | Modifier keys to press.                                             |
+| `options.noWaitAfter` | `boolean` (optional)                       | Deprecated. No effect.                                              |
+| `options.position`    | `Object` (optional)                        | `{ x, y }` point relative to element.                               |
+| `options.strict`      | `boolean` (optional)                       | Added in v1.14. Requires selector to resolve to a single element.   |
+| `options.timeout`     | `number` (optional)                        | Maximum time in milliseconds. Defaults to 0 (no timeout).           |
+| `options.trial`       | `boolean` (optional)                       | Added in v1.11. Only perform actionability checks, skip the action. |
 
-null if waiting for hidden or detached. notePlaywright automatically waits for element to be ready before performing an action. Using Locator objects and web-first assertions makes the code wait-for-selector-free. Wait for the selector to satisfy state option (either appear/disappear from dom, or become visible/hidden). If at the moment of calling the method selector already satisfies the condition, the method will return immediately. If the selector doesn't satisfy the condition for the timeout milliseconds, the function will throw
+**Returns:** `Promise<void>`
 
-This method works across navigations: const { chromium } = require('playwright'); // Or 'firefox' or 'webkit'.(async () => { const browser = await chromium.launch(); const page = await browser.newPage(); for (const currentURL of ['https://google.com', 'https://bbc.com']) { await page.goto(currentURL); const element = await page.waitForSelector('img'); console.log('Loaded image: ' + await element.getAttribute('src')); } await browser.close();})(); Arguments selector string# A selector to query for. options Object (optional) state "attached" | "detached" | "visible" | "hidden" (optional)# Defaults to 'visible'. Can be either: 'attached' - wait for element to be present in DOM. 'detached' - wait for element to not be present in DOM. 'visible' - wait for element to have non-empty bounding box and no visibility:hidden. Note that element without any content or with display:none has an empty bounding box and is not considered visible. 'hidden' - wait for element to be either detached from DOM, or have an empty bounding box or visibility:hidden. This is opposite to the 'visible' option. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+---
 
-Promise<null | ElementHandle># wait
+### `page.dispatchEvent()` — Added before v1.9
 
-## ForTimeout
+> **Discouraged:** Use locator-based `locator.dispatchEvent()` instead.
 
-Added before v1.9 page.waitForTimeout DiscouragedNever wait for timeout in production. Tests that wait for time are inherently flaky. Use Locator actions and web assertions that wait automatically. Waits for the given timeout in milliseconds. Note that page.waitForTimeout() should only be used for debugging. Tests using the timer in production are going to be flaky. Use signals such as network events, selectors becoming visible and others instead
+Dispatches a DOM event on the matching element.
 
-// wait for 1 secondawait page.waitForTimeout(1000); Arguments timeout number# A timeout to wait for Returns Promise<void>#
+```js
+await page.dispatchEvent('button#submit', 'click');
+```
 
-add
+**Arguments:**
 
-## InitScript
+| Parameter         | Type                            | Description                                                       |
+| ----------------- | ------------------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`                        | A selector to search for an element.                              |
+| `type`            | `string`                        | DOM event type (e.g., `"click"`, `"dragstart"`).                  |
+| `eventInit`       | `EvaluationArgument` (optional) | Optional event-specific initialization properties.                |
+| `options.strict`  | `boolean` (optional)            | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)             | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-Added before v1.9 page.addInitScript Adds a script which would be evaluated in one of the following scenarios: Whenever the page is navigated. Whenever the child frame is attached or navigated. In this case, the script is evaluated in the context of the newly attached frame. The script is evaluated after the document was created but before any of its scripts were run. This is useful to amend the JavaScript environment, e.g. to seed Math.random
+**Returns:** `Promise<void>`
 
-An example of overriding Math.random before the page loads: // preload.jsMath.random = () => 42; // In your playwright script, assuming the preload.js file is in same directoryawait page.addInitScript({ path: './preload.js' }); await page.addInitScript(mock => { window.mock = mock;}, mock); noteThe order of evaluation of multiple scripts installed via browserContext.addInitScript() and page.addInitScript() is not defined
+---
 
-script function | string | Object# path string (optional) Path to the JavaScript file. If path is a relative path, then it is resolved relative to the current working directory. Optional. content string (optional) Raw script content. Optional. Script to be evaluated in the page. arg Serializable (optional)# Optional argument to pass to script (only supported when passing a function)
+### `page.fill()` — Added before v1.9
 
-Promise<Disposable># add
+> **Discouraged:** Use locator-based `locator.fill()` instead.
 
-## LocatorHandler
+Fills an input, textarea, or contenteditable element.
 
-Added in: v1.42 page.addLocatorHandler When testing a web page, sometimes unexpected overlays like a "Sign up" dialog appear and block actions you want to automate, e.g. clicking a button. These overlays don't always show up in the same way or at the same time, making them tricky to handle in automated tests. This method lets you set up a special function, called a handler, that activates when it detects that overlay is visible. The handler's job is to remove the overlay, allowing your test to continue as if the overlay wasn't there. Things to keep in mind: When an overlay is shown predictably, we recommend explicitly waiting for it in your test and dismissing it as a part of your normal test flow, instead of using page.addLocatorHandler(). Playwright checks for the overlay every time before executing or retrying an action that requires an actionability check, or before performing an auto-waiting assertion check. When overlay is visible, Playwright calls the handler first, and then proceeds with the action/assertion. Note that the handler is only called when you perform an action/assertion - if the overlay becomes visible but you don't perform any actions, the handler will not be triggered. After executing the handler, Playwright will ensure that overlay that triggered the handler is not visible anymore. You can opt-out of this behavior with noWaitAfter. The execution time of the handler counts towards the timeout of the action/assertion that executed the handler. If your handler takes too long, it might cause timeouts. You can register multiple handlers. However, only a single handler will be running at a time. Make sure the actions within a handler don't depend on another handler. warningRunning the handler will alter your page state mid-test. For example it will change the currently focused element and move the mouse. Make sure that actions that run after the handler are self-contained and do not rely on the focus and mouse state being unchanged.For example, consider a test that calls locator.focus() followed by keyboard.press(). If your handler clicks a button between these two actions, the focused element most likely will be wrong, and key press will happen on the unexpected element. Use locator.press() instead to avoid this problem.Another example is a series of mouse actions, where mouse.move() is followed by mouse.down(). Again, when the handler runs between these two actions, the mouse position will be wrong during the mouse down. Prefer self-contained actions like locator.click() that do not rely on the state being unchanged by a handler
+```js
+await page.fill('#username', 'admin');
+```
 
-An example that closes a "Sign up to the newsletter" dialog when it appears: // Setup the handler.await page.addLocatorHandler(page.getByText('Sign up to the newsletter'), async () => { await page.getByRole('button', { name: 'No thanks' }).click();});// Write the test as usual.await page.goto('https://example.com');await page.getByRole('button', { name: 'Start here' }).click(); An example that skips the "Confirm your security details" page when it is shown: // Setup the handler.await page.addLocatorHandler(page.getByText('Confirm your security details'), async () => { await page.getByRole('button', { name: 'Remind me later' }).click();});// Write the test as usual.await page.goto('https://example.com');await page.getByRole('button', { name: 'Start here' }).click(); An example with a custom callback on every actionability check. It uses a <body> locator that is always visible, so the handler is called before every actionability check. It is important to specify noWaitAfter, because the handler does not hide the <body> element. // Setup the handler.await page.addLocatorHandler(page.locator('body'), async () => { await page.evaluate(() => window.removeObstructionsForTestIfNeeded());}, { noWaitAfter: true });// Write the test as usual.await page.goto('https://example.com');await page.getByRole('button', { name: 'Start here' }).click(); Handler takes the original locator as an argument. You can also automatically remove the handler after a number of invocations by setting times: await page.addLocatorHandler(page.getByLabel('Close'), async locator => { await locator.click();}, { times: 1 }); Arguments locator Locator# Locator that triggers the handler. handler function(Locator):Promise<Object># Function that should be run once locator appears. This function should get rid of the element that blocks actions like click. options Object (optional) noWaitAfter boolean (optional) Added in: v1.44# By default, after calling the handler Playwright will wait until the overlay becomes hidden, and only then Playwright will continue with the action/assertion that triggered the handler. This option allows to opt-out of this behavior, so that overlay can stay visible after the handler has run. times number (optional) Added in: v1.44# Specifies the maximum number of times this handler should be called. Unlimited by default
+**Arguments:**
 
-Promise<void># add
+| Parameter             | Type                 | Description                                                                  |
+| --------------------- | -------------------- | ---------------------------------------------------------------------------- |
+| `selector`            | `string`             | A selector to search for an element.                                         |
+| `value`               | `string`             | Value to fill the element with.                                              |
+| `options.force`       | `boolean` (optional) | Added in v1.13. Whether to bypass actionability checks. Defaults to `false`. |
+| `options.noWaitAfter` | `boolean` (optional) | Deprecated. No effect.                                                       |
+| `options.strict`      | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element.            |
+| `options.timeout`     | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).                    |
 
-## ScriptTag
+**Returns:** `Promise<void>`
 
-Added before v1.9 page.addScriptTag Adds a <script> tag into the page with the desired url or content
+---
 
-the added tag when the script's onload fires or when the script content was injected into frame
+### `page.focus()` — Added before v1.9
 
-await page.addScriptTag();await page.addScriptTag(options); Arguments options Object (optional) content string (optional)# Raw JavaScript content to be injected into frame. path string (optional)# Path to the JavaScript file to be injected into frame. If path is a relative path, then it is resolved relative to the current working directory. type string (optional)# Script type. Use 'module' in order to load a JavaScript ES6 module. See script for more details. url string (optional)# URL of a script to be added
+> **Discouraged:** Use locator-based `locator.focus()` instead.
 
-Promise<ElementHandle># add
+Fetches an element with `selector` and focuses it.
 
-## StyleTag
+```js
+await page.focus('#username');
+```
 
-Added before v1.9 page.addStyleTag Adds a <link rel="stylesheet"> tag into the page with the desired url or a <style type="text/css"> tag with the content
+**Arguments:**
 
-the added tag when the stylesheet's onload fires or when the CSS content was injected into frame
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-await page.addStyleTag();await page.addStyleTag(options); Arguments options Object (optional) content string (optional)# Raw CSS content to be injected into frame. path string (optional)# Path to the CSS file to be injected into frame. If path is a relative path, then it is resolved relative to the current working directory. url string (optional)# URL of the <link> tag
+**Returns:** `Promise<void>`
 
-Promise<ElementHandle># aria
+---
 
-## Snapshot
+### `page.getAttribute()` — Added before v1.9
 
-Added in: v1.59 page.ariaSnapshot Captures the aria snapshot of the page. Read more about aria snapshots
+> **Discouraged:** Use locator-based `locator.getAttribute()` instead.
 
-await page.ariaSnapshot();await page.ariaSnapshot(options); Arguments options Object (optional) depth number (optional)# When specified, limits the depth of the snapshot. mode "ai" | "default" (optional)# When set to "ai", returns a snapshot optimized for AI consumption: including element references like [ref=e2] and snapshots of <iframe>s. Defaults to "default". timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+Returns the element attribute value.
 
-Promise<string># bring
+```js
+const href = await page.getAttribute('a', 'href');
+```
 
-## ToFront
+**Arguments:**
 
-Added before v1.9 page.bringToFront Brings page to front (activates tab)
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `name`            | `string`             | Attribute name to get the value for.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-await page.bringToFront(); Returns Promise<void># cancel
+**Returns:** `Promise<null | string>`
 
-## PickLocator
+---
 
-Added in: v1.59 page.cancelPickLocator Cancels an ongoing page.pickLocator() call by deactivating pick locator mode. If no pick locator mode is active, this method is a no-op
+### `page.hover()` — Added before v1.9
 
-await page.cancelPickLocator(); Returns Promise<void># clear
+> **Discouraged:** Use locator-based `locator.hover()` instead.
 
-## ConsoleMessages
+Hovers over an element matching `selector`.
 
-Added in: v1.59 page.clearConsoleMessages Clears all stored console messages from this page. Subsequent calls to page.consoleMessages() will only return messages logged after the clear
+```js
+await page.hover('button#menu');
+```
 
-await page.clearConsoleMessages(); Returns Promise<void># clear
+**Arguments:**
 
-## PageErrors
+| Parameter             | Type                       | Description                                                         |
+| --------------------- | -------------------------- | ------------------------------------------------------------------- |
+| `selector`            | `string`                   | A selector to search for an element.                                |
+| `options.force`       | `boolean` (optional)       | Whether to bypass actionability checks. Defaults to `false`.        |
+| `options.modifiers`   | `Array<string>` (optional) | Modifier keys to press.                                             |
+| `options.noWaitAfter` | `boolean` (optional)       | Added in v1.28. Deprecated. No effect.                              |
+| `options.position`    | `Object` (optional)        | `{ x, y }` point relative to element.                               |
+| `options.strict`      | `boolean` (optional)       | Added in v1.14. Requires selector to resolve to a single element.   |
+| `options.timeout`     | `number` (optional)        | Maximum time in milliseconds. Defaults to 0 (no timeout).           |
+| `options.trial`       | `boolean` (optional)       | Added in v1.11. Only perform actionability checks, skip the action. |
 
-Added in: v1.59 page.clearPageErrors Clears all stored page errors from this page. Subsequent calls to page.pageErrors() will only return errors thrown after the clear
+**Returns:** `Promise<void>`
 
-await page.clearPageErrors(); Returns Promise<void># close​ Added before v1.9 page.close If runBeforeUnload is false, does not run any unload handlers and waits for the page to be closed. If runBeforeUnload is true the method will run unload handlers, but will not wait for the page to close. By default, page.close() does not run beforeunload handlers. noteif runBeforeUnload is passed as true, a beforeunload dialog might be summoned and should be handled manually via page.on('dialog') event
+---
 
-await page.close();await page.close(options); Arguments options Object (optional) reason string (optional) Added in: v1.40# The reason to be reported to the operations interrupted by the page closure. runBeforeUnload boolean (optional)# Defaults to false. Whether to run the before unload page handlers
+### `page.innerHTML()` — Added before v1.9
 
-Promise<void># console
+> **Discouraged:** Use locator-based `locator.innerHTML()` instead.
 
-## Messages
+Returns `element.innerHTML`.
 
-Added in: v1.56 page.consoleMessages Returns up to (currently) 200 last console messages from this page. See page.on('console') for more details
+```js
+const html = await page.innerHTML('.main-container');
+```
 
-await page.consoleMessages();await page.consoleMessages(options); Arguments options Object (optional) filter "all" | "since-navigation" (optional) Added in: v1.59# Controls which messages are returned: Returns Promise<Array<ConsoleMessage>># content​ Added before v1.9 page.content Gets the full HTML contents of the page, including the doctype
+**Arguments:**
 
-await page.content(); Returns Promise<string># context​ Added before v1.9 page.context Get the browser context that the page belongs to
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-page.context(); Returns BrowserContext# drag
+**Returns:** `Promise<string>`
 
-## AndDrop
+---
 
-Added in: v1.13 page.dragAndDrop This method drags the source element to the target element. It will first move to the source element, perform a mousedown, then move to the target element and perform a mouseup
+### `page.innerText()` — Added before v1.9
 
-await page.dragAndDrop('#source', '#target');// or specify exact positions relative to the top-left corners of the elements:await page.dragAndDrop('#source', '#target', { sourcePosition: { x: 34, y: 7 }, targetPosition: { x: 10, y: 20 },}); Arguments source string# A selector to search for an element to drag. If there are multiple elements satisfying the selector, the first will be used. target string# A selector to search for an element to drop onto. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. sourcePosition Object (optional) Added in: v1.14# x number y number Clicks on the source element at this point relative to the top-left corner of the element's padding box. If not specified, some visible point of the element is used. steps number (optional) Added in: v1.57# Defaults to 1. Sends n interpolated mousemove events to represent travel between the mousedown and mouseup of the drag. When set to 1, emits a single mousemove event at the destination location. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. targetPosition Object (optional) Added in: v1.14# x number y number Drops on the target element at this point relative to the top-left corner of the element's padding box. If not specified, some visible point of the element is used. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional)# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it
+> **Discouraged:** Use locator-based `locator.innerText()` instead.
 
-Promise<void># emulate
+Returns `element.innerText`.
 
-## Media
+```js
+const text = await page.innerText('h1');
+```
 
-Added before v1.9 page.emulateMedia This method changes the CSS media type through the media argument, and/or the 'prefers-colors-scheme' media feature, using the colorScheme argument
+**Arguments:**
 
-await page.evaluate(() => matchMedia('screen').matches);// → trueawait page.evaluate(() => matchMedia('print').matches);// → falseawait page.emulateMedia({ media: 'print' });await page.evaluate(() => matchMedia('screen').matches);// → falseawait page.evaluate(() => matchMedia('print').matches);// → trueawait page.emulateMedia({});await page.evaluate(() => matchMedia('screen').matches);// → trueawait page.evaluate(() => matchMedia('print').matches);// → false await page.emulateMedia({ colorScheme: 'dark' });await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);// → trueawait page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);// → false Arguments options Object (optional) colorScheme null | "light" | "dark" | "no-preference" (optional) Added in: v1.9# Emulates prefers-colors-scheme media feature, supported values are 'light' and 'dark'. Passing null disables color scheme emulation. 'no-preference' is deprecated. contrast null | "no-preference" | "more" (optional) Added in: v1.51# Emulates 'prefers-contrast' media feature, supported values are 'no-preference', 'more'. Passing null disables contrast emulation. forcedColors null | "active" | "none" (optional) Added in: v1.15# Emulates 'forced-colors' media feature, supported values are 'active' and 'none'. Passing null disables forced colors emulation. media null | "screen" | "print" (optional) Added in: v1.9# Changes the CSS media type of the page. The only allowed values are 'screen', 'print' and null. Passing null disables CSS media emulation. reducedMotion null | "reduce" | "no-preference" (optional) Added in: v1.12# Emulates 'prefers-reduced-motion' media feature, supported values are 'reduce', 'no-preference'. Passing null disables reduced motion emulation
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-Promise<void># evaluate​ Added before v1.9 page.evaluate Returns the value of the pageFunction invocation. If the function passed to the page.evaluate() returns a Promise, then page.evaluate() would wait for the promise to resolve and return its value. If the function passed to the page.evaluate() returns a non-Serializable value, then page.evaluate() resolves to undefined. Playwright also supports transferring some additional values that are not serializable by JSON: -0, NaN, Infinity, -Infinity
+**Returns:** `Promise<string>`
 
-Passing argument to pageFunction: const result = await page.evaluate(([x, y]) => { return Promise.resolve(x \* y);}, [7, 8]);console.log(result); // prints "56" A string can also be passed in instead of a function: console.log(await page.evaluate('1 + 2')); // prints "3"const x = 10;console.log(await page.evaluate(`1 + ${x}`)); // prints "11" ElementHandle instances can be passed as an argument to the page.evaluate(): const bodyHandle = await page.evaluate('document.body');const html = await page.evaluate<string, HTMLElement>(([body, suffix]) => body.innerHTML + suffix, [bodyHandle, 'hello']);await bodyHandle.dispose(); Arguments pageFunction function | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction
+---
 
-Promise<Serializable># evaluate
+### `page.inputValue()` — Added in: v1.13
 
-## Handle
+> **Discouraged:** Use locator-based `locator.inputValue()` instead.
 
-Added before v1.9 page.evaluateHandle Returns the value of the pageFunction invocation as a JSHandle. The only difference between page.evaluate() and page.evaluateHandle() is that page.evaluateHandle() returns JSHandle. If the function passed to the page.evaluateHandle() returns a Promise, then page.evaluateHandle() would wait for the promise to resolve and return its value
+Returns `input.value` for `<input>`, `<textarea>` or `<select>` elements.
 
-// Handle for the window object.const aWindowHandle = await page.evaluateHandle(() => Promise.resolve(window)); A string can also be passed in instead of a function: const aHandle = await page.evaluateHandle('document'); // Handle for the 'document' JSHandle instances can be passed as an argument to the page.evaluateHandle(): const aHandle = await page.evaluateHandle(() => document.body);const resultHandle = await page.evaluateHandle(body => body.innerHTML, aHandle);console.log(await resultHandle.jsonValue());await resultHandle.dispose(); Arguments pageFunction function | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction
+```js
+const value = await page.inputValue('#search');
+```
 
-Promise<JSHandle># expose
+**Arguments:**
 
-## Binding
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-Added before v1.9 page.exposeBinding The method adds a function called name on the window object of every frame in this page. When called, the function executes callback and returns a Promise which resolves to the return value of callback. If the callback returns a Promise, it will be awaited. The first argument of the callback function contains information about the caller: { browserContext: BrowserContext, page: Page, frame: Frame }. See browserContext.exposeBinding() for the context-wide version. noteFunctions installed via page.exposeBinding() survive navigations
+**Returns:** `Promise<string>`
 
-An example of exposing page URL to all frames in a page: const { webkit } = require('playwright'); // Or 'chromium' or 'firefox'.(async () => { const browser = await webkit.launch({ headless: false }); const context = await browser.newContext(); const page = await context.newPage(); await page.exposeBinding('pageURL', ({ page }) => page.url()); await page.setContent(`<script> async function onClick() { document.querySelector('div').textContent = await window.pageURL(); } </script> <button onclick="onClick()">Click me</button> <div></div>`); await page.click('button');})(); Arguments name string# Name of the function on the window object. callback function# Callback function that will be called in the Playwright's context. options Object (optional) handle boolean (optional)# DeprecatedThis option will be removed in the future. Whether to pass the argument as a handle, instead of passing by value. When passing a handle, only one argument is supported. When passing by value, multiple arguments are supported
+---
 
-Promise<Disposable># expose
+### `page.isChecked()` — Added before v1.9
 
-## Function
+> **Discouraged:** Use locator-based `locator.isChecked()` instead.
 
-Added before v1.9 page.exposeFunction The method adds a function called name on the window object of every frame in the page. When called, the function executes callback and returns a Promise which resolves to the return value of callback. If the callback returns a Promise, it will be awaited. See browserContext.exposeFunction() for context-wide exposed function. noteFunctions installed via page.exposeFunction() survive navigations
+Returns whether the element is checked. Throws if not a checkbox or radio input.
 
-An example of adding a sha256 function to the page: const { webkit } = require('playwright'); // Or 'chromium' or 'firefox'.const crypto = require('crypto');(async () => { const browser = await webkit.launch({ headless: false }); const page = await browser.newPage(); await page.exposeFunction('sha256', text => crypto.createHash('sha256').update(text).digest('hex'), ); await page.setContent(`<script> async function onClick() { document.querySelector('div').textContent = await window.sha256('PLAYWRIGHT'); } </script> <button onclick="onClick()">Click me</button> <div></div>`); await page.click('button');})(); Arguments name string# Name of the function on the window object callback function# Callback function which will be called in Playwright's context
+```js
+const checked = await page.isChecked('input[type=checkbox]');
+```
 
-Promise<Disposable># frame​ Added before v1.9 page.frame Returns frame matching the specified criteria. Either name or url must be specified
+**Arguments:**
 
-const frame = page.frame('frame-name'); const frame = page.frame({ url: /._domain._/ }); Arguments frameSelector string | Object# name string (optional) Frame name specified in the iframe's name attribute. Optional. url string | RegExp | [URLPattern] | function(URL):boolean (optional) A glob pattern, regex pattern, URL pattern, or predicate receiving frame's url as a URL object. Optional. Frame name or other frame lookup options
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-null | Frame# frame
+**Returns:** `Promise<boolean>`
 
-## Locator
+---
 
-Added in: v1.17 page.frameLocator When working with iframes, you can create a frame locator that will enter the iframe and allow selecting elements in that iframe
+### `page.isDisabled()` — Added before v1.9
 
-Following snippet locates element with text "Submit" in the iframe with id my-frame, like <iframe id="my-frame">: const locator = page.frameLocator('#my-iframe').getByText('Submit');await locator.click(); Arguments selector string# A selector to use when resolving DOM element
+> **Discouraged:** Use locator-based `locator.isDisabled()` instead.
 
-FrameLocator# frames​ Added before v1.9 page.frames An array of all frames attached to the page
+Returns whether the element is disabled.
 
-page.frames(); Returns Array<Frame># get
+```js
+const disabled = await page.isDisabled('button');
+```
 
-## ByAltText
+**Arguments:**
 
-Added in: v1.27 page.getByAltText Allows locating elements by their alt text
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-For example, this method will find the image by alt text "Playwright logo": <img alt='Playwright logo'> await page.getByAltText('Playwright logo').click(); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+**Returns:** `Promise<boolean>`
 
-Locator# get
+---
 
-## ByLabel
+### `page.isEditable()` — Added before v1.9
 
-Added in: v1.27 page.getByLabel Allows locating input elements by the text of the associated <label> or aria-labelledby element, or by the aria-label attribute
+> **Discouraged:** Use locator-based `locator.isEditable()` instead.
 
-For example, this method will find inputs by label "Username" and "Password" in the following DOM: <input aria-label="Username"><label for="password-input">Password:</label><input id="password-input"> await page.getByLabel('Username').fill('john');await page.getByLabel('Password').fill('secret'); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+Returns whether the element is editable.
 
-Locator# get
+```js
+const editable = await page.isEditable('input#name');
+```
 
-## ByPlaceholder
+**Arguments:**
 
-Added in: v1.27 page.getByPlaceholder Allows locating input elements by the placeholder text
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-For example, consider the following DOM structure. <input type="email" placeholder="name@example.com" /> You can fill the input after locating it by the placeholder text: await page .getByPlaceholder('name@example.com') .fill('playwright@microsoft.com'); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+**Returns:** `Promise<boolean>`
 
-Locator# get
+---
 
-## ByRole
+### `page.isEnabled()` — Added before v1.9
 
-Added in: v1.27 page.getByRole Allows locating elements by their ARIA role, ARIA attributes and accessible name
+> **Discouraged:** Use locator-based `locator.isEnabled()` instead.
 
-Consider the following DOM structure. <h3>Sign up</h3><label> <input type="checkbox" /> Subscribe</label><br/><button>Submit</button> You can locate each element by its implicit role: await expect(page.getByRole('heading', { name: 'Sign up' })).toBeVisible();await page.getByRole('checkbox', { name: 'Subscribe' }).check();await page.getByRole('button', { name: /submit/i }).click(); Arguments role "alert" | "alertdialog" | "application" | "article" | "banner" | "blockquote" | "button" | "caption" | "cell" | "checkbox" | "code" | "columnheader" | "combobox" | "complementary" | "contentinfo" | "definition" | "deletion" | "dialog" | "directory" | "document" | "emphasis" | "feed" | "figure" | "form" | "generic" | "grid" | "gridcell" | "group" | "heading" | "img" | "insertion" | "link" | "list" | "listbox" | "listitem" | "log" | "main" | "marquee" | "math" | "meter" | "menu" | "menubar" | "menuitem" | "menuitemcheckbox" | "menuitemradio" | "navigation" | "none" | "note" | "option" | "paragraph" | "presentation" | "progressbar" | "radio" | "radiogroup" | "region" | "row" | "rowgroup" | "rowheader" | "scrollbar" | "search" | "searchbox" | "separator" | "slider" | "spinbutton" | "status" | "strong" | "subscript" | "superscript" | "switch" | "tab" | "table" | "tablist" | "tabpanel" | "term" | "textbox" | "time" | "timer" | "toolbar" | "tooltip" | "tree" | "treegrid" | "treeitem"# Required aria role. options Object (optional) checked boolean (optional)# An attribute that is usually set by aria-checked or native <input type=checkbox> controls. Learn more about aria-checked. disabled boolean (optional)# An attribute that is usually set by aria-disabled or disabled. noteUnlike most other attributes, disabled is inherited through the DOM hierarchy. Learn more about aria-disabled. exact boolean (optional) Added in: v1.28# Whether name is matched exactly: case-sensitive and whole-string. Defaults to false. Ignored when name is a regular expression. Note that exact match still trims whitespace. expanded boolean (optional)# An attribute that is usually set by aria-expanded. Learn more about aria-expanded. includeHidden boolean (optional)# Option that controls whether hidden elements are matched. By default, only non-hidden elements, as defined by ARIA, are matched by role selector. Learn more about aria-hidden. level number (optional)# A number attribute that is usually present for roles heading, listitem, row, treeitem, with default values for <h1>-<h6> elements. Learn more about aria-level. name string | RegExp (optional)# Option to match the accessible name. By default, matching is case-insensitive and searches for a substring, use exact to control this behavior. Learn more about accessible name. pressed boolean (optional)# An attribute that is usually set by aria-pressed. Learn more about aria-pressed. selected boolean (optional)# An attribute that is usually set by aria-selected. Learn more about aria-selected
+Returns whether the element is enabled.
 
-Locator# Details Role selector does not replace accessibility audits and conformance tests, but rather gives early feedback about the ARIA guidelines. Many html elements have an implicitly defined role that is recognized by the role selector. You can find all the supported roles here. ARIA guidelines do not recommend duplicating implicit roles and attributes by setting role and/or aria-\* attributes to default values. get
+```js
+const enabled = await page.isEnabled('button');
+```
 
-## ByTestId
+**Arguments:**
 
-Added in: v1.27 page.getByTestId Locate element by the test id
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-Consider the following DOM structure. <button data-testid="directions">Itinéraire</button> You can locate the element by its test id: await page.getByTestId('directions').click(); Arguments testId string | RegExp# Id to locate the element by
+**Returns:** `Promise<boolean>`
 
-Locator# Details By default, the data-testid attribute is used as a test id. Use selectors.setTestIdAttribute() to configure a different test id attribute if necessary. // Set custom test id attribute from @playwright/test config:import { defineConfig } from '@playwright/test';export default defineConfig({ use: { testIdAttribute: 'data-pw' },}); get
+---
 
-## ByText
+### `page.isHidden()` — Added before v1.9
 
-Added in: v1.27 page.getByText Allows locating elements that contain given text. See also locator.filter() that allows to match by another criteria, like an accessible role, and then filter by the text content
+> **Discouraged:** Use locator-based `locator.isHidden()` instead.
 
-Consider the following DOM structure: <div>Hello <span>world</span></div><div>Hello</div> You can locate by text substring, exact string, or a regular expression: // Matches <span>page.getByText('world');// Matches first <div>page.getByText('Hello world');// Matches second <div>page.getByText('Hello', { exact: true });// Matches both <div>spage.getByText(/Hello/);// Matches second <div>page.getByText(/^hello$/i); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+Returns whether the element is hidden. Selectors that don't match any elements are considered hidden.
 
-Locator# Details Matching by text always normalizes whitespace, even with exact match. For example, it turns multiple spaces into one, turns line breaks into spaces and ignores leading and trailing whitespace. Input elements of the type button and submit are matched by their value instead of the text content. For example, locating by text "Log in" matches <input type=button value="Log in">. get
+```js
+const hidden = await page.isHidden('.overlay');
+```
 
-## ByTitle
+**Arguments:**
 
-Added in: v1.27 page.getByTitle Allows locating elements by their title attribute
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Deprecated. This option is ignored.                               |
 
-Consider the following DOM structure. <span title='Issues count'>25 issues</span> You can check the issues count after locating it by the title text: await expect(page.getByTitle('Issues count')).toHaveText('25 issues'); Arguments text string | RegExp# Text to locate the element for. options Object (optional) exact boolean (optional)# Whether to find an exact match: case-sensitive and whole-string. Default to false. Ignored when locating by a regular expression. Note that exact match still trims whitespace
+**Returns:** `Promise<boolean>`
 
-Locator# go
+---
 
-## Back
+### `page.isVisible()` — Added before v1.9
 
-Added before v1.9 page.goBack Returns the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If cannot go back, returns null. Navigate to the previous page in history
+> **Discouraged:** Use locator-based `locator.isVisible()` instead.
 
-await page.goBack();await page.goBack(options); Arguments options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+Returns whether the element is visible. Selectors that don't match any elements are considered not visible.
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+```js
+const visible = await page.isVisible('button#submit');
+```
 
-Promise<null | Response># go
+**Arguments:**
 
-## Forward
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Deprecated. This option is ignored.                               |
 
-Added before v1.9 page.goForward Returns the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If cannot go forward, returns null. Navigate to the next page in history
+**Returns:** `Promise<boolean>`
 
-await page.goForward();await page.goForward(options); Arguments options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+---
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+### `page.press()` — Added before v1.9
 
-Promise<null | Response># goto​ Added before v1.9 page.goto Returns the main resource response. In case of multiple redirects, the navigation will resolve with the first non-redirect response. The method will throw an error if: there's an SSL error (e.g. in case of self-signed certificates). target URL is invalid. the timeout is exceeded during navigation. the remote server does not respond or is unreachable. the main resource failed to load. The method will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error". The status code for such responses can be retrieved by calling response.status(). noteThe method either throws an error or returns a main resource response. The only exceptions are navigation to about:blank or navigation to the same URL with a different hash, which would succeed and return null. noteHeadless mode doesn't support navigation to a PDF document. See the upstream issue
+> **Discouraged:** Use locator-based `locator.press()` instead.
 
-await page.goto(url);await page.goto(url, options); Arguments url string# URL to navigate page to. The url should include scheme, e.g. https://. When a baseURL via the context options was provided and the passed URL is a path, it gets merged via the new URL() constructor. options Object (optional) referer string (optional)# Referer header value. If provided it will take preference over the referer header value set by page.setExtraHTTPHeaders(). timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+Focuses the element and uses `keyboard.down()` and `keyboard.up()` to press the key.
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+```js
+await page.press('body', 'A');
+await page.press('body', 'Control+c');
+```
 
-Promise<null | Response># is
+**Arguments:**
 
-## Closed
+| Parameter             | Type                 | Description                                                       |
+| --------------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`            | `string`             | A selector to search for an element.                              |
+| `key`                 | `string`             | Name of the key to press or a character to generate.              |
+| `options.delay`       | `number` (optional)  | Time between keydown and keyup in milliseconds. Defaults to 0.    |
+| `options.noWaitAfter` | `boolean` (optional) | Deprecated.                                                       |
+| `options.strict`      | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout`     | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-Added before v1.9 page.isClosed Indicates that the page has been closed
+**Returns:** `Promise<void>`
 
-page.isClosed(); Returns boolean# locator​ Added in: v1.14 page.locator The method returns an element locator that can be used to perform actions on this page / frame. Locator is resolved to the element immediately before performing an action, so a series of actions on the same locator can in fact be performed on different DOM elements. That would happen if the DOM structure between those actions has changed. Learn more about locators
+---
 
-page.locator(selector);page.locator(selector, options); Arguments selector string# A selector to use when resolving DOM element. options Object (optional) has Locator (optional)# Narrows down the results of the method to those which contain elements matching this relative locator. For example, article that has text=Playwright matches <article><div>Playwright</div></article>. Inner locator must be relative to the outer locator and is queried starting with the outer locator match, not the document root. For example, you can find content that has div in <article><content><div>Playwright</div></content></article>. However, looking for content that has article div will fail, because the inner locator must be relative and should not use any elements outside the content. Note that outer and inner locators must belong to the same frame. Inner locator must not contain FrameLocators. hasNot Locator (optional) Added in: v1.33# Matches elements that do not contain an element that matches an inner locator. Inner locator is queried against the outer one. For example, article that does not have div matches <article><span>Playwright</span></article>. Note that outer and inner locators must belong to the same frame. Inner locator must not contain FrameLocators. hasNotText string | RegExp (optional) Added in: v1.33# Matches elements that do not contain specified text somewhere inside, possibly in a child or a descendant element. When passed a string, matching is case-insensitive and searches for a substring. hasText string | RegExp (optional)# Matches elements containing specified text somewhere inside, possibly in a child or a descendant element. When passed a string, matching is case-insensitive and searches for a substring. For example, "Playwright" matches <article><div>Playwright</div></article>
+### `page.selectOption()` — Added before v1.9
 
-Locator# main
+> **Discouraged:** Use locator-based `locator.selectOption()` instead.
 
-## Frame
+Selects options in a `<select>` element.
 
-Added before v1.9 page.mainFrame The page's main frame. Page is guaranteed to have a main frame which persists during navigations
+```js
+page.selectOption('select#colors', 'blue');
+page.selectOption('select#colors', { label: 'Blue' });
+page.selectOption('select#colors', ['red', 'green', 'blue']);
+```
 
-page.mainFrame(); Returns Frame# opener​ Added before v1.9 page.opener Returns the opener for popup pages and null for others. If the opener has been closed already the returns null
+**Arguments:**
 
-await page.opener(); Returns Promise<null | Page># page
+| Parameter             | Type                                                                | Description                                                       |
+| --------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `selector`            | `string`                                                            | A selector to search for an element.                              |
+| `values`              | `null \| string \| ElementHandle \| Array<string> \| Object \| ...` | Options to select.                                                |
+| `options.force`       | `boolean` (optional)                                                | Added in v1.13. Whether to bypass actionability checks.           |
+| `options.noWaitAfter` | `boolean` (optional)                                                | Deprecated. No effect.                                            |
+| `options.strict`      | `boolean` (optional)                                                | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout`     | `number` (optional)                                                 | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-## Errors
+**Returns:** `Promise<Array<string>>`
 
-Added in: v1.56 page.pageErrors Returns up to (currently) 200 last page errors from this page. See page.on('pageerror') for more details
+---
 
-await page.pageErrors();await page.pageErrors(options); Arguments options Object (optional) filter "all" | "since-navigation" (optional) Added in: v1.59# Controls which errors are returned: Returns Promise<Array<Error>># pause​ Added in: v1.9 page.pause Pauses script execution. Playwright will stop executing the script and wait for the user to either press the 'Resume' button in the page overlay or to call playwright.resume() in the DevTools console. User can inspect selectors or perform manual steps while paused. Resume will continue running the original script from the place it was paused. noteThis method requires Playwright to be started in a headed mode, with a falsy headless option
+### `page.setChecked()` — Added in: v1.15
 
-await page.pause(); Returns Promise<void># pdf​ Added before v1.9 page.pdf Returns the PDF buffer. page.pdf() generates a pdf of the page with print css media. To generate a pdf with screen media, call page.emulateMedia() before calling page.pdf(): noteBy default, page.pdf() generates a pdf with modified colors for printing. Use the -webkit-print-color-adjust property to force rendering of exact colors
+> **Discouraged:** Use locator-based `locator.setChecked()` instead.
 
-// Generates a PDF with 'screen' media type.await page.emulateMedia({ media: 'screen' });await page.pdf({ path: 'page.pdf' }); The width, height, and margin options accept values labeled with units. Unlabeled values are treated as pixels. A few examples: page.pdf({width: 100}) - prints with width set to 100 pixels page.pdf({width: '100px'}) - prints with width set to 100 pixels page.pdf({width: '10cm'}) - prints with width set to 10 centimeters. All possible units are: px - pixel in - inch cm - centimeter mm - millimeter The format options are: Letter: 8.5in x 11in Legal: 8.5in x 14in Tabloid: 11in x 17in Ledger: 17in x 11in A0: 33.1in x 46.8in A1: 23.4in x 33.1in A2: 16.54in x 23.4in A3: 11.7in x 16.54in A4: 8.27in x 11.7in A5: 5.83in x 8.27in A6: 4.13in x 5.83in noteheaderTemplate and footerTemplate markup have the following limitations: > 1. Script tags inside templates are not evaluated. > 2. Page styles are not visible inside templates
+Checks or unchecks an element matching `selector`.
 
-options Object (optional) displayHeaderFooter boolean (optional)# Display header and footer. Defaults to false. footerTemplate string (optional)# HTML template for the print footer. Should use the same format as the headerTemplate. format string (optional)# Paper format. If set, takes priority over width or height options. Defaults to 'Letter'. headerTemplate string (optional)# HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: 'date' formatted print date 'title' document title 'url' document location 'pageNumber' current page number 'totalPages' total pages in the document height string | number (optional)# Paper height, accepts values labeled with units. landscape boolean (optional)# Paper orientation. Defaults to false. margin Object (optional)# top string | number (optional) Top margin, accepts values labeled with units. Defaults to 0. right string | number (optional) Right margin, accepts values labeled with units. Defaults to 0. bottom string | number (optional) Bottom margin, accepts values labeled with units. Defaults to 0. left string | number (optional) Left margin, accepts values labeled with units. Defaults to 0. Paper margins, defaults to none. outline boolean (optional) Added in: v1.42# Whether or not to embed the document outline into the PDF. Defaults to false. pageRanges string (optional)# Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages. path string (optional)# The file path to save the PDF to. If path is a relative path, then it is resolved relative to the current working directory. If no path is provided, the PDF won't be saved to the disk. preferCSSPageSize boolean (optional)# Give any CSS @page size declared in the page priority over what is declared in width and height or format options. Defaults to false, which will scale the content to fit the paper size. printBackground boolean (optional)# Print background graphics. Defaults to false. scale number (optional)# Scale of the webpage rendering. Defaults to 1. Scale amount must be between 0.1 and 2. tagged boolean (optional) Added in: v1.42# Whether or not to generate tagged (accessible) PDF. Defaults to false. width string | number (optional)# Paper width, accepts values labeled with units
+```js
+await page.setChecked('input[type=checkbox]', true);
+```
 
-Promise<Buffer># pick
+**Arguments:**
 
-## Locator
+| Parameter             | Type                 | Description                                                  |
+| --------------------- | -------------------- | ------------------------------------------------------------ |
+| `selector`            | `string`             | A selector to search for an element.                         |
+| `checked`             | `boolean`            | Whether to check or uncheck the checkbox.                    |
+| `options.force`       | `boolean` (optional) | Whether to bypass actionability checks. Defaults to `false`. |
+| `options.noWaitAfter` | `boolean` (optional) | Deprecated. No effect.                                       |
+| `options.position`    | `Object` (optional)  | `{ x, y }` point relative to element.                        |
+| `options.strict`      | `boolean` (optional) | Requires selector to resolve to a single element.            |
+| `options.timeout`     | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).    |
+| `options.trial`       | `boolean` (optional) | Only perform actionability checks, skip the action.          |
 
-Added in: v1.59 page.pickLocator Enters pick locator mode where hovering over page elements highlights them and shows the corresponding locator. Once the user clicks an element, the mode is deactivated and the Locator for the picked element is returned
+**Returns:** `Promise<void>`
 
-const locator = await page.pickLocator();console.log(locator); Returns Promise<Locator># reload​ Added before v1.9 page.reload This method reloads the current page, in the same way as if the user had triggered a browser refresh
+---
 
-the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect
+### `page.setInputFiles()` — Added before v1.9
 
-await page.reload();await page.reload(options); Arguments options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+> **Discouraged:** Use locator-based `locator.setInputFiles()` instead.
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+Sets the value of a file input to the specified file paths or files.
 
-Promise<null | Response># remove
+```js
+await page.setInputFiles('input[type=file]', 'myfile.pdf');
+```
 
-## AllListeners
+**Arguments:**
 
-Added in: v1.47 page.removeAllListeners Removes all the listeners of the given type (or all registered listeners if no type given). Allows to wait for async listeners to complete or to ignore subsequent errors from these listeners
+| Parameter             | Type                                                 | Description                                                       |
+| --------------------- | ---------------------------------------------------- | ----------------------------------------------------------------- |
+| `selector`            | `string`                                             | A selector to search for an element.                              |
+| `files`               | `string \| Array<string> \| Object \| Array<Object>` | File paths or file objects `{ name, mimeType, buffer }`.          |
+| `options.noWaitAfter` | `boolean` (optional)                                 | Deprecated. No effect.                                            |
+| `options.strict`      | `boolean` (optional)                                 | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout`     | `number` (optional)                                  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-page.on('request', async request => { const response = await request.response(); const body = await response.body(); console.log(body.byteLength);});await page.goto('https://playwright.dev', { waitUntil: 'domcontentloaded' });// Waits for all the reported 'request' events to resolve.await page.removeAllListeners('request', { behavior: 'wait' }); Arguments type string (optional)# options Object (optional) behavior "wait" | "ignoreErrors" | "default" (optional)# Specifies whether to wait for already running listeners and what to do if they throw errors: 'default' - do not wait for current listener calls (if any) to finish, if the listener throws, it may result in unhandled error 'wait' - wait for current listener calls (if any) to finish 'ignoreErrors' - do not wait for current listener calls (if any) to finish, all errors thrown by the listeners after removal are silently caught Returns Promise<void># remove
+**Returns:** `Promise<void>`
 
-## LocatorHandler
+---
 
-Added in: v1.44 page.removeLocatorHandler Removes all locator handlers added by page.addLocatorHandler() for a specific locator
+### `page.tap()` — Added before v1.9
 
-await page.removeLocatorHandler(locator); Arguments locator Locator# Locator passed to page.addLocatorHandler()
+> **Discouraged:** Use locator-based `locator.tap()` instead.
 
-Promise<void># requestGC​ Added in: v1.48 page.requestGC Request the page to perform garbage collection. Note that there is no guarantee that all unreachable objects will be collected. This is useful to help detect memory leaks. For example, if your page has a large object 'suspect' that might be leaked, you can check that it does not leak by using a WeakRef. // 1. In your page, save a WeakRef for the "suspect".await page.evaluate(() => globalThis.suspectWeakRef = new WeakRef(suspect));// 2. Request garbage collection.await page.requestGC();// 3. Check that weak ref does not deref to the original object.expect(await page.evaluate(() => !globalThis.suspectWeakRef.deref())).toBe(true); Usage await page.requestGC(); Returns Promise<void># requests​ Added in: v1.56 page.requests Returns up to (currently) 100 last network request from this page. See page.on('request') for more details. Returned requests should be accessed immediately, otherwise they might be collected to prevent unbounded memory growth as new requests come in. Once collected, retrieving most information about the request is impossible. Note that requests reported through the page.on('request') request are not collected, so there is a trade off between efficient memory usage with page.requests() and the amount of available information reported through page.on('request')
+Taps an element matching `selector`. Requires `hasTouch` option in browser context to be `true`.
 
-await page.requests(); Returns Promise<Array<Request>># route​ Added before v1.9 page.route Routing provides the capability to modify network requests that are made by a page. Once routing is enabled, every request matching the url pattern will stall unless it's continued, fulfilled or aborted. noteThe handler will only be called for the first url if the response is a redirect. notepage.route() will not intercept requests intercepted by Service Worker. See this issue. We recommend disabling Service Workers when using request interception by setting serviceWorkers to 'block'. notepage.route() will not intercept the first request of a popup page. Use browserContext.route() instead
+```js
+await page.tap('button#menu');
+```
 
-An example of a naive handler that aborts all image requests: const page = await browser.newPage();await page.route('**/\*.{png,jpg,jpeg}', route => route.abort());await page.goto('https://example.com');await browser.close(); or the same snippet using a regex pattern instead: const page = await browser.newPage();await page.route(/(\.png$)|(\.jpg$)/, route => route.abort());await page.goto('https://example.com');await browser.close(); It is possible to examine the request to decide the route action. For example, mocking all requests that contain some post data, and leaving all other requests as is: await page.route('/api/**', async route => { if (route.request().postData().includes('my-string')) await route.fulfill({ body: 'mocked-data' }); else await route.continue();}); If a request matches multiple registered routes, the most recently registered route takes precedence. Page routes take precedence over browser context routes (set up with browserContext.route()) when request matches both handlers. To remove a route with its handler you can use page.unroute(). noteEnabling routing disables http cache
+**Arguments:**
 
-url string | RegExp | [URLPattern] | function(URL):boolean# A glob pattern, regex pattern, URL pattern, or predicate that receives a URL to match during routing. If baseURL is set in the context options and the provided URL is a string that does not start with \*, it is resolved using the new URL() constructor. handler function(Route, Request):Promise<Object> | Object# handler function to route the request. options Object (optional) times number (optional) Added in: v1.15# How often a route should be used. By default it will be used every time
+| Parameter             | Type                       | Description                                                         |
+| --------------------- | -------------------------- | ------------------------------------------------------------------- |
+| `selector`            | `string`                   | A selector to search for an element.                                |
+| `options.force`       | `boolean` (optional)       | Whether to bypass actionability checks. Defaults to `false`.        |
+| `options.modifiers`   | `Array<string>` (optional) | Modifier keys to press.                                             |
+| `options.noWaitAfter` | `boolean` (optional)       | Deprecated. No effect.                                              |
+| `options.position`    | `Object` (optional)        | `{ x, y }` point relative to element.                               |
+| `options.strict`      | `boolean` (optional)       | Added in v1.14. Requires selector to resolve to a single element.   |
+| `options.timeout`     | `number` (optional)        | Maximum time in milliseconds. Defaults to 0 (no timeout).           |
+| `options.trial`       | `boolean` (optional)       | Added in v1.11. Only perform actionability checks, skip the action. |
 
-Promise<Disposable># route
+**Returns:** `Promise<void>`
 
-## FromHAR
+---
 
-Added in: v1.23 page.routeFromHAR If specified the network requests that are made in the page will be served from the HAR file. Read more about Replaying from HAR. Playwright will not serve requests intercepted by Service Worker from the HAR file. See this issue. We recommend disabling Service Workers when using request interception by setting serviceWorkers to 'block'
+### `page.textContent()` — Added before v1.9
 
-await page.routeFromHAR(har);await page.routeFromHAR(har, options); Arguments har string# Path to a HAR file with prerecorded network data. If path is a relative path, then it is resolved relative to the current working directory. options Object (optional) notFound "abort" | "fallback" (optional)# If set to 'abort' any request not found in the HAR file will be aborted. If set to 'fallback' missing requests will be sent to the network. Defaults to abort. update boolean (optional)# If specified, updates the given HAR with the actual network information instead of serving from file. The file is written to disk when browserContext.close() is called. updateContent "embed" | "attach" (optional) Added in: v1.32# Optional setting to control resource content management. If attach is specified, resources are persisted as separate files or entries in the ZIP archive. If embed is specified, content is stored inline the HAR file. updateMode "full" | "minimal" (optional) Added in: v1.32# When set to minimal, only record information necessary for routing from HAR. This omits sizes, timing, page, cookies, security and other types of HAR information that are not used when replaying from HAR. Defaults to minimal. url string | RegExp (optional)# A glob pattern, regular expression or predicate to match the request URL. Only requests with URL matching the pattern will be served from the HAR file. If not specified, all requests are served from the HAR file
+> **Discouraged:** Use locator-based `locator.textContent()` instead.
 
-Promise<void># route
+Returns `element.textContent`.
 
-## WebSocket
+```js
+const text = await page.textContent('h1');
+```
 
-Added in: v1.48 page.routeWebSocket This method allows to modify websocket connections that are made by the page. Note that only WebSockets created after this method was called will be routed. It is recommended to call this method before navigating the page
+**Arguments:**
 
-Below is an example of a simple mock that responds to a single message. See WebSocketRoute for more details and examples. await page.routeWebSocket('/ws', ws => { ws.onMessage(message => { if (message === 'request') ws.send('response'); });}); Arguments url string | RegExp | [URLPattern] | function(URL):boolean# Only WebSockets with the url matching this pattern will be routed. A string pattern can be relative to the baseURL context option. handler function(WebSocketRoute):Promise<Object> | Object# Handler function to route the WebSocket
+| Parameter         | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`             | A selector to search for an element.                              |
+| `options.strict`  | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-Promise<void># screenshot​ Added before v1.9 page.screenshot Returns the buffer with the captured screenshot
+**Returns:** `Promise<null | string>`
 
-await page.screenshot();await page.screenshot(options); Arguments options Object (optional) animations "disabled" | "allow" (optional)# When set to "disabled", stops CSS animations, CSS transitions and Web Animations. Animations get different treatment depending on their duration: finite animations are fast-forwarded to completion, so they'll fire transitionend event. infinite animations are canceled to initial state, and then played over after the screenshot. Defaults to "allow" that leaves animations untouched. caret "hide" | "initial" (optional)# When set to "hide", screenshot will hide text caret. When set to "initial", text caret behavior will not be changed. Defaults to "hide". clip Object (optional)# x number x-coordinate of top-left corner of clip area y number y-coordinate of top-left corner of clip area width number width of clipping area height number height of clipping area An object which specifies clipping of the resulting image. fullPage boolean (optional)# When true, takes a screenshot of the full scrollable page, instead of the currently visible viewport. Defaults to false. mask Array<Locator> (optional)# Specify locators that should be masked when the screenshot is taken. Masked elements will be overlaid with a pink box #FF00FF (customized by maskColor) that completely covers its bounding box. The mask is also applied to invisible elements, see Matching only visible elements to disable that. maskColor string (optional) Added in: v1.35# Specify the color of the overlay box for masked elements, in CSS color format. Default color is pink #FF00FF. omitBackground boolean (optional)# Hides default white background and allows capturing screenshots with transparency. Not applicable to jpeg images. Defaults to false. path string (optional)# The file path to save the image to. The screenshot type will be inferred from file extension. If path is a relative path, then it is resolved relative to the current working directory. If no path is provided, the image won't be saved to the disk. quality number (optional)# The quality of the image, between 0-100. Not applicable to png images. scale "css" | "device" (optional)# When set to "css", screenshot will have a single pixel per each css pixel on the page. For high-dpi devices, this will keep screenshots small. Using "device" option will produce a single pixel per each device pixel, so screenshots of high-dpi devices will be twice as large or even larger. Defaults to "device". style string (optional) Added in: v1.41# Text of the stylesheet to apply while making the screenshot. This is where you can hide dynamic elements, make elements invisible or change their properties to help you creating repeatable screenshots. This stylesheet pierces the Shadow DOM and applies to the inner frames. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. type "png" | "jpeg" (optional)# Specify screenshot type, defaults to png
+---
 
-Promise<Buffer># set
+### `page.type()` — Added before v1.9
 
-## Content
+> **Deprecated:** Use `locator.fill()` in most cases. Use `locator.pressSequentially()` only for special keyboard handling.
 
-Added before v1.9 page.setContent This method internally calls document.write(), inheriting all its specific characteristics and behaviors
+Sends a keydown, keypress/input, and keyup event for each character in the text.
 
-await page.setContent(html);await page.setContent(html, options); Arguments html string# HTML markup to assign to the page. options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
+```js
+await page.type('#editor', 'Hello World');
+```
 
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
+**Arguments:**
 
-Promise<void># set
+| Parameter             | Type                 | Description                                                       |
+| --------------------- | -------------------- | ----------------------------------------------------------------- |
+| `selector`            | `string`             | A selector to search for an element.                              |
+| `text`                | `string`             | A text to type into a focused element.                            |
+| `options.delay`       | `number` (optional)  | Time between key presses in milliseconds. Defaults to 0.          |
+| `options.noWaitAfter` | `boolean` (optional) | Deprecated. No effect.                                            |
+| `options.strict`      | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout`     | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-## DefaultNavigationTimeout
+**Returns:** `Promise<void>`
 
-Added before v1.9 page.setDefaultNavigationTimeout This setting will change the default maximum navigation time for the following methods and related shortcuts: page.goBack() page.goForward() page.goto() page.reload() page.setContent() page.waitForNavigation() page.waitForURL() notepage.setDefaultNavigationTimeout() takes priority over page.setDefaultTimeout(), browserContext.setDefaultTimeout() and browserContext.setDefaultNavigationTimeout()
+---
 
-page.setDefaultNavigationTimeout(timeout); Arguments timeout number#
+### `page.uncheck()` — Added before v1.9
 
-## Maximum navigation time in milliseconds setDefaultTimeout
+> **Discouraged:** Use locator-based `locator.uncheck()` instead.
 
-Added before v1.9 page.setDefaultTimeout This setting will change the default maximum time for all the methods accepting timeout option. notepage.setDefaultNavigationTimeout() takes priority over page.setDefaultTimeout()
+Unchecks an element matching `selector`.
 
-page.setDefaultTimeout(timeout); Arguments timeout number#
+```js
+await page.uncheck('input[type=checkbox]');
+```
 
-## Maximum time in milliseconds. Pass 0 to disable timeout. setExtraHTTPHeaders
+**Arguments:**
 
-Added before v1.9 page.setExtraHTTPHeaders The extra HTTP headers will be sent with every request the page initiates. notepage.setExtraHTTPHeaders() does not guarantee the order of headers in the outgoing requests
+| Parameter             | Type                 | Description                                                         |
+| --------------------- | -------------------- | ------------------------------------------------------------------- |
+| `selector`            | `string`             | A selector to search for an element.                                |
+| `options.force`       | `boolean` (optional) | Whether to bypass actionability checks. Defaults to `false`.        |
+| `options.noWaitAfter` | `boolean` (optional) | Deprecated. No effect.                                              |
+| `options.position`    | `Object` (optional)  | Added in v1.11. `{ x, y }` point relative to element.               |
+| `options.strict`      | `boolean` (optional) | Added in v1.14. Requires selector to resolve to a single element.   |
+| `options.timeout`     | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).           |
+| `options.trial`       | `boolean` (optional) | Added in v1.11. Only perform actionability checks, skip the action. |
 
-await page.setExtraHTTPHeaders(headers); Arguments headers Object<string, string># An object containing additional HTTP headers to be sent with every request. All header values must be strings
+**Returns:** `Promise<void>`
 
-Promise<void># set
+---
 
-## ViewportSize
+### `page.waitForNavigation()` — Added before v1.9
 
-Added before v1.9 page.setViewportSize In the case of multiple pages in a single browser, each page can have its own viewport size. However, browser.newContext() allows to set viewport size (and more) for all pages in the context at once. page.setViewportSize() will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport size before navigating to the page. page.setViewportSize() will also reset screen size, use browser.newContext() with screen and viewport parameters if you need better control of these properties
+> **Deprecated:** Use `page.waitForURL()` instead.
 
-const page = await browser.newPage();await page.setViewportSize({ width: 640, height: 480,});await page.goto('https://example.com'); Arguments viewportSize Object# width number page width in pixels. height number page height in pixels
+Waits for the main frame navigation and returns the main resource response.
 
-Promise<void># title​ Added before v1.9 page.title Returns the page's title
+```js
+const navigationPromise = page.waitForNavigation();
+await page.getByText('Navigate after timeout').click();
+await navigationPromise;
+```
 
-await page.title(); Returns Promise<string># unroute​ Added before v1.9 page.unroute Removes a route created with page.route(). When handler is not specified, removes all routes for the url
+**Arguments:**
 
-await page.unroute(url);await page.unroute(url, handler); Arguments url string | RegExp | [URLPattern] | function(URL):boolean# A glob pattern, regex pattern, URL pattern, or predicate receiving URL to match while routing. handler function(Route, Request):Promise<Object> | Object (optional)# Optional handler function to route the request
+| Parameter           | Type                                                                   | Description                                                         |
+| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `options.timeout`   | `number` (optional)                                                    | Maximum operation time in milliseconds. Defaults to 0 (no timeout). |
+| `options.url`       | `string \| RegExp \| URLPattern \| function(URL): boolean` (optional)  | URL pattern to match while waiting.                                 |
+| `options.waitUntil` | `"load" \| "domcontentloaded" \| "networkidle" \| "commit"` (optional) | When to consider operation succeeded. Defaults to `load`.           |
 
-Promise<void># unroute
+**Returns:** `Promise<null | Response>`
 
-## All
+---
 
-Added in: v1.41 page.unrouteAll Removes all routes created with page.route() and page.routeFromHAR()
+### `page.waitForSelector()` — Added before v1.9
 
-await page.unrouteAll();await page.unrouteAll(options); Arguments options Object (optional) behavior "wait" | "ignoreErrors" | "default" (optional)# Specifies whether to wait for already running handlers and what to do if they throw errors: 'default' - do not wait for current handler calls (if any) to finish, if unrouted handler throws, it may result in unhandled error 'wait' - wait for current handler calls (if any) to finish 'ignoreErrors' - do not wait for current handler calls (if any) to finish, all errors thrown by the handlers after unrouting are silently caught Returns Promise<void># url​ Added before v1.9 page.url Usage page.url(); Returns string# video​ Added before v1.9 page.video Video object associated with this page. Can be used to access the video file when using the recordVideo context option
+> **Discouraged:** Use web assertions or `locator.waitFor()` instead.
 
-page.video(); Returns null | Video# viewport
+Waits for the selector to satisfy the `state` option.
 
-## Size
+```js
+const element = await page.waitForSelector('img');
+```
 
-Added before v1.9 page.viewportSize Usage page.viewportSize(); Returns null | Object# width number page width in pixels. height number page height in pixels. wait
+**Arguments:**
 
-## ForEvent
+| Parameter         | Type                                                           | Description                                                       |
+| ----------------- | -------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `selector`        | `string`                                                       | A selector to query for.                                          |
+| `options.state`   | `"attached" \| "detached" \| "visible" \| "hidden"` (optional) | Defaults to `"visible"`.                                          |
+| `options.strict`  | `boolean` (optional)                                           | Added in v1.14. Requires selector to resolve to a single element. |
+| `options.timeout` | `number` (optional)                                            | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
-Added before v1.9 page.waitForEvent Waits for event to fire and passes its value into the predicate function
+**Returns:** `Promise<null | ElementHandle>`
 
-when the predicate returns truthy value. Will throw an error if the page is closed before the event is fired
+---
 
-the event data value
+### `page.waitForTimeout()` — Added before v1.9
 
-// Start waiting for download before clicking. Note no await.const downloadPromise = page.waitForEvent('download');await page.getByText('Download file').click();const download = await downloadPromise; Arguments event string# Event name, same one typically passed into \*.on(event). optionsOrPredicate function | Object (optional)# predicate function Receives the event data and resolves to truthy value when the waiting should resolve. timeout number (optional) Maximum time to wait for in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. Either a predicate that receives an event or an options object. Optional. options Object (optional) predicate function (optional)# Receives the event data and resolves to truthy value when the waiting should resolve
+> **Discouraged:** Never use in production. Use Locator actions and web assertions instead.
 
-Promise<Object># wait
+Waits for the given timeout in milliseconds.
 
-## ForFunction
+```js
+await page.waitForTimeout(1000);
+```
 
-Added before v1.9 page.waitForFunction Returns when the pageFunction returns a truthy value. It resolves to a JSHandle of the truthy value
+**Arguments:**
 
-The page.waitForFunction() can be used to observe viewport size change: const { webkit } = require('playwright'); // Or 'chromium' or 'firefox'.(async () => { const browser = await webkit.launch(); const page = await browser.newPage(); const watchDog = page.waitForFunction(() => window.innerWidth < 100); await page.setViewportSize({ width: 50, height: 50 }); await watchDog; await browser.close();})(); To pass an argument to the predicate of page.waitForFunction() function: const selector = '.foo';await page.waitForFunction(selector => !!document.querySelector(selector), selector); Arguments pageFunction function | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction. options Object (optional) polling number | "raf" (optional)# If polling is 'raf', then pageFunction is constantly executed in requestAnimationFrame callback. If polling is a number, then it is treated as an interval in milliseconds at which the function would be executed. Defaults to raf. timeout number (optional)# Maximum time to wait for in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
+| Parameter | Type     | Description                            |
+| --------- | -------- | -------------------------------------- |
+| `timeout` | `number` | A timeout to wait for in milliseconds. |
 
-Promise<JSHandle># wait
-
-## ForLoadState
-
-Added before v1.9 page.waitForLoadState Returns when the required load state has been reached. This resolves when the page reaches a required load state, load by default. The navigation must have been committed when this method is called. If current document has already reached the required state, resolves immediately. noteMost of the time, this method is not needed because Playwright auto-waits before every action
-
-await page.getByRole('button').click(); // Click triggers navigation.await page.waitForLoadState(); // The promise resolves after 'load' event. const popupPromise = page.waitForEvent('popup');await page.getByRole('button').click(); // Click triggers a popup.const popup = await popupPromise;await popup.waitForLoadState('domcontentloaded'); // Wait for the 'DOMContentLoaded' event.console.log(await popup.title()); // Popup is ready to use
-
-state "load" | "domcontentloaded" | "networkidle" (optional)# Optional load state to wait for, defaults to load. If the state has been already reached while loading current document, the method resolves immediately. Can be one of: 'load' - wait for the load event to be fired. 'domcontentloaded' - wait for the DOMContentLoaded event to be fired. 'networkidle' - DISCOURAGED wait until there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods
-
-Promise<void># wait
-
-## ForRequest
-
-Added before v1.9 page.waitForRequest Waits for the matching request and returns it. See waiting for event for more details about events
-
-// Start waiting for request before clicking. Note no await.const requestPromise = page.waitForRequest('https://example.com/resource');await page.getByText('trigger request').click();const request = await requestPromise;// Alternative way with a predicate. Note no await.const requestPromise = page.waitForRequest(request => request.url() === 'https://example.com' && request.method() === 'GET',);await page.getByText('trigger request').click();const request = await requestPromise; Arguments urlOrPredicate string | RegExp | function(Request):boolean | Promise<boolean># Request URL string, regex or predicate receiving Request object. options Object (optional) timeout number (optional)# Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the page.setDefaultTimeout() method
-
-Promise<Request># wait
-
-## ForResponse
-
-Added before v1.9 page.waitForResponse Returns the matched response. See waiting for event for more details about events
-
-// Start waiting for response before clicking. Note no await.const responsePromise = page.waitForResponse('https://example.com/resource');await page.getByText('trigger response').click();const response = await responsePromise;// Alternative way with a predicate. Note no await.const responsePromise = page.waitForResponse(response => response.url() === 'https://example.com' && response.status() === 200 && response.request().method() === 'GET');await page.getByText('trigger response').click();const response = await responsePromise; Arguments urlOrPredicate string | RegExp | function(Response):boolean | Promise<boolean># Request URL string, regex or predicate receiving Response object. When a baseURL via the context options was provided and the passed URL is a path, it gets merged via the new URL() constructor. options Object (optional) timeout number (optional)# Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<Response># wait
-
-## ForURL
-
-Added in: v1.11 page.waitForURL Waits for the main frame to navigate to the given URL
-
-await page.click('a.delayed-navigation'); // Clicking the link will indirectly cause a navigationawait page.waitForURL('\*\*/target.html'); Arguments url string | RegExp | [URLPattern] | function(URL):boolean# A glob pattern, regex pattern, URL pattern, or predicate receiving URL to match while waiting for the navigation. Note that if the parameter is a string without wildcard characters, the method will wait for navigation to URL that is exactly equal to the string. options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
-
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
-
-Promise<void># workers​ Added before v1.9 page.workers This method returns all of the dedicated WebWorkers associated with the page. noteThis does not contain ServiceWorkers Usage page.workers(); Returns Array<Worker>#
-
-## Properties
-
-clock​ Added in: v1.45 page.clock Playwright has ability to mock clock and passage of time.
-
-## Usage page.clock Type Clock coverage
-
-Added before v1.9 page.coverage noteOnly available for Chromium atm. Browser-specific Coverage implementation.
-
-## See Coverage for more details
-
-page.coverage Type Coverage keyboard
-
-## Added before v1.9 page.keyboard Usage page.keyboard Type Keyboard mouse
-
-## Added before v1.9 page.mouse Usage page.mouse Type Mouse request
-
-Added in: v1.16 page.request API testing helper associated with this page. This method returns the same instance as browserContext.request on the page's context. See browserContext.request for more details.
-
-## Usage page.request Type APIRequestContext screencast
-
-Added in: v1.59 page.screencast Screencast object associated with this page
-
-page.screencast.on('screencastFrame', data => { console.log('received frame, jpeg size:', data.length);});await page.screencast.start();// ... perform actions ...await page.screencast.stop();
-
-## Type Screencast touchscreen
-
-## Added before v1.9 page.touchscreen Usage page.touchscreen Type Touchscreen Events
-
-on('close')​ Added before v1.9 page.on('close') Emitted when the page closes
-
-page.on('close', data => {});
-
-## Event data Page on('console')
-
-Added before v1.9 page.on('console') Emitted when JavaScript within the page calls one of console API methods, e.g. console.log or console.dir. The arguments passed into console.log are available on the ConsoleMessage event handler argument
-
-page.on('console', async msg => { const values = []; for (const arg of msg.args()) values.push(await arg.jsonValue()); console.log(...values);});await page.evaluate(() => console.log('hello', 5, { foo: 'bar' }));
-
-## Event data ConsoleMessage on('crash')
-
-Added before v1.9 page.on('crash') Emitted when the page crashes. Browser pages might crash if they try to allocate too much memory. When the page crashes, ongoing and subsequent operations will throw. The most common way to deal with crashes is to catch an exception: try { // Crash might happen during a click. await page.click('button'); // Or while waiting for an event. await page.waitForEvent('popup');} catch (e) { // When the page crashes, exception message contains 'crash'.} Usage page.on('crash', data => {});
-
-## Event data Page on('dialog')
-
-Added before v1.9 page.on('dialog') Emitted when a JavaScript dialog appears, such as alert, prompt, confirm or beforeunload. Listener must either dialog.accept() or dialog.dismiss() the dialog - otherwise the page will freeze waiting for the dialog, and actions like click will never finish
-
-page.on('dialog', dialog => dialog.accept()); noteWhen no page.on('dialog') or browserContext.on('dialog') listeners are present, all dialogs are automatically dismissed.
-
-## Event data Dialog on('domcontentloaded')
-
-Added in: v1.9 page.on('domcontentloaded') Emitted when the JavaScript DOMContentLoaded event is dispatched
-
-page.on('domcontentloaded', data => {});
-
-## Event data Page on('download')
-
-Added before v1.9 page.on('download') Emitted when attachment download started. User can access basic file operations on downloaded content via the passed Download instance
-
-page.on('download', data => {});
-
-## Event data Download on('filechooser')
-
-Added in: v1.9 page.on('filechooser') Emitted when a file chooser is supposed to appear, such as after clicking the <input type=file>. Playwright can respond to it via setting the input files using fileChooser.setFiles() that can be uploaded after that. page.on('filechooser', async fileChooser => { await fileChooser.setFiles(path.join(\_\_dirname, '/tmp/myfile.pdf'));}); Usage page.on('filechooser', data => {});
-
-## Event data FileChooser on('frameattached')
-
-Added in: v1.9 page.on('frameattached') Emitted when a frame is attached
-
-page.on('frameattached', data => {});
-
-## Event data Frame on('framedetached')
-
-Added in: v1.9 page.on('framedetached') Emitted when a frame is detached
-
-page.on('framedetached', data => {});
-
-## Event data Frame on('framenavigated')
-
-Added in: v1.9 page.on('framenavigated') Emitted when a frame is navigated to a new url
-
-page.on('framenavigated', data => {});
-
-## Event data Frame on('load')
-
-Added before v1.9 page.on('load') Emitted when the JavaScript load event is dispatched
-
-page.on('load', data => {});
-
-## Event data Page on('pageerror')
-
-Added in: v1.9 page.on('pageerror') Emitted when an uncaught exception happens within the page. // Log all uncaught errors to the terminalpage.on('pageerror', exception => { console.log(`Uncaught exception: "${exception}"`);});// Navigate to a page with an exception.await page.goto('data:text/html,<script>throw new Error("Test")</script>'); Usage page.on('pageerror', data => {});
-
-## Event data Error on('popup')
-
-Added before v1.9 page.on('popup') Emitted when the page opens a new tab or window. This event is emitted in addition to the browserContext.on('page'), but only for popups relevant to this page. The earliest moment that page is available is when it has navigated to the initial url. For example, when opening a popup with window.open('http://example.com'), this event will fire when the network request to "http://example.com" is done and its response has started loading in the popup. If you would like to route/listen to this network request, use browserContext.route() and browserContext.on('request') respectively instead of similar methods on the Page. // Start waiting for popup before clicking. Note no await.const popupPromise = page.waitForEvent('popup');await page.getByText('open the popup').click();const popup = await popupPromise;console.log(await popup.evaluate('location.href')); noteUse page.waitForLoadState() to wait until the page gets to a particular state (you should not need it in most cases)
-
-page.on('popup', data => {});
-
-## Event data Page on('request')
-
-Added before v1.9 page.on('request') Emitted when a page issues a request. The request object is read-only. In order to intercept and mutate requests, see page.route() or browserContext.route()
-
-page.on('request', data => {});
-
-## Event data Request on('requestfailed')
-
-Added in: v1.9 page.on('requestfailed') Emitted when a request fails, for example by timing out. page.on('requestfailed', request => { console.log(request.url() + ' ' + request.failure().errorText);}); noteHTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with page.on('requestfinished') event and not with page.on('requestfailed'). A request will only be considered failed when the client cannot get an HTTP response from the server, e.g. due to network error net::ERR_FAILED
-
-page.on('requestfailed', data => {});
-
-## Event data Request on('requestfinished')
-
-Added in: v1.9 page.on('requestfinished') Emitted when a request finishes successfully after downloading the response body. For a successful response, the sequence of events is request, response and requestfinished
-
-page.on('requestfinished', data => {});
-
-## Event data Request on('response')
-
-Added before v1.9 page.on('response') Emitted when response status and headers are received for a request. For a successful response, the sequence of events is request, response and requestfinished
-
-page.on('response', data => {});
-
-## Event data Response on('websocket')
-
-Added in: v1.9 page.on('websocket') Emitted when WebSocket request is sent
-
-page.on('websocket', data => {});
-
-## Event data WebSocket on('worker')
-
-Added before v1.9 page.on('worker') Emitted when a dedicated WebWorker is spawned by the page
-
-page.on('worker', data => {});
-
-## Event data Worker Deprecated
-
-$​ Added in: v1.9 page.$ DiscouragedUse locator-based page.locator() instead. Read more about locators. The method finds an element matching the specified selector within the page. If no elements match the selector, the return value resolves to null. To wait for an element on the page, use locator.waitFor()
-
-await page.$(selector);await page.$(selector, options); Arguments selector string# A selector to query for. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception
-
-Promise<null | ElementHandle># $$​ Added in: v1.9 page.$$ DiscouragedUse locator-based page.locator() instead. Read more about locators. The method finds all elements matching the specified selector within the page. If no elements match the selector, the return value resolves to []
-
-await page.$$(selector); Arguments selector string# A selector to query for
-
-Promise<Array<ElementHandle>># $eval​ Added in: v1.9 page.$eval DiscouragedThis method does not wait for the element to pass actionability checks and therefore can lead to the flaky tests. Use locator.evaluate(), other Locator helper methods or web-first assertions instead. The method finds an element matching the specified selector within the page and passes it as a first argument to pageFunction. If no elements match the selector, the method throws an error
-
-the value of pageFunction. If pageFunction returns a Promise, then page.$eval() would wait for the promise to resolve and return its value
-
-const searchValue = await page.$eval('#search', el => el.value);const preloadHref = await page.$eval('link[rel=preload]', el => el.href);const html = await page.$eval('.main-container', (e, suffix) => e.outerHTML + suffix, 'hello');// In TypeScript, this example requires an explicit type annotation (HTMLLinkElement) on el:const preloadHrefTS = await page.$eval('link[rel=preload]', (el: HTMLLinkElement) => el.href); Arguments selector string# A selector to query for. pageFunction function(Element) | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception
-
-Promise<Serializable># $$eval​ Added in: v1.9 page.$$eval DiscouragedIn most cases, locator.evaluateAll(), other Locator helper methods and web-first assertions do a better job. The method finds all elements matching the specified selector within the page and passes an array of matched elements as a first argument to pageFunction
-
-the result of pageFunction invocation. If pageFunction returns a Promise, then page.$$eval() would wait for the promise to resolve and return its value
-
-const divCounts = await page.$$eval('div', (divs, min) => divs.length >= min, 10); Arguments selector string# A selector to query for. pageFunction function(Array<Element>) | string# Function to be evaluated in the page context. arg EvaluationArgument (optional)# Optional argument to pass to pageFunction
-
-Promise<Serializable># check​ Added before v1.9 page.check DiscouragedUse locator-based locator.check() instead. Read more about locators. This method checks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Ensure that matched element is a checkbox or a radio input. If not, this method throws. If the element is already checked, this method returns immediately. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to click in the center of the element. Ensure that the element is now checked. If not, this method throws. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
-
-await page.check(selector);await page.check(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional) Added in: v1.11# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it
-
-Promise<void># click​ Added before v1.9 page.click DiscouragedUse locator-based locator.click() instead. Read more about locators. This method clicks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to click in the center of the element, or the specified position. Wait for initiated navigations to either succeed or fail, unless noWaitAfter option is set. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
-
-await page.click(selector);await page.click(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) button "left" | "right" | "middle" (optional)# Defaults to left. clickCount number (optional)# defaults to 1. See UIEvent.detail. delay number (optional)# Time to wait between mousedown and mouseup in milliseconds. Defaults to 0. force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. modifiers Array<"Alt" | "Control" | "ControlOrMeta" | "Meta" | "Shift"> (optional)# Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current modifiers back. If not specified, currently pressed modifiers are used. "ControlOrMeta" resolves to "Control" on Windows and Linux and to "Meta" on macOS. noWaitAfter boolean (optional)# DeprecatedThis option will default to true in the future. Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as navigating to inaccessible pages. Defaults to false. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it. Note that keyboard modifiers will be pressed regardless of trial to allow testing elements which are only visible when those keys are pressed
-
-Promise<void># dblclick​ Added before v1.9 page.dblclick DiscouragedUse locator-based locator.dblclick() instead. Read more about locators. This method double clicks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to double click in the center of the element, or the specified position. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this. notepage.dblclick() dispatches two click events and a single dblclick event
-
-await page.dblclick(selector);await page.dblclick(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) button "left" | "right" | "middle" (optional)# Defaults to left. delay number (optional)# Time to wait between mousedown and mouseup in milliseconds. Defaults to 0. force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. modifiers Array<"Alt" | "Control" | "ControlOrMeta" | "Meta" | "Shift"> (optional)# Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current modifiers back. If not specified, currently pressed modifiers are used. "ControlOrMeta" resolves to "Control" on Windows and Linux and to "Meta" on macOS. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it. Note that keyboard modifiers will be pressed regardless of trial to allow testing elements which are only visible when those keys are pressed
-
-Promise<void># dispatch
-
-## Event
-
-Added before v1.9 page.dispatchEvent DiscouragedUse locator-based locator.dispatchEvent() instead. Read more about locators. The snippet below dispatches the click event on the element. Regardless of the visibility state of the element, click is dispatched. This is equivalent to calling element.click()
-
-await page.dispatchEvent('button#submit', 'click'); Under the hood, it creates an instance of an event based on the given type, initializes it with eventInit properties and dispatches it on the element
-
-are composed, cancelable and bubble by default. Since eventInit is event-specific, please refer to the events documentation for the lists of initial properties: DeviceMotionEvent DeviceOrientationEvent DragEvent Event FocusEvent KeyboardEvent MouseEvent PointerEvent TouchEvent WheelEvent You can also specify JSHandle as the property value if you want live objects to be passed into the event: // Note you can only create DataTransfer in Chromium and Firefoxconst dataTransfer = await page.evaluateHandle(() => new DataTransfer());await page.dispatchEvent('#source', 'dragstart', { dataTransfer }); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. type string# DOM event type: "click", "dragstart", etc. eventInit EvaluationArgument (optional)# Optional event-specific initialization properties. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<void># fill​ Added before v1.9 page.fill DiscouragedUse locator-based locator.fill() instead. Read more about locators. This method waits for an element matching selector, waits for actionability checks, focuses the element, fills it and triggers an input event after filling. Note that you can pass an empty string to clear the input field. If the target element is not an <input>, <textarea> or [contenteditable] element, this method throws an error. However, if the element is inside the <label> element that has an associated control, the control will be filled instead. To send fine-grained keyboard events, use locator.pressSequentially()
-
-await page.fill(selector, value);await page.fill(selector, value, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. value string# Value to fill for the <input>, <textarea> or [contenteditable] element. options Object (optional) force boolean (optional) Added in: v1.13# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<void># focus​ Added before v1.9 page.focus DiscouragedUse locator-based locator.focus() instead. Read more about locators. This method fetches an element with selector and focuses it. If there's no element matching selector, the method waits until a matching element appears in the DOM
-
-await page.focus(selector);await page.focus(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<void># get
-
-## Attribute
-
-Added before v1.9 page.getAttribute DiscouragedUse locator-based locator.getAttribute() instead. Read more about locators
-
-element attribute value
-
-await page.getAttribute(selector, name);await page.getAttribute(selector, name, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. name string# Attribute name to get the value for. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<null | string># hover​ Added before v1.9 page.hover DiscouragedUse locator-based locator.hover() instead. Read more about locators. This method hovers over an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to hover over the center of the element, or the specified position. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
-
-await page.hover(selector);await page.hover(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. modifiers Array<"Alt" | "Control" | "ControlOrMeta" | "Meta" | "Shift"> (optional)# Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current modifiers back. If not specified, currently pressed modifiers are used. "ControlOrMeta" resolves to "Control" on Windows and Linux and to "Meta" on macOS. noWaitAfter boolean (optional) Added in: v1.28# DeprecatedThis option has no effect. This option has no effect. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it. Note that keyboard modifiers will be pressed regardless of trial to allow testing elements which are only visible when those keys are pressed
-
-Promise<void># inner
-
-## HTML
-
-Added before v1.9 page.innerHTML DiscouragedUse locator-based locator.innerHTML() instead. Read more about locators
-
-element.innerHTML
-
-await page.innerHTML(selector);await page.innerHTML(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<string># inner
-
-## Text
-
-Added before v1.9 page.innerText DiscouragedUse locator-based locator.innerText() instead. Read more about locators
-
-element.innerText
-
-await page.innerText(selector);await page.innerText(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<string># input
-
-## Value
-
-Added in: v1.13 page.inputValue DiscouragedUse locator-based locator.inputValue() instead. Read more about locators
-
-input.value for the selected <input> or <textarea> or <select> element. Throws for non-input elements. However, if the element is inside the <label> element that has an associated control, returns the value of the control
-
-await page.inputValue(selector);await page.inputValue(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<string># is
-
-## Checked
-
-Added before v1.9 page.isChecked DiscouragedUse locator-based locator.isChecked() instead. Read more about locators
-
-whether the element is checked. Throws if the element is not a checkbox or radio input
-
-await page.isChecked(selector);await page.isChecked(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<boolean># is
-
-## Disabled
-
-Added before v1.9 page.isDisabled DiscouragedUse locator-based locator.isDisabled() instead. Read more about locators
-
-whether the element is disabled, the opposite of enabled
-
-await page.isDisabled(selector);await page.isDisabled(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<boolean># is
-
-## Editable
-
-Added before v1.9 page.isEditable DiscouragedUse locator-based locator.isEditable() instead. Read more about locators
-
-whether the element is editable
-
-await page.isEditable(selector);await page.isEditable(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<boolean># is
-
-## Enabled
-
-Added before v1.9 page.isEnabled DiscouragedUse locator-based locator.isEnabled() instead. Read more about locators
-
-whether the element is enabled
-
-await page.isEnabled(selector);await page.isEnabled(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<boolean># is
-
-## Hidden
-
-Added before v1.9 page.isHidden DiscouragedUse locator-based locator.isHidden() instead. Read more about locators
-
-whether the element is hidden, the opposite of visible. selector that does not match any elements is considered hidden
-
-await page.isHidden(selector);await page.isHidden(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# DeprecatedThis option is ignored. page.isHidden() does not wait for the element to become hidden and returns immediately
-
-Promise<boolean># is
-
-## Visible
-
-Added before v1.9 page.isVisible DiscouragedUse locator-based locator.isVisible() instead. Read more about locators
-
-whether the element is visible. selector that does not match any elements is considered not visible
-
-await page.isVisible(selector);await page.isVisible(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# DeprecatedThis option is ignored. page.isVisible() does not wait for the element to become visible and returns immediately
-
-Promise<boolean># press​ Added before v1.9 page.press DiscouragedUse locator-based locator.press() instead. Read more about locators. Focuses the element, and then uses keyboard.down() and keyboard.up(). key can specify the intended keyboardEvent.key value or a single character to generate the text for. A superset of the key values can be found here. Examples of the keys are: F1 - F12, Digit0- Digit9, KeyA- KeyZ, Backquote, Minus, Equal, Backslash, Backspace, Tab, Delete, Escape, ArrowDown, End, Enter, Home, Insert, PageDown, PageUp, ArrowRight, ArrowUp, etc. Following modification shortcuts are also supported: Shift, Control, Alt, Meta, ShiftLeft, ControlOrMeta. ControlOrMeta resolves to Control on Windows and Linux and to Meta on macOS. Holding down Shift will type the text that corresponds to the key in the upper case. If key is a single character, it is case-sensitive, so the values a and A will generate different respective texts. Shortcuts such as key: "Control+o", key: "Control++ or key: "Control+Shift+T" are supported as well. When specified with the modifier, modifier is pressed and being held while the subsequent key is being pressed
-
-const page = await browser.newPage();await page.goto('https://keycode.info');await page.press('body', 'A');await page.screenshot({ path: 'A.png' });await page.press('body', 'ArrowLeft');await page.screenshot({ path: 'ArrowLeft.png' });await page.press('body', 'Shift+O');await page.screenshot({ path: 'O.png' });await browser.close(); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. key string# Name of the key to press or a character to generate, such as ArrowLeft or a. options Object (optional) delay number (optional)# Time to wait between keydown and keyup in milliseconds. Defaults to 0. noWaitAfter boolean (optional)# DeprecatedThis option will default to true in the future. Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as navigating to inaccessible pages. Defaults to false. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<void># select
-
-## Option
-
-Added before v1.9 page.selectOption DiscouragedUse locator-based locator.selectOption() instead. Read more about locators. This method waits for an element matching selector, waits for actionability checks, waits until all specified options are present in the <select> element and selects these options. If the target element is not a <select> element, this method throws an error. However, if the element is inside the <label> element that has an associated control, the control will be used instead
-
-the array of option values that have been successfully selected. Triggers a change and input event once all the provided options have been selected
-
-// Single selection matching the value or labelpage.selectOption('select#colors', 'blue');// single selection matching the labelpage.selectOption('select#colors', { label: 'Blue' });// multiple selectionpage.selectOption('select#colors', ['red', 'green', 'blue']); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. values null | string | ElementHandle | Array<string> | Object | Array<ElementHandle> | Array<Object># value string (optional) Matches by option.value. Optional. label string (optional) Matches by option.label. Optional. index number (optional) Matches by the index. Optional. Options to select. If the <select> has the multiple attribute, all matching options are selected, otherwise only the first option matching one of the passed options is selected. String values are matching both values and labels. Option is considered matching if all specified properties match. options Object (optional) force boolean (optional) Added in: v1.13# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<Array<string>># set
-
-## Checked
-
-Added in: v1.15 page.setChecked DiscouragedUse locator-based locator.setChecked() instead. Read more about locators. This method checks or unchecks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Ensure that matched element is a checkbox or a radio input. If not, this method throws. If the element already has the right checked state, this method returns immediately. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to click in the center of the element. Ensure that the element is now checked or unchecked. If not, this method throws. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
-
-await page.setChecked(selector, checked);await page.setChecked(selector, checked, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. checked boolean# Whether to check or uncheck the checkbox. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional)# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional)# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it
-
-Promise<void># set
-
-## InputFiles
-
-Added before v1.9 page.setInputFiles DiscouragedUse locator-based locator.setInputFiles() instead. Read more about locators. Sets the value of the file input to these file paths or files. If some of the filePaths are relative paths, then they are resolved relative to the current working directory. For empty array, clears the selected files. For inputs with a [webkitdirectory] attribute, only a single directory path is supported. This method expects selector to point to an input element. However, if the element is inside the <label> element that has an associated control, targets the control instead
-
-await page.setInputFiles(selector, files);await page.setInputFiles(selector, files, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. files string | Array<string> | Object | Array<Object># name string File name mimeType string File type buffer Buffer File content options Object (optional) noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<void># tap​ Added before v1.9 page.tap DiscouragedUse locator-based locator.tap() instead. Read more about locators. This method taps an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.touchscreen to tap the center of the element, or the specified position. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this. notepage.tap() the method will throw if hasTouch option of the browser context is false
-
-await page.tap(selector);await page.tap(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. modifiers Array<"Alt" | "Control" | "ControlOrMeta" | "Meta" | "Shift"> (optional)# Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current modifiers back. If not specified, currently pressed modifiers are used. "ControlOrMeta" resolves to "Control" on Windows and Linux and to "Meta" on macOS. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional)# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it. Note that keyboard modifiers will be pressed regardless of trial to allow testing elements which are only visible when those keys are pressed
-
-Promise<void># text
-
-## Content
-
-Added before v1.9 page.textContent DiscouragedUse locator-based locator.textContent() instead. Read more about locators
-
-element.textContent
-
-await page.textContent(selector);await page.textContent(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<null | string># type​ Added before v1.9 page.type DeprecatedIn most cases, you should use locator.fill() instead. You only need to press keys one by one if there is special keyboard handling on the page - in this case use locator.pressSequentially(). Sends a keydown, keypress/input, and keyup event for each character in the text. page.type can be used to send fine-grained keyboard events. To fill values in form fields, use page.fill(). To press a special key, like Control or ArrowDown, use keyboard.press()
-
-Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. text string# A text to type into a focused element. options Object (optional) delay number (optional)# Time to wait between key presses in milliseconds. Defaults to 0. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<void># uncheck​ Added before v1.9 page.uncheck DiscouragedUse locator-based locator.uncheck() instead. Read more about locators. This method unchecks an element matching selector by performing the following steps: Find an element matching selector. If there is none, wait until a matching element is attached to the DOM. Ensure that matched element is a checkbox or a radio input. If not, this method throws. If the element is already unchecked, this method returns immediately. Wait for actionability checks on the matched element, unless force option is set. If the element is detached during the checks, the whole action is retried. Scroll the element into view if needed. Use page.mouse to click in the center of the element. Ensure that the element is now unchecked. If not, this method throws. When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this
-
-await page.uncheck(selector);await page.uncheck(selector, options); Arguments selector string# A selector to search for an element. If there are multiple elements satisfying the selector, the first will be used. options Object (optional) force boolean (optional)# Whether to bypass the actionability checks. Defaults to false. noWaitAfter boolean (optional)# DeprecatedThis option has no effect. This option has no effect. position Object (optional) Added in: v1.11# x number y number A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods. trial boolean (optional) Added in: v1.11# When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it
-
-Promise<void># wait
-
-## ForNavigation
-
-Added before v1.9 page.waitForNavigation DeprecatedThis method is inherently racy, please use page.waitForURL() instead. Waits for the main frame navigation and returns the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with null
-
-This resolves when the page navigates to a new URL or reloads. It is useful for when you run code which will indirectly cause the page to navigate. e.g. The click target has an onclick handler that triggers navigation from a setTimeout. Consider this example: // Start waiting for navigation before clicking. Note no await.const navigationPromise = page.waitForNavigation();await page.getByText('Navigate after timeout').click();await navigationPromise; noteUsage of the History API to change the URL is considered a navigation
-
-options Object (optional) timeout number (optional)# Maximum operation time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via navigationTimeout option in the config, or by using the browserContext.setDefaultNavigationTimeout(), browserContext.setDefaultTimeout(), page.setDefaultNavigationTimeout() or page.setDefaultTimeout() methods. url string | RegExp | [URLPattern] | function(URL):boolean (optional)# A glob pattern, regex pattern, URL pattern, or predicate receiving URL to match while waiting for the navigation. Note that if the parameter is a string without wildcard characters, the method will wait for navigation to URL that is exactly equal to the string. waitUntil "load" | "domcontentloaded" | "networkidle" | "commit" (optional)# When to consider operation succeeded, defaults to load
-
-can be either: 'domcontentloaded' - consider operation to be finished when the DOMContentLoaded event is fired. 'load' - consider operation to be finished when the load event is fired. 'networkidle' - DISCOURAGED consider operation to be finished when there are no network connections for at least 500 ms. Don't use this method for testing, rely on web assertions to assess readiness instead. 'commit' - consider operation to be finished when network response is received and the document started loading
-
-Promise<null | Response># wait
-
-## ForSelector
-
-Added before v1.9 page.waitForSelector DiscouragedUse web assertions that assert visibility or a locator-based locator.waitFor() instead. Read more about locators
-
-when element specified by selector satisfies state option
-
-null if waiting for hidden or detached. notePlaywright automatically waits for element to be ready before performing an action. Using Locator objects and web-first assertions makes the code wait-for-selector-free. Wait for the selector to satisfy state option (either appear/disappear from dom, or become visible/hidden). If at the moment of calling the method selector already satisfies the condition, the method will return immediately. If the selector doesn't satisfy the condition for the timeout milliseconds, the function will throw
-
-This method works across navigations: const { chromium } = require('playwright'); // Or 'firefox' or 'webkit'.(async () => { const browser = await chromium.launch(); const page = await browser.newPage(); for (const currentURL of ['https://google.com', 'https://bbc.com']) { await page.goto(currentURL); const element = await page.waitForSelector('img'); console.log('Loaded image: ' + await element.getAttribute('src')); } await browser.close();})(); Arguments selector string# A selector to query for. options Object (optional) state "attached" | "detached" | "visible" | "hidden" (optional)# Defaults to 'visible'. Can be either: 'attached' - wait for element to be present in DOM. 'detached' - wait for element to not be present in DOM. 'visible' - wait for element to have non-empty bounding box and no visibility:hidden. Note that element without any content or with display:none has an empty bounding box and is not considered visible. 'hidden' - wait for element to be either detached from DOM, or have an empty bounding box or visibility:hidden. This is opposite to the 'visible' option. strict boolean (optional) Added in: v1.14# When true, the call requires selector to resolve to a single element. If given selector resolves to more than one element, the call throws an exception. timeout number (optional)# Maximum time in milliseconds. Defaults to 0 - no timeout. The default value can be changed via actionTimeout option in the config, or by using the browserContext.setDefaultTimeout() or page.setDefaultTimeout() methods
-
-Promise<null | ElementHandle># wait
-
-## ForTimeout
-
-Added before v1.9 page.waitForTimeout DiscouragedNever wait for timeout in production. Tests that wait for time are inherently flaky. Use Locator actions and web assertions that wait automatically. Waits for the given timeout in milliseconds. Note that page.waitForTimeout() should only be used for debugging. Tests using the timer in production are going to be flaky. Use signals such as network events, selectors becoming visible and others instead
-
-// wait for 1 secondawait page.waitForTimeout(1000); Arguments timeout number# A timeout to wait for Returns Promise<void>#
+**Returns:** `Promise<void>`
