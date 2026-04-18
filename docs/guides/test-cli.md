@@ -4,116 +4,341 @@
 
 ---
 
-## Command linePlaywright provides a powerful command line interface for running tests, generating code, debugging, and more. The most up to date list of commands and arguments available on the CLI can always be retrieved via npx playwright --help. Essential Commands
+## 💻 Command line
 
-## Run Tests
+Playwright provides a powerful command line interface for running tests, generating code, debugging, and more. The most up to date list of commands and arguments available on the CLI can always be retrieved via:
 
-## Run your Playwright tests. Read more about running tests. Syntax
+```bash
+npx playwright --help
+```
 
+---
+
+## 🚀 Run Tests
+
+Run your Playwright tests. Read more about running tests.
+
+**Syntax**
+
+```bash
 npx playwright test [options] [test-filter...]
+```
 
-## Examples
+**Examples**
 
-# Run all testsnpx playwright test# Run a single test filenpx playwright test tests/todo-page.spec.ts# Run a set of test filesnpx playwright test tests/todo-page/ tests/landing-page/# Run tests at a specific linenpx playwright test my-spec.ts:42# Run tests by titlenpx playwright test -g "add a todo item"# Run tests in headed browsersnpx playwright test --headed# Run tests for a specific projectnpx playwright test --project=chromium# Get helpnpx playwright test --help Disable parallelization npx playwright test --workers=1 Run in debug mode with Playwright Inspector npx playwright test --debug
+```bash
+# Run all tests
+npx playwright test
 
-## Run tests in interactive UI mode npx playwright test --ui Common Options
+# Run a single test file
+npx playwright test tests/todo-page.spec.ts
 
-OptionDescription--debugRun tests with Playwright Inspector. Shortcut for PWDEBUG=1 environment variable and --timeout=0 --max-failures=1 --headed --workers=1 options.--headedRun tests in headed browsers (default: headless).-g <grep> or --grep <grep>Only run tests matching this regular expression (default: "._").--project <project-name...>Only run tests from the specified list of projects, supports '_' wildcard (default: run all projects).--uiRun tests in interactive UI mode.-j <workers> or --workers <workers>Number of concurrent workers or percentage of logical CPU cores, use 1 to run in a single worker (default: 50%).
+# Run a set of test files
+npx playwright test tests/todo-page/ tests/landing-page/
 
-## All Options
+# Run tests at a specific line
+npx playwright test my-spec.ts:42
 
-OptionDescriptionNon-option argumentsEach argument is treated as a regular expression matched against the full test file path. Only tests from files matching the pattern will be executed. Special symbols like $ or _ should be escaped with \. In many shells/terminals you may need to quote the arguments.-c <file> or --config <file>Configuration file, or a test directory with optional "playwright.config.{m,c}?{js,ts}". Defaults to playwright.config.ts or playwright.config.js in the current directory.--debugRun tests with Playwright Inspector. Shortcut for PWDEBUG=1 environment variable and --timeout=0 --max-failures=1 --headed --workers=1 options.--fail-on-flaky-testsFail if any test is flagged as flaky (default: false).--forbid-onlyFail if test.only is called (default: false). Useful on CI.--fully-parallelRun all tests in parallel (default: false).--global-timeout <timeout>Maximum time this test suite can run in milliseconds (default: unlimited).-g <grep> or --grep <grep>Only run tests matching this regular expression (default: "._").--grep-invert <grep>Only run tests that do not match this regular expression.--headedRun tests in headed browsers (default: headless).--ignore-snapshotsIgnore screenshot and snapshot expectations.-j <workers> or --workers <workers>Number of concurrent workers or percentage of logical CPU cores, use 1 to run in a single worker (default: 50%).--last-failedOnly re-run the failures.--listCollect all the tests and report them, but do not run.--max-failures <N> or -xStop after the first N failures. Passing -x stops after the first failure.--no-depsDo not run project dependencies.--output <dir>Folder for output artifacts (default: "test-results").--only-changed [ref]Only run test files that have been changed between 'HEAD' and 'ref'. Defaults to running all uncommitted changes. Only supports Git.--pass-with-no-testsMakes test run succeed even if no tests were found.--project <project-name...>Only run tests from the specified list of projects, supports '\*' wildcard (default: run all projects).--quietSuppress stdio.--repeat-each <N>Run each test N times (default: 1).--reporter <reporter>Reporter to use, comma-separated, can be "dot", "line", "list", or others (default: "list"). You can also pass a path to a custom reporter file.--retries <retries>Maximum retry count for flaky tests, zero for no retries (default: no retries).--shard <shard>Shard tests and execute only the selected shard, specified in the form "current/all", 1-based, e.g., "3/5".--test-list <file>Path to a file containing a list of tests to run. See test list for details.--test-list-invert <file>Path to a file containing a list of tests to skip. See test list for details.--timeout <timeout>Specify test timeout threshold in milliseconds, zero for unlimited (default: 30 seconds).--trace <mode>Force tracing mode, can be on, off, on-first-retry, on-all-retries, retain-on-failure, retain-on-first-failure, retain-on-failure-and-retries.--tsconfig <path>Path to a single tsconfig applicable to all imported files (default: look up tsconfig for each imported file separately).--uiRun tests in interactive UI mode.--ui-host <host>Host to serve UI on; specifying this option opens UI in a browser tab.--ui-port <port>Port to serve UI on, 0 for any free port; specifying this option opens UI in a browser tab.-u or --update-snapshots [mode]Update snapshots with actual results. Possible values are "all", "changed", "missing", and "none". Running tests without the flag defaults to "missing"; running tests with the flag but without a value defaults to "changed".--update-source-method [mode]Update snapshots with actual results. Possible values are "patch" (default), "3way" and "overwrite". "Patch" creates a unified diff file that can be used to update the source code later. "3way" generates merge conflict markers in source code. "Overwrite" overwrites the source code with the new snapshot values.-x
+# Run tests by title
+npx playwright test -g "add a todo item"
 
-## Stop after the first failure. Test list
+# Run tests in headed browsers
+npx playwright test --headed
 
-Options --test-list and --test-list-invert accept a path to a test list file. This file should list tests in the format similar to the output produced in --list mode. # This is a test list file.# It can include comments and empty lines.# Run ALL tests in a file:path/to/example.spec.ts# Run all tests in a file for a specific project:[chromium] › path/to/example.spec.ts# Run all tests in a specific group/suite:path/to/example.spec.ts › suite name# Run all tests in a nested group:path/to/example.spec.ts › outer suite › inner suite# Fully qualified test with a project:[chromium] › path/to/example.spec.ts:3:9 › suite › nested suite › example test# This test is included for all projects:path/to/example.spec.ts:3:9 › example test# Use "›" or ">" as a separator:[firefox] > example.spec.ts > suite > nested suite > example test# Line/column numbers are completely ignored, you can omit them.# Three entries below refer to the same test:example.spec.ts › example testexample.spec.ts:15 › example testexample.spec.ts:42:42 › example test
+# Run tests for a specific project
+npx playwright test --project=chromium
 
-## Show Report
+# Get help
+npx playwright test --help
+```
 
-Display
+Disable parallelization:
 
-## HTML report from previous test run. Read more about the HTML reporter. Syntax
+```bash
+npx playwright test --workers=1
+```
 
+Run in debug mode with Playwright Inspector:
+
+```bash
+npx playwright test --debug
+```
+
+Run tests in interactive UI mode:
+
+```bash
+npx playwright test --ui
+```
+
+**Common Options**
+
+| Option                                  | Description                                                                                                                                         |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--debug`                               | Run tests with Playwright Inspector. Shortcut for `PWDEBUG=1` environment variable and `--timeout=0 --max-failures=1 --headed --workers=1` options. |
+| `--headed`                              | Run tests in headed browsers (default: headless).                                                                                                   |
+| `-g <grep>` or `--grep <grep>`          | Only run tests matching this regular expression (default: `".*"`).                                                                                  |
+| `--project <project-name...>`           | Only run tests from the specified list of projects, supports `*` wildcard (default: run all projects).                                              |
+| `--ui`                                  | Run tests in interactive UI mode.                                                                                                                   |
+| `-j <workers>` or `--workers <workers>` | Number of concurrent workers or percentage of logical CPU cores, use 1 to run in a single worker (default: 50%).                                    |
+
+**All Options**
+
+| Option                                  | Description                                                                                                                                                                                                                                                                      |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Non-option arguments                    | Each argument is treated as a regular expression matched against the full test file path. Only tests from files matching the pattern will be executed. Special symbols like `$` or `*` should be escaped with `\`. In many shells/terminals you may need to quote the arguments. |
+| `-c <file>` or `--config <file>`        | Configuration file, or a test directory with optional `playwright.config.{m,c}?{js,ts}`. Defaults to `playwright.config.ts` or `playwright.config.js` in the current directory.                                                                                                  |
+| `--debug`                               | Run tests with Playwright Inspector. Shortcut for `PWDEBUG=1` environment variable and `--timeout=0 --max-failures=1 --headed --workers=1` options.                                                                                                                              |
+| `--fail-on-flaky-tests`                 | Fail if any test is flagged as flaky (default: false).                                                                                                                                                                                                                           |
+| `--forbid-only`                         | Fail if `test.only` is called (default: false). Useful on CI.                                                                                                                                                                                                                    |
+| `--fully-parallel`                      | Run all tests in parallel (default: false).                                                                                                                                                                                                                                      |
+| `--global-timeout <timeout>`            | Maximum time this test suite can run in milliseconds (default: unlimited).                                                                                                                                                                                                       |
+| `-g <grep>` or `--grep <grep>`          | Only run tests matching this regular expression (default: `".*"`).                                                                                                                                                                                                               |
+| `--grep-invert <grep>`                  | Only run tests that do not match this regular expression.                                                                                                                                                                                                                        |
+| `--headed`                              | Run tests in headed browsers (default: headless).                                                                                                                                                                                                                                |
+| `--ignore-snapshots`                    | Ignore screenshot and snapshot expectations.                                                                                                                                                                                                                                     |
+| `-j <workers>` or `--workers <workers>` | Number of concurrent workers or percentage of logical CPU cores, use 1 to run in a single worker (default: 50%).                                                                                                                                                                 |
+| `--last-failed`                         | Only re-run the failures.                                                                                                                                                                                                                                                        |
+| `--list`                                | Collect all the tests and report them, but do not run.                                                                                                                                                                                                                           |
+| `--max-failures <N>` or `-x`            | Stop after the first N failures. Passing `-x` stops after the first failure.                                                                                                                                                                                                     |
+| `--no-deps`                             | Do not run project dependencies.                                                                                                                                                                                                                                                 |
+| `--output <dir>`                        | Folder for output artifacts (default: `"test-results"`).                                                                                                                                                                                                                         |
+| `--only-changed [ref]`                  | Only run test files that have been changed between `HEAD` and `ref`. Defaults to running all uncommitted changes. Only supports Git.                                                                                                                                             |
+| `--pass-with-no-tests`                  | Makes test run succeed even if no tests were found.                                                                                                                                                                                                                              |
+| `--project <project-name...>`           | Only run tests from the specified list of projects, supports `*` wildcard (default: run all projects).                                                                                                                                                                           |
+| `--quiet`                               | Suppress stdio.                                                                                                                                                                                                                                                                  |
+| `--repeat-each <N>`                     | Run each test N times (default: 1).                                                                                                                                                                                                                                              |
+| `--reporter <reporter>`                 | Reporter to use, comma-separated, can be `"dot"`, `"line"`, `"list"`, or others (default: `"list"`). You can also pass a path to a custom reporter file.                                                                                                                         |
+| `--retries <retries>`                   | Maximum retry count for flaky tests, zero for no retries (default: no retries).                                                                                                                                                                                                  |
+| `--shard <shard>`                       | Shard tests and execute only the selected shard, specified in the form `"current/all"`, 1-based, e.g., `"3/5"`.                                                                                                                                                                  |
+| `--test-list <file>`                    | Path to a file containing a list of tests to run. See test list for details.                                                                                                                                                                                                     |
+| `--test-list-invert <file>`             | Path to a file containing a list of tests to skip. See test list for details.                                                                                                                                                                                                    |
+| `--timeout <timeout>`                   | Specify test timeout threshold in milliseconds, zero for unlimited (default: 30 seconds).                                                                                                                                                                                        |
+| `--trace <mode>`                        | Force tracing mode, can be `on`, `off`, `on-first-retry`, `on-all-retries`, `retain-on-failure`, `retain-on-first-failure`, `retain-on-failure-and-retries`.                                                                                                                     |
+| `--tsconfig <path>`                     | Path to a single tsconfig applicable to all imported files (default: look up tsconfig for each imported file separately).                                                                                                                                                        |
+| `--ui`                                  | Run tests in interactive UI mode.                                                                                                                                                                                                                                                |
+| `--ui-host <host>`                      | Host to serve UI on; specifying this option opens UI in a browser tab.                                                                                                                                                                                                           |
+| `--ui-port <port>`                      | Port to serve UI on, 0 for any free port; specifying this option opens UI in a browser tab.                                                                                                                                                                                      |
+| `-u` or `--update-snapshots [mode]`     | Update snapshots with actual results. Possible values are `"all"`, `"changed"`, `"missing"`, and `"none"`. Running tests without the flag defaults to `"missing"`; running tests with the flag but without a value defaults to `"changed"`.                                      |
+| `--update-source-method [mode]`         | Update snapshots with actual results. Possible values are `"patch"` (default), `"3way"` and `"overwrite"`.                                                                                                                                                                       |
+| `-x`                                    | Stop after the first failure.                                                                                                                                                                                                                                                    |
+
+---
+
+## 📋 Test list
+
+Options `--test-list` and `--test-list-invert` accept a path to a test list file. This file should list tests in the format similar to the output produced in `--list` mode.
+
+```text
+# This is a test list file.
+# It can include comments and empty lines.
+
+# Run ALL tests in a file:
+path/to/example.spec.ts
+
+# Run all tests in a file for a specific project:
+[chromium] › path/to/example.spec.ts
+
+# Run all tests in a specific group/suite:
+path/to/example.spec.ts › suite name
+
+# Run all tests in a nested group:
+path/to/example.spec.ts › outer suite › inner suite
+
+# Fully qualified test with a project:
+[chromium] › path/to/example.spec.ts:3:9 › suite › nested suite › example test
+
+# This test is included for all projects:
+path/to/example.spec.ts:3:9 › example test
+
+# Use "›" or ">" as a separator:
+[firefox] > example.spec.ts > suite > nested suite > example test
+
+# Line/column numbers are completely ignored, you can omit them.
+# Three entries below refer to the same test:
+example.spec.ts › example test
+example.spec.ts:15 › example test
+example.spec.ts:42:42 › example test
+```
+
+---
+
+## 📊 Show Report
+
+Display HTML report from previous test run. Read more about the HTML reporter.
+
+**Syntax**
+
+```bash
 npx playwright show-report [report] [options]
+```
 
-## Examples
+**Examples**
 
-# Show latest test reportnpx playwright show-report# Show a specific reportnpx playwright show-report playwright-report/#
+```bash
+# Show latest test report
+npx playwright show-report
 
-## Show report on custom portnpx playwright show-report --port 8080 Options
+# Show a specific report
+npx playwright show-report playwright-report/
 
-OptionDescription--host <host>Host to serve report on (default: localhost)--port <port>
+# Show report on custom port
+npx playwright show-report --port 8080
+```
 
-## Port to serve report on (default: 9323) Install Browsers
+**Options**
 
-Install browsers required by
+| Option          | Description                                  |
+| --------------- | -------------------------------------------- |
+| `--host <host>` | Host to serve report on (default: localhost) |
+| `--port <port>` | Port to serve report on (default: 9323)      |
 
-## Playwright. Read more about Playwright's browser support. Syntax
+---
 
-npx playwright install [options] [browser...]npx playwright install-deps [options] [browser...]npx playwright uninstall
+## 🌐 Install Browsers
 
-## Examples
+Install browsers required by Playwright. Read more about Playwright's browser support.
 
-# Install all browsersnpx playwright install# Install only Chromiumnpx playwright install chromium# Install specific browsersnpx playwright install chromium webkit# Install browsers with dependenciesnpx playwright install --with-deps
+**Syntax**
 
-## Install Options
+```bash
+npx playwright install [options] [browser...]
+npx playwright install-deps [options] [browser...]
+npx playwright uninstall
+```
 
-OptionDescription--forceForce reinstall of stable browser channels--with-depsInstall browser system dependencies--dry-runDon't perform installation, just print information--only-shellOnly install chromium-headless-shell instead of full
+**Examples**
 
-## Chromium--no-shellDon't install chromium-headless-shell Install Deps Options
+```bash
+# Install all browsers
+npx playwright install
 
-OptionDescription--dry-run
+# Install only Chromium
+npx playwright install chromium
 
-## Don't perform installation, just print information Generation & Debugging Tools
+# Install specific browsers
+npx playwright install chromium webkit
 
-## Code Generation
+# Install browsers with dependencies
+npx playwright install --with-deps
+```
 
-Record actions and generate tests for multiple languages.
+**Install Options**
 
-## Read more about Codegen. Syntax
+| Option         | Description                                                   |
+| -------------- | ------------------------------------------------------------- |
+| `--force`      | Force reinstall of stable browser channels                    |
+| `--with-deps`  | Install browser system dependencies                           |
+| `--dry-run`    | Don't perform installation, just print information            |
+| `--only-shell` | Only install chromium-headless-shell instead of full Chromium |
+| `--no-shell`   | Don't install chromium-headless-shell                         |
 
+**Install Deps Options**
+
+| Option      | Description                                        |
+| ----------- | -------------------------------------------------- |
+| `--dry-run` | Don't perform installation, just print information |
+
+---
+
+## 🔧 Code Generation
+
+Record actions and generate tests for multiple languages. Read more about Codegen.
+
+**Syntax**
+
+```bash
 npx playwright codegen [options] [url]
+```
 
-## Examples
+**Examples**
 
-# Start recording with interactive UInpx playwright codegen# Record on specific sitenpx playwright codegen https://playwright.dev# Generate Python codenpx playwright codegen --target=python
+```bash
+# Start recording with interactive UI
+npx playwright codegen
 
-## Options
+# Record on specific site
+npx playwright codegen https://playwright.dev
 
-OptionDescription-b, --browser <name>Browser to use: chromium, firefox, or webkit (default: chromium)-o, --output <file>Output file for the generated script--target <language>Language to use: javascript, playwright-test, python, etc.--test-id-attribute <attr>
+# Generate Python code
+npx playwright codegen --target=python
+```
 
-## Attribute to use for test IDs Trace Viewer
+**Options**
 
-## Analyze and view test traces for debugging. Read more about Trace Viewer. Syntax
+| Option                       | Description                                                      |
+| ---------------------------- | ---------------------------------------------------------------- |
+| `-b, --browser <name>`       | Browser to use: chromium, firefox, or webkit (default: chromium) |
+| `-o, --output <file>`        | Output file for the generated script                             |
+| `--target <language>`        | Language to use: javascript, playwright-test, python, etc.       |
+| `--test-id-attribute <attr>` | Attribute to use for test IDs                                    |
 
+---
+
+## 🔍 Trace Viewer
+
+Analyze and view test traces for debugging. Read more about Trace Viewer.
+
+**Syntax**
+
+```bash
 npx playwright show-trace [options] [trace]
+```
 
-## Examples
+**Examples**
 
-# Open trace viewer without a specific trace (can load traces via UI)npx playwright show-trace# View a trace filenpx playwright show-trace trace.zip#
+```bash
+# Open trace viewer without a specific trace (can load traces via UI)
+npx playwright show-trace
 
-## View trace from directorynpx playwright show-trace trace/ Options
+# View a trace file
+npx playwright show-trace trace.zip
 
-OptionDescription-b, --browser <name>Browser to use: chromium, firefox, or webkit (default: chromium)-h, --host <host>Host to serve trace on-p, --port <port>
+# View trace from directory
+npx playwright show-trace trace/
+```
 
-## Port to serve trace on Specialized Commands
+**Options**
 
-## Merge Reports
+| Option                 | Description                                                      |
+| ---------------------- | ---------------------------------------------------------------- |
+| `-b, --browser <name>` | Browser to use: chromium, firefox, or webkit (default: chromium) |
+| `-h, --host <host>`    | Host to serve trace on                                           |
+| `-p, --port <port>`    | Port to serve trace on                                           |
 
-## Read blob reports and combine them. Read more about merge-reports. Syntax
+---
 
+## 🔀 Merge Reports
+
+Read blob reports and combine them. Read more about merge-reports.
+
+**Syntax**
+
+```bash
 npx playwright merge-reports [options] <blob dir>
+```
 
-## Examples
+**Examples**
 
-#
+```bash
+# Combine test reports
+npx playwright merge-reports ./reports
+```
 
-## Combine test reportsnpx playwright merge-reports ./reports Options
+**Options**
 
-OptionDescription-c, --config <file>Configuration file. Can be used to specify additional configuration for the output report--reporter <reporter>Reporter to use, comma-separated, can be "list", "line", "dot", "json", "junit", "null", "github", "html", "blob" (default: "list")
+| Option                  | Description                                                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-c, --config <file>`   | Configuration file. Can be used to specify additional configuration for the output report                                                               |
+| `--reporter <reporter>` | Reporter to use, comma-separated, can be `"list"`, `"line"`, `"dot"`, `"json"`, `"junit"`, `"null"`, `"github"`, `"html"`, `"blob"` (default: `"list"`) |
 
-## Clear Cache
+---
 
-## Clear all Playwright caches. Syntax
+## 🗑️ Clear Cache
 
+Clear all Playwright caches.
+
+**Syntax**
+
+```bash
 npx playwright clear-cache
+```
