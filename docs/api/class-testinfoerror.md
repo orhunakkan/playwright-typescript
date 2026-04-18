@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **TestInfoError** contains information about an error thrown during test execution.
 
 ## Properties

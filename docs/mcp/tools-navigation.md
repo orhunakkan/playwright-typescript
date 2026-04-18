@@ -98,3 +98,15 @@ You: Open the TodoMVC app, add an item, then go back to see if the item persists
   - checkbox "Toggle Todo" [ref=e10]
   - text: "Buy groceries"
 ```
+
+---
+
+## 🗂️ Quick Reference
+
+| What          | Tool                       |
+| ------------- | -------------------------- |
+| Go to URL     | `browser_navigate`         |
+| Go back       | `browser_navigate_back`    |
+| Go forward    | `browser_navigate_forward` |
+| Reload page   | `browser_reload`           |
+| Close browser | `browser_close`            |

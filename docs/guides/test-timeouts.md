@@ -4,7 +4,7 @@
 
 ---
 
-## ⏱️ Timeouts
+## Timeouts
 
 Playwright Test has multiple configurable timeouts for various tasks.
 
@@ -15,11 +15,11 @@ Playwright Test has multiple configurable timeouts for various tasks.
 
 ---
 
-## ⏰ Test timeout
+## Test timeout
 
 Playwright Test enforces a timeout for each test, 30 seconds by default. Time spent by the test function, fixture setups, and `beforeEach` hooks is included in the test timeout. Timed out test produces the following error:
 
-```
+```text
 example.spec.ts:3:1 › basic test ===========================
 Timeout of 30000ms exceeded.
 ```
@@ -87,11 +87,11 @@ API reference: `testInfo.setTimeout()`.
 
 ---
 
-## ✅ Expect timeout
+## Expect timeout
 
 Auto-retrying assertions like `expect(locator).toHaveText()` have a separate timeout, 5 seconds by default. Assertion timeout is unrelated to the test timeout. It produces the following error:
 
-```
+```text
 example.spec.ts:3:1 › basic test ===========================
 Error: expect(received).toHaveText(expected)
 
@@ -130,11 +130,11 @@ test('example', async ({ page }) => {
 
 ---
 
-## 🌍 Global timeout
+## Global timeout
 
 Playwright Test supports a timeout for the whole test run. This prevents excess resource usage when everything went wrong. There is no default global timeout, but you can set a reasonable one in the config, for example one hour.
 
-```
+```text
 Running 1000 tests using 10 workers
 
   514 skipped
@@ -155,7 +155,7 @@ API reference: `testConfig.globalTimeout`.
 
 ---
 
-## 🔬 Advanced: low level timeouts
+## Advanced: low level timeouts
 
 These are the low-level timeouts that are pre-configured by the test runner, you should not need to change these.
 
@@ -196,7 +196,7 @@ test('basic test', async ({ page }) => {
 
 ---
 
-## 🔧 Fixture timeout
+## Fixture timeout
 
 By default, fixture shares timeout with the test. However, for slow fixtures, especially worker-scoped ones, it is convenient to have a separate timeout. This way you can keep the overall test timeout small, and give the slow fixture more time.
 

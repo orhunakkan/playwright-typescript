@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **ConsoleMessage** objects are dispatched by page via the `page.on('console')` event. For each console message logged in the page there will be a corresponding event in the Playwright context.
 
 ```ts

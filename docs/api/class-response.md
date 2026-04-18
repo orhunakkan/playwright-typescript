@@ -4,11 +4,13 @@
 
 ---
 
-## Overview
-
 **Response** class represents responses which are received by page.
 
 ---
+
+## Methods
+
+## Methods
 
 ### `response.allHeaders()` — Added in: v1.15
 

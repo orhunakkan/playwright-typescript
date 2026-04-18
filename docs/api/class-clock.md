@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Accurately simulating time-dependent behavior is essential for verifying the correctness of applications. Note that clock is installed for the entire `BrowserContext`, so the time in all the pages and iframes is controlled by the same clock.
 
 ---

@@ -513,7 +513,7 @@ xvfb-run npx playwright test
 
 ---
 
-## Quick Reference
+## 🗂️ Quick Reference
 
 | What                        | How                                          |
 | --------------------------- | -------------------------------------------- |

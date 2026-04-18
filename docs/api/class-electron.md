@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Playwright has **experimental** support for Electron automation. You can access the electron namespace via:
 
 ```ts

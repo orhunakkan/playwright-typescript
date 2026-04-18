@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **Download** objects are dispatched by page via the `page.on('download')` event. All the downloaded files belonging to the browser context are deleted when the browser context is closed. Download event is emitted once the download starts. Download path becomes available once download completes.
 
 ```ts

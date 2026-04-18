@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **FrameLocator** represents a view to the iframe on the page. It captures the logic sufficient to retrieve the iframe and locate elements in that iframe. FrameLocator can be created with either `locator.contentFrame()`, `page.frameLocator()` or `locator.frameLocator()` method.
 
 ```ts

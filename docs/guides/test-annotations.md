@@ -4,7 +4,7 @@
 
 ---
 
-## 📝 Introduction
+## Introduction
 
 Playwright supports tags and annotations that are displayed in the test report. You can add your own tags and annotations at any moment, but Playwright comes with a few built-in ones:
 
@@ -17,7 +17,7 @@ Annotations can be added to a single test or a group of tests. Built-in annotati
 
 ---
 
-## 🎯 Focus a test
+## Focus a test
 
 You can focus some tests. When there are focused tests, only these tests run.
 
@@ -29,7 +29,7 @@ test.only('focus this test', async ({ page }) => {
 
 ---
 
-## ⏭️ Skip a test
+## Skip a test
 
 Mark a test as skipped.
 
@@ -41,7 +41,7 @@ test.skip('skip this test', async ({ page }) => {
 
 ---
 
-## 🔀 Conditionally skip a test
+## Conditionally skip a test
 
 You can skip certain test based on the condition.
 
@@ -53,7 +53,7 @@ test('skip this test', async ({ page, browserName }) => {
 
 ---
 
-## 📦 Group tests
+## Group tests
 
 You can group tests to give them a logical name or to scope before/after hooks to the group.
 
@@ -72,7 +72,7 @@ test.describe('two tests', () => {
 
 ---
 
-## 🏷️ Tag tests
+## Tag tests
 
 Sometimes you want to tag your tests as `@fast` or `@slow`, and then filter by tag in the test report. Or you might want to only run tests that have a certain tag. To tag a test, either provide an additional details object when declaring a test, or add `@`-token to the test title. Note that tags must start with `@` symbol.
 
@@ -149,7 +149,7 @@ You can also filter tests in the configuration file via `testConfig.grep` and `t
 
 ---
 
-## 🔖 Annotate tests
+## Annotate tests
 
 If you would like to annotate your tests with something more substantial than a tag, you can do that when declaring a test. Annotations have a type and a description for more context and available in reporter API. Playwright's built-in HTML reporter shows all annotations, except those where type starts with `_` symbol.
 
@@ -204,7 +204,7 @@ test.describe(
 
 ---
 
-## 🚫 Conditionally skip a group of tests
+## Conditionally skip a group of tests
 
 For example, you can run a group of tests just in Chromium by passing a callback.
 
@@ -226,7 +226,7 @@ test.describe('chromium only', () => {
 
 ---
 
-## 🔧 Use fixme in beforeEach hook
+## Use fixme in beforeEach hook
 
 To avoid running `beforeEach` hooks, you can put annotations in the hook itself.
 
@@ -245,7 +245,7 @@ test('user profile', async ({ page }) => {
 
 ---
 
-## 🏃 Runtime annotations
+## Runtime annotations
 
 While the test is already running, you can add annotations to `test.info().annotations`.
 

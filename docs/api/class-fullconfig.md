@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Resolved configuration which is accessible via `testInfo.config` and is passed to the test reporters. To see the format of Playwright configuration file, please see `TestConfig` instead.
 
 ---

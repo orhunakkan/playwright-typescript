@@ -4,13 +4,13 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 In addition to configuring the test runner you can also configure Emulation, Network and Recording for the Browser or BrowserContext. These options are passed to the `use: {}` object in the Playwright config.
 
 ---
 
-## ⚙️ Basic Options
+## Basic Options
 
 Set the base URL and storage state for all tests:
 
@@ -35,7 +35,7 @@ export default defineConfig({
 
 ---
 
-## 📱 Emulation Options
+## Emulation Options
 
 With Playwright you can emulate a real device such as a mobile phone or tablet. See our guide on projects for more info on emulating devices. You can also emulate the "geolocation", "locale" and "timezone" for all tests or for a specific test as well as set the "permissions" to show notifications or change the "colorScheme". See our Emulation guide to learn more.
 
@@ -72,7 +72,7 @@ export default defineConfig({
 
 ---
 
-## 🔌 Network Options
+## Network Options
 
 Available options to configure networking:
 
@@ -119,7 +119,7 @@ export default defineConfig({
 
 ---
 
-## 📸 Recording Options
+## Recording Options
 
 With Playwright you can capture screenshots, record videos as well as traces of your test. By default these are turned off but you can enable them by setting the `screenshot`, `video` and `trace` options in your `playwright.config.js` file. Trace files, screenshots and videos will appear in the test output directory, typically `test-results`.
 
@@ -147,7 +147,7 @@ export default defineConfig({
 
 ---
 
-## 🔧 Other Options
+## Other Options
 
 ```ts
 // playwright.config.ts
@@ -182,7 +182,7 @@ export default defineConfig({
 
 ---
 
-## 🔧 More browser and context options
+## More browser and context options
 
 Any options accepted by `browserType.launch()`, `browser.newContext()` or `browserType.connect()` can be put into `launchOptions`, `contextOptions` or `connectOptions` respectively in the `use` section.
 
@@ -203,7 +203,7 @@ However, most common ones like `headless` or `viewport` are available directly i
 
 ---
 
-## 🏗️ Explicit Context Creation and Option Inheritance
+## Explicit Context Creation and Option Inheritance
 
 If using the built-in `browser` fixture, calling `browser.newContext()` will create a context with options inherited from the config:
 
@@ -233,7 +233,7 @@ test('should inherit use options on context when using built-in browser fixture'
 
 ---
 
-## 🔭 Configuration Scopes
+## Configuration Scopes
 
 You can configure Playwright globally, per project, or per test. For example, you can set the locale to be used globally by adding `locale` to the `use` option of the Playwright config, and then override it for a specific project using the project option in the config. You can also override it for a specific test by adding `test.use({})` in the test file and passing in the options.
 
@@ -294,7 +294,7 @@ test.describe('french language block', () => {
 
 ---
 
-## 🔄 Reset an option
+## Reset an option
 
 You can reset an option to the value defined in the config file. Consider the following config that sets a `baseURL`:
 

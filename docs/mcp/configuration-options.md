@@ -241,3 +241,19 @@ export default async ({ page }) => {
 | `--save-session`              | Save session data                     | `PLAYWRIGHT_MCP_SAVE_SESSION`          |
 | `--save-video <size>`         | Auto-record video (e.g., "800x600")   | `PLAYWRIGHT_MCP_SAVE_VIDEO`            |
 | `--secrets <path>`            | Secrets file (dotenv)                 | `PLAYWRIGHT_MCP_SECRETS_FILE`          |
+
+---
+
+## 🗂️ Quick Reference
+
+| What        | Option / Flag                  |
+| ----------- | ------------------------------ |
+| Headless    | `--headless`                   |
+| Browser     | `--browser=firefox`            |
+| Device      | `--device="iPhone 15"`         |
+| Viewport    | `--viewport-size=1280x720`     |
+| Proxy       | `--proxy-server=<url>`         |
+| HTTP server | `--port 8931`                  |
+| Config file | `--config path/to/config.json` |
+| Init script | `--init-script ./setup.js`     |
+| Init page   | `--init-page ./setup-page.ts`  |

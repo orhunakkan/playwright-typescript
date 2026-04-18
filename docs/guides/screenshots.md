@@ -4,7 +4,7 @@
 
 ---
 
-## 📸 Introduction
+## Introduction
 
 Here is a quick way to capture a screenshot and save it into a file:
 
@@ -16,7 +16,7 @@ Screenshots API accepts many parameters for image format, clip area, quality, et
 
 ---
 
-## 🖼️ Full page screenshots
+## Full page screenshots
 
 Full page screenshot is a screenshot of a full scrollable page, as if you had a very tall screen and the page could fit it entirely.
 
@@ -26,7 +26,7 @@ await page.screenshot({ path: 'screenshot.png', fullPage: true });
 
 ---
 
-## 📦 Capture into buffer
+## Capture into buffer
 
 Rather than writing into a file, you can get a buffer with the image and post-process it or pass it to a third party pixel diff facility.
 
@@ -37,7 +37,7 @@ console.log(buffer.toString('base64'));
 
 ---
 
-## 🔍 Element screenshot
+## Element screenshot
 
 Sometimes it is useful to take a screenshot of a single element.
 

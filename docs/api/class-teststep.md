@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **TestStep** represents a step in the `TestRun`.
 
 ## Methods

@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Playwright has experimental support for Android automation. This includes Chrome for Android and Android WebView.
 
 **Requirements:**

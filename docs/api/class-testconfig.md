@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **TestConfig** is the object returned from `defineConfig()`. It represents the full resolved Playwright configuration. You usually do not need to interact with this class directly; see the config guide for more details.
 
 ```ts

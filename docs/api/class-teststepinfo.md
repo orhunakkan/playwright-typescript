@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **TestStepInfo** contains information about the currently running test step. It is passed as an argument to the step function. **TestStepInfo** provides utilities to control test step execution.
 
 ## Methods

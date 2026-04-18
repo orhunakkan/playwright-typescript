@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 A **Browser** is created via `browserType.launch()`. An example of using a Browser to create a Page:
 
 ```ts

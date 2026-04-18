@@ -4,7 +4,7 @@
 
 ---
 
-## 📄 Pages
+## Pages
 
 Each `BrowserContext` can have multiple pages. A `Page` refers to a single tab or a popup window within a browser context. It should be used to navigate to URLs and interact with the page content.
 
@@ -23,7 +23,7 @@ console.log(page.url());
 
 ---
 
-## 🗂️ Multiple pages
+## Multiple pages
 
 Each browser context can host multiple pages (tabs). Each page behaves like a focused, active page. Bringing the page to front is not required. Pages inside a context respect context-level emulation, like viewport sizes, custom network routes or browser locale.
 
@@ -37,7 +37,7 @@ const allPages = context.pages();
 
 ---
 
-## ➕ Handling new pages
+## Handling new pages
 
 The `page` event on browser contexts can be used to get new pages that are created in the context. This can be used to handle new pages opened by `target="_blank"` links.
 
@@ -63,7 +63,7 @@ context.on('page', async (page) => {
 
 ---
 
-## 🪟 Handling popups
+## Handling popups
 
 If the page opens a pop-up (e.g. pages opened by `target="_blank"` links), you can get a reference to it by listening to the `popup` event on the page. This event is emitted in addition to the `browserContext.on('page')` event, but only for popups relevant to this page.
 

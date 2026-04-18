@@ -206,7 +206,7 @@ Then point your MCP client to the HTTP endpoint:
 
 ---
 
-## Quick Reference
+## 🗂️ Quick Reference
 
 | Action              | How to do it                                         |
 | ------------------- | ---------------------------------------------------- |

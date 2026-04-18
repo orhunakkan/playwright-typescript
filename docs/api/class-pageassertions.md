@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 The **PageAssertions** class provides assertion methods for the **Page** state in tests.
 
 ```ts

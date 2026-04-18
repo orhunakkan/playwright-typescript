@@ -12,13 +12,13 @@ By default, **retries are disabled.** You opt in.
 
 ---
 
-## 🧱 How Failures Work Under the Hood
+## How Failures Work Under the Hood
 
 Playwright runs tests in **worker processes** — isolated OS processes, each with its own browser. When a test fails, the **entire worker is discarded** and a fresh one starts.
 
 ### Without retries
 
-```
+```text
 Worker #1 starts
   ✅ beforeAll runs
   ✅ first good → passes
@@ -33,7 +33,7 @@ Worker #2 starts
 
 ### With retries enabled
 
-```
+```text
 Worker #1 starts
   ✅ beforeAll runs
   ✅ first good → passes
@@ -49,7 +49,7 @@ Worker #2 starts
 
 ---
 
-## ⚙️ Configuring Retries
+## Configuring Retries
 
 ### CLI (one-off)
 
@@ -85,7 +85,7 @@ test.describe(() => {
 
 ---
 
-## 📊 How Playwright Categorizes Results
+## How Playwright Categorizes Results
 
 | Status        | Meaning                             |
 | ------------- | ----------------------------------- |
@@ -95,7 +95,7 @@ test.describe(() => {
 
 ### Example output
 
-```
+```text
 Running 3 tests using 1 worker
 
   ✓  example.spec.ts › first passes       (438ms)
@@ -109,7 +109,7 @@ Running 3 tests using 1 worker
 
 ---
 
-## 🔍 Detecting Retries at Runtime
+## Detecting Retries at Runtime
 
 Use `testInfo.retry` inside any test, hook, or fixture:
 
@@ -128,7 +128,7 @@ test('my test', async ({ page }, testInfo) => {
 
 ---
 
-## 🔗 Serial Mode
+## Serial Mode
 
 Use `mode: 'serial'` when tests are **dependent on each other** — they must run in order and together.
 
@@ -151,7 +151,7 @@ test('third good', async ({ page }) => {
 
 ### Without retries — skips on failure
 
-```
+```text
 Worker #1:
   ✅ first good
   ❌ second flaky → FAILS
@@ -160,7 +160,7 @@ Worker #1:
 
 ### With retries — all tests retry together
 
-```
+```text
 Worker #1:
   ✅ first good
   ❌ second flaky → fails
@@ -175,7 +175,7 @@ Worker #2:
 
 ---
 
-## ♻️ Reusing a Single Page Across Tests
+## Reusing a Single Page Across Tests
 
 If you need to share a `Page` object across multiple tests (e.g. to preserve state), create it in `beforeAll` and close it in `afterAll`. Requires `mode: 'serial'`.
 

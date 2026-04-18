@@ -4,13 +4,13 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 **Locators** are the central piece of Playwright's auto-waiting and retry-ability. In a nutshell, locators represent a way to find element(s) on the page at any moment.
 
 ---
 
-## 🗺️ Quick Guide
+## Quick Guide
 
 These are the recommended built-in locators:
 
@@ -31,7 +31,7 @@ await expect(page.getByText('Welcome, John!')).toBeVisible();
 
 ---
 
-## 🔍 Locating elements
+## Locating elements
 
 Playwright comes with multiple built-in locators. To make tests resilient, we recommend prioritizing user-facing attributes and explicit contracts such as `page.getByRole()`.
 
@@ -66,7 +66,7 @@ await locator.click();
 
 ---
 
-## 🎭 Locate by role
+## Locate by role
 
 The `page.getByRole()` locator reflects how users and assistive technology perceive the page, for example whether some element is a button or a checkbox. When locating by role, you should usually pass the accessible name as well, so that the locator pinpoints the exact element.
 
@@ -95,7 +95,7 @@ Role locators include buttons, checkboxes, headings, links, lists, tables, and m
 
 ---
 
-## 🏷️ Locate by label
+## Locate by label
 
 Most form controls usually have dedicated labels that could be conveniently used to interact with the form. In this case, you can locate the control by its associated label using `page.getByLabel()`.
 
@@ -115,7 +115,7 @@ await page.getByLabel('Password').fill('secret');
 
 ---
 
-## 📝 Locate by placeholder
+## Locate by placeholder
 
 Inputs may have a `placeholder` attribute to hint to the user what value should be entered. You can locate such an input using `page.getByPlaceholder()`.
 
@@ -135,7 +135,7 @@ await page.getByPlaceholder('name@example.com').fill('playwright@microsoft.com')
 
 ---
 
-## 📄 Locate by text
+## Locate by text
 
 Find an element by the text it contains. You can match by a substring, exact string, or a regular expression when using `page.getByText()`.
 
@@ -169,7 +169,7 @@ await expect(page.getByText(/welcome, [A-Za-z]+$/i)).toBeVisible();
 
 ---
 
-## 🖼️ Locate by alt text
+## Locate by alt text
 
 All images should have an `alt` attribute that describes the image. You can locate an image based on the text alternative using `page.getByAltText()`.
 
@@ -189,7 +189,7 @@ await page.getByAltText('playwright logo').click();
 
 ---
 
-## 📌 Locate by title
+## Locate by title
 
 Locate an element with a matching `title` attribute using `page.getByTitle()`.
 
@@ -209,7 +209,7 @@ await expect(page.getByTitle('Issues count')).toHaveText('25 issues');
 
 ---
 
-## 🔖 Locate by test id
+## Locate by test id
 
 Testing by test ids is the most resilient way of testing as even if your text or role of the attribute changes, the test will still pass. QA's and developers should define explicit test ids and query them with `page.getByTestId()`. However testing by test ids is not user facing. If the role or text value is important to you then consider using user facing locators such as role and text locators.
 
@@ -256,7 +256,7 @@ await page.getByTestId('directions').click();
 
 ---
 
-## 🔗 Locate by CSS or XPath
+## Locate by CSS or XPath
 
 If you absolutely must use CSS or XPath locators, you can use `page.locator()` to create a locator that takes a selector describing how to find an element in the page. Playwright supports CSS and XPath selectors, and auto-detects them if you omit the `css=` or `xpath=` prefix.
 
@@ -278,7 +278,7 @@ await page.locator('//*[@id="tsf"]/div[2]/div[1]/div[1]/div/div[2]/input').click
 
 ---
 
-## 🌑 Locate in Shadow DOM
+## Locate in Shadow DOM
 
 All locators in Playwright by default work with elements in Shadow DOM. The exceptions are:
 
@@ -315,7 +315,7 @@ await expect(page.locator('x-details')).toContainText('Details');
 
 ---
 
-## 🔎 Filtering Locators
+## Filtering Locators
 
 Consider the following DOM structure where we want to click on the buy button of the second product card:
 
@@ -396,7 +396,7 @@ Note that the inner locator is matched starting from the outer one, not from the
 
 ---
 
-## ⚙️ Locator operators
+## Locator operators
 
 ### Matching inside a locator
 
@@ -467,7 +467,7 @@ await page.locator('button').filter({ visible: true }).click();
 
 ---
 
-## 📋 Lists
+## Lists
 
 ### Count items in a list
 
@@ -614,7 +614,7 @@ You should now have a "screenshot.png" file in your project's root directory.
 
 ---
 
-## 🔄 Rare use cases
+## Rare use cases
 
 ### Do something with each element in the list
 
@@ -643,7 +643,7 @@ const texts = await rows.evaluateAll((list) => list.map((element) => element.tex
 
 ---
 
-## ⚡ Strictness
+## Strictness
 
 **Locators are strict.** This means that all operations on locators that imply some target DOM element will throw an exception if more than one element matches.
 
@@ -679,6 +679,6 @@ You can explicitly opt-out from strictness check by telling Playwright which ele
 
 ---
 
-## 🔗 More Locators
+## More Locators
 
 For less commonly used locators, look at the other locators guide.

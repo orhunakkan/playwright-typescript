@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Page provides methods to interact with a single tab in a Browser, or an extension background page in Chromium. One Browser instance might have multiple Page instances.
 
 ```js
@@ -1587,7 +1585,7 @@ page.on('worker', (data) => {});
 
 ---
 
-## Deprecated Methods
+## Deprecated
 
 ### `page.$()` — Added in: v1.9
 

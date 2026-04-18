@@ -4,7 +4,7 @@
 
 ---
 
-## 🧪 Introduction
+## Introduction
 
 Playwright includes test assertions in the form of `expect` function. To make an assertion, call `expect(value)` and choose a matcher that reflects the expectation. There are many generic matchers like `toEqual`, `toContain`, `toBeTruthy` that can be used to assert any conditions.
 
@@ -22,7 +22,7 @@ Playwright will be re-testing the element with the test id of `status` until the
 
 ---
 
-## ⏳ Auto-retrying assertions
+## Auto-retrying assertions
 
 The following assertions will retry until the assertion passes, or the assertion timeout is reached. Note that retrying assertions are async, so you must `await` them.
 
@@ -61,7 +61,7 @@ The following assertions will retry until the assertion passes, or the assertion
 
 ---
 
-## 🔒 Non-retrying assertions
+## Non-retrying assertions
 
 These assertions allow to test any conditions, but do not auto-retry. Most of the time, web pages show information asynchronously, and using non-retrying assertions can lead to a flaky test. Prefer auto-retrying assertions whenever possible. For more complex assertions that need to be retried, use `expect.poll` or `expect.toPass`.
 
@@ -93,7 +93,7 @@ These assertions allow to test any conditions, but do not auto-retry. Most of th
 
 ---
 
-## ↔️ Asymmetric matchers
+## Asymmetric matchers
 
 These expressions can be nested in other assertions to allow more relaxed matching against a given condition.
 
@@ -110,7 +110,7 @@ These expressions can be nested in other assertions to allow more relaxed matchi
 
 ---
 
-## 🚫 Negating matchers
+## Negating matchers
 
 In general, we can expect the opposite to be true by adding a `.not` to the front of the matchers:
 
@@ -121,7 +121,7 @@ await expect(locator).not.toContainText('some text');
 
 ---
 
-## 🟡 Soft assertions
+## Soft assertions
 
 By default, failed assertion will terminate test execution. Playwright also supports soft assertions: failed soft assertions do not terminate test execution, but mark the test as failed.
 
@@ -148,7 +148,7 @@ Note that soft assertions only work with Playwright test runner.
 
 ---
 
-## 💬 Custom expect message
+## Custom expect message
 
 You can specify a custom expect message as a second argument to the `expect` function, for example:
 
@@ -187,7 +187,7 @@ expect.soft(value, 'my soft assertion').toBe(56);
 
 ---
 
-## ⚙️ expect.configure
+## expect.configure
 
 You can create your own pre-configured `expect` instance to have its own defaults such as timeout and soft.
 
@@ -202,7 +202,7 @@ await softExpect(locator).toHaveText('Submit');
 
 ---
 
-## 🔄 expect.poll
+## expect.poll
 
 You can convert any synchronous `expect` to an asynchronous polling one using `expect.poll`. The following method will poll given function until it returns HTTP status 200:
 
@@ -258,7 +258,7 @@ This allows the test to continue even if the assertion inside `poll` fails.
 
 ---
 
-## ✅ expect.toPass
+## expect.toPass
 
 You can retry blocks of code until they are passing successfully.
 
@@ -287,7 +287,7 @@ Note that by default `toPass` has timeout 0 and does not respect custom expect t
 
 ---
 
-## 🔧 Add custom matchers using expect.extend
+## Add custom matchers using expect.extend
 
 You can extend Playwright assertions by providing custom matchers. These matchers will be available on the `expect` object. In this example we add a custom `toHaveAmount` function. Custom matcher should return a `pass` flag indicating whether the assertion passed, and a `message` callback that's used when the assertion fails.
 
@@ -353,7 +353,7 @@ test('amount', async () => {
 
 ---
 
-## 🔀 Combine custom matchers from multiple modules
+## Combine custom matchers from multiple modules
 
 You can combine custom matchers from multiple files or modules.
 

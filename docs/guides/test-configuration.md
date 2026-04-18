@@ -4,13 +4,13 @@
 
 ---
 
-## ⚙️ Introduction
+## Introduction
 
 Playwright has many options to configure how your tests are run. You can specify these options in the configuration file. Note that test runner options are top-level, do not put them into the `use` section.
 
 ---
 
-## 🗂️ Basic Configuration
+## Basic Configuration
 
 Here are some of the most common configuration options.
 
@@ -67,7 +67,7 @@ export default defineConfig({
 
 ---
 
-## 🔍 Filtering Tests
+## Filtering Tests
 
 Filter tests by glob patterns or regular expressions.
 
@@ -90,7 +90,7 @@ export default defineConfig({
 
 ---
 
-## 🔧 Advanced Configuration
+## Advanced Configuration
 
 ```ts
 // playwright.config.ts
@@ -117,7 +117,7 @@ export default defineConfig({
 
 ---
 
-## ✅ Expect Options
+## Expect Options
 
 Configuration for the `expect` assertion library.
 

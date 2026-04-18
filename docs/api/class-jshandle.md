@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **JSHandle** represents an in-page JavaScript object. JSHandles can be created with the `page.evaluateHandle()` method.
 
 ```ts

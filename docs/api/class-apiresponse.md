@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **APIResponse** class represents responses returned by `apiRequestContext.get()` and similar methods.
 
 ---

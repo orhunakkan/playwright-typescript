@@ -4,13 +4,13 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Web APIs are usually implemented as HTTP endpoints. Playwright provides APIs to mock and modify network traffic, both HTTP and HTTPS. Any requests that a page does, including XHRs and fetch requests, can be tracked, modified and mocked. With Playwright you can also mock using HAR files that contain multiple network requests made by the page.
 
 ---
 
-## 🎯 Mock API requests
+## Mock API requests
 
 The following code will intercept all the calls to `**/api/v1/fruits` and will return a custom response instead. No requests to the API will be made. The test goes to the URL that uses the mocked route and asserts that mock data is present on the page.
 
@@ -32,7 +32,7 @@ You can see from the trace of the example test that the API was never called, it
 
 ---
 
-## ✏️ Modify API responses
+## Modify API responses
 
 Sometimes, it is essential to make an API request, but the response needs to be patched to allow for reproducible testing. In that case, instead of mocking the request, one can perform the request and fulfill it with the modified response. In the example below we intercept the call to the fruit API and add a new fruit called 'Loquat', to the data. We then go to the url and assert that this data is there:
 
@@ -58,7 +58,7 @@ In the trace of our test we can see that the API was called and the response was
 
 ---
 
-## 📁 Mocking with HAR files
+## Mocking with HAR files
 
 A HAR file is an HTTP Archive file that contains a record of all the network requests that are made when a page is loaded. It contains information about the request and response headers, cookies, content, timings, and more. You can use HAR files to mock network requests in your tests. You'll need to:
 
@@ -117,7 +117,7 @@ npx playwright open --save-har=example.har --save-har-glob="**/api/**" https://e
 
 ---
 
-## 🌐 Mock WebSockets
+## Mock WebSockets
 
 The following code will intercept WebSocket connections and mock entire communication over the WebSocket, instead of connecting to the server. This example responds to a "request" with a "response".
 

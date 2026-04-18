@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **TestProject** supports running multiple test projects at the same time. This is useful for running tests in multiple configurations. For example, consider running tests against multiple browsers.
 
 ```ts

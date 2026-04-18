@@ -4,13 +4,13 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Playwright provides native support for most of the browser features. However, there are some experimental APIs and APIs which are not (yet) fully supported by all browsers. Playwright usually doesn't provide dedicated automation APIs in such cases. You can use mocks to test the behavior of your application in such cases. This guide gives a few examples. Let's consider a web app that uses battery API to show your device's battery status. We'll mock the battery API and check that the page correctly displays the battery status.
 
 ---
 
-## 🔧 Creating mocks
+## Creating mocks
 
 Since the page may be calling the API very early while loading it's important to setup all the mocks before the page started loading. The easiest way to achieve that is to call `page.addInitScript()`:
 
@@ -56,7 +56,7 @@ test('show battery status', async ({ page }) => {
 
 ---
 
-## 🔒 Mocking read-only APIs
+## Mocking read-only APIs
 
 Some APIs are read-only so you won't be able to assign to a navigator property. For example,
 
@@ -77,7 +77,7 @@ await page.addInitScript(() => {
 
 ---
 
-## ✅ Verifying API calls
+## Verifying API calls
 
 Sometimes it is useful to check if the page made all expected APIs calls. You can record all API method invocations and then compare them with golden result. `page.exposeFunction()` may come in handy for passing message from the page back to the test code:
 
@@ -110,7 +110,7 @@ test('log battery calls', async ({ page }) => {
 
 ---
 
-## 🔄 Updating mock
+## Updating mock
 
 To test that the app correctly reflects battery status updates it's important to make sure that the mock battery object fires same events that the browser implementation would. The following test demonstrates how to achieve that:
 

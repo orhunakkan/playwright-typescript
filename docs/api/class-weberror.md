@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **WebError** class represents an unhandled exception thrown in the page. It is dispatched via the `browserContext.on('weberror')` event.
 
 ```ts

@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 The **APIResponseAssertions** class provides assertion methods that can be used to make assertions about the **APIResponse** in the tests.
 
 **Example:**

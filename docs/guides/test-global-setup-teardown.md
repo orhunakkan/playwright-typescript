@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 There are two ways to configure global setup and teardown: using a global setup file and setting it in the config under `globalSetup`, or using **project dependencies**. With project dependencies, you define a project that runs before all other projects. This is the recommended approach, as it integrates better with the Playwright test runner: your HTML report will include the global setup, traces will be recorded, and fixtures can be used.
 
@@ -20,7 +20,7 @@ There are two ways to configure global setup and teardown: using a global setup 
 
 ---
 
-## 🔗 Option 1: Project Dependencies
+## Option 1: Project Dependencies
 
 Project dependencies are a list of projects that need to run before the tests in another project run. They can be useful for configuring the global setup actions so that one project depends on this running first. Using dependencies allows global setup to produce traces and other artifacts.
 
@@ -141,7 +141,7 @@ All test filtering options, such as `--grep`/`--grep-invert`, `--shard`, filteri
 
 ---
 
-## ⚙️ Option 2: Configure globalSetup and globalTeardown
+## Option 2: Configure globalSetup and globalTeardown
 
 You can use the `globalSetup` option in the configuration file to set something up once before running all tests. The global setup file must export a single function that takes a config object. This function will be run once before all the tests. Similarly, use `globalTeardown` to run something once after all the tests. Alternatively, let `globalSetup` return a function that will be used as a global teardown.
 

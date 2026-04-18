@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **AndroidSocket** is a way to communicate with a process launched on the `AndroidDevice`. Use `androidDevice.open()` to open a socket.
 
 ---

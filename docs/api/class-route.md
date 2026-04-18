@@ -4,11 +4,13 @@
 
 ---
 
-## Overview
-
 Whenever a network route is set up with `page.route()` or `browserContext.route()`, the **Route** object allows to handle the route. Learn more about networking.
 
 ---
+
+## Methods
+
+## Methods
 
 ### `route.abort(errorCode?)` — Added before v1.9
 

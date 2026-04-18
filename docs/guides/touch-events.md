@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Web applications that handle legacy touch events to respond to gestures like swipe, pinch, and tap can be tested by manually dispatching **TouchEvents** to the page. The examples below demonstrate how to use `locator.dispatchEvent()` and pass Touch points as arguments.
 
@@ -12,7 +12,7 @@ Web applications that handle legacy touch events to respond to gestures like swi
 
 ---
 
-## 🖐️ Emulating pan gesture
+## Emulating pan gesture
 
 In the example below, we emulate pan gesture that is expected to move the map. The app under test only uses `clientX`/`clientY` coordinates of the touch point, so we initialize just that. In a more complex scenario you may need to also set `pageX`/`pageY`/`screenX`/`screenY`, if your app needs them.
 
@@ -67,7 +67,7 @@ test(`pan gesture to move the map`, async ({ page }) => {
 
 ---
 
-## 🤏 Emulating pinch gesture
+## Emulating pinch gesture
 
 In the example below, we emulate pinch gesture, i.e. two touch points moving closer to each other. It is expected to zoom out the map. The app under test only uses `clientX`/`clientY` coordinates of touch points, so we initialize just that. In a more complex scenario you may need to also set `pageX`/`pageY`/`screenX`/`screenY`, if your app needs them.
 

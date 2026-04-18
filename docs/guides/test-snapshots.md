@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Playwright Test includes the ability to produce and visually compare screenshots using `await expect(page).toHaveScreenshot()`. On first execution, Playwright test will generate reference screenshots. Subsequent runs will compare against the reference.
 
@@ -21,17 +21,17 @@ test('example test', async ({ page }) => {
 
 ---
 
-## 📷 Generating screenshots
+## Generating screenshots
 
 When you run above for the first time, test runner will say:
 
-```
+```text
 Error: A snapshot doesn't exist at example.spec.ts-snapshots/example-test-1-chromium-darwin.png, writing actual.
 ```
 
 That's because there was no golden file yet. This method took a bunch of screenshots until two consecutive screenshots matched, and saved the last screenshot to file system. It is now ready to be added to the repository. The name of the folder with the golden expectations starts with the name of your test file:
 
-```
+```text
 drwxr-xr-x  5 user  group  160 Jun  4 11:46 .
 drwxr-xr-x  6 user  group  192 Jun  4 11:45 ..
 -rw-r--r--  1 user  group  231 Jun  4 11:16 example.spec.ts
@@ -47,7 +47,7 @@ The snapshot name and path can be configured with `testConfig.snapshotPathTempla
 
 ---
 
-## 🔄 Updating screenshots
+## Updating screenshots
 
 Sometimes you need to update the reference screenshot, for example when the page has changed. Do this with the `--update-snapshots` flag.
 
@@ -57,7 +57,7 @@ npx playwright test --update-snapshots
 
 ---
 
-## ⚙️ Options
+## Options
 
 ### maxDiffPixels
 
@@ -120,7 +120,7 @@ export default defineConfig({
 
 ---
 
-## 📄 Non-image snapshots
+## Non-image snapshots
 
 Apart from screenshots, you can use `expect(value).toMatchSnapshot(snapshotName)` to compare text or arbitrary binary data. Playwright Test auto-detects the content type and uses the appropriate comparison algorithm. Here we compare text content against the reference.
 

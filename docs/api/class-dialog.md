@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **Dialog** objects are dispatched by page via the `page.on('dialog')` event.
 
 ```ts

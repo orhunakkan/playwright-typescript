@@ -4,13 +4,13 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 With Playwright you can record videos for your tests.
 
 ---
 
-## 🎬 Record video
+## Record video
 
 Playwright Test can record videos for your tests, controlled by the **video** option in your Playwright config. By default videos are off.
 

@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 API for collecting and saving Playwright traces. Playwright traces can be opened in **Trace Viewer** after Playwright script runs.
 
 > **Note:** You probably want to enable tracing in your config file instead of using `context.tracing`. The `context.tracing` API captures browser operations and network activity, but it doesn't record test assertions (like `expect` calls). We recommend enabling tracing through Playwright Test configuration, which includes those assertions and provides a more complete trace for debugging test failures.
@@ -153,16 +151,3 @@ await tracing.stopChunk(options);
   - `path` `string` _(optional)_ — Export trace collected since the last `tracing.startChunk()` call into the file with the given path.
 
 **Returns:** `Promise<void>`
-
----
-
-## 🗂️ Quick Reference
-
-| Method                 | Version | Description                              |
-| ---------------------- | ------- | ---------------------------------------- |
-| `tracing.start()`      | v1.12   | Start tracing                            |
-| `tracing.stop()`       | v1.12   | Stop tracing and optionally save to file |
-| `tracing.startChunk()` | v1.15   | Start a new trace chunk                  |
-| `tracing.stopChunk()`  | v1.15   | Stop the current trace chunk             |
-| `tracing.group()`      | v1.49   | Create a named group in the trace        |
-| `tracing.groupEnd()`   | v1.49   | Close the current trace group            |

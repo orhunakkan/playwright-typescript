@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **TestOptions** provides many options to configure test execution. These options are usually provided in the configuration file through `use`.
 
 ```ts

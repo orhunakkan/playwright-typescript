@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **APIRequestContext** is used for Web API testing. You can use it to trigger API endpoints, configure micro-services, prepare environment or the service to your e2e test.
 
 Each Playwright browser context has associated with it `APIRequestContext` instance which shares cookie storage with the browser context and can be accessed via `browserContext.request` or `page.request`. It is also possible to create a new `APIRequestContext` instance manually by calling `apiRequest.newContext()`.

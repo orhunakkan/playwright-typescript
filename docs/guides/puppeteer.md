@@ -4,7 +4,7 @@
 
 ---
 
-## 📋 Migration Principles
+## Migration Principles
 
 This guide describes migration to Playwright Library and Playwright Test from Puppeteer. The APIs have similarities, but Playwright offers much more possibilities for web testing and cross-browser automation.
 
@@ -15,7 +15,7 @@ This guide describes migration to Playwright Library and Playwright Test from Pu
 
 ---
 
-## 📊 Cheat Sheet
+## 🗂️ Quick Reference
 
 | Puppeteer                                                                    | Playwright Library                                                       |
 | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
@@ -46,7 +46,7 @@ This guide describes migration to Playwright Library and Playwright Test from Pu
 
 ---
 
-## 💡 Examples
+## Examples
 
 ### Automation example
 
@@ -146,7 +146,7 @@ Migration highlights:
 
 ---
 
-## 🧪 Testing
+## Testing
 
 To improve testing, it is advised to use Locators and web-first Assertions. See Writing Tests.
 
@@ -156,7 +156,7 @@ Playwright Test is the first-party recommended test runner for Playwright. It pr
 
 ---
 
-## ✨ Playwright Test Super Powers
+## Playwright Test Super Powers
 
 Once you're on Playwright Test, you get a lot!
 
@@ -174,7 +174,7 @@ You also get all these awesome tools that come bundled with Playwright Test:
 
 ---
 
-## 📚 Further Reading
+## Further Reading
 
 Learn more about Playwright Test runner:
 

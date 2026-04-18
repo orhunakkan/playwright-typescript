@@ -4,7 +4,7 @@
 
 ---
 
-## 📋 Migration Principles
+## Migration Principles
 
 - No need for "webdriver-manager" / Selenium.
 - Protractor's `ElementFinder` ⇄ Playwright Test `Locator`
@@ -13,7 +13,7 @@
 
 ---
 
-## 📊 Cheat Sheet
+## 🗂️ Quick Reference
 
 | Protractor                                        | Playwright Test                                                                    |
 | ------------------------------------------------- | ---------------------------------------------------------------------------------- |
@@ -30,7 +30,7 @@
 
 ---
 
-## 💡 Example
+## Example
 
 Protractor:
 
@@ -85,7 +85,7 @@ Migration highlights (see inline comments in the Playwright Test code snippet):
 
 ---
 
-## 🔌 Polyfilling waitForAngular
+## Polyfilling waitForAngular
 
 Playwright Test has built-in auto-waiting that makes Protractor's `waitForAngular` unneeded in general. However, it might come handy in some edge cases. Here's how to polyfill `waitForAngular` in Playwright Test:
 
@@ -139,7 +139,7 @@ await waitForAngular(page);
 
 ---
 
-## ✨ Playwright Test Super Powers
+## Playwright Test Super Powers
 
 Once you're on Playwright Test, you get a lot!
 
@@ -157,7 +157,7 @@ You also get all these awesome tools that come bundled with Playwright Test:
 
 ---
 
-## 📚 Further Reading
+## Further Reading
 
 Learn more about Playwright Test runner:
 

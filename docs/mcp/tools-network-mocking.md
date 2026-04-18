@@ -194,3 +194,15 @@ Pattern             Status  Content-Type
 → browser_network_state_set { state: "online" }
 → browser_reload  // Page loads normally
 ```
+
+---
+
+## 🗂️ Quick Reference
+
+| What              | Tool                        |
+| ----------------- | --------------------------- |
+| List requests     | `browser_network_requests`  |
+| Mock route        | `browser_route`             |
+| List mocks        | `browser_route_list`        |
+| Remove mocks      | `browser_unroute`           |
+| Go offline/online | `browser_network_state_set` |

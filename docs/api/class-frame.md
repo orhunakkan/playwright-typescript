@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 At every point of time, page exposes its current frame tree via the `page.mainFrame()` and `frame.childFrames()` methods. Frame object's lifecycle is controlled by three events, dispatched on the page object:
 
 - `page.on('frameattached')` — fired when the frame gets attached to the page. A Frame can be attached to the page only once.

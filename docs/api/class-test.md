@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **Playwright Test** provides a `test` function to declare tests and `expect` function to write assertions.
 
 ```ts
@@ -19,6 +17,10 @@ test('basic test', async ({ page }) => {
 ```
 
 ---
+
+## Methods
+
+## Methods
 
 ### `test(title, body)` — Added in: v1.10
 

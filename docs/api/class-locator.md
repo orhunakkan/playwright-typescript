@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Locators are the central piece of Playwright's auto-waiting and retry-ability. They represent a way to find element(s) on the page at any moment. A locator can be created with the `page.locator()` method.
 
 ---

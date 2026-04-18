@@ -73,7 +73,7 @@ If you have multiple `playwright.config.ts` files, you can switch between them u
 
 ---
 
-## Quick Reference
+## 🗂️ Quick Reference
 
 | Action             | How to do it in VS Code                             |
 | ------------------ | --------------------------------------------------- |

@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Migration principles
+## Migration principles
 
 This guide describes migration to Playwright's Experimental Component Testing from DOM Testing Library, React Testing Library and Vue Testing Library.
 
@@ -12,7 +12,7 @@ This guide describes migration to Playwright's Experimental Component Testing fr
 
 ---
 
-## 🗂️ Cheat Sheet
+## 🗂️ Quick Reference
 
 | Testing Library                                                   | Playwright                                                             |
 | ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
@@ -35,7 +35,7 @@ This guide describes migration to Playwright's Experimental Component Testing fr
 
 ---
 
-## 💡 Example
+## Example
 
 **Testing Library:**
 
@@ -84,13 +84,13 @@ Migration highlights (see inline comments in the Playwright Test code snippet):
 
 ---
 
-## 🔄 Migrating queries
+## Migrating queries
 
 All queries like `getBy...`, `findBy...`, `queryBy...` and their multi-element counterparts are replaced with `component.getBy...` locators. Locators always auto-wait and retry when needed, so you don't have to worry about choosing the right method. When you want to do a list operation, e.g. assert a list of texts, Playwright automatically performs multi-element operations.
 
 ---
 
-## ⏳ Replacing waitFor
+## Replacing waitFor
 
 Playwright includes assertions that automatically wait for the condition, so you don't usually need an explicit `waitFor`/`waitForElementToBeRemoved` call.
 
@@ -119,7 +119,7 @@ await expect
 
 ---
 
-## 🔲 Replacing within
+## Replacing within
 
 You can create a locator inside another locator with `locator.locator()` method.
 
@@ -135,7 +135,7 @@ const helloMessage = messages.getByText('hello');
 
 ---
 
-## ⚡ Playwright Test Super Powers
+## Playwright Test Super Powers
 
 Once you're on Playwright Test, you get a lot!
 
@@ -155,7 +155,7 @@ You also get all these ✨ awesome tools ✨ that come bundled with Playwright T
 
 ---
 
-## 📖 Further Reading
+## Further Reading
 
 Learn more about Playwright Test runner:
 

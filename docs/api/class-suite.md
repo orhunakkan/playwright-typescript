@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **Suite** is a group of tests. All tests in Playwright Test form the following hierarchy:
 
 - Root suite has a child suite for each `FullProject`.
@@ -16,6 +14,10 @@
 Reporter receives suite objects via the `reporter.onBegin()` call.
 
 ---
+
+## Methods
+
+## Methods
 
 ### `suite.allTests()` — Added in: v1.10
 

@@ -114,3 +114,17 @@ Add to `~/.config/opencode/opencode.json`:
   }
 }
 ```
+
+---
+
+## 🗂️ Quick Reference
+
+| Client      | Config Location                    |
+| ----------- | ---------------------------------- |
+| Cline       | `cline_mcp_settings.json`          |
+| Codex       | `~/.codex/config.toml`             |
+| Copilot CLI | `~/.copilot/mcp-config.json`       |
+| Goose       | Advanced settings → Extensions     |
+| Kiro        | `.kiro/settings/mcp.json`          |
+| Gemini CLI  | MCP install guide                  |
+| opencode    | `~/.config/opencode/opencode.json` |

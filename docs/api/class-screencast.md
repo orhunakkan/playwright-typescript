@@ -4,11 +4,13 @@
 
 ---
 
-## Overview
-
 **Screencast** allows recording and annotating the browser in a screencast format. You can add overlays, chapters, and action decorations to the video.
 
 ---
+
+## Methods
+
+## Methods
 
 ### `screencast.hideActions()` — Added in: v1.59
 

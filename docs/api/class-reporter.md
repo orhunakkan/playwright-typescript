@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **Reporter** is the interface test runner notifies about various events during test execution. All methods of the reporter are optional. You can create a custom reporter by implementing a class with some of the reporter methods. Make sure to export this class as default.
 
 ```ts
@@ -60,6 +58,10 @@ Additionally, `reporter.onStdOut()` and `reporter.onStdErr()` are called when st
 > **Note:** If your custom reporter does not print anything to the terminal, implement `reporter.printsToStdio()` and return `false`.
 
 ---
+
+## Methods
+
+## Methods
 
 ### `reporter.onBegin(config, suite)` — Added in: v1.10
 

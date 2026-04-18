@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 > **Note:** Check out the main locators guide for most common and recommended locators.
 
@@ -12,7 +12,7 @@ In addition to recommended locators like `page.getByRole()` and `page.getByText(
 
 ---
 
-## 🎯 CSS locator
+## CSS locator
 
 > **Note:** We recommend prioritizing user-visible locators like text or accessible role instead of using CSS that is tied to the implementation and could break when the page changes.
 
@@ -135,7 +135,7 @@ await page.locator(':nth-match(:text("Buy"), 3)').waitFor();
 
 ---
 
-## 🔢 N-th element locator
+## N-th element locator
 
 You can narrow down query to the n-th match using the `nth=` locator passing a zero-based index.
 
@@ -148,7 +148,7 @@ await page.locator('button').locator('nth=-1').click();
 
 ---
 
-## 👆 Parent element locator
+## Parent element locator
 
 When you need to target a parent element of some other element, most of the time you should use `locator.filter()` by the child locator. For example, consider the following DOM structure:
 
@@ -172,7 +172,7 @@ const parent = page.getByText('Hello').locator('xpath=..');
 
 ---
 
-## ⚙️ XPath locator
+## XPath locator
 
 > **Warning:** We recommend prioritizing user-visible locators like text or accessible role instead of using XPath that is tied to the implementation and easily breaks when the page changes.
 
@@ -197,7 +197,7 @@ await page.locator(`//span[contains(@class, 'spinner__loading')]|//div[@id='conf
 
 ---
 
-## 🏷️ Label to form control retargeting
+## Label to form control retargeting
 
 > **Warning:** We recommend locating by label text instead of relying on label-to-control retargeting.
 
@@ -230,7 +230,7 @@ await expect(page.locator('label')).toHaveText('Password');
 
 ---
 
-## 📜 Legacy text locator
+## Legacy text locator
 
 > **Warning:** We recommend the modern text locator instead.
 
@@ -254,7 +254,7 @@ Legacy text locator has a few variations:
 
 ---
 
-## 🆔 id, data-testid, data-test-id, data-test selectors
+## id, data-testid, data-test-id, data-test selectors
 
 > **Warning:** We recommend locating by test id instead.
 
@@ -271,7 +271,7 @@ await page.locator('data-test-id=submit').click();
 
 ---
 
-## 🔗 Chaining selectors
+## Chaining selectors
 
 > **Warning:** We recommend chaining locators instead.
 
@@ -287,7 +287,7 @@ If a selector needs to include `>>` in the body, it should be escaped inside a s
 
 ---
 
-## 🔀 Intermediate matches
+## Intermediate matches
 
 > **Warning:** We recommend filtering by another locator to locate elements that contain other elements.
 

@@ -133,3 +133,15 @@ Resize the browser window.
 - heading "Welcome, Alice!" [level=1]
 - text: "Your account has been created."
 ```
+
+---
+
+## 🗂️ Quick Reference
+
+| What            | Tool                    |
+| --------------- | ----------------------- |
+| Click element   | `browser_click`         |
+| Hover           | `browser_hover`         |
+| Drag and drop   | `browser_drag`          |
+| Select dropdown | `browser_select_option` |
+| Resize window   | `browser_resize`        |

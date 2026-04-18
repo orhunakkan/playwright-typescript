@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **SnapshotAssertions** provides assertion methods that compare values with stored snapshots. The snapshots are stored in a dedicated folder alongside the test file (configurable by `snapshotDir` and `snapshotPathTemplate` in playwright.config.ts).
 
 ```ts
@@ -14,6 +12,10 @@ expect(results).toMatchSnapshot('results.txt');
 ```
 
 ---
+
+## Methods
+
+## Methods
 
 ### `snapshotAssertions.toMatchSnapshot(name, options?)` — Added in: v1.22
 

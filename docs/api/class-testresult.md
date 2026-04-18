@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **TestResult** is a result of a single `TestCase` run.
 
 ## Properties

@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 The **WebSocket** class represents WebSocket connections within a page. It provides the ability to inspect and manipulate the data being transmitted and received.
 
 > **Note:** If you want to intercept or modify WebSocket frames, consider using `WebSocketRoute`.

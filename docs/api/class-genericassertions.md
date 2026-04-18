@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 The **GenericAssertions** class provides assertion methods that can be used to make assertions about any values in the tests. A new instance of GenericAssertions is created by calling `expect()`.
 
 ```ts

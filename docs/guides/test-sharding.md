@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 By default, Playwright runs test files in parallel and strives for optimal utilization of CPU cores on your machine. In order to achieve even greater parallelisation, you can further scale Playwright test execution by running tests on multiple machines simultaneously. We call this mode of operation "**sharding**".
 
@@ -12,7 +12,7 @@ Sharding in Playwright means splitting your tests into smaller parts called "sha
 
 ---
 
-## 🔀 Sharding tests between multiple machines
+## Sharding tests between multiple machines
 
 To shard the test suite, pass `--shard=x/y` to the command line. For example, to split the suite into four shards, each running one fourth of the tests:
 
@@ -27,7 +27,7 @@ Now, if you run these shards in parallel on different jobs, your test suite comp
 
 ---
 
-## ⚖️ Balancing Shards
+## Balancing Shards
 
 Sharding can be done at two levels of granularity depending on whether you use the `testProject.fullyParallel` option or not. This affects how the tests are balanced across the shards.
 
@@ -48,7 +48,7 @@ To ensure the most effective use of sharding, especially in CI environments, it 
 
 ---
 
-## 📊 Merging reports from multiple shards
+## Merging reports from multiple shards
 
 In the previous example, each test shard has its own test report. If you want to have a combined report showing all the test results from all the shards, you can merge them. Start with adding blob reporter to the config when running on CI:
 
@@ -72,7 +72,7 @@ This will produce a standard HTML report into `playwright-report` directory.
 
 ---
 
-## ⚙️ GitHub Actions example
+## GitHub Actions example
 
 GitHub Actions supports sharding tests between multiple jobs using the `jobs.<job_id>.strategy.matrix` option. The matrix option will run a separate job for every possible combination of the provided options.
 
@@ -151,7 +151,7 @@ jobs:
 
 ---
 
-## 🌍 Merging reports from multiple environments
+## Merging reports from multiple environments
 
 If you want to run the same tests in multiple environments, as opposed to shard your tests onto multiple machines, you need to differentiate these environments. In this case, it is useful to specify the `testConfig.tag` property, to tag all tests with the environment name.
 
@@ -167,7 +167,7 @@ export default defineConfig({
 
 ---
 
-## 💻 Merge-reports CLI
+## Merge-reports CLI
 
 `npx playwright merge-reports path/to/blob-reports-dir` reads all blob reports from the passed directory and merges them into a single report. When merging reports from different OS'es you'll have to provide an explicit merge config to disambiguate which directory should be used as tests root.
 

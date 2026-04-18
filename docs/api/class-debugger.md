@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 API for controlling the Playwright debugger. The debugger allows pausing script execution and inspecting the page. Obtain the debugger instance via `browserContext.debugger`.
 
 ---

@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **Keyboard** provides an api for managing a virtual keyboard. The high level api is `keyboard.type()`, which takes raw characters and generates proper `keydown`, `keypress/input`, and `keyup` events on your page. For finer control, you can use `keyboard.down()`, `keyboard.up()`, and `keyboard.insertText()` to manually fire events as if they were generated from a real keyboard.
 
 An example of holding down Shift in order to select and delete some text:

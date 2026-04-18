@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Playwright supports TypeScript out of the box. You just write tests in TypeScript, and Playwright will read them, transform to JavaScript and run. Note that Playwright does not check the types and will run tests even if there are non-critical TypeScript compilation errors. We recommend you run TypeScript compiler alongside Playwright.
 
@@ -30,13 +30,13 @@ npx tsc -p tsconfig.json --noEmit -w
 
 ---
 
-## ⚙️ tsconfig.json
+## tsconfig.json
 
 Playwright will pick up `tsconfig.json` for each source file it loads. Note that Playwright only supports the following tsconfig options: `allowJs`, `baseUrl`, `paths` and `references`. We recommend setting up a separate `tsconfig.json` in the tests directory so that you can change some preferences specifically for the tests.
 
 Here is an example directory structure:
 
-```
+```text
 src/
   source.ts
 tests/
@@ -101,7 +101,7 @@ export default defineConfig({
 
 ---
 
-## 🔧 Manually compile tests with TypeScript
+## Manually compile tests with TypeScript
 
 Sometimes, Playwright Test will not be able to transform your TypeScript code correctly, for example when you are using experimental or very recent features of TypeScript, usually configured in `tsconfig.json`. In this case, you can perform your own TypeScript compilation before sending the tests to Playwright.
 

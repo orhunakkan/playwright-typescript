@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **AndroidWebView** represents a WebView open on the `AndroidDevice`. WebView is usually obtained using `androidDevice.webView()`.
 
 ---

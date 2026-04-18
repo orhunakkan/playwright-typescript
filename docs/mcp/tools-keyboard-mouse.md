@@ -98,3 +98,17 @@ Drag from one position to another.
 | Drag interactions on pixel-precise targets | Mouse tools with vision            |
 
 For most web applications, **refs from accessibility snapshots** are more reliable than coordinates. Use mouse tools only when the accessibility tree doesn't expose the elements you need.
+
+---
+
+## 🗂️ Quick Reference
+
+| What            | Tool                     |
+| --------------- | ------------------------ |
+| Press key/combo | `browser_press_key`      |
+| Type text       | `browser_type`           |
+| Move mouse      | `browser_mouse_move_xy`  |
+| Click at coords | `browser_mouse_click_xy` |
+| Drag by coords  | `browser_mouse_drag_xy`  |
+| Mouse down / up | `browser_mouse_down/up`  |
+| Scroll          | `browser_mouse_wheel`    |

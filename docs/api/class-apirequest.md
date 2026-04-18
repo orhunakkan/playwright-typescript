@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **APIRequest** exposes API that can be used for the Web API testing. This class is used for creating `APIRequestContext` instance which in turn can be used for sending web requests. An instance of this class can be obtained via `playwright.request`. For more information see `APIRequestContext`.
 
 ---

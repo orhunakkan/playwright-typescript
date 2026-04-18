@@ -4,13 +4,13 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 You can either parameterize tests on a test level or on a project level.
 
 ---
 
-## 🔁 Parameterized Tests
+## Parameterized Tests
 
 ```ts
 // example.spec.ts
@@ -29,7 +29,7 @@ You can either parameterize tests on a test level or on a project level.
 
 ---
 
-## 🔗 Before and after hooks
+## Before and after hooks
 
 Most of the time you should put `beforeEach`, `beforeAll`, `afterEach` and `afterAll` hooks outside of `forEach`, so that hooks are executed just once:
 
@@ -76,7 +76,7 @@ If you want to have hooks for each test, you can put them inside a `describe()` 
 
 ---
 
-## 📂 Parameterized Projects
+## Parameterized Projects
 
 Playwright Test supports running multiple test projects at the same time. In the following example, we'll run two projects with different options. We declare the option `person` and set the value in the config. The first project runs with the value `Alice` and the second with the value `Bob`.
 
@@ -159,7 +159,7 @@ export const test = base.extend<TestOptions>({
 
 ---
 
-## 🔑 Passing Environment Variables
+## Passing Environment Variables
 
 You can use environment variables to configure tests from the command line. For example, consider the following test file that needs a username and a password. It is usually a good idea not to store your secrets in the source code, so we'll need a way to pass secrets from outside.
 
@@ -199,7 +199,7 @@ STAGING=1 npx playwright test
 
 ---
 
-## 📄 .env files
+## env files
 
 To make environment variables easier to manage, consider something like `.env` files. Here is an example that uses `dotenv` package to read environment variables directly in the configuration file.
 
@@ -223,7 +223,7 @@ export default defineConfig({
 
 Now, you can just edit `.env` file to set any variables you'd like.
 
-```
+```ini
 # .env file
 STAGING=0
 USER_NAME=me
@@ -238,11 +238,11 @@ npx playwright test
 
 ---
 
-## 📊 Create tests via a CSV file
+## Create tests via a CSV file
 
 The Playwright test-runner runs in Node.js, this means you can directly read files from the file system and parse them with your preferred CSV library. See for example this CSV file, in our example `input.csv`:
 
-```
+```csv
 "test_case","some_value","some_other_value"
 "value 1","value 11","foobar1"
 "value 2","value 22","foobar21"

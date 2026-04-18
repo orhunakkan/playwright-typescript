@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Playwright Test is based on the concept of the test fixtures. Test fixtures are used to establish environment for each test, giving the test everything it needs and nothing else. Playwright Test looks at each test declaration, analyses the set of fixtures the test needs and prepares those fixtures specifically for the test. Values prepared by the fixtures are merged into a single object that is available to the test, hooks, annotations and other fixtures as a first parameter.
 
 ```ts

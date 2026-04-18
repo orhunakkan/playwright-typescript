@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **TestCase** corresponds to every `test()` call in a test file. When a single `test()` is running in multiple projects or repeated multiple times, it will have multiple **TestCase** objects in corresponding projects' suites.
 
 ## Methods

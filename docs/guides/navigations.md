@@ -4,13 +4,13 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Playwright can navigate to URLs and handle navigations caused by the page interactions.
 
 ---
 
-## 🚀 Basic navigation
+## Basic navigation
 
 Simplest form of a navigation is opening a URL:
 
@@ -25,7 +25,7 @@ The code above loads the page and waits for the web page to fire the `load` even
 
 ---
 
-## ❓ When is the page loaded?
+## When is the page loaded?
 
 Modern pages perform numerous activities after the `load` event was fired. They fetch data lazily, populate UI, load expensive resources, scripts and styles after the `load` event was fired. There is no way to tell that the page is loaded, it depends on the page, framework, etc. So when can you start interacting with it?
 
@@ -42,7 +42,7 @@ For the scenario above, Playwright will wait for the text to become visible, wil
 
 ---
 
-## 💧 Hydration
+## Hydration
 
 At some point in time, you'll stumble upon a use case where Playwright performs an action, but nothing seemingly happens. Or you enter some text into the input field and it will disappear. The most probable reason behind that is a poor page hydration.
 
@@ -54,7 +54,7 @@ The right fix for this issue is to make sure that all the interactive controls a
 
 ---
 
-## ⏳ Waiting for navigation
+## Waiting for navigation
 
 Clicking an element could trigger multiple navigations. In these cases, it is recommended to explicitly `page.waitForURL()` to a specific url.
 
@@ -65,7 +65,7 @@ await page.waitForURL('**/login');
 
 ---
 
-## 📡 Navigation events
+## Navigation events
 
 Playwright splits the process of showing a new document in a page into **navigation** and **loading**.
 

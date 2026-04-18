@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Runtime representation of the test project configuration. It is accessible in the tests via `testInfo.project` and `workerInfo.project` and is passed to the test reporters. To see the format of the project in the Playwright configuration file please see `TestProject` instead.
 
 ---

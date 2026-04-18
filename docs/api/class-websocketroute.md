@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Whenever a WebSocket route is set up with `page.routeWebSocket()` or `browserContext.routeWebSocket()`, the **WebSocketRoute** object allows handling the WebSocket, like an actual server would do.
 
 ## Mocking

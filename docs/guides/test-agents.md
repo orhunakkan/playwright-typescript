@@ -4,7 +4,7 @@
 
 ---
 
-## 🤖 Introduction
+## Introduction
 
 Playwright comes with three Playwright Test Agents out of the box: planner, generator and healer. These agents can be used independently, sequentially, or as the chained calls in the agentic loop. Using them sequentially will produce test coverage for your product.
 
@@ -14,7 +14,7 @@ Playwright comes with three Playwright Test Agents out of the box: planner, gene
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Start with adding Playwright Test Agent definitions to your project using the `init-agents` command. These definitions should be regenerated whenever Playwright is updated to pick up new tools and instructions.
 
@@ -35,7 +35,7 @@ Once the agents have been generated, you can use your AI tool of choice to comma
 
 ---
 
-## 🎭 Planner
+## Planner
 
 Planner agent explores your app and produces a test plan for one or many scenarios and user flows.
 
@@ -102,7 +102,7 @@ interface. Key features include:
 
 ---
 
-## 🎭 Generator
+## Generator
 
 Generator agent uses the Markdown plan to produce executable Playwright Tests. It verifies selectors and assertions live as it performs the scenarios. Playwright supports generation hints and provides a catalog of assertions for efficient structural and behavioral validation.
 
@@ -160,7 +160,7 @@ test.describe('Adding New Todos', () => {
 
 ---
 
-## 🎭 Healer
+## Healer
 
 When the test fails, the healer agent:
 
@@ -179,11 +179,11 @@ A passing test, or a skipped test if the healer believes that functionality is b
 
 ---
 
-## 📁 Artifacts and Conventions
+## Artifacts and Conventions
 
 The static agent definitions and generated files follow a simple, auditable structure:
 
-```
+```text
 repo/
   .github/          # agent definitions
   specs/            # human-readable test plans
@@ -196,7 +196,7 @@ repo/
 
 ---
 
-## 🔧 Agent Definitions
+## Agent Definitions
 
 Under the hood, agent definitions are collections of instructions and MCP tools. They are provided by Playwright and should be regenerated whenever Playwright is updated.
 
@@ -208,18 +208,18 @@ npx playwright init-agents --loop=claude
 
 ---
 
-## 📋 Specs in `specs/`
+## Specs in `specs/`
 
 Specs are structured plans describing scenarios in human-readable terms. They include steps, expected outcomes, and data. Specs can start from scratch or extend a seed test.
 
 ---
 
-## 🧪 Tests in `tests/`
+## Tests in `tests/`
 
 Generated Playwright tests, aligned one-to-one with specs wherever feasible.
 
 ---
 
-## 🌱 Seed Tests `seed.spec.ts`
+## Seed Tests `seed.spec.ts`
 
 Seed tests provide a ready-to-use page context to bootstrap execution.

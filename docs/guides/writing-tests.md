@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Playwright tests are simple: they perform actions and assert the state against expectations. Playwright automatically waits for **actionability checks** to pass before performing each action. You don't need to add manual waits or deal with race conditions. Playwright assertions are designed to describe expectations that will eventually be met, eliminating flaky timeouts and racy checks.
 
@@ -18,7 +18,7 @@ You will learn:
 
 ---
 
-## ✍️ First test
+## First test
 
 Take a look at the following example to see how to write a test.
 
@@ -44,7 +44,7 @@ test('get started link', async ({ page }) => {
 
 ---
 
-## 🖱️ Actions
+## Actions
 
 ### Navigation
 
@@ -91,7 +91,7 @@ Here are the most popular Playwright actions. For the complete list, check the L
 
 ---
 
-## ✅ Assertions
+## Assertions
 
 Playwright includes test assertions in the form of `expect` function. To make an assertion, call `expect(value)` and choose a matcher that reflects the expectation. Playwright includes **async matchers** that wait until the expected condition is met. Using these matchers makes tests non-flaky and resilient.
 
@@ -122,7 +122,7 @@ expect(success).toBeTruthy();
 
 ---
 
-## 🔒 Test Isolation
+## Test Isolation
 
 Playwright Test is based on the concept of **test fixtures** such as the built-in `page` fixture, which is passed into your test. Pages are isolated between tests due to the **Browser Context**, which is equivalent to a brand new browser profile. Every test gets a fresh environment, even when multiple tests run in a single browser.
 
@@ -140,7 +140,7 @@ test('another test', async ({ page }) => {
 
 ---
 
-## 🔗 Using Test Hooks
+## Using Test Hooks
 
 You can use various test hooks such as `test.describe` to declare a group of tests and `test.beforeEach` and `test.afterEach` which are executed before/after each test. Other hooks include the `test.beforeAll` and `test.afterAll` which are executed once per worker before/after all tests.
 

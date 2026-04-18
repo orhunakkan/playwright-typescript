@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 When browser context is created with the `recordVideo` option, each page has a **video** object associated with it.
 
 ```ts

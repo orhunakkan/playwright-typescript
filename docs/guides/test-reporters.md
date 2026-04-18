@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Playwright Test comes with a few built-in reporters for different needs and ability to provide custom reporters. The easiest way to try out built-in reporters is to pass `--reporter` command line option.
 
@@ -25,7 +25,7 @@ export default defineConfig({
 
 ---
 
-## 📋 Multiple reporters
+## Multiple reporters
 
 You can use multiple reporters at the same time. For example you can use `'list'` for nice terminal output and `'json'` to get a comprehensive json file with the test results.
 
@@ -40,7 +40,7 @@ export default defineConfig({
 
 ---
 
-## ⚙️ Reporters on CI
+## Reporters on CI
 
 You can use different reporters locally and on CI. For example, using concise `'dot'` reporter avoids too much output. This is the default on CI.
 
@@ -56,7 +56,7 @@ export default defineConfig({
 
 ---
 
-## 📦 Built-in reporters
+## Built-in reporters
 
 All built-in reporters show detailed information about failures, and mostly differ in verbosity for successful runs.
 
@@ -79,7 +79,7 @@ export default defineConfig({
 
 Example output:
 
-```
+```text
 npx playwright test --reporter=list
 Running 124 tests using 6 workers
 
@@ -133,7 +133,7 @@ export default defineConfig({
 
 Example output:
 
-```
+```text
 npx playwright test --reporter=line
 Running 124 tests using 6 workers
 
@@ -166,7 +166,7 @@ export default defineConfig({
 
 Example output:
 
-```
+```text
 npx playwright test --reporter=dot
 Running 124 tests using 6 workers
 
@@ -365,7 +365,7 @@ export default defineConfig({
 
 ---
 
-## 🔧 Custom reporters
+## Custom reporters
 
 You can create a custom reporter by implementing a class with some of the reporter methods. Learn more about the Reporter API.
 

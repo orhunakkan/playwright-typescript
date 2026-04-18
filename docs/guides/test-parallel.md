@@ -4,7 +4,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Playwright Test runs tests in parallel. In order to achieve that, it runs several **worker processes** that run at the same time. By default, test files are run in parallel. Tests in a single file are run in order, in the same worker process.
 
@@ -16,13 +16,13 @@ You can control the number of parallel worker processes and limit the number of 
 
 ---
 
-## 👷 Worker processes
+## Worker processes
 
 All tests run in worker processes. These processes are OS processes, running independently, orchestrated by the test runner. All workers have identical environments and each starts its own browser. You can't communicate between the workers. Playwright Test reuses a single worker as much as it can to make testing faster, so multiple test files are usually run in a single worker one after another. Workers are always shutdown after a test failure to guarantee pristine environment for following tests.
 
 ---
 
-## 🔢 Limit workers
+## Limit workers
 
 You can control the maximum number of parallel worker processes via command line or in the configuration file.
 
@@ -46,7 +46,7 @@ export default defineConfig({
 
 ---
 
-## 🔒 Disable parallelism
+## Disable parallelism
 
 You can disable any parallelism by allowing just a single worker at any time. Either set `workers: 1` option in the configuration file or pass `--workers=1` to the command line.
 
@@ -56,7 +56,7 @@ npx playwright test --workers=1
 
 ---
 
-## 🔀 Parallelize tests in a single file
+## Parallelize tests in a single file
 
 By default, tests in a single file are run in order. If you have many independent tests in a single file, you might want to run them in parallel with `test.describe.configure()`. Note that parallel tests are executed in separate worker processes and cannot share any state or global variables. Each test executes all relevant hooks just for itself, including `beforeAll` and `afterAll`.
 
@@ -104,7 +104,7 @@ export default defineConfig({
 
 ---
 
-## 🔗 Serial mode
+## Serial mode
 
 You can annotate inter-dependent tests as serial. If one of the serial tests fails, all subsequent tests are skipped. All tests in a group are retried together.
 
@@ -137,7 +137,7 @@ test('runs second', async () => {
 
 ---
 
-## ↩️ Opt out of fully parallel mode
+## Opt out of fully parallel mode
 
 If your configuration applies parallel mode to all tests using `testConfig.fullyParallel`, you might still want to run some tests with default settings. You can override the mode per describe:
 
@@ -151,7 +151,7 @@ test.describe('runs in parallel with other describes', () => {
 
 ---
 
-## 🔧 Shard tests between multiple machines
+## Shard tests between multiple machines
 
 Playwright Test can shard a test suite, so that it can be executed on multiple machines. See sharding guide for more details.
 
@@ -161,7 +161,7 @@ npx playwright test --shard=2/3
 
 ---
 
-## 🛑 Limit failures and fail fast
+## Limit failures and fail fast
 
 You can limit the number of failed tests in the whole test suite by setting `maxFailures` config option or passing `--max-failures` command line flag. When running with "max failures" set, Playwright Test will stop after reaching this number of failed tests and skip any tests that were not executed yet. This is useful to avoid wasting resources on broken test suites.
 
@@ -185,7 +185,7 @@ export default defineConfig({
 
 ---
 
-## 🔢 Worker index and parallel index
+## Worker index and parallel index
 
 Each worker process is assigned two ids: a unique **worker index** that starts with 1, and a **parallel index** that is between 0 and `workers - 1`. When a worker is restarted, for example after a failure, the new worker process has the same `parallelIndex` and a new `workerIndex`.
 
@@ -193,7 +193,7 @@ You can read an index from environment variables `process.env.TEST_WORKER_INDEX`
 
 ---
 
-## 🗄️ Isolate test data between parallel workers
+## Isolate test data between parallel workers
 
 You can leverage `process.env.TEST_WORKER_INDEX` or `testInfo.workerIndex` mentioned above to isolate user data in the database between tests running on different workers. All tests run by the worker reuse the same user.
 
@@ -237,7 +237,7 @@ test('test', async ({ dbUserName }) => {
 
 ---
 
-## 📋 Control test order
+## Control test order
 
 Playwright Test runs tests from a single file in the order of declaration, unless you parallelize tests in a single file. There is no guarantee about the order of test execution across the files, because Playwright Test runs test files in parallel by default. However, if you disable parallelism, you can control test order by either naming your files in alphabetical order or using a "test list" file.
 

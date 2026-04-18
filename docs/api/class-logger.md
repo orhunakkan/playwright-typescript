@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 > **Deprecated:** This class is deprecated. The logs pumped through this class are incomplete. Please use tracing instead.
 
 Playwright generates a lot of logs and they are accessible via the pluggable logger sink.

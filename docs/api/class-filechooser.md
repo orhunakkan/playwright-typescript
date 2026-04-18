@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **FileChooser** objects are dispatched by the page in the `page.on('filechooser')` event.
 
 ```ts

@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **AndroidDevice** represents a connected device, either real hardware or emulated. Devices can be obtained using `android.devices()`.
 
 ---

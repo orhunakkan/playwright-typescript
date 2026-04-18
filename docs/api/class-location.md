@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 Represents a location in the source code where `TestCase` or `Suite` is defined.
 
 ---

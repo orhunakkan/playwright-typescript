@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **TestInfo** contains information about currently running tests. It is accessible to tests and hooks through built-in `testInfo` fixture. `TestInfo` provides utilities to control test execution: attach files, update test timeout, determine which project the test is running in, and so on.
 
 ```ts

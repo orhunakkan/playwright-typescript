@@ -4,7 +4,7 @@
 
 ---
 
-## ⚙️ Introduction
+## Introduction
 
 > **Warning:** Service workers are only supported on Chromium-based browsers.
 
@@ -14,7 +14,7 @@ Service Workers provide a browser-native method of handling requests made by a p
 
 ---
 
-## 🚫 How to Disable Service Workers
+## How to Disable Service Workers
 
 Playwright allows to disable Service Workers during testing. This makes tests more predictable and performant. However, if your actual page uses a Service Worker, the behavior might be different. To disable service workers, set `testOptions.serviceWorkers` to `'block'`.
 
@@ -28,7 +28,7 @@ export default defineConfig({
 
 ---
 
-## 👷 Accessing Service Workers and Waiting for Activation
+## Accessing Service Workers and Waiting for Activation
 
 You can use `browserContext.serviceWorkers()` to list the Service Workers, or specifically watch for the Service Worker if you anticipate a page will trigger its registration:
 
@@ -52,7 +52,7 @@ await page.evaluate(async () => {
 
 ---
 
-## 🌐 Network Events and Routing
+## Network Events and Routing
 
 Any network request made by the Service Worker is reported through the `BrowserContext` object:
 
@@ -98,7 +98,7 @@ Since the example Service Worker just acts a basic transparent "proxy":
 
 ---
 
-## 🔀 Routing Service Worker Requests Only
+## Routing Service Worker Requests Only
 
 ```ts
 await context.route('**', async (route) => {
@@ -117,6 +117,6 @@ await context.route('**', async (route) => {
 
 ---
 
-## ⚠️ Known Limitations
+## Known Limitations
 
 Requests for updated Service Worker main script code currently cannot be routed (https://github.com/microsoft/playwright/issues/14711).

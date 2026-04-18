@@ -98,3 +98,14 @@ You: Fill out the registration form on this page.
 
 → browser_click { ref: "e9" }
 ```
+
+---
+
+## 🗂️ Quick Reference
+
+| What             | Tool                |
+| ---------------- | ------------------- |
+| Type into field  | `browser_type`      |
+| Fill entire form | `browser_fill_form` |
+| Check box/radio  | `browser_check`     |
+| Uncheck          | `browser_uncheck`   |

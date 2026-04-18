@@ -4,13 +4,13 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 Playwright Test is based on the concept of **test fixtures**. Test fixtures are used to establish the environment for each test, giving the test everything it needs and nothing else. Test fixtures are isolated between tests. With fixtures, you can group tests based on their meaning, instead of their common setup.
 
 ---
 
-## 📦 Built-in fixtures
+## Built-in fixtures
 
 You have already used test fixtures in your first test.
 
@@ -35,7 +35,7 @@ The `{ page }` argument tells Playwright Test to set up the `page` fixture and p
 
 ---
 
-## 🆚 Without fixtures
+## Without fixtures
 
 Here is how a typical test environment setup differs between the traditional test style and the fixture-based one. `TodoPage` is a class that helps us interact with a "todo list" page of the web app, following the Page Object Model pattern.
 
@@ -109,7 +109,7 @@ test.describe('todo tests', () => {
 
 ---
 
-## ✅ With fixtures
+## With fixtures
 
 Fixtures have a number of advantages over before/after hooks:
 
@@ -150,7 +150,7 @@ test('should remove an item', async ({ todoPage }) => {
 
 ---
 
-## 🏗️ Creating a fixture
+## Creating a fixture
 
 To create your own fixture, use `test.extend()` to create a new test object that will include it. Below we create two fixtures `todoPage` and `settingsPage` that follow the Page Object Model pattern.
 
@@ -192,7 +192,7 @@ export { expect } from '@playwright/test';
 
 ---
 
-## 🔌 Using a fixture
+## Using a fixture
 
 Just mention a fixture in your test function argument, and the test runner will take care of it. Fixtures are also available in hooks and other fixtures. If you use TypeScript, fixtures will be type safe.
 
@@ -211,7 +211,7 @@ test('basic test', async ({ todoPage, page }) => {
 
 ---
 
-## 🔄 Overriding fixtures
+## Overriding fixtures
 
 In addition to creating your own fixtures, you can also override existing fixtures to fit your needs. Consider the following example which overrides the `page` fixture by automatically navigating to the `baseURL`:
 
@@ -248,7 +248,7 @@ export const test = base.extend({
 
 ---
 
-## 👷 Worker-scoped fixtures
+## Worker-scoped fixtures
 
 Playwright Test uses worker processes to run test files. Similar to how test fixtures are set up for individual test runs, worker fixtures are set up for each worker process. That's where you can set up services, run servers, etc.
 
@@ -304,7 +304,7 @@ export { expect } from '@playwright/test';
 
 ---
 
-## 🤖 Automatic fixtures
+## Automatic fixtures
 
 Automatic fixtures are set up for each test/worker, even when the test does not list them directly. To create an automatic fixture, use the tuple syntax and pass `{ auto: true }`.
 
@@ -343,7 +343,7 @@ export { expect } from '@playwright/test';
 
 ---
 
-## ⏱️ Fixture timeout
+## Fixture timeout
 
 Fixture is considered to be a part of a test, and so its setup and teardown running time counts towards the test timeout. You can set a separate larger timeout for such a fixture, and keep the overall test timeout small.
 
@@ -367,7 +367,7 @@ test('example test', async ({ slowFixture }) => {
 
 ---
 
-## ⚙️ Fixtures-options
+## Fixtures-options
 
 Playwright Test supports running multiple test projects that can be configured separately. You can use "option" fixtures to make your configuration options declarative and type safe. Learn more about parameterizing tests.
 
@@ -427,7 +427,7 @@ export default defineConfig<MyOptions>({
 
 ---
 
-## 📦 Box fixtures
+## Box fixtures
 
 Usually, custom fixtures are reported as separate steps in the UI mode, Trace Viewer and various test reports. They also appear in error messages from the test runner. For frequently used fixtures, this can mean lots of noise. You can stop the fixtures steps from being shown in the UI by "boxing" it.
 
@@ -448,7 +448,7 @@ You can also mark the fixture as `box: 'self'` to only hide that particular fixt
 
 ---
 
-## 🏷️ Custom fixture title
+## Custom fixture title
 
 Instead of the usual fixture name, you can give fixtures a custom title that will be shown in test reports and error messages.
 
@@ -467,7 +467,7 @@ export const test = base.extend({
 
 ---
 
-## 🌐 Adding global beforeEach/afterEach hooks
+## Adding global beforeEach/afterEach hooks
 
 `test.beforeEach()` and `test.afterEach()` hooks run before/after each test declared in the same file and same `test.describe()` block. If you want to declare hooks that run before/after each test globally, you can declare them as auto fixtures:
 
@@ -502,7 +502,7 @@ test('basic', async ({ page }) => {
 
 ---
 
-## 🌍 Adding global beforeAll/afterAll hooks
+## Adding global beforeAll/afterAll hooks
 
 `test.beforeAll()` and `test.afterAll()` hooks run before/after all tests declared in the same file and same `test.describe()` block, once per worker process. If you want to declare hooks that run before/after all tests in every file, declare them as auto fixtures with `scope: 'worker'`:
 
@@ -538,7 +538,7 @@ Note that the fixtures will still run once per worker process, but you don't nee
 
 ---
 
-## 🔗 Combine custom fixtures from multiple modules
+## Combine custom fixtures from multiple modules
 
 You can merge test fixtures from multiple files or modules:
 

@@ -4,7 +4,7 @@
 
 ---
 
-## 💻 Command line
+## Command line
 
 Playwright provides a powerful command line interface for running tests, generating code, debugging, and more. The most up to date list of commands and arguments available on the CLI can always be retrieved via:
 
@@ -14,7 +14,7 @@ npx playwright --help
 
 ---
 
-## 🚀 Run Tests
+## Run Tests
 
 Run your Playwright tests. Read more about running tests.
 
@@ -124,7 +124,7 @@ npx playwright test --ui
 
 ---
 
-## 📋 Test list
+## Test list
 
 Options `--test-list` and `--test-list-invert` accept a path to a test list file. This file should list tests in the format similar to the output produced in `--list` mode.
 
@@ -162,7 +162,7 @@ example.spec.ts:42:42 › example test
 
 ---
 
-## 📊 Show Report
+## Show Report
 
 Display HTML report from previous test run. Read more about the HTML reporter.
 
@@ -194,7 +194,7 @@ npx playwright show-report --port 8080
 
 ---
 
-## 🌐 Install Browsers
+## Install Browsers
 
 Install browsers required by Playwright. Read more about Playwright's browser support.
 
@@ -240,7 +240,7 @@ npx playwright install --with-deps
 
 ---
 
-## 🔧 Code Generation
+## Code Generation
 
 Record actions and generate tests for multiple languages. Read more about Codegen.
 
@@ -274,7 +274,7 @@ npx playwright codegen --target=python
 
 ---
 
-## 🔍 Trace Viewer
+## Trace Viewer
 
 Analyze and view test traces for debugging. Read more about Trace Viewer.
 
@@ -307,7 +307,7 @@ npx playwright show-trace trace/
 
 ---
 
-## 🔀 Merge Reports
+## Merge Reports
 
 Read blob reports and combine them. Read more about merge-reports.
 
@@ -333,7 +333,7 @@ npx playwright merge-reports ./reports
 
 ---
 
-## 🗑️ Clear Cache
+## Clear Cache
 
 Clear all Playwright caches.
 

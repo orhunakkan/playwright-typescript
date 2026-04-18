@@ -4,7 +4,7 @@
 
 ---
 
-## 🧩 Introduction
+## Introduction
 
 Playwright Test can now test your components.
 
@@ -36,7 +36,7 @@ test('event should work', async ({ mount }) => {
 
 ---
 
-## 🚀 How to get started
+## How to get started
 
 Adding Playwright Test to an existing project is easy. Below are the steps to enable Playwright Test for a React or Vue project.
 
@@ -113,7 +113,7 @@ Further reading: configure reporting, browsers, tracing. Refer to Playwright con
 
 ---
 
-## 📖 Test stories
+## Test stories
 
 When Playwright Test is used to test web components, tests run in Node.js, while components run in the real browser. This brings together the best of both worlds: components run in the real browser environment, real clicks are triggered, real layout is executed, visual regression is possible. At the same time, test can use all the powers of Node.js as well as all the Playwright Test features. As a result, the same parallel, parametrized tests with the same post-mortem Tracing story are available during component testing.
 
@@ -208,7 +208,7 @@ As a result, for every component you'll have a story file that exports all the s
 
 ---
 
-## ⚙️ Under the hood
+## Under the hood
 
 Here is how component testing works:
 
@@ -218,7 +218,7 @@ Playwright is using Vite to create the components bundle and serve it.
 
 ---
 
-## 📚 API reference
+## API reference
 
 ### props
 
@@ -441,7 +441,7 @@ test('update', async ({ mount }) => {
 
 ---
 
-## 🌐 Handling network requests
+## Handling network requests
 
 Playwright provides an experimental `router` fixture to intercept and handle network requests. There are two ways to use the `router` fixture:
 
@@ -482,7 +482,7 @@ test('example test', async ({ mount, router }) => {
 
 ---
 
-## ❓ Frequently asked questions
+## Frequently asked questions
 
 ### What's the difference between @playwright/test and @playwright/experimental-ct-{react,vue}?
 

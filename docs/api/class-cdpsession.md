@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **CDPSession** instances are used to talk raw Chrome DevTools Protocol:
 
 - Protocol methods can be called with `session.send` method.

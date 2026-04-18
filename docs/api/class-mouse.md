@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 The **Mouse** class operates in main-frame CSS pixels relative to the top-left corner of the viewport.
 
 > **Tip:** If you want to debug where the mouse moved, you can use the Trace viewer or Playwright Inspector. A red dot showing the location of the mouse will be shown for every mouse action.

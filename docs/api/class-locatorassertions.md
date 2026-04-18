@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 The **LocatorAssertions** class provides assertion methods for the **Locator** state in tests.
 
 ```ts

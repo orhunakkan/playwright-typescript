@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **BrowserType** provides methods to launch a specific browser instance or connect to an existing one.
 
 ```ts

@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 **ElementHandle** extends: `JSHandle`
 
 **ElementHandle** represents an in-page DOM element. ElementHandles can be created with the `page.$()` method.

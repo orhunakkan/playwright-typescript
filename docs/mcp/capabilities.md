@@ -198,6 +198,21 @@ Everything enabled:
 ["@playwright/mcp@latest", "--caps=network,storage,testing,vision,pdf,devtools"]
 ```
 
+---
+
+## 🗂️ Quick Reference
+
+| Capability | Flag        | Key Tools                         |
+| ---------- | ----------- | --------------------------------- |
+| core       | (always on) | navigate, click, type, snapshot   |
+| network    | `network`   | route, unroute, network_state_set |
+| storage    | `storage`   | cookie*\*, localstorage*\*, state |
+| testing    | `testing`   | verify\_\*, generate_locator      |
+| vision     | `vision`    | mouse_move_xy, mouse_click_xy     |
+| pdf        | `pdf`       | pdf_save                          |
+| devtools   | `devtools`  | tracing, video recording          |
+| config     | `config`    | get_config                        |
+
 ### Testing workflow
 
 Core + testing assertions + storage for auth persistence:

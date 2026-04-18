@@ -4,8 +4,6 @@
 
 ---
 
-## Overview
-
 The **Worker** class represents a WebWorker. `worker` event is emitted on the page object to signal a worker creation. `close` event is emitted on the worker object when the worker is gone.
 
 ```ts

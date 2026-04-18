@@ -170,3 +170,15 @@ Same interface as localStorage but session-scoped — data is cleared when the t
 | browser_sessionstorage_set    | `key` (string), `value` (string) |
 | browser_sessionstorage_delete | `key` (string)                   |
 | browser_sessionstorage_clear  | (none)                           |
+
+---
+
+## 🗂️ Quick Reference
+
+| What                  | Tool                        |
+| --------------------- | --------------------------- |
+| Save full state       | `browser_storage_state`     |
+| Restore state         | `browser_set_storage_state` |
+| Manage cookies        | `browser_cookie_*`          |
+| Manage localStorage   | `browser_localstorage_*`    |
+| Manage sessionStorage | `browser_sessionstorage_*`  |

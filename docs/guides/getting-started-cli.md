@@ -304,7 +304,7 @@ This requires the Playwright MCP Bridge browser extension to be installed.
 
 ---
 
-## Quick Reference
+## 🗂️ Quick Reference
 
 | Action            | Command                                            |
 | ----------------- | -------------------------------------------------- |
