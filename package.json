@@ -26,7 +26,7 @@
     "pg": "^8.20.0"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.1",
+    "@axe-core/playwright": "^4.11.2",
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.2",
