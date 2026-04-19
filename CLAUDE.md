@@ -15,6 +15,7 @@
 - `npx playwright test --reporter=line` — minimal output reporter
 - `npx playwright test --last-failed` — re-run only previously failed tests
 - `npx playwright test --update-snapshots` — update visual regression baselines
+- `npm run test:db` — run DB tests only (serial, workers=1)
 
 ### Debugging & Inspection
 
@@ -128,10 +129,18 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 - `npm run test:visual` — run visual regression tests in Docker
 - `npm run test:visual:update` — update visual regression snapshots in Docker
 
+### Database & Docker
+
+- `npm run docker:up` — start PostgreSQL container (docker compose, waits until healthy)
+- `npm run docker:down` — stop and remove containers + volumes
+- `npm run typecheck` — TypeScript type check (no emit)
+- `npm run test:db` — run DB tests via `npx playwright test --project="DB Tests" --workers=1`
+
 ## Project Structure
 
 - `tests/api/` — API tests (run in **serial** mode, test dependencies between steps)
 - `tests/e2e/` — E2E browser tests (run in **parallel**, independent scenarios)
+- `tests/db/` — DB integration tests (run in **serial** mode, verify API ↔ DB consistency)
 - `utilities/` — Shared helpers (error listeners, calculator, etc.)
 - `fixtures/` — Test data: API payloads (Faker.js), reference snapshots
 - `pages/` — Page Object Model classes
@@ -139,15 +148,20 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 ## Test Projects (playwright.config.ts)
 
 1. API Tests — `tests/api/`, no browser
-2. Desktop Chrome — `tests/e2e/`
-3. Desktop Firefox — `tests/e2e/`
-4. Desktop Edge — `tests/e2e/`
+2. DB Tests — `tests/db/`, no browser, PostgreSQL via docker compose
+3. Desktop Chrome — `tests/e2e/`
+4. Desktop Firefox — `tests/e2e/`
+5. Desktop Edge — `tests/e2e/`
+6. Mobile Safari — `tests/e2e/`, iPhone 15 Pro Max device
+7. Mobile Chrome — `tests/e2e/`, Pixel 7 device
 
 ## Utilities (reuse these — don't write inline equivalents)
 
 - `utilities/error-listeners.ts` — `attachConsoleErrorListener(page, errorMessages)` / `attachPageErrorListener(page, errorMessages)` / `attachRequestFailedListener(page, errorMessages)` / `attachAllErrorListeners(page)` — composable error tracking for console errors, page errors, and failed requests
 - `utilities/calculator.ts` — `clickCalcButton(page, key)` / `pressCalcKeys(page, ...keys)` — helpers for interacting with calculator pages
 - `utilities/a11y.ts` — `runA11yScan(page, options?)` — wraps AxeBuilder with WCAG 2.1 AA defaults; options: `include`/`exclude` CSS selector, custom `tags`
+- `utilities/api-schema-validator.ts` — `expectMatchesSchema(obj, schema, context?)` / `expectArrayMatchesSchema(arr, schema, context?)` — asserts response objects match typed schemas; pre-built schemas: `UserDataSchema`, `LoginDataSchema`, `UserProfileDataSchema`, `NoteDataSchema`, `ErrorResponseSchema`, `HealthCheckSchema`
+- `utilities/db-client.ts` — `queryOne<T>(sql, params?)` / `queryMany<T>(sql, params?)` / `queryRaw(sql, params?)` / `truncateAll()` / `seedUser(overrides?)` / `seedNote(userId, overrides?)` / `closePool()` — direct PostgreSQL access for DB test layer
 
 ## API Test Pattern
 
@@ -158,6 +172,18 @@ API tests in `tests/api/` follow a specific pattern:
 - Use `request` fixture from Playwright (not `page`)
 - Generate payloads with Faker.js from `fixtures/notes-api-payloads/`
 - Flow: register → login → create → read → update → list → delete
+
+## DB Test Pattern
+
+DB tests in `tests/db/` follow a specific pattern:
+
+- Configure serial mode: `test.describe.configure({ mode: 'serial' })`
+- Reset state in `beforeEach` via `truncateAll()` from `db-client`
+- Seed data directly via `seedUser()` / `seedNote()` (SQL inserts with Faker defaults)
+- Make HTTP requests via `request` fixture, then query DB to verify consistency
+- Chapter-based naming: `chapter-db-01-*.spec.ts` through `chapter-db-08-*.spec.ts`
+- Uses Allure decorators (`allure.feature()`, `allure.story()`, `allure.severity()`)
+- Requires Docker running: `npm run docker:up` before running `npm run test:db`
 
 ## Fixtures Organization
 
