@@ -1,26 +1,24 @@
-# 📦 Playwright — API testing
+# 🧪 Playwright — API Testing
 
-> **Source:** [playwright.dev/docs/api/testing](https://playwright.dev/docs/api/testing)
+> **Source:** [playwright.dev/docs/api-testing](https://playwright.dev/docs/api-testing)
 
 ---
 
 ## Introduction
 
-Playwright can be used to access the REST API of your application. Sometimes you may want to send requests directly from Node.js without loading a page and running JavaScript in it.
-
-Common scenarios:
+Playwright can be used to get access to the REST API of your application. Sometimes you may want to send requests to the server directly from Node.js without loading a page and running js code in it. A few examples where it may come in handy:
 
 - Test your server API.
-- Prepare server-side state before visiting the web application in a test.
-- Validate server-side post-conditions after running actions in the browser.
+- Prepare server side state before visiting the web application in a test.
+- Validate server side post-conditions after running some actions in the browser.
 
-All of that can be achieved via **APIRequestContext** methods.
+All of that could be achieved via **APIRequestContext** methods.
 
 ---
 
 ## Writing API Test
 
-**APIRequestContext** can send all kinds of HTTP(S) requests over network. The following example demonstrates how to use Playwright to test issues creation via GitHub API. The test suite will:
+**APIRequestContext** can send all kinds of HTTP(S) requests over network. The following example demonstrates how to use Playwright to test issues creation via GitHub API. The test suite will do the following:
 
 - Create a new repository before running tests.
 - Create a few issues and validate server state.
@@ -30,7 +28,7 @@ All of that can be achieved via **APIRequestContext** methods.
 
 ## Configuration
 
-GitHub API requires authorization, so we'll configure the token once for all tests. We'll also set the `baseURL` to simplify the tests. You can put them in the configuration file, or in the test file with `test.use()`.
+GitHub API requires authorization, so we'll configure the token once for all tests. While at it, we'll also set the `baseURL` to simplify the tests. You can either put them in the configuration file, or in the test file with `test.use()`.
 
 ```ts
 // playwright.config.ts
@@ -50,7 +48,9 @@ export default defineConfig({
 });
 ```
 
-> **Note:** Proxy configuration — if your tests need to run behind a proxy, you can specify this in the config and the `request` fixture will pick it up automatically:
+### Proxy configuration
+
+If your tests need to run behind a proxy, you can specify this in the config and the `request` fixture will pick it up automatically:
 
 ```ts
 // playwright.config.ts
@@ -71,6 +71,8 @@ export default defineConfig({
 ## Writing tests
 
 Playwright Test comes with the built-in `request` fixture that respects configuration options like `baseURL` or `extraHTTPHeaders` we specified and is ready to send some requests.
+
+Now we can add a few tests that will create new issues in the repository.
 
 ```ts
 const REPO = 'test-repo-1';
