@@ -15,8 +15,6 @@
 | `reload`     | Reload the current page                  |
 | `close`      | Close the browser                        |
 
----
-
 ## Opening a browser
 
 ```bash
@@ -32,8 +30,6 @@ playwright-cli open https://example.com --browser=firefox
 playwright-cli open https://example.com --persistent
 ```
 
----
-
 ## Navigating
 
 ```bash
@@ -46,8 +42,6 @@ $ playwright-cli goto https://demo.playwright.dev/todomvc
 ### Snapshot
 [Snapshot](.playwright-cli/page-2026-02-14T19-22-42-679Z.yml)
 ```
-
----
 
 ## History navigation
 
@@ -64,16 +58,12 @@ $ playwright-cli reload
 # page2 reloaded
 ```
 
----
-
 ## Closing
 
 ```bash
 playwright-cli close # close current page
 playwright-cli close-all # close all browser sessions
 ```
-
----
 
 ## Workflow: navigation with history
 

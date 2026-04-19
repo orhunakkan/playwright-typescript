@@ -11,8 +11,6 @@
 expect(results).toMatchSnapshot('results.txt');
 ```
 
----
-
 ## Methods
 
 ## Methods
@@ -36,8 +34,6 @@ expect(await page.title()).toMatchSnapshot('page-title.txt');
 | `options.threshold`         | `number` (optional)       | An acceptable perceived color difference between the same pixel in compared images, ranges from 0 (strict) to 1 (lax). Default is configurable with `TestConfig.expect`. |
 
 **Returns:** `void`
-
----
 
 ### `snapshotAssertions.toMatchSnapshot(options?)` — Added in: v1.22
 

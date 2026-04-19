@@ -8,8 +8,6 @@
 
 Playwright executes tests in isolated environments called **browser contexts**. This isolation model improves reproducibility and prevents cascading test failures. Tests can load existing authenticated state. This eliminates the need to authenticate in every test and speeds up test execution.
 
----
-
 ## Core Concepts
 
 Regardless of the authentication strategy you choose, you are likely to store authenticated browser state on the file system.
@@ -40,8 +38,6 @@ Your authentication routine will produce authenticated browser state and save it
 > **⚠️ Security Warning**
 >
 > The browser state file may contain sensitive cookies and headers that could be used to impersonate you or your test account. We strongly discourage checking them into private or public repositories.
-
----
 
 ## Basic: Shared Account in All Tests
 
@@ -149,8 +145,6 @@ UI mode will not run the setup project by default to improve testing speed. We r
 
 First enable the setup project in the filters, then click the triangle button next to `auth.setup.ts` file, and then disable the setup project in the filters again.
 
----
-
 ## Moderate: One Account Per Parallel Worker
 
 This is the **recommended approach for tests that modify server-side state**. In Playwright, worker processes run in parallel. In this approach, each parallel worker is authenticated once. All tests ran by worker are reusing the same authentication state. We will need multiple testing accounts, one per each parallel worker.
@@ -243,8 +237,6 @@ test('test', async ({ page }) => {
   // page is authenticated
 });
 ```
-
----
 
 ## Advanced Scenarios
 

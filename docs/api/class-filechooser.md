@@ -14,8 +14,6 @@ const fileChooser = await fileChooserPromise;
 await fileChooser.setFiles(path.join(__dirname, 'myfile.pdf'));
 ```
 
----
-
 ## Methods
 
 ### element
@@ -30,8 +28,6 @@ fileChooser.element();
 
 **Returns:** `ElementHandle`
 
----
-
 ### isMultiple
 
 **Added before:** v1.9
@@ -44,8 +40,6 @@ fileChooser.isMultiple();
 
 **Returns:** `boolean`
 
----
-
 ### page
 
 **Added before:** v1.9
@@ -57,8 +51,6 @@ fileChooser.page();
 ```
 
 **Returns:** `Page`
-
----
 
 ### setFiles
 

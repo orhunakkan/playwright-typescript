@@ -8,8 +8,6 @@
 
 **Locators** are the central piece of Playwright's auto-waiting and retry-ability. In a nutshell, locators represent a way to find element(s) on the page at any moment.
 
----
-
 ## Quick Guide
 
 These are the recommended built-in locators:
@@ -28,8 +26,6 @@ await page.getByLabel('Password').fill('secret-password');
 await page.getByRole('button', { name: 'Sign in' }).click();
 await expect(page.getByText('Welcome, John!')).toBeVisible();
 ```
-
----
 
 ## Locating elements
 
@@ -64,8 +60,6 @@ const locator = page.frameLocator('#my-frame').getByRole('button', { name: 'Sign
 await locator.click();
 ```
 
----
-
 ## Locate by role
 
 The `page.getByRole()` locator reflects how users and assistive technology perceive the page, for example whether some element is a button or a checkbox. When locating by role, you should usually pass the accessible name as well, so that the locator pinpoints the exact element.
@@ -93,8 +87,6 @@ Role locators include buttons, checkboxes, headings, links, lists, tables, and m
 
 > **Note:** We recommend prioritizing role locators to locate elements, as it is the closest way to how users and assistive technology perceive the page.
 
----
-
 ## Locate by label
 
 Most form controls usually have dedicated labels that could be conveniently used to interact with the form. In this case, you can locate the control by its associated label using `page.getByLabel()`.
@@ -113,8 +105,6 @@ await page.getByLabel('Password').fill('secret');
 
 > **Note:** Use this locator when locating form fields.
 
----
-
 ## Locate by placeholder
 
 Inputs may have a `placeholder` attribute to hint to the user what value should be entered. You can locate such an input using `page.getByPlaceholder()`.
@@ -132,8 +122,6 @@ await page.getByPlaceholder('name@example.com').fill('playwright@microsoft.com')
 ```
 
 > **Note:** Use this locator when locating form elements that do not have labels but do have placeholder texts.
-
----
 
 ## Locate by text
 
@@ -167,8 +155,6 @@ await expect(page.getByText(/welcome, [A-Za-z]+$/i)).toBeVisible();
 
 > **Note:** We recommend using text locators to find non interactive elements like `div`, `span`, `p`, etc. For interactive elements like `button`, `a`, `input`, etc. use role locators. You can also filter by text which can be useful when trying to find a particular item in a list.
 
----
-
 ## Locate by alt text
 
 All images should have an `alt` attribute that describes the image. You can locate an image based on the text alternative using `page.getByAltText()`.
@@ -187,8 +173,6 @@ await page.getByAltText('playwright logo').click();
 
 > **Note:** Use this locator when your element supports alt text such as `img` and `area` elements.
 
----
-
 ## Locate by title
 
 Locate an element with a matching `title` attribute using `page.getByTitle()`.
@@ -206,8 +190,6 @@ await expect(page.getByTitle('Issues count')).toHaveText('25 issues');
 ```
 
 > **Note:** Use this locator when your element has the `title` attribute.
-
----
 
 ## Locate by test id
 
@@ -254,8 +236,6 @@ And then locate the element as you would normally do:
 await page.getByTestId('directions').click();
 ```
 
----
-
 ## Locate by CSS or XPath
 
 If you absolutely must use CSS or XPath locators, you can use `page.locator()` to create a locator that takes a selector describing how to find an element in the page. Playwright supports CSS and XPath selectors, and auto-detects them if you omit the `css=` or `xpath=` prefix.
@@ -275,8 +255,6 @@ await page.locator('//*[@id="tsf"]/div[2]/div[1]/div[1]/div/div[2]/input').click
 ```
 
 > **Note:** CSS and XPath are not recommended as the DOM can often change leading to non resilient tests. Instead, try to come up with a locator that is close to how the user perceives the page such as role locators or define an explicit testing contract using test ids.
-
----
 
 ## Locate in Shadow DOM
 
@@ -312,8 +290,6 @@ To ensure that `<x-details>` contains the text "Details":
 ```ts
 await expect(page.locator('x-details')).toContainText('Details');
 ```
-
----
 
 ## Filtering Locators
 
@@ -394,8 +370,6 @@ await expect(page.getByRole('listitem').filter({ hasNot: page.getByText('Product
 
 Note that the inner locator is matched starting from the outer one, not from the document root.
 
----
-
 ## Locator operators
 
 ### Matching inside a locator
@@ -464,8 +438,6 @@ This will only find a second button, because it is visible, and then click it:
 ```ts
 await page.locator('button').filter({ visible: true }).click();
 ```
-
----
 
 ## Lists
 
@@ -612,8 +584,6 @@ await rowLocator
 
 You should now have a "screenshot.png" file in your project's root directory.
 
----
-
 ## Rare use cases
 
 ### Do something with each element in the list
@@ -640,8 +610,6 @@ The code inside `locator.evaluateAll()` runs in the page, you can call any DOM a
 const rows = page.getByRole('listitem');
 const texts = await rows.evaluateAll((list) => list.map((element) => element.textContent));
 ```
-
----
 
 ## Strictness
 
@@ -676,8 +644,6 @@ You can explicitly opt-out from strictness check by telling Playwright which ele
 | `page.getByTestId()`        | Locate elements by `data-testid` attribute          |
 | `page.locator('css=...')`   | CSS selector (use only when necessary)              |
 | `page.locator('xpath=...')` | XPath selector (use only when necessary)            |
-
----
 
 ## More Locators
 

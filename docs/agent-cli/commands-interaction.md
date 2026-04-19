@@ -21,8 +21,6 @@
 | `upload <file>`              | Upload files                                     |
 | `resize <width> <height>`    | Resize the browser window                        |
 
----
-
 ## Targeting elements
 
 ### Refs from snapshots (recommended)
@@ -50,8 +48,6 @@ playwright-cli click "getByText('Login')"
 playwright-cli fill "getByLabel('Email')" "test@example.com"
 ```
 
----
-
 ## Form interaction
 
 ```bash
@@ -75,8 +71,6 @@ playwright-cli upload /path/to/file.pdf
 playwright-cli resize 375 812 # mobile viewport
 playwright-cli resize 1920 1080 # desktop
 ```
-
----
 
 ## Workflow: login form
 

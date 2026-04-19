@@ -15,8 +15,6 @@ You will learn:
 - How to run the example test
 - How to open the HTML test report
 
----
-
 ## Installing Playwright
 
 Get started by installing Playwright using one of the following methods.
@@ -42,8 +40,6 @@ You can re-run the command later; it does not overwrite existing tests.
 
 You can also create and run tests with the VS Code Extension.
 
----
-
 ## What's Installed
 
 Playwright downloads required browser binaries and creates the scaffold below.
@@ -57,8 +53,6 @@ tests/
 ```
 
 The `playwright.config` centralizes configuration: target browsers, timeouts, retries, projects, reporters and more. In existing projects, dependencies are added to your current `package.json`. `tests/` contains a minimal starter test.
-
----
 
 ## Running the Example Test
 
@@ -77,8 +71,6 @@ Tips:
 
 See Running Tests for details on filtering, headed mode, sharding and retries.
 
----
-
 ## HTML Test Reports
 
 After a test run, the HTML Reporter provides a dashboard filterable by browser, passed, failed, skipped, flaky and more. Click a test to inspect errors, attachments and steps. It auto-opens only when failures occur; open manually with:
@@ -86,8 +78,6 @@ After a test run, the HTML Reporter provides a dashboard filterable by browser, 
 ```bash
 npx playwright show-report
 ```
-
----
 
 ## Running the Example Test in UI Mode
 
@@ -98,8 +88,6 @@ npx playwright test --ui
 ```
 
 > **Note:** See the detailed guide on UI Mode for watch filters, step details and trace integration.
-
----
 
 ## Updating Playwright
 
@@ -116,16 +104,12 @@ Check your installed version:
 npx playwright --version
 ```
 
----
-
 ## System requirements
 
 - Node.js: latest 20.x, 22.x or 24.x
 - Windows 11+, Windows Server 2019+, or Windows Subsystem for Linux (WSL)
 - macOS 14 (Ventura) or later
 - Linux: Debian 12/13, Ubuntu 22.04/24.04 (x86-64 or arm64)
-
----
 
 ## What's next
 

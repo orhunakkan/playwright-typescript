@@ -12,8 +12,6 @@ The CLI runs **headless** by default. To see the browser:
 playwright-cli open https://playwright.dev --headed
 ```
 
----
-
 ## Browser selection
 
 ```bash
@@ -23,15 +21,11 @@ playwright-cli open --browser=webkit # WebKit (Safari engine)
 playwright-cli open --browser=msedge # Microsoft Edge
 ```
 
----
-
 ## Device emulation
 
 ```bash
 playwright-cli open --device="iPhone 15" https://example.com
 ```
-
----
 
 ## Viewport size
 
@@ -39,15 +33,11 @@ playwright-cli open --device="iPhone 15" https://example.com
 playwright-cli open --viewport-size=1280x720 https://example.com
 ```
 
----
-
 ## Proxy
 
 ```bash
 playwright-cli open --proxy-server=http://myproxy:3128 --proxy-bypass=localhost,*.internal.com https://example.com
 ```
-
----
 
 ## Profile modes
 
@@ -84,8 +74,6 @@ Explicit in-memory mode — equivalent to the default but can be set in the conf
   }
 }
 ```
-
----
 
 ## Configuration file
 
@@ -156,8 +144,6 @@ The CLI automatically loads `.playwright/cli.config.json` if present.
   codegen?: 'typescript' | 'none';
 }
 ```
-
----
 
 ## Example configs
 
@@ -234,8 +220,6 @@ The CLI automatically loads `.playwright/cli.config.json` if present.
 }
 ```
 
----
-
 ## Print resolved config
 
 See the final config after merging CLI options, environment variables, and config file:
@@ -243,8 +227,6 @@ See the final config after merging CLI options, environment variables, and confi
 ```bash
 playwright-cli config-print
 ```
-
----
 
 ## Browser extension
 
@@ -255,8 +237,6 @@ playwright-cli attach --extension
 ```
 
 See **Attach** for details.
-
----
 
 ## Environment variables
 
@@ -295,8 +275,6 @@ See **Attach** for details.
 | `PLAYWRIGHT_MCP_SAVE_SESSION`          | Save session data                                |
 | `PLAYWRIGHT_MCP_SAVE_VIDEO`            | Auto-record video (e.g., "800x600")              |
 | `PLAYWRIGHT_MCP_SECRETS_FILE`          | Secrets file (dotenv)                            |
-
----
 
 ## All open parameters
 

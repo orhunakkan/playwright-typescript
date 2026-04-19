@@ -6,8 +6,6 @@
 
 By default, Playwright MCP uses accessibility snapshots for all interactions. **Vision mode** adds coordinate-based tools that work with screenshots, enabling interaction with elements not exposed in the accessibility tree.
 
----
-
 ## Enabling vision mode
 
 Add the **vision capability**:
@@ -23,8 +21,6 @@ Add the **vision capability**:
 }
 ```
 
----
-
 ## Additional tools
 
 With vision mode, these coordinate-based tools become available:
@@ -38,8 +34,6 @@ With vision mode, these coordinate-based tools become available:
 | browser_mouse_up       | Release mouse button                                |
 | browser_mouse_wheel    | Scroll with mouse wheel                             |
 
----
-
 ## Workflow: interacting with a canvas app
 
 ```bash
@@ -50,8 +44,6 @@ You: Draw a rectangle on the canvas.
 → browser_mouse_drag_xy { startX: 100, startY: 150, endX: 300, endY: 250 }
 → browser_take_screenshot  // LLM verifies the rectangle was drawn
 ```
-
----
 
 ## Workflow: clicking an icon without accessible name
 
@@ -66,8 +58,6 @@ You: Draw a rectangle on the canvas.
 - textbox "Display name" [ref=e12]
 ```
 
----
-
 ## When to use vision mode
 
 | Scenario                    | Approach                          |
@@ -80,8 +70,6 @@ You: Draw a rectangle on the canvas.
 | Custom widgets without ARIA | Vision mode as fallback           |
 
 For most web applications, the **default snapshot-based approach** is more reliable and token-efficient. Use vision mode only when the accessibility tree doesn't cover your use case.
-
----
 
 ## Combining capabilities
 

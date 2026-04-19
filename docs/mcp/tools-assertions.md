@@ -17,8 +17,6 @@ Verify page state and generate Playwright test code. Requires the **testing capa
 }
 ```
 
----
-
 ## Verify elements
 
 ### browser_verify_element_visible
@@ -82,8 +80,6 @@ Verify page state and generate Playwright test code. Requires the **testing capa
 ✓ Value matches: "alice@example.com"
 ```
 
----
-
 ## Generate test code
 
 ### browser_generate_locator
@@ -103,8 +99,6 @@ page.getByRole('button', { name: 'Submit' })
 → browser_generate_locator { ref: "e3" }
 page.getByLabel('Email')
 ```
-
----
 
 ## Workflow: exploratory testing to test code
 
@@ -137,8 +131,6 @@ test('add and complete todo', async ({ page }) => {
   await expect(page.getByText('0 items left')).toBeVisible();
 });
 ```
-
----
 
 ## Workflow: testing form validation
 

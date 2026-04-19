@@ -6,8 +6,6 @@
 
 **AndroidDevice** represents a connected device, either real hardware or emulated. Devices can be obtained using `android.devices()`.
 
----
-
 ## Methods
 
 ### close
@@ -21,8 +19,6 @@ await androidDevice.close();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### drag
 
@@ -47,8 +43,6 @@ await androidDevice.drag(selector, dest, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### fill
 
 **Added in:** v1.9
@@ -68,8 +62,6 @@ await androidDevice.fill(selector, text, options);
   - `timeout` number (optional) — Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the `androidDevice.setDefaultTimeout()` method.
 
 **Returns:** `Promise<void>`
-
----
 
 ### fling
 
@@ -92,8 +84,6 @@ await androidDevice.fling(selector, direction, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### info
 
 **Added in:** v1.9
@@ -109,8 +99,6 @@ await androidDevice.info(selector);
 - `selector` [AndroidSelector] — Selector to return information about.
 
 **Returns:** `Promise<AndroidElementInfo>`
-
----
 
 ### installApk
 
@@ -130,8 +118,6 @@ await androidDevice.installApk(file, options);
   - `args` Array\<string\> (optional) — Optional arguments to pass to the `shell:cmd package install` call. Defaults to `-r -t -S`.
 
 **Returns:** `Promise<void>`
-
----
 
 ### launchBrowser
 
@@ -203,8 +189,6 @@ await androidDevice.launchBrowser(options);
 
 **Returns:** `Promise<BrowserContext>`
 
----
-
 ### longTap
 
 **Added in:** v1.9
@@ -224,8 +208,6 @@ await androidDevice.longTap(selector, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### model
 
 **Added in:** v1.9
@@ -237,8 +219,6 @@ androidDevice.model();
 ```
 
 **Returns:** `string`
-
----
 
 ### open
 
@@ -255,8 +235,6 @@ await androidDevice.open(command);
 - `command` string — Shell command to execute.
 
 **Returns:** `Promise<AndroidSocket>`
-
----
 
 ### pinchClose
 
@@ -279,8 +257,6 @@ await androidDevice.pinchClose(selector, percent, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### pinchOpen
 
 **Added in:** v1.9
@@ -302,8 +278,6 @@ await androidDevice.pinchOpen(selector, percent, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### press
 
 **Added in:** v1.9
@@ -323,8 +297,6 @@ await androidDevice.press(selector, key, options);
   - `timeout` number (optional) — Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout.
 
 **Returns:** `Promise<void>`
-
----
 
 ### push
 
@@ -346,8 +318,6 @@ await androidDevice.push(file, path, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### screenshot
 
 **Added in:** v1.9
@@ -365,8 +335,6 @@ await androidDevice.screenshot(options);
   - `path` string (optional) — The file path to save the image to. If path is a relative path, then it is resolved relative to the current working directory. If no path is provided, the image won't be saved to the disk.
 
 **Returns:** `Promise<Buffer>`
-
----
 
 ### scroll
 
@@ -390,8 +358,6 @@ await androidDevice.scroll(selector, direction, percent, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### serial
 
 **Added in:** v1.9
@@ -403,8 +369,6 @@ androidDevice.serial();
 ```
 
 **Returns:** `string`
-
----
 
 ### setDefaultTimeout
 
@@ -419,8 +383,6 @@ androidDevice.setDefaultTimeout(timeout);
 **Arguments:**
 
 - `timeout` number — Maximum time in milliseconds.
-
----
 
 ### shell
 
@@ -437,8 +399,6 @@ await androidDevice.shell(command);
 - `command` string — Shell command to execute.
 
 **Returns:** `Promise<Buffer>`
-
----
 
 ### swipe
 
@@ -462,8 +422,6 @@ await androidDevice.swipe(selector, direction, percent, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### tap
 
 **Added in:** v1.9
@@ -483,8 +441,6 @@ await androidDevice.tap(selector, options);
   - `timeout` number (optional) — Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout.
 
 **Returns:** `Promise<void>`
-
----
 
 ### wait
 
@@ -506,8 +462,6 @@ await androidDevice.wait(selector, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### waitForEvent
 
 **Added in:** v1.9
@@ -527,8 +481,6 @@ await androidDevice.waitForEvent(event, optionsOrPredicate);
   - `timeout` number (optional) — Maximum time to wait in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.
 
 **Returns:** `Promise<Object>`
-
----
 
 ### webView
 
@@ -551,8 +503,6 @@ await androidDevice.webView(selector, options);
 
 **Returns:** `Promise<AndroidWebView>`
 
----
-
 ### webViews
 
 **Added in:** v1.9
@@ -565,8 +515,6 @@ androidDevice.webViews();
 
 **Returns:** `Array<AndroidWebView>`
 
----
-
 ## Properties
 
 ### input
@@ -578,8 +526,6 @@ androidDevice.webViews();
 ```ts
 androidDevice.input;
 ```
-
----
 
 ## Events
 
@@ -594,8 +540,6 @@ androidDevice.on('close', (data) => {});
 ```
 
 **Event data:** `AndroidDevice`
-
----
 
 ### on('webview')
 

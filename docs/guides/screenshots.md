@@ -14,8 +14,6 @@ await page.screenshot({ path: 'screenshot.png' });
 
 Screenshots API accepts many parameters for image format, clip area, quality, etc. Make sure to check them out.
 
----
-
 ## Full page screenshots
 
 Full page screenshot is a screenshot of a full scrollable page, as if you had a very tall screen and the page could fit it entirely.
@@ -23,8 +21,6 @@ Full page screenshot is a screenshot of a full scrollable page, as if you had a 
 ```ts
 await page.screenshot({ path: 'screenshot.png', fullPage: true });
 ```
-
----
 
 ## Capture into buffer
 
@@ -34,8 +30,6 @@ Rather than writing into a file, you can get a buffer with the image and post-pr
 const buffer = await page.screenshot();
 console.log(buffer.toString('base64'));
 ```
-
----
 
 ## Element screenshot
 

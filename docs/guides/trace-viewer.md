@@ -8,8 +8,6 @@
 
 Playwright **Trace Viewer** is a GUI tool that helps you explore recorded Playwright traces after the script has run. Traces are a great way for debugging your tests when they fail on CI. You can open traces locally or in your browser on [trace.playwright.dev](https://trace.playwright.dev).
 
----
-
 ## Opening Trace Viewer
 
 You can open a saved trace using either the Playwright CLI or in the browser at trace.playwright.dev. Make sure to add the full path to where your `trace.zip` file is located.
@@ -18,13 +16,9 @@ You can open a saved trace using either the Playwright CLI or in the browser at 
 npx playwright show-trace path/to/trace.zip
 ```
 
----
-
 ## Using trace.playwright.dev
 
 `trace.playwright.dev` is a statically hosted variant of the Trace Viewer. You can upload a trace file using drag and drop or via the **Select file** button. Trace Viewer loads the trace entirely in your browser and does not transmit any data externally.
-
----
 
 ## Viewing remote traces
 
@@ -39,8 +33,6 @@ When using `trace.playwright.dev`, you can also pass the URL of your uploaded tr
 ```text
 https://trace.playwright.dev/?trace=https://demo.playwright.dev/reports/todomvc/data/e6099cadf79aa753d5500aa9508f9d1dbd87b5ee.zip
 ```
-
----
 
 ## Recording a trace
 
@@ -98,8 +90,6 @@ Available options to record a trace:
 - `'retain-on-failure'` — Record a trace for each test, but remove it from successful test runs.
 
 You can also use `trace: 'retain-on-failure'` if you do not enable retries but still want traces for failed tests. There are more granular options available, see `testOptions.trace`. If you are not using Playwright as a Test Runner, use the `browserContext.tracing` API instead.
-
----
 
 ## Trace Viewer features
 

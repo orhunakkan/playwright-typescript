@@ -8,8 +8,6 @@
 
 This guide should help you to make sure you are following our best practices and writing tests that are more resilient.
 
----
-
 ## Testing Philosophy
 
 ### Test User-Visible Behavior
@@ -63,8 +61,6 @@ await page.goto('https://example.com');
 ### Testing with a Database
 
 If working with a database then make sure you control the data. Test against a staging environment and make sure it doesn't change. For visual regression tests make sure the operating system and browser versions are the same.
-
----
 
 ## Best Practices
 
@@ -129,8 +125,6 @@ You can then hover over any element on your page in the browser window and see t
 
 You can also use the VS Code Extension to generate locators as well as record a test. The VS Code extension also gives you a great developer experience when writing, running, and debugging tests.
 
----
-
 ## Use Web First Assertions
 
 Assertions are a way to verify that the expected result and the actual result matched or not. By using web first assertions Playwright will wait until the expected condition is met. For example, when testing an alert message, a test would click a button that makes a message appear and check that the alert message is there. If the alert message takes half a second to appear, assertions such as `toBeVisible()` will wait and retry if needed.
@@ -158,8 +152,6 @@ Use web first assertions such as `toBeVisible()` instead:
 // 👍
 await expect(page.getByText('welcome')).toBeVisible();
 ```
-
----
 
 ## Configure Debugging
 
@@ -201,8 +193,6 @@ npx playwright show-report
 
 Traces can be opened by clicking on the icon next to the test file name or by opening each of the test reports and scrolling down to the traces section.
 
----
-
 ## Use Playwright's Tooling
 
 Playwright comes with a range of tooling to help you write tests:
@@ -213,8 +203,6 @@ Playwright comes with a range of tooling to help you write tests:
 - The **UI Mode** lets you explore, run and debug tests with a time travel experience complete with watch mode
 
 TypeScript in Playwright works out of the box and gives you better IDE integrations. Your IDE will show you everything you can do and highlight when you do something wrong. No TypeScript experience is needed and it is not necessary for your code to be in TypeScript, all you need to do is create your tests with a `.ts` extension.
-
----
 
 ## Test Across All Browsers
 
@@ -242,8 +230,6 @@ export default defineConfig({
 });
 ```
 
----
-
 ## Keep Your Playwright Dependency Up to Date
 
 By keeping your Playwright version up to date you will be able to test your app on the latest browser versions and catch failures before the latest browser version is released to the public.
@@ -259,8 +245,6 @@ You can see what version of Playwright you have by running the following command
 ```bash
 npx playwright --version
 ```
-
----
 
 ## Run Tests on CI
 
@@ -287,15 +271,11 @@ npx playwright install chromium --with-deps
 
 This saves both download time and disk space on your CI machines.
 
----
-
 ## Lint Your Tests
 
 We recommend TypeScript and linting with ESLint for your tests to catch errors early. Use `@typescript-eslint/no-floating-promises` ESLint rule to make sure there are no missing awaits before the asynchronous calls to the Playwright API.
 
 On your CI you can run `tsc --noEmit` to ensure that functions are called with the right signature.
-
----
 
 ## Use Parallelism and Sharding
 
@@ -319,8 +299,6 @@ Playwright can shard a test suite, so that it can be executed on multiple machin
 ```bash
 npx playwright test --shard=1/3
 ```
-
----
 
 ## Productivity Tips
 

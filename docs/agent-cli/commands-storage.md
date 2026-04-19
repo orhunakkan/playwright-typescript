@@ -8,8 +8,6 @@
 
 Manage cookies, localStorage, sessionStorage, and save/restore full browser state for authentication persistence.
 
----
-
 ## Storage state (cookies + localStorage)
 
 Save and restore the full browser state (cookies + localStorage) in a single file. This is the **primary way to persist authentication** across sessions.
@@ -36,8 +34,6 @@ playwright-cli state-load auth.json
 playwright-cli goto https://app.example.com/dashboard
 # Already logged in!
 ```
-
----
 
 ## Cookies
 
@@ -86,8 +82,6 @@ playwright-cli snapshot
 # - textbox "Email" [ref=e3]
 ```
 
----
-
 ## localStorage
 
 | Command                          | Description              |
@@ -113,8 +107,6 @@ $ playwright-cli localstorage-set onboarding_done "false"
 $ playwright-cli reload
 # Onboarding wizard appears
 ```
-
----
 
 ## sessionStorage
 

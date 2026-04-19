@@ -8,8 +8,6 @@
 
 Playwright provides APIs to monitor and modify browser network traffic, both HTTP and HTTPS. Any requests that a page does, including XHRs and fetch requests, can be tracked, modified and handled.
 
----
-
 ## Mock APIs
 
 Check out our API mocking guide to learn more on how to:
@@ -17,8 +15,6 @@ Check out our API mocking guide to learn more on how to:
 - Mock API requests and never hit the API
 - Perform the API request and modify the response
 - Use HAR files to mock network requests
-
----
 
 ## Network mocking
 
@@ -53,8 +49,6 @@ test('loads page without images', async ({ page }) => {
 });
 ```
 
----
-
 ## HTTP Authentication
 
 Perform HTTP Authentication with `httpCredentials` in config or context options.
@@ -85,8 +79,6 @@ const context = await browser.newContext({
 const page = await context.newPage();
 await page.goto('https://example.com');
 ```
-
----
 
 ## HTTP Proxy
 
@@ -147,8 +139,6 @@ const context = await browser.newContext({
 });
 ```
 
----
-
 ## Network events
 
 You can monitor all the Requests and Responses:
@@ -183,8 +173,6 @@ await page.getByText('Update').click();
 const response = await responsePromise;
 ```
 
----
-
 ## Handle requests
 
 You can mock API endpoints via handling the network requests in your Playwright script.
@@ -213,8 +201,6 @@ await browserContext.route('**/api/login', (route) =>
 await page.goto('https://example.com');
 ```
 
----
-
 ## Modify requests
 
 You can continue requests with modifications. The example below removes an HTTP header from the outgoing requests.
@@ -231,8 +217,6 @@ await page.route('**/*', async (route) => {
 await page.route('**/*', (route) => route.continue({ method: 'POST' }));
 ```
 
----
-
 ## Abort requests
 
 You can abort requests using `page.route()` and `route.abort()`.
@@ -245,8 +229,6 @@ await page.route('**/*', (route) => {
   return route.request().resourceType() === 'image' ? route.abort() : route.continue();
 });
 ```
-
----
 
 ## Modify responses
 
@@ -273,8 +255,6 @@ await page.route('**/title.html', async (route) => {
 });
 ```
 
----
-
 ## Glob URL patterns
 
 Playwright uses simplified glob patterns for URL matching in network interception methods like `page.route()` or `page.waitForResponse()`. These patterns support basic wildcards:
@@ -293,8 +273,6 @@ Examples:
 
 > **Note:** The glob pattern must match the entire URL, not just a part of it. For more complex matching requirements, consider using RegExp instead of glob patterns.
 
----
-
 ## WebSockets
 
 Playwright supports WebSockets inspection, mocking and modifying out of the box. See our API mocking guide to learn how to mock WebSockets. Every time a WebSocket is created, the `page.on('websocket')` event is fired. This event contains the WebSocket instance for further web socket frames inspection:
@@ -307,8 +285,6 @@ page.on('websocket', (ws) => {
   ws.on('close', () => console.log('WebSocket closed'));
 });
 ```
-
----
 
 ## Missing Network Events and Service Workers
 

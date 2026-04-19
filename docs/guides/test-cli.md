@@ -12,8 +12,6 @@ Playwright provides a powerful command line interface for running tests, generat
 npx playwright --help
 ```
 
----
-
 ## Run Tests
 
 Run your Playwright tests. Read more about running tests.
@@ -122,8 +120,6 @@ npx playwright test --ui
 | `--update-source-method [mode]`         | Update snapshots with actual results. Possible values are `"patch"` (default), `"3way"` and `"overwrite"`.                                                                                                                                                                       |
 | `-x`                                    | Stop after the first failure.                                                                                                                                                                                                                                                    |
 
----
-
 ## Test list
 
 Options `--test-list` and `--test-list-invert` accept a path to a test list file. This file should list tests in the format similar to the output produced in `--list` mode.
@@ -160,8 +156,6 @@ example.spec.ts:15 › example test
 example.spec.ts:42:42 › example test
 ```
 
----
-
 ## Show Report
 
 Display HTML report from previous test run. Read more about the HTML reporter.
@@ -191,8 +185,6 @@ npx playwright show-report --port 8080
 | --------------- | -------------------------------------------- |
 | `--host <host>` | Host to serve report on (default: localhost) |
 | `--port <port>` | Port to serve report on (default: 9323)      |
-
----
 
 ## Install Browsers
 
@@ -238,8 +230,6 @@ npx playwright install --with-deps
 | ----------- | -------------------------------------------------- |
 | `--dry-run` | Don't perform installation, just print information |
 
----
-
 ## Code Generation
 
 Record actions and generate tests for multiple languages. Read more about Codegen.
@@ -272,8 +262,6 @@ npx playwright codegen --target=python
 | `--target <language>`        | Language to use: javascript, playwright-test, python, etc.       |
 | `--test-id-attribute <attr>` | Attribute to use for test IDs                                    |
 
----
-
 ## Trace Viewer
 
 Analyze and view test traces for debugging. Read more about Trace Viewer.
@@ -305,8 +293,6 @@ npx playwright show-trace trace/
 | `-h, --host <host>`    | Host to serve trace on                                           |
 | `-p, --port <port>`    | Port to serve trace on                                           |
 
----
-
 ## Merge Reports
 
 Read blob reports and combine them. Read more about merge-reports.
@@ -330,8 +316,6 @@ npx playwright merge-reports ./reports
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-c, --config <file>`   | Configuration file. Can be used to specify additional configuration for the output report                                                               |
 | `--reporter <reporter>` | Reporter to use, comma-separated, can be `"list"`, `"line"`, `"dot"`, `"json"`, `"junit"`, `"null"`, `"github"`, `"html"`, `"blob"` (default: `"list"`) |
-
----
 
 ## Clear Cache
 

@@ -28,8 +28,6 @@
 | `browser.get(url)`                                | `await page.goto(url)`                                                             |
 | `browser.getCurrentUrl()`                         | `page.url()`                                                                       |
 
----
-
 ## Example
 
 Protractor:
@@ -83,8 +81,6 @@ Migration highlights (see inline comments in the Playwright Test code snippet):
 4. Almost all Playwright calls are prefixed with `await`
 5. Locator creation with `page.locator()` is one of the few methods that is sync
 
----
-
 ## Polyfilling waitForAngular
 
 Playwright Test has built-in auto-waiting that makes Protractor's `waitForAngular` unneeded in general. However, it might come handy in some edge cases. Here's how to polyfill `waitForAngular` in Playwright Test:
@@ -137,8 +133,6 @@ await page.goto('https://example.org');
 await waitForAngular(page);
 ```
 
----
-
 ## Playwright Test Super Powers
 
 Once you're on Playwright Test, you get a lot!
@@ -154,8 +148,6 @@ You also get all these awesome tools that come bundled with Playwright Test:
 - Playwright Inspector
 - Playwright Test Code generation
 - Playwright Tracing for post-mortem debugging
-
----
 
 ## Further Reading
 

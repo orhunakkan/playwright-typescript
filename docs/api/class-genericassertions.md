@@ -15,8 +15,6 @@ test('assert a value', async ({ page }) => {
 });
 ```
 
----
-
 ## Methods
 
 ### `genericAssertions.any(constructor)` — Added in: v1.9
@@ -37,8 +35,6 @@ expect('abc').toEqual(expect.any(String));
 
 - `constructor` Function — Constructor of the expected object like `ExampleClass`, or a primitive boxed type like `Number`.
 
----
-
 ### `genericAssertions.anything()` — Added in: v1.9
 
 `expect.anything()` matches everything except `null` and `undefined`. Use it inside `expect(value).toEqual()` to perform pattern matching.
@@ -48,8 +44,6 @@ const value = { prop: 1 };
 expect(value).toEqual({ prop: expect.anything() });
 expect(value).not.toEqual({ otherProp: expect.anything() });
 ```
-
----
 
 ### `genericAssertions.arrayContaining(expected)` — Added in: v1.9
 
@@ -63,8 +57,6 @@ expect([1, 2, 3]).not.toEqual(expect.arrayContaining([1, 4]));
 **Arguments:**
 
 - `expected` Array\<Object\> — Expected array that is a subset of the received value.
-
----
 
 ### `genericAssertions.arrayOf(constructor)` — Added in: v1.57
 
@@ -82,8 +74,6 @@ expect(['a', 'b', 'c']).toEqual(expect.arrayOf(String));
 
 - `constructor` Function — Constructor of the expected object like `ExampleClass`, or a primitive boxed type like `Number`.
 
----
-
 ### `genericAssertions.closeTo(expected, numDigits?)` — Added in: v1.9
 
 Compares floating point numbers for approximate equality. Use this method inside `expect(value).toEqual()` to perform pattern matching. When just comparing two numbers, prefer `expect(value).toBeCloseTo()`.
@@ -97,8 +87,6 @@ expect({ prop: 0.1 + 0.2 }).toEqual({ prop: expect.closeTo(0.3, 5) });
 
 - `expected` number — Expected value.
 - `numDigits` number (optional) — The number of decimal digits after the decimal point that must be equal.
-
----
 
 ### `genericAssertions.objectContaining(expected)` — Added in: v1.9
 
@@ -126,8 +114,6 @@ expect({
 
 - `expected` Object — Expected object pattern that contains a subset of the properties.
 
----
-
 ### `genericAssertions.stringContaining(expected)` — Added in: v1.9
 
 `expect.stringContaining()` matches a string that contains the expected substring. Use this method inside `expect(value).toEqual()` to perform pattern matching.
@@ -139,8 +125,6 @@ expect('Hello world!').toEqual(expect.stringContaining('Hello'));
 **Arguments:**
 
 - `expected` string — Expected substring.
-
----
 
 ### `genericAssertions.stringMatching(expected)` — Added in: v1.9
 
@@ -162,8 +146,6 @@ expect({
 
 - `expected` string | RegExp — Pattern that expected string should match.
 
----
-
 ### `genericAssertions.toBe(expected)` — Added in: v1.9
 
 Compares value with expected by calling `Object.is`. This method compares objects by reference instead of their contents, similarly to the strict equality operator `===`.
@@ -179,8 +161,6 @@ expect(value.prop).toBe(1);
 
 - `expected` Object — Expected value.
 
----
-
 ### `genericAssertions.toBeCloseTo(expected, numDigits?)` — Added in: v1.9
 
 Compares floating point numbers for approximate equality. Use this method instead of `expect(value).toBe()` when comparing floating point numbers.
@@ -195,8 +175,6 @@ expect(0.1 + 0.2).toBeCloseTo(0.3, 5);
 - `expected` number — Expected value.
 - `numDigits` number (optional) — The number of decimal digits after the decimal point that must be equal.
 
----
-
 ### `genericAssertions.toBeDefined()` — Added in: v1.9
 
 Ensures that value is not `undefined`.
@@ -206,8 +184,6 @@ const value = null;
 expect(value).toBeDefined();
 ```
 
----
-
 ### `genericAssertions.toBeFalsy()` — Added in: v1.9
 
 Ensures that value is false in a boolean context, one of `false`, `0`, `''`, `null`, `undefined` or `NaN`. Use this method when you don't care about the specific value.
@@ -216,8 +192,6 @@ Ensures that value is false in a boolean context, one of `false`, `0`, `''`, `nu
 const value = null;
 expect(value).toBeFalsy();
 ```
-
----
 
 ### `genericAssertions.toBeGreaterThan(expected)` — Added in: v1.9
 
@@ -232,8 +206,6 @@ expect(value).toBeGreaterThan(1);
 
 - `expected` number | bigint — The value to compare to.
 
----
-
 ### `genericAssertions.toBeGreaterThanOrEqual(expected)` — Added in: v1.9
 
 Ensures that `value >= expected` for number or big integer values.
@@ -246,8 +218,6 @@ expect(value).toBeGreaterThanOrEqual(42);
 **Arguments:**
 
 - `expected` number | bigint — The value to compare to.
-
----
 
 ### `genericAssertions.toBeInstanceOf(expected)` — Added in: v1.9
 
@@ -263,8 +233,6 @@ expect(new Example()).toBeInstanceOf(Example);
 
 - `expected` Function — The class or constructor function.
 
----
-
 ### `genericAssertions.toBeLessThan(expected)` — Added in: v1.9
 
 Ensures that `value < expected` for number or big integer values.
@@ -277,8 +245,6 @@ expect(value).toBeLessThan(100);
 **Arguments:**
 
 - `expected` number | bigint — The value to compare to.
-
----
 
 ### `genericAssertions.toBeLessThanOrEqual(expected)` — Added in: v1.9
 
@@ -293,8 +259,6 @@ expect(value).toBeLessThanOrEqual(42);
 
 - `expected` number | bigint — The value to compare to.
 
----
-
 ### `genericAssertions.toBeNaN()` — Added in: v1.9
 
 Ensures that value is `NaN`.
@@ -303,8 +267,6 @@ Ensures that value is `NaN`.
 const value = NaN;
 expect(value).toBeNaN();
 ```
-
----
 
 ### `genericAssertions.toBeNull()` — Added in: v1.9
 
@@ -315,8 +277,6 @@ const value = null;
 expect(value).toBeNull();
 ```
 
----
-
 ### `genericAssertions.toBeTruthy()` — Added in: v1.9
 
 Ensures that value is true in a boolean context, anything but `false`, `0`, `''`, `null`, `undefined` or `NaN`. Use this method when you don't care about the specific value.
@@ -326,8 +286,6 @@ const value = { example: 'value' };
 expect(value).toBeTruthy();
 ```
 
----
-
 ### `genericAssertions.toBeUndefined()` — Added in: v1.9
 
 Ensures that value is `undefined`.
@@ -336,8 +294,6 @@ Ensures that value is `undefined`.
 const value = undefined;
 expect(value).toBeUndefined();
 ```
-
----
 
 ### `genericAssertions.toContain(expected)` (string) — Added in: v1.9
 
@@ -353,8 +309,6 @@ expect(value).toContain(',');
 
 - `expected` string — Expected substring.
 
----
-
 ### `genericAssertions.toContain(expected)` (collection) — Added in: v1.9
 
 Ensures that value is an `Array` or `Set` and contains an expected item.
@@ -369,8 +323,6 @@ expect(new Set(value)).toContain(2);
 
 - `expected` Object — Expected value in the collection.
 
----
-
 ### `genericAssertions.toContainEqual(expected)` — Added in: v1.9
 
 Ensures that value is an `Array` or `Set` and contains an item equal to the expected. For objects, this method recursively checks equality of all fields.
@@ -384,8 +336,6 @@ expect(new Set(value)).toContainEqual({ another: 2 });
 **Arguments:**
 
 - `expected` Object — Expected value in the collection.
-
----
 
 ### `genericAssertions.toEqual(expected)` — Added in: v1.9
 
@@ -415,8 +365,6 @@ expect({
 
 - `expected` Object — Expected value.
 
----
-
 ### `genericAssertions.toHaveLength(expected)` — Added in: v1.9
 
 Ensures that value has a `.length` property equal to expected. Useful for arrays and strings.
@@ -429,8 +377,6 @@ expect([1, 2, 3]).toHaveLength(3);
 **Arguments:**
 
 - `expected` number — Expected length.
-
----
 
 ### `genericAssertions.toHaveProperty(keyPath, expected?)` — Added in: v1.9
 
@@ -453,8 +399,6 @@ expect(value).toHaveProperty('c', true);
 - `keyPath` string — Path to the property. Use dot notation `a.b` to check nested properties and indexed `a[2]` notation to check nested array items.
 - `expected` Object (optional) — Optional expected value to compare the property to.
 
----
-
 ### `genericAssertions.toMatch(expected)` — Added in: v1.9
 
 Ensures that string value matches a regular expression.
@@ -467,8 +411,6 @@ expect(value).toMatch(/Is \d+ enough/);
 **Arguments:**
 
 - `expected` RegExp | string — Regular expression to match against.
-
----
 
 ### `genericAssertions.toMatchObject(expected)` — Added in: v1.9
 
@@ -485,8 +427,6 @@ expect([{ a: 1, b: 2 }]).toMatchObject([{ a: 1 }]);
 
 - `expected` Object | Array — The expected object value to match against.
 
----
-
 ### `genericAssertions.toStrictEqual(expected)` — Added in: v1.9
 
 Compares contents of the value with contents of expected and their types. Differences from `toEqual`: keys with `undefined` properties are checked; array sparseness is checked; object types are checked to be equal.
@@ -499,8 +439,6 @@ expect(value).toStrictEqual({ prop: 1 });
 **Arguments:**
 
 - `expected` Object — Expected value.
-
----
 
 ### `genericAssertions.toThrow(expected?)` — Added in: v1.9
 
@@ -522,8 +460,6 @@ expect(() => {
 
 - `expected` Object (optional) — Expected error message or error object.
 
----
-
 ### `genericAssertions.toThrowError(expected?)` — Added in: v1.9
 
 An alias for `expect(value).toThrow()`.
@@ -538,8 +474,6 @@ expect(() => {
 
 - `expected` Object (optional) — Expected error message or error object.
 
----
-
 ## Properties
 
 ### `genericAssertions.not` — Added in: v1.9
@@ -553,8 +487,6 @@ expect(value).not.toBe(2);
 
 **Type:** `GenericAssertions`
 
----
-
 ### `genericAssertions.rejects` — Added in: v1.9
 
 Use `.rejects` to unwrap the reason of a rejected promise so any other matcher can be chained. If the promise is fulfilled the assertion fails.
@@ -566,8 +498,6 @@ test('rejects to octopus', async () => {
 ```
 
 **Type:** `GenericAssertions`
-
----
 
 ### `genericAssertions.resolves` — Added in: v1.9
 

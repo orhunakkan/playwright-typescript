@@ -17,8 +17,6 @@ const { chromium } = require('playwright'); // Or 'firefox' or 'webkit'.
 })();
 ```
 
----
-
 ## Methods
 
 ### connect
@@ -45,8 +43,6 @@ await browserType.connect(endpoint, options);
   - `timeout` number (optional) _(Added in: v1.10)_ — Maximum time in milliseconds to wait for the connection to be established. Defaults to 0 (no timeout).
 
 **Returns:** `Promise<Browser>`
-
----
 
 ### connectOverCDP
 
@@ -77,8 +73,6 @@ const page = defaultContext.pages()[0];
 
 **Returns:** `Promise<Browser>`
 
----
-
 ### executablePath
 
 **Added before:** v1.9
@@ -90,8 +84,6 @@ browserType.executablePath();
 ```
 
 **Returns:** `string`
-
----
 
 ### launch
 
@@ -135,8 +127,6 @@ const browser = await chromium.launch({
   - `tracesDir` string (optional) — If specified, traces are saved into this directory.
 
 **Returns:** `Promise<Browser>`
-
----
 
 ### launchPersistentContext
 
@@ -201,8 +191,6 @@ await browserType.launchPersistentContext(userDataDir, options);
 
 **Returns:** `Promise<BrowserContext>`
 
----
-
 ### launchServer
 
 **Added before:** v1.9
@@ -246,8 +234,6 @@ const { chromium } = require('playwright'); // Or 'webkit' or 'firefox'.
 > **Warning:** Any process or web page with knowledge of the `wsPath` can take control of the OS user. Use an unguessable token.
 
 **Returns:** `Promise<BrowserServer>`
-
----
 
 ### name
 

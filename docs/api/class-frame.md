@@ -28,8 +28,6 @@ const { firefox } = require('playwright'); // Or 'chromium' or 'webkit'.
 })();
 ```
 
----
-
 ## Methods
 
 ### addScriptTag
@@ -53,8 +51,6 @@ await frame.addScriptTag(options);
 
 **Returns:** `Promise<ElementHandle>`
 
----
-
 ### addStyleTag
 
 **Added before:** v1.9
@@ -75,8 +71,6 @@ await frame.addStyleTag(options);
 
 **Returns:** `Promise<ElementHandle>`
 
----
-
 ### childFrames
 
 **Added before:** v1.9
@@ -86,8 +80,6 @@ frame.childFrames();
 ```
 
 **Returns:** `Array<Frame>`
-
----
 
 ### content
 
@@ -100,8 +92,6 @@ await frame.content();
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### dragAndDrop
 
@@ -127,8 +117,6 @@ await frame.dragAndDrop(source, target, options);
   - `trial` boolean (optional) — When set, only performs actionability checks and skips the action.
 
 **Returns:** `Promise<void>`
-
----
 
 ### evaluate
 
@@ -161,8 +149,6 @@ await bodyHandle.dispose();
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### evaluateHandle
 
 **Added before:** v1.9
@@ -190,8 +176,6 @@ await resultHandle.dispose();
 
 **Returns:** `Promise<JSHandle>`
 
----
-
 ### frameElement
 
 **Added before:** v1.9
@@ -203,8 +187,6 @@ const frameElement = await frame.frameElement();
 ```
 
 **Returns:** `Promise<ElementHandle>`
-
----
 
 ### frameLocator
 
@@ -221,8 +203,6 @@ const locator = frame.frameLocator(':scope');
 - `selector` string — A selector to use when resolving DOM element.
 
 **Returns:** `FrameLocator`
-
----
 
 ### getByAltText
 
@@ -241,8 +221,6 @@ await frame.getByAltText('Playwright logo').click();
 
 **Returns:** `Locator`
 
----
-
 ### getByLabel
 
 **Added in:** v1.27
@@ -259,8 +237,6 @@ await frame.getByLabel('Username').fill('john');
 - `options` Object (optional) — `exact` boolean (optional).
 
 **Returns:** `Locator`
-
----
 
 ### getByPlaceholder
 
@@ -279,8 +255,6 @@ await frame.getByPlaceholder('name@example.com').fill('playwright@microsoft.com'
 
 **Returns:** `Locator`
 
----
-
 ### getByRole
 
 **Added in:** v1.27
@@ -298,8 +272,6 @@ await frame.getByRole('button', { name: /submit/i }).click();
 
 **Returns:** `Locator`
 
----
-
 ### getByTestId
 
 **Added in:** v1.27
@@ -315,8 +287,6 @@ await frame.getByTestId('directions').click();
 - `testId` string | RegExp — Id to locate the element by.
 
 **Returns:** `Locator`
-
----
 
 ### getByText
 
@@ -335,8 +305,6 @@ await frame.getByText('Welcome').click();
 
 **Returns:** `Locator`
 
----
-
 ### getByTitle
 
 **Added in:** v1.27
@@ -353,8 +321,6 @@ await expect(frame.getByTitle('Issues count')).toHaveText('25 issues');
 - `options` Object (optional) — `exact` boolean (optional).
 
 **Returns:** `Locator`
-
----
 
 ### goto
 
@@ -377,8 +343,6 @@ await frame.goto(url, options);
 
 **Returns:** `Promise<null | Response>`
 
----
-
 ### isDetached
 
 **Added before:** v1.9
@@ -390,8 +354,6 @@ frame.isDetached();
 ```
 
 **Returns:** `boolean`
-
----
 
 ### isEnabled
 
@@ -413,8 +375,6 @@ await frame.isEnabled(selector, options);
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### locator
 
 **Added in:** v1.14
@@ -433,8 +393,6 @@ await locator.click();
 
 **Returns:** `Locator`
 
----
-
 ### name
 
 **Added before:** v1.9
@@ -446,8 +404,6 @@ frame.name();
 ```
 
 **Returns:** `string`
-
----
 
 ### page
 
@@ -461,8 +417,6 @@ frame.page();
 
 **Returns:** `Page`
 
----
-
 ### parentFrame
 
 **Added before:** v1.9
@@ -474,8 +428,6 @@ frame.parentFrame();
 ```
 
 **Returns:** `null | Frame`
-
----
 
 ### setContent
 
@@ -497,8 +449,6 @@ await frame.setContent(html, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### title
 
 **Added before:** v1.9
@@ -511,8 +461,6 @@ await frame.title();
 
 **Returns:** `Promise<string>`
 
----
-
 ### url
 
 **Added before:** v1.9
@@ -524,8 +472,6 @@ frame.url();
 ```
 
 **Returns:** `string`
-
----
 
 ### waitForFunction
 
@@ -547,8 +493,6 @@ await watchDog;
 
 **Returns:** `Promise<JSHandle>`
 
----
-
 ### waitForLoadState
 
 **Added in:** v1.1
@@ -566,8 +510,6 @@ await frame.waitForLoadState(); // Ensure that 'load' event is fired.
 - `options` Object (optional) — `timeout` number (optional).
 
 **Returns:** `Promise<void>`
-
----
 
 ### waitForURL
 
@@ -589,8 +531,6 @@ await frame.waitForURL('**/target.html');
 
 **Returns:** `Promise<void>`
 
----
-
 ## Deprecated
 
 ### $
@@ -605,8 +545,6 @@ await frame.$(selector);
 
 **Returns:** `Promise<null | ElementHandle>`
 
----
-
 ### $$
 
 **Added before:** v1.9
@@ -618,8 +556,6 @@ await frame.$$(selector);
 ```
 
 **Returns:** `Promise<Array<ElementHandle>>`
-
----
 
 ### $eval
 
@@ -634,8 +570,6 @@ await frame.$eval(selector, pageFunction, arg);
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### $$eval
 
 **Added before:** v1.9
@@ -649,8 +583,6 @@ await frame.$$eval(selector, pageFunction, arg);
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### check
 
 **Added before:** v1.9
@@ -662,8 +594,6 @@ await frame.check(selector);
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### click
 
@@ -677,8 +607,6 @@ await frame.click(selector);
 
 **Returns:** `Promise<void>`
 
----
-
 ### dblclick
 
 **Added before:** v1.9
@@ -690,8 +618,6 @@ await frame.dblclick(selector);
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### dispatchEvent
 
@@ -705,8 +631,6 @@ await frame.dispatchEvent(selector, type);
 
 **Returns:** `Promise<void>`
 
----
-
 ### fill
 
 **Added before:** v1.9
@@ -718,8 +642,6 @@ await frame.fill(selector, value);
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### focus
 
@@ -733,8 +655,6 @@ await frame.focus(selector);
 
 **Returns:** `Promise<void>`
 
----
-
 ### getAttribute
 
 **Added before:** v1.9
@@ -746,8 +666,6 @@ await frame.getAttribute(selector, name);
 ```
 
 **Returns:** `Promise<null | string>`
-
----
 
 ### hover
 
@@ -761,8 +679,6 @@ await frame.hover(selector);
 
 **Returns:** `Promise<void>`
 
----
-
 ### innerHTML
 
 **Added before:** v1.9
@@ -774,8 +690,6 @@ await frame.innerHTML(selector);
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### innerText
 
@@ -789,8 +703,6 @@ await frame.innerText(selector);
 
 **Returns:** `Promise<string>`
 
----
-
 ### inputValue
 
 **Added in:** v1.13
@@ -802,8 +714,6 @@ await frame.inputValue(selector);
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### isChecked
 
@@ -817,8 +727,6 @@ await frame.isChecked(selector);
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### isDisabled
 
 **Added in:** v1.9
@@ -830,8 +738,6 @@ await frame.isDisabled(selector);
 ```
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### isEditable
 
@@ -845,8 +751,6 @@ await frame.isEditable(selector);
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### isHidden
 
 **Added in:** v1.9
@@ -858,8 +762,6 @@ await frame.isHidden(selector);
 ```
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### isVisible
 
@@ -873,8 +775,6 @@ await frame.isVisible(selector);
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### press
 
 **Added before:** v1.9
@@ -886,8 +786,6 @@ await frame.press(selector, key);
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### selectOption
 
@@ -901,8 +799,6 @@ await frame.selectOption(selector, values);
 
 **Returns:** `Promise<Array<string>>`
 
----
-
 ### setChecked
 
 **Added in:** v1.15
@@ -914,8 +810,6 @@ await frame.setChecked(selector, checked);
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### setInputFiles
 
@@ -929,8 +823,6 @@ await frame.setInputFiles(selector, files);
 
 **Returns:** `Promise<void>`
 
----
-
 ### tap
 
 **Added before:** v1.9
@@ -942,8 +834,6 @@ await frame.tap(selector);
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### textContent
 
@@ -957,8 +847,6 @@ await frame.textContent(selector);
 
 **Returns:** `Promise<null | string>`
 
----
-
 ### type
 
 **Added before:** v1.9
@@ -971,8 +859,6 @@ await frame.type(selector, text);
 
 **Returns:** `Promise<void>`
 
----
-
 ### uncheck
 
 **Added before:** v1.9
@@ -984,8 +870,6 @@ await frame.uncheck(selector);
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### waitForNavigation
 
@@ -1000,8 +884,6 @@ await frame.waitForNavigation(options);
 
 **Returns:** `Promise<null | Response>`
 
----
-
 ### waitForSelector
 
 **Added before:** v1.9
@@ -1014,8 +896,6 @@ await frame.waitForSelector(selector, options);
 ```
 
 **Returns:** `Promise<null | ElementHandle>`
-
----
 
 ### waitForTimeout
 

@@ -10,8 +10,6 @@ By default, Playwright runs test files in parallel and strives for optimal utili
 
 Sharding in Playwright means splitting your tests into smaller parts called "shards". Each shard is like a separate job that can run independently. The whole purpose is to divide your tests to speed up test runtime. When you shard your tests, each shard can run on its own, utilizing the available CPU cores. This helps speed up the testing process by doing tasks simultaneously. In a CI pipeline, each shard can run as a separate job, making use of the hardware resources available in your CI pipeline, like CPU cores, to run tests faster.
 
----
-
 ## Sharding tests between multiple machines
 
 To shard the test suite, pass `--shard=x/y` to the command line. For example, to split the suite into four shards, each running one fourth of the tests:
@@ -24,8 +22,6 @@ npx playwright test --shard=4/4
 ```
 
 Now, if you run these shards in parallel on different jobs, your test suite completes four times faster. Note that Playwright can only shard tests that can be run in parallel. By default, this means Playwright will shard test files. Learn about other options in the parallelism guide.
-
----
 
 ## Balancing Shards
 
@@ -45,8 +41,6 @@ Without the `fullyParallel` setting, Playwright Test defaults to file-level gran
 - Without `fullyParallel`: Tests are split at the file level, so to balance the shards, it's important to keep your test files small and evenly sized.
 
 To ensure the most effective use of sharding, especially in CI environments, it is recommended to use `fullyParallel: true` when aiming for balanced distribution across shards. Otherwise, you may need to manually organize your test files to avoid imbalances.
-
----
 
 ## Merging reports from multiple shards
 
@@ -69,8 +63,6 @@ npx playwright merge-reports --reporter html ./all-blob-reports
 ```
 
 This will produce a standard HTML report into `playwright-report` directory.
-
----
 
 ## GitHub Actions example
 
@@ -149,8 +141,6 @@ jobs:
           retention-days: 14
 ```
 
----
-
 ## Merging reports from multiple environments
 
 If you want to run the same tests in multiple environments, as opposed to shard your tests onto multiple machines, you need to differentiate these environments. In this case, it is useful to specify the `testConfig.tag` property, to tag all tests with the environment name.
@@ -164,8 +154,6 @@ export default defineConfig({
   tag: process.env.CI_ENVIRONMENT_NAME, // for example "@APIv2"
 });
 ```
-
----
 
 ## Merge-reports CLI
 

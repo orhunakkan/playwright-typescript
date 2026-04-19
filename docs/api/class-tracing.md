@@ -20,8 +20,6 @@ expect(page.url()).toBe('https://playwright.dev');
 await context.tracing.stop({ path: 'trace.zip' });
 ```
 
----
-
 ## Methods
 
 ### `group()` — Added in: v1.49
@@ -48,8 +46,6 @@ await test.step('Log in', async () => {
 
 **Returns:** `Promise<Disposable>`
 
----
-
 ### `groupEnd()` — Added in: v1.49
 
 Closes the last group created by `tracing.group()`.
@@ -59,8 +55,6 @@ await tracing.groupEnd();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### `start()` — Added in: v1.12
 
@@ -88,8 +82,6 @@ await context.tracing.stop({ path: 'trace.zip' });
 
 **Returns:** `Promise<void>`
 
----
-
 ### `startChunk()` — Added in: v1.15
 
 Start a new trace chunk. If you'd like to record multiple traces on the same `BrowserContext`, use `tracing.start()` once, and then create multiple trace chunks with `tracing.startChunk()` and `tracing.stopChunk()`.
@@ -116,8 +108,6 @@ await context.tracing.stopChunk({ path: 'trace2.zip' });
 
 **Returns:** `Promise<void>`
 
----
-
 ### `stop()` — Added in: v1.12
 
 Stop tracing.
@@ -133,8 +123,6 @@ await tracing.stop(options);
   - `path` `string` _(optional)_ — Export trace into the file with the given path.
 
 **Returns:** `Promise<void>`
-
----
 
 ### `stopChunk()` — Added in: v1.15
 

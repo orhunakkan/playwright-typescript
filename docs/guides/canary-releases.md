@@ -10,8 +10,6 @@ Playwright for Node.js has a canary releases system. It permits you to test new 
 
 > **Note:** Using a canary release in production might seem risky, but in practice, it's not. A canary release passes all automated tests and is used to test e.g. the HTML report, Trace Viewer, or Playwright Inspector with end-to-end tests.
 
----
-
 ## Next npm Dist Tag
 
 For any code-related commit on main, the continuous integration will publish a daily canary release under the `@next` npm dist tag. You can see on npm the current dist tags:
@@ -20,15 +18,11 @@ For any code-related commit on main, the continuous integration will publish a d
 - `next`: next releases, published daily
 - `beta`: after a release-branch was cut, usually a week before a stable release — each commit gets published under this tag
 
----
-
 ## Using a Canary Release
 
 ```bash
 npm install -D @playwright/test@next
 ```
-
----
 
 ## Documentation
 

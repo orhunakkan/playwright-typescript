@@ -24,8 +24,6 @@ The recommended approach is to use `setFixedTime` to set the time to a specific 
 
 > **Warning:** If you call `install` at any point in your test, the call MUST occur before any other clock related calls. Calling these methods out of order will result in undefined behavior. For example, you cannot call `setInterval`, followed by `install`, then `clearInterval`, as `install` overrides the native definition of the clock functions.
 
----
-
 ## Test with predefined time
 
 Often you only need to fake `Date.now` while keeping the timers going. That way the time flows naturally, but `Date.now` always returns a fixed value.
@@ -38,8 +36,6 @@ await page.clock.setFixedTime(new Date('2024-02-02T10:30:00'));
 // We know that the page has a timer that updates the time every second.
 await expect(page.getByTestId('current-time')).toHaveText('2/2/2024, 10:30:00 AM');
 ```
-
----
 
 ## Consistent time and timers
 
@@ -60,8 +56,6 @@ await page.clock.fastForward('30:00');
 await expect(page.getByTestId('current-time')).toHaveText('2/2/2024, 10:30:00 AM');
 ```
 
----
-
 ## Test inactivity monitoring
 
 Inactivity monitoring is a common feature in web applications that logs out users after a period of inactivity. Testing this feature can be tricky because you need to wait for a long time to see the effect. With the help of the clock, you can speed up time and test this feature quickly.
@@ -79,8 +73,6 @@ await page.clock.fastForward('05:00');
 // Check that the user was logged out automatically.
 await expect(page.getByText('You have been logged out due to inactivity.')).toBeVisible();
 ```
-
----
 
 ## Tick through time manually, firing all the timers consistently
 

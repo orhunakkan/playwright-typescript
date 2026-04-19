@@ -27,16 +27,12 @@ $ playwright-cli screenshot --filename=login-page.png
 $ playwright-cli screenshot --full-page --filename=full-page.png
 ```
 
----
-
 ## PDF export
 
 ```bash
 playwright-cli pdf # save with auto-generated name
 playwright-cli pdf --filename=page.pdf # save with custom name
 ```
-
----
 
 ## When to use screenshots
 
@@ -50,8 +46,6 @@ Screenshots complement accessibility snapshots:
 | Documenting a bug            | **Screenshot**                    |
 | Understanding page structure | **Accessibility snapshot**        |
 | Reading text content         | **Accessibility snapshot**        |
-
----
 
 ## Snapshots
 

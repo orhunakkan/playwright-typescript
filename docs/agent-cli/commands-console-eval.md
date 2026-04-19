@@ -23,8 +23,6 @@ $ playwright-cli console error
 # [error] Failed to fetch: GET /api/users 404
 ```
 
----
-
 ## Workflow: debugging a broken page
 
 ```bash
@@ -39,8 +37,6 @@ playwright-cli route "**/api/data" \
   --body='{"items":[]}' --content-type=application/json
 playwright-cli reload
 ```
-
----
 
 ## JavaScript evaluation
 
@@ -67,8 +63,6 @@ $ playwright-cli eval "(el) => el.getAttribute('data-id')" e15
 $ playwright-cli eval "(el) => getComputedStyle(el).color" e5
 # rgb(255, 0, 0)
 ```
-
----
 
 ## Running Playwright code
 

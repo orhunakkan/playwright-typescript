@@ -17,16 +17,12 @@ Record execution traces that capture DOM snapshots, screenshots, network activit
 }
 ```
 
----
-
 ## browser_start_tracing
 
 ```bash
 → browser_start_tracing
 Tracing started
 ```
-
----
 
 ## browser_stop_tracing
 
@@ -35,8 +31,6 @@ Tracing started
 Trace saved to: /output/trace-2024-03-15.zip
 Network log: /output/trace-2024-03-15.network
 ```
-
----
 
 ## View traces
 
@@ -53,8 +47,6 @@ The trace viewer shows a timeline of every action with:
 - Network requests and responses
 - Console messages
 - Timing
-
----
 
 ## Workflow: debugging a broken checkout
 
@@ -87,8 +79,6 @@ You: Something fails during checkout. Record a trace.
 → browser_stop_tracing
 // Share trace with the team for full timeline analysis
 ```
-
----
 
 ## Automatic session recording
 

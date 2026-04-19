@@ -6,8 +6,6 @@
 
 Playwright MCP uses **accessibility snapshots** instead of screenshots. Every tool that interacts with the page returns a structured tree of accessible elements with **refs** for interaction.
 
----
-
 ## Snapshot format
 
 ```bash
@@ -34,8 +32,6 @@ browser_click { ref: "e10" } → check the checkbox
 browser_click { ref: "e20" } → click the "All" link
 ```
 
----
-
 ## Element refs
 
 Refs are **stable within a single snapshot** — the same element always has the same ref until the page changes. After navigation or DOM updates, the tool returns a fresh snapshot with new refs.
@@ -47,13 +43,9 @@ Refs are **stable within a single snapshot** — the same element always has the
 | Lifetime   | Valid until the next page change                                  |
 | Assignment | Only interactive elements get refs (buttons, links, inputs, etc.) |
 
----
-
 ## On-demand snapshots
 
 Use `browser_snapshot` to capture the page state on demand. Most tools also return a snapshot automatically after each action, so the LLM always has up-to-date page state.
-
----
 
 ## Snapshots with screenshots
 
@@ -62,8 +54,6 @@ For pages where visual context matters (canvas apps, charts, image-heavy layouts
 **Take a snapshot and a screenshot of the current page.** The LLM gets both the structured accessibility tree for interaction and the visual screenshot for understanding layout.
 
 See **Vision Mode** for coordinate-based interaction using screenshots.
-
----
 
 ## Why snapshots over screenshots
 
@@ -74,8 +64,6 @@ See **Vision Mode** for coordinate-based interaction using screenshots.
 | Speed        | Instant — text parsing                            | Slower — vision model inference             |
 | Reliability  | Deterministic — same structure = same interaction | Variable — layout changes break coordinates |
 | Vision model | Not required                                      | Required                                    |
-
----
 
 ## Best practices
 

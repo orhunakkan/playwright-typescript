@@ -8,15 +8,11 @@
 
 Playwright comes with `playwright-cli`, a command-line interface for browser automation designed for coding agents. It provides token-efficient browser control through concise CLI commands and installable skills, making it ideal for agents that need to balance browser automation with large codebases and reasoning within limited context windows.
 
----
-
 ## Playwright MCP
 
 `playwright-cli` is best for coding agents (Claude Code, GitHub Copilot, etc.) that favor token-efficient, skill-based workflows. CLI commands avoid loading large tool schemas and verbose accessibility trees into the model context. MCP is best for specialized agentic loops that benefit from persistent state and iterative reasoning over page structure, such as exploratory automation or long-running autonomous workflows.
 
 > **Note:** See the MCP getting started guide.
-
----
 
 ## Prerequisites
 
@@ -24,8 +20,6 @@ Before you begin, make sure you have the following installed:
 
 - Node.js 18 or newer
 - A coding agent: Claude Code, GitHub Copilot, or similar
-
----
 
 ## Installation
 
@@ -58,8 +52,6 @@ You can also point your agent at the CLI directly and let it discover commands o
 
 > **Note:** Check `playwright-cli --help` for available commands.
 
----
-
 ## First Steps
 
 ### Interactive demo
@@ -91,8 +83,6 @@ After each command, the CLI outputs a snapshot of the current page state:
 ### Snapshot
 [Snapshot](.playwright-cli/page-2026-02-14T19-22-42-679Z.yml)
 ```
-
----
 
 ## Core Commands
 
@@ -211,8 +201,6 @@ playwright-cli video-chapter <title>  # add chapter marker to video
 playwright-cli video-stop --filename=f  # stop video recording
 ```
 
----
-
 ## Sessions
 
 The CLI keeps the browser profile in memory by default — cookies and storage state are preserved between calls within a session but lost when the browser closes.
@@ -257,8 +245,6 @@ The dashboard provides:
 - **Session grid** — all active sessions grouped by workspace, each with a live screencast preview, session name, current URL, and page title. Click any session to zoom in.
 - **Session detail** — a live view of the selected session with tab bar, navigation controls, and full remote control. Click into the viewport to take over mouse and keyboard; press Escape to release.
 
----
-
 ## Configuration
 
 ### Headed mode
@@ -290,8 +276,6 @@ The CLI also loads `.playwright/cli.config.json` automatically if present. The c
 
 > **Note:** Run `playwright-cli --help` for the full list of options.
 
----
-
 ## Browser extension
 
 Connect to your existing browser tabs instead of launching a new browser:
@@ -318,8 +302,6 @@ This requires the Playwright MCP Bridge browser extension to be installed.
 | Run headed        | `playwright-cli open https://example.com --headed` |
 | Use Firefox       | `playwright-cli open --browser=firefox`            |
 | Monitor sessions  | `playwright-cli show`                              |
-
----
 
 ## What's Next
 

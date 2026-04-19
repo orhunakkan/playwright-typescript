@@ -27,8 +27,6 @@ webError.error();
 
 **Returns:** `Error`
 
----
-
 ### `page()` — Added in: v1.38
 
 The page that produced this unhandled exception, if any.

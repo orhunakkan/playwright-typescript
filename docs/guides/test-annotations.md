@@ -15,8 +15,6 @@ Playwright supports tags and annotations that are displayed in the test report. 
 
 Annotations can be added to a single test or a group of tests. Built-in annotations can be conditional, in which case they apply when the condition is truthy, and may depend on test fixtures. There could be multiple annotations on the same test, possibly in different configurations.
 
----
-
 ## Focus a test
 
 You can focus some tests. When there are focused tests, only these tests run.
@@ -26,8 +24,6 @@ test.only('focus this test', async ({ page }) => {
   // Run only focused tests in the entire project.
 });
 ```
-
----
 
 ## Skip a test
 
@@ -39,8 +35,6 @@ test.skip('skip this test', async ({ page }) => {
 });
 ```
 
----
-
 ## Conditionally skip a test
 
 You can skip certain test based on the condition.
@@ -50,8 +44,6 @@ test('skip this test', async ({ page, browserName }) => {
   test.skip(browserName === 'firefox', 'Still working on it');
 });
 ```
-
----
 
 ## Group tests
 
@@ -69,8 +61,6 @@ test.describe('two tests', () => {
   });
 });
 ```
-
----
 
 ## Tag tests
 
@@ -147,8 +137,6 @@ npx playwright test --grep "(?=.*@fast)(?=.*@slow)"
 
 You can also filter tests in the configuration file via `testConfig.grep` and `testProject.grep`.
 
----
-
 ## Annotate tests
 
 If you would like to annotate your tests with something more substantial than a tag, you can do that when declaring a test. Annotations have a type and a description for more context and available in reporter API. Playwright's built-in HTML reporter shows all annotations, except those where type starts with `_` symbol.
@@ -202,8 +190,6 @@ test.describe(
 );
 ```
 
----
-
 ## Conditionally skip a group of tests
 
 For example, you can run a group of tests just in Chromium by passing a callback.
@@ -224,8 +210,6 @@ test.describe('chromium only', () => {
 });
 ```
 
----
-
 ## Use fixme in beforeEach hook
 
 To avoid running `beforeEach` hooks, you can put annotations in the hook itself.
@@ -242,8 +226,6 @@ test('user profile', async ({ page }) => {
   // ...
 });
 ```
-
----
 
 ## Runtime annotations
 

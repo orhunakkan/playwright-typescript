@@ -12,8 +12,6 @@
 | browser_reload           | Reload the current page            |
 | browser_close            | Close the current page and browser |
 
----
-
 ## browser_navigate
 
 Navigate to a URL in the current tab.
@@ -31,8 +29,6 @@ You: Go to https://demo.playwright.dev/todomvc
 - textbox "What needs to be done?" [ref=e5]
 ```
 
----
-
 ## browser_navigate_back
 
 Go back to the previous page in the browser history.
@@ -44,8 +40,6 @@ You: Go back to the previous page.
 → Returns snapshot of the previous page
 ```
 
----
-
 ## browser_navigate_forward
 
 Go forward to the next page in the browser history.
@@ -55,8 +49,6 @@ You: Go forward.
 
 → browser_navigate_forward
 ```
-
----
 
 ## browser_reload
 
@@ -69,8 +61,6 @@ You: Reload the page.
 → Returns fresh snapshot after reload
 ```
 
----
-
 ## browser_close
 
 Close the current page and browser.
@@ -78,8 +68,6 @@ Close the current page and browser.
 ```bash
 → browser_close
 ```
-
----
 
 ## Workflow example
 

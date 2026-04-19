@@ -25,8 +25,6 @@ await page.locator('.result-frame').contentFrame().first().getByRole('button').c
 
 **Converting FrameLocator to Locator:** If you have a FrameLocator object it can be converted to Locator pointing to the same iframe using `frameLocator.owner()`.
 
----
-
 ## Methods
 
 ### frameLocator
@@ -44,8 +42,6 @@ frameLocator.frameLocator(selector);
 - `selector` string — A selector to use when resolving DOM element.
 
 **Returns:** `FrameLocator`
-
----
 
 ### getByAltText
 
@@ -67,8 +63,6 @@ await page.getByAltText('Playwright logo').click();
 
 **Returns:** `Locator`
 
----
-
 ### getByLabel
 
 **Added in:** v1.27
@@ -88,8 +82,6 @@ await page.getByLabel('Password').fill('secret');
 
 **Returns:** `Locator`
 
----
-
 ### getByPlaceholder
 
 **Added in:** v1.27
@@ -107,8 +99,6 @@ await page.getByPlaceholder('name@example.com').fill('playwright@microsoft.com')
   - `exact` boolean (optional) — Whether to find an exact match: case-sensitive and whole-string. Default to `false`.
 
 **Returns:** `Locator`
-
----
 
 ### getByRole
 
@@ -138,8 +128,6 @@ await page.getByRole('button', { name: /submit/i }).click();
 
 **Returns:** `Locator`
 
----
-
 ### getByTestId
 
 **Added in:** v1.27
@@ -155,8 +143,6 @@ await page.getByTestId('directions').click();
 - `testId` string | RegExp — Id to locate the element by.
 
 **Returns:** `Locator`
-
----
 
 ### getByText
 
@@ -183,8 +169,6 @@ page.getByText(/Hello/);
 
 **Returns:** `Locator`
 
----
-
 ### getByTitle
 
 **Added in:** v1.27
@@ -202,8 +186,6 @@ await expect(page.getByTitle('Issues count')).toHaveText('25 issues');
   - `exact` boolean (optional) — Whether to find an exact match: case-sensitive and whole-string. Default to `false`.
 
 **Returns:** `Locator`
-
----
 
 ### locator
 
@@ -227,8 +209,6 @@ frameLocator.locator(selectorOrLocator, options);
 
 **Returns:** `Locator`
 
----
-
 ### owner
 
 **Added in:** v1.43
@@ -243,8 +223,6 @@ await expect(locator).toBeVisible();
 ```
 
 **Returns:** `Locator`
-
----
 
 ## Deprecated
 
@@ -262,8 +240,6 @@ frameLocator.first();
 
 **Returns:** `FrameLocator`
 
----
-
 ### last
 
 **Added in:** v1.17
@@ -277,8 +253,6 @@ frameLocator.last();
 ```
 
 **Returns:** `FrameLocator`
-
----
 
 ### nth
 

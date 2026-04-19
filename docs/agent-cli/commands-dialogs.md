@@ -8,16 +8,12 @@
 
 Handle browser dialogs (alert, confirm, prompt) that block page interaction.
 
----
-
 ## Commands
 
 | Command                  | Description                                       |
 | ------------------------ | ------------------------------------------------- |
 | `dialog-accept [prompt]` | Accept a dialog, optionally providing prompt text |
 | `dialog-dismiss`         | Dismiss (cancel) a dialog                         |
-
----
 
 ## Alert dialogs
 
@@ -27,8 +23,6 @@ $ playwright-cli click e5
 
 $ playwright-cli dialog-accept
 ```
-
----
 
 ## Confirm dialogs
 
@@ -43,8 +37,6 @@ $ playwright-cli dialog-accept
 $ playwright-cli dialog-dismiss
 ```
 
----
-
 ## Prompt dialogs
 
 ```bash
@@ -57,8 +49,6 @@ $ playwright-cli dialog-accept "Alice"
 # Or dismiss (cancels the prompt)
 $ playwright-cli dialog-dismiss
 ```
-
----
 
 ## Workflow
 

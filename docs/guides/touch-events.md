@@ -10,8 +10,6 @@ Web applications that handle legacy touch events to respond to gestures like swi
 
 > Note that `locator.dispatchEvent()` does not set `Event.isTrusted` property. If your web page relies on it, make sure to disable `isTrusted` check during the test.
 
----
-
 ## Emulating pan gesture
 
 In the example below, we emulate pan gesture that is expected to move the map. The app under test only uses `clientX`/`clientY` coordinates of the touch point, so we initialize just that. In a more complex scenario you may need to also set `pageX`/`pageY`/`screenX`/`screenY`, if your app needs them.
@@ -64,8 +62,6 @@ test(`pan gesture to move the map`, async ({ page }) => {
   await expect(met).toHaveScreenshot();
 });
 ```
-
----
 
 ## Emulating pinch gesture
 

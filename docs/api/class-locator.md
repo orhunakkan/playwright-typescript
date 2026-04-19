@@ -6,8 +6,6 @@
 
 Locators are the central piece of Playwright's auto-waiting and retry-ability. They represent a way to find element(s) on the page at any moment. A locator can be created with the `page.locator()` method.
 
----
-
 ## Methods
 
 ### `locator.all()` — Added in: v1.29
@@ -20,8 +18,6 @@ for (const li of await page.getByRole('listitem').all()) await li.click();
 
 **Returns:** `Promise<Array<Locator>>`
 
----
-
 ### `locator.allInnerTexts()` — Added in: v1.14
 
 Returns an array of `node.innerText` values for all matching nodes.
@@ -32,8 +28,6 @@ const texts = await page.getByRole('link').allInnerTexts();
 
 **Returns:** `Promise<Array<string>>`
 
----
-
 ### `locator.allTextContents()` — Added in: v1.14
 
 Returns an array of `node.textContent` values for all matching nodes.
@@ -43,8 +37,6 @@ const texts = await page.getByRole('link').allTextContents();
 ```
 
 **Returns:** `Promise<Array<string>>`
-
----
 
 ### `locator.and(locator)` — Added in: v1.34
 
@@ -61,8 +53,6 @@ const button = page.getByRole('button').and(page.getByTitle('Subscribe'));
 | `locator` | `Locator` | Additional locator to match |
 
 **Returns:** `Locator`
-
----
 
 ### `locator.ariaSnapshot(options?)` — Added in: v1.49
 
@@ -82,8 +72,6 @@ await page.getByRole('link').ariaSnapshot();
 
 **Returns:** `Promise<string>`
 
----
-
 ### `locator.blur(options?)` — Added in: v1.28
 
 Calls blur on the element.
@@ -99,8 +87,6 @@ await locator.blur();
 | `options.timeout` | `number` (optional) | Max time in ms. Default: no timeout |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locator.boundingBox(options?)` — Added in: v1.14
 
@@ -118,8 +104,6 @@ await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 | `options.timeout` | `number` (optional) | Max time in ms. Default: no timeout |
 
 **Returns:** `Promise<null | { x: number, y: number, width: number, height: number }>`
-
----
 
 ### `locator.check(options?)` — Added in: v1.14
 
@@ -140,8 +124,6 @@ await page.getByRole('checkbox').check();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.clear(options?)` — Added in: v1.28
 
 Clear the input field. Waits for actionability checks, focuses, clears, and triggers an input event.
@@ -158,8 +140,6 @@ await page.getByRole('textbox').clear();
 | `options.timeout` | `number` (optional)  | Max time in ms. Default: no timeout           |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locator.click(options?)` — Added in: v1.14
 
@@ -187,8 +167,6 @@ await page.locator('canvas').click({ button: 'right', modifiers: ['Shift'], posi
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.contentFrame()` — Added in: v1.43
 
 Returns a `FrameLocator` pointing to the same iframe as this locator. Useful for interacting with iframe contents.
@@ -201,8 +179,6 @@ await frameLocator.getByRole('button').click();
 
 **Returns:** `FrameLocator`
 
----
-
 ### `locator.count()` — Added in: v1.14
 
 Returns the number of elements matching the locator.
@@ -212,8 +188,6 @@ const count = await page.getByRole('listitem').count();
 ```
 
 **Returns:** `Promise<number>`
-
----
 
 ### `locator.dblclick(options?)` — Added in: v1.14
 
@@ -238,8 +212,6 @@ await locator.dblclick();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.describe(description)` — Added in: v1.53
 
 Describes the locator; description is used in the trace viewer and reports.
@@ -257,8 +229,6 @@ await button.click();
 
 **Returns:** `Locator`
 
----
-
 ### `locator.description()` — Added in: v1.57
 
 Returns locator description previously set with `locator.describe()`, or `null` if none set.
@@ -271,8 +241,6 @@ console.log(input.description()); // null
 ```
 
 **Returns:** `null | string`
-
----
 
 ### `locator.dispatchEvent(type, eventInit?, options?)` — Added in: v1.14
 
@@ -294,8 +262,6 @@ await locator.dispatchEvent('dragstart', { dataTransfer });
 | `options.timeout` | `number` (optional)             | Max time in ms. Default: no timeout               |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locator.dragTo(target, options?)` — Added in: v1.18
 
@@ -323,8 +289,6 @@ await source.dragTo(target, { sourcePosition: { x: 34, y: 7 }, targetPosition: {
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.evaluate(pageFunction, arg?, options?)` — Added in: v1.14
 
 Execute JavaScript code in the page, taking the matching element as an argument.
@@ -348,8 +312,6 @@ const result = await page.getByTestId('myId').evaluate(
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### `locator.evaluateAll(pageFunction, arg?)` — Added in: v1.14
 
 Execute JavaScript code in the page, taking all matching elements as an argument.
@@ -367,8 +329,6 @@ const moreThanTen = await locator.evaluateAll((divs, min) => divs.length > min, 
 | `arg`          | `EvaluationArgument` (optional) | Argument to pass to `pageFunction`       |
 
 **Returns:** `Promise<Serializable>`
-
----
 
 ### `locator.evaluateHandle(pageFunction, arg?, options?)` — Added in: v1.14
 
@@ -389,8 +349,6 @@ await locator.evaluateHandle(pageFunction, arg, options);
 
 **Returns:** `Promise<JSHandle>`
 
----
-
 ### `locator.fill(value, options?)` — Added in: v1.14
 
 Set a value to the input field. Waits for actionability checks, focuses, fills, and triggers an input event.
@@ -408,8 +366,6 @@ await page.getByRole('textbox').fill('example value');
 | `options.timeout` | `number` (optional)  | Max time in ms. Default: no timeout                              |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locator.filter(options?)` — Added in: v1.22
 
@@ -435,8 +391,6 @@ await rowLocator
 
 **Returns:** `Locator`
 
----
-
 ### `locator.first()` — Added in: v1.14
 
 Returns locator to the first matching element.
@@ -446,8 +400,6 @@ locator.first();
 ```
 
 **Returns:** `Locator`
-
----
 
 ### `locator.focus(options?)` — Added in: v1.14
 
@@ -465,8 +417,6 @@ await locator.focus();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.frameLocator(selector)` — Added in: v1.17
 
 Creates a frame locator that enters the iframe and allows locating elements inside it.
@@ -483,8 +433,6 @@ await locator.click();
 | `selector` | `string` | Selector to use when resolving the DOM element |
 
 **Returns:** `FrameLocator`
-
----
 
 ### `locator.getAttribute(name, options?)` — Added in: v1.14
 
@@ -504,8 +452,6 @@ await locator.getAttribute(name, options);
 
 **Returns:** `Promise<null | string>`
 
----
-
 ### `locator.getByAltText(text, options?)` — Added in: v1.27
 
 Allows locating elements by their alt text.
@@ -522,8 +468,6 @@ await page.getByAltText('Playwright logo').click();
 | `options.exact` | `boolean` (optional) | Whether to find an exact match. Default: `false` |
 
 **Returns:** `Locator`
-
----
 
 ### `locator.getByLabel(text, options?)` — Added in: v1.27
 
@@ -543,8 +487,6 @@ await page.getByLabel('Password').fill('secret');
 
 **Returns:** `Locator`
 
----
-
 ### `locator.getByPlaceholder(text, options?)` — Added in: v1.27
 
 Allows locating input elements by the placeholder text.
@@ -561,8 +503,6 @@ await page.getByPlaceholder('name@example.com').fill('playwright@microsoft.com')
 | `options.exact` | `boolean` (optional) | Whether to find an exact match. Default: `false` |
 
 **Returns:** `Locator`
-
----
 
 ### `locator.getByRole(role, options?)` — Added in: v1.27
 
@@ -591,8 +531,6 @@ await page.getByRole('button', { name: /submit/i }).click();
 
 **Returns:** `Locator`
 
----
-
 ### `locator.getByTestId(testId)` — Added in: v1.27
 
 Locate element by the test id. By default uses the `data-testid` attribute.
@@ -608,8 +546,6 @@ await page.getByTestId('directions').click();
 | `testId`  | `string \| RegExp` | Id to locate the element by |
 
 **Returns:** `Locator`
-
----
 
 ### `locator.getByText(text, options?)` — Added in: v1.27
 
@@ -630,8 +566,6 @@ page.getByText(/^hello$/i);
 
 **Returns:** `Locator`
 
----
-
 ### `locator.getByTitle(text, options?)` — Added in: v1.27
 
 Allows locating elements by their title attribute.
@@ -649,8 +583,6 @@ await expect(page.getByTitle('Issues count')).toHaveText('25 issues');
 
 **Returns:** `Locator`
 
----
-
 ### `locator.highlight()` — Added in: v1.20
 
 Highlight the corresponding element(s) on the screen. Useful for debugging.
@@ -660,8 +592,6 @@ await locator.highlight();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locator.hover(options?)` — Added in: v1.14
 
@@ -683,8 +613,6 @@ await page.getByRole('link').hover();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.innerHTML(options?)` — Added in: v1.14
 
 Returns the `element.innerHTML`.
@@ -700,8 +628,6 @@ await locator.innerHTML();
 | `options.timeout` | `number` (optional) | Max time in ms. Default: no timeout |
 
 **Returns:** `Promise<string>`
-
----
 
 ### `locator.innerText(options?)` — Added in: v1.14
 
@@ -719,8 +645,6 @@ await locator.innerText();
 
 **Returns:** `Promise<string>`
 
----
-
 ### `locator.inputValue(options?)` — Added in: v1.14
 
 Returns the value for the matching `<input>`, `<textarea>`, or `<select>` element.
@@ -736,8 +660,6 @@ const value = await page.getByRole('textbox').inputValue();
 | `options.timeout` | `number` (optional) | Max time in ms. Default: no timeout |
 
 **Returns:** `Promise<string>`
-
----
 
 ### `locator.isChecked(options?)` — Added in: v1.14
 
@@ -755,8 +677,6 @@ const checked = await page.getByRole('checkbox').isChecked();
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### `locator.isDisabled(options?)` — Added in: v1.14
 
 Returns whether the element is disabled (opposite of enabled).
@@ -772,8 +692,6 @@ const disabled = await page.getByRole('button').isDisabled();
 | `options.timeout` | `number` (optional) | Max time in ms. Default: no timeout |
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### `locator.isEditable(options?)` — Added in: v1.14
 
@@ -791,8 +709,6 @@ const editable = await page.getByRole('textbox').isEditable();
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### `locator.isEnabled(options?)` — Added in: v1.14
 
 Returns whether the element is enabled.
@@ -809,8 +725,6 @@ const enabled = await page.getByRole('button').isEnabled();
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### `locator.isHidden(options?)` — Added in: v1.14
 
 Returns whether the element is hidden (opposite of visible). Does not wait for the element to become hidden and returns immediately.
@@ -820,8 +734,6 @@ const hidden = await page.getByRole('button').isHidden();
 ```
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### `locator.isVisible(options?)` — Added in: v1.14
 
@@ -833,8 +745,6 @@ const visible = await page.getByRole('button').isVisible();
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### `locator.last()` — Added in: v1.14
 
 Returns locator to the last matching element.
@@ -844,8 +754,6 @@ const banana = await page.getByRole('listitem').last();
 ```
 
 **Returns:** `Locator`
-
----
 
 ### `locator.locator(selectorOrLocator, options?)` — Added in: v1.14
 
@@ -868,8 +776,6 @@ locator.locator(selectorOrLocator, options);
 
 **Returns:** `Locator`
 
----
-
 ### `locator.normalize()` — Added in: v1.59
 
 Returns a new locator using best practices for referencing the matched element, prioritizing test ids, aria roles, and user-facing attributes over CSS selectors.
@@ -879,8 +785,6 @@ await locator.normalize();
 ```
 
 **Returns:** `Promise<Locator>`
-
----
 
 ### `locator.nth(index)` — Added in: v1.14
 
@@ -897,8 +801,6 @@ const banana = await page.getByRole('listitem').nth(2);
 | `index`   | `number` | Zero-based index |
 
 **Returns:** `Locator`
-
----
 
 ### `locator.or(locator)` — Added in: v1.33
 
@@ -920,8 +822,6 @@ await newEmail.click();
 
 **Returns:** `Locator`
 
----
-
 ### `locator.page()` — Added in: v1.19
 
 A page this locator belongs to.
@@ -931,8 +831,6 @@ locator.page();
 ```
 
 **Returns:** `Page`
-
----
 
 ### `locator.press(key, options?)` — Added in: v1.14
 
@@ -952,8 +850,6 @@ await page.getByRole('textbox').press('Backspace');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.pressSequentially(text, options?)` — Added in: v1.38
 
 Focuses the element, then sends keydown/keypress/input/keyup events for each character. Prefer `locator.fill()` unless special keyboard handling is needed.
@@ -972,8 +868,6 @@ await locator.pressSequentially('World', { delay: 100 });
 | `options.timeout` | `number` (optional) | Max time in ms. Default: no timeout          |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locator.screenshot(options?)` — Added in: v1.14
 
@@ -1001,8 +895,6 @@ await page.getByRole('link').screenshot({ animations: 'disabled', path: 'link.pn
 
 **Returns:** `Promise<Buffer>`
 
----
-
 ### `locator.scrollIntoViewIfNeeded(options?)` — Added in: v1.14
 
 Waits for actionability checks, then scrolls element into view unless already completely visible.
@@ -1018,8 +910,6 @@ await locator.scrollIntoViewIfNeeded();
 | `options.timeout` | `number` (optional) | Max time in ms. Default: no timeout |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locator.selectOption(values, options?)` — Added in: v1.14
 
@@ -1041,8 +931,6 @@ element.selectOption(['red', 'green', 'blue']);
 
 **Returns:** `Promise<Array<string>>`
 
----
-
 ### `locator.selectText(options?)` — Added in: v1.14
 
 Waits for actionability checks, then focuses the element and selects all its text content.
@@ -1059,8 +947,6 @@ await locator.selectText();
 | `options.timeout` | `number` (optional)  | Max time in ms. Default: no timeout           |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locator.setChecked(checked, options?)` — Added in: v1.15
 
@@ -1081,8 +967,6 @@ await page.getByRole('checkbox').setChecked(true);
 | `options.trial`    | `boolean` (optional)                  | Only perform actionability checks. Default: `false` |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locator.setInputFiles(files, options?)` — Added in: v1.14
 
@@ -1105,8 +989,6 @@ await page.getByLabel('Upload file').setInputFiles({ name: 'file.txt', mimeType:
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.tap(options?)` — Added in: v1.14
 
 Perform a tap gesture on the element. Requires the browser context to have `hasTouch` set to `true`.
@@ -1127,8 +1009,6 @@ await locator.tap();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.textContent(options?)` — Added in: v1.14
 
 Returns the `node.textContent`.
@@ -1145,8 +1025,6 @@ await locator.textContent();
 
 **Returns:** `Promise<null | string>`
 
----
-
 ### `locator.toString()` — Added in: v1.57
 
 Returns a human-readable representation of the locator, using `locator.description()` if one exists.
@@ -1156,8 +1034,6 @@ locator.toString();
 ```
 
 **Returns:** `string`
-
----
 
 ### `locator.uncheck(options?)` — Added in: v1.14
 
@@ -1178,8 +1054,6 @@ await page.getByRole('checkbox').uncheck();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locator.waitFor(options?)` — Added in: v1.16
 
 Returns when element specified by locator satisfies the state option. If already satisfied, returns immediately.
@@ -1197,8 +1071,6 @@ await orderSent.waitFor();
 | `options.timeout` | `number` (optional)                                            | Max time in ms. Default: no timeout |
 
 **Returns:** `Promise<void>`
-
----
 
 ## Deprecated Methods
 
@@ -1221,8 +1093,6 @@ await locator.elementHandle(options);
 
 **Returns:** `Promise<ElementHandle>`
 
----
-
 ### `locator.elementHandles()` — Added in: v1.14
 
 > **Discouraged:** Always prefer using Locators and web assertions over ElementHandles.
@@ -1234,8 +1104,6 @@ await locator.elementHandles();
 ```
 
 **Returns:** `Promise<Array<ElementHandle>>`
-
----
 
 ### `locator.type(text, options?)` — Added in: v1.14
 

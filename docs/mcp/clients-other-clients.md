@@ -6,8 +6,6 @@
 
 The standard configuration works with most MCP clients. Consult your client's MCP documentation for where to place the config.
 
----
-
 ## Cline
 
 Follow the **Configuring MCP Servers** guide. Add to your `cline_mcp_settings.json`:
@@ -26,8 +24,6 @@ Follow the **Configuring MCP Servers** guide. Add to your `cline_mcp_settings.js
 }
 ```
 
----
-
 ## Codex
 
 ```bash
@@ -41,8 +37,6 @@ Or add to `~/.codex/config.toml`:
 command = "npx"
 args = ["@playwright/mcp@latest"]
 ```
-
----
 
 ## Copilot CLI
 
@@ -65,15 +59,11 @@ Or add to `~/.copilot/mcp-config.json`:
 }
 ```
 
----
-
 ## Goose
 
 Go to **Advanced settings → Extensions → Add custom extension**.
 
 Use type **STDIO** and set the command to `npx @playwright/mcp`.
-
----
 
 ## Kiro
 
@@ -90,13 +80,9 @@ Add to `.kiro/settings/mcp.json`:
 }
 ```
 
----
-
 ## Gemini CLI
 
 Follow the **MCP install guide** and use the standard config.
-
----
 
 ## opencode
 

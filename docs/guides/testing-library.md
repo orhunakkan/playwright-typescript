@@ -33,8 +33,6 @@ This guide describes migration to Playwright's Experimental Component Testing fr
 | `const { unmount } = render(<Component />);`                      | `const { unmount } = await mount(<Component />);`                      |
 | `const { rerender } = render(<Component />);`                     | `const { update } = await mount(<Component />);`                       |
 
----
-
 ## Example
 
 **Testing Library:**
@@ -82,13 +80,9 @@ Migration highlights (see inline comments in the Playwright Test code snippet):
 4. Use locators created with `locator.locator()` or `page.locator()` to perform most of the actions.
 5. Use assertions to verify the state.
 
----
-
 ## Migrating queries
 
 All queries like `getBy...`, `findBy...`, `queryBy...` and their multi-element counterparts are replaced with `component.getBy...` locators. Locators always auto-wait and retry when needed, so you don't have to worry about choosing the right method. When you want to do a list operation, e.g. assert a list of texts, Playwright automatically performs multi-element operations.
-
----
 
 ## Replacing waitFor
 
@@ -117,8 +111,6 @@ await expect
   .toBe(200);
 ```
 
----
-
 ## Replacing within
 
 You can create a locator inside another locator with `locator.locator()` method.
@@ -132,8 +124,6 @@ const helloMessage = within(messages).getByText('hello');
 const messages = component.getByTestId('messages');
 const helloMessage = messages.getByText('hello');
 ```
-
----
 
 ## Playwright Test Super Powers
 
@@ -152,8 +142,6 @@ You also get all these ✨ awesome tools ✨ that come bundled with Playwright T
 - Playwright Inspector
 - Playwright Test Code generation
 - Playwright Tracing for post-mortem debugging
-
----
 
 ## Further Reading
 

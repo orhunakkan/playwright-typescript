@@ -29,8 +29,6 @@ testStepInfo.attach(name, options);
 
 > **Note:** `testStepInfo.attach()` works the same way as `testInfo.attach()`.
 
----
-
 ### `testStepInfo.skip()` — Added in: v1.51
 
 Unconditionally skip the currently running step. Step is immediately aborted.
@@ -38,8 +36,6 @@ Unconditionally skip the currently running step. Step is immediately aborted.
 ```ts
 testStepInfo.skip();
 ```
-
----
 
 ### `testStepInfo.skip(condition)` — Added in: v1.51
 
@@ -54,8 +50,6 @@ testStepInfo.skip(condition, description);
 
 - `condition` `boolean` — A skip condition. Step is skipped when the condition is `true`.
 - `description` `string` (optional) — Optional description that will be reflected in a test report.
-
----
 
 ## Properties
 

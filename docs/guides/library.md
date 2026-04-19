@@ -8,11 +8,7 @@
 
 Playwright Library provides unified APIs for launching and interacting with browsers, while Playwright Test provides all this plus a fully managed end-to-end Test Runner and experience. Under most circumstances, for end-to-end testing, you'll want to use `@playwright/test` (Playwright Test), and not `playwright` (Playwright Library) directly. To get started with Playwright Test, follow the Getting Started Guide.
 
----
-
 ## Differences when using library
-
----
 
 ## Library Example
 
@@ -39,8 +35,6 @@ import assert from 'node:assert';
 
 Run it with `node my-script.js`.
 
----
-
 ## Test Example
 
 A test to achieve similar behavior would look like:
@@ -59,8 +53,6 @@ test('should be titled', async ({ page, context }) => {
 
 Run it with `npx playwright test`.
 
----
-
 ## Key Differences
 
 The key differences to note are as follows:
@@ -77,8 +69,6 @@ The key differences to note are as follows:
 | Running          | Run as a node script, possibly with compilation                                                                                                         | Use `npx playwright test`; Test Runner handles compilation                                                                     |
 
 In addition to the above, Playwright Test as a full-featured Test Runner includes: Configuration Matrix and Projects, Parallelization, Web-First Assertions, Reporting, Retries, Easily Enabled Tracing, and more.
-
----
 
 ## Usage
 
@@ -119,8 +109,6 @@ Playwright APIs are asynchronous and return Promise objects. Our code examples u
 })(); // End of the function and () to invoke itself
 ```
 
----
-
 ## First script
 
 In our first script, we will navigate to https://playwright.dev/ and take a screenshot in WebKit.
@@ -143,8 +131,6 @@ By default, Playwright runs the browsers in headless mode. To see the browser UI
 firefox.launch({ headless: false, slowMo: 50 });
 ```
 
----
-
 ## Record scripts
 
 Command line tools can be used to record user interactions and generate JavaScript code.
@@ -152,8 +138,6 @@ Command line tools can be used to record user interactions and generate JavaScri
 ```bash
 npx playwright codegen wikipedia.org
 ```
-
----
 
 ## Browser downloads
 
@@ -204,8 +188,6 @@ In certain cases, it is desired to avoid browser downloads altogether because br
 # and @playwright/browser-webkit helper packages
 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install
 ```
-
----
 
 ## TypeScript support
 

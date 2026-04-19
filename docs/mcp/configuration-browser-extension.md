@@ -6,8 +6,6 @@
 
 Instead of launching a new browser, connect to one that's already running.
 
----
-
 ## Connect by channel name
 
 Connect to a running Chrome or Edge by its channel name.
@@ -28,8 +26,6 @@ Connect to a running Chrome or Edge by its channel name.
 **Supported channels:** `chrome`, `chrome-beta`, `chrome-dev`, `chrome-canary`, `msedge`, `msedge-beta`, `msedge-dev`, `msedge-canary`.
 
 This is the simplest way to connect — no need to start Chrome with special flags or know the debugging port.
-
----
 
 ## Connect via CDP endpoint
 
@@ -63,8 +59,6 @@ Works with:
 - Electron apps
 - Cloud browser services
 
----
-
 ## Connect via browser extension
 
 The **Playwright MCP Bridge extension** connects to your existing browser tabs, reusing your logged-in sessions, cookies, and installed extensions.
@@ -82,8 +76,6 @@ The **Playwright MCP Bridge extension** connects to your existing browser tabs, 
   }
 }
 ```
-
----
 
 ## When to use extension mode
 

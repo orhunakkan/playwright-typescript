@@ -13,8 +13,6 @@
 
 Reporter receives suite objects via the `reporter.onBegin()` call.
 
----
-
 ## Methods
 
 ## Methods
@@ -29,8 +27,6 @@ suite.allTests();
 
 **Returns:** `Array<TestCase>`
 
----
-
 ### `suite.entries()` — Added in: v1.44
 
 Iterates over all entries (suites and test cases) in this suite in their declaration order.
@@ -44,8 +40,6 @@ for (const entry of suite.entries()) {
 
 **Returns:** `Array<TestCase | Suite>`
 
----
-
 ### `suite.project()` — Added in: v1.10
 
 Configuration of the project this suite belongs to, or `undefined` for the root suite.
@@ -55,8 +49,6 @@ suite.project();
 ```
 
 **Returns:** `FullProject | undefined`
-
----
 
 ### `suite.titlePath()` — Added in: v1.10
 
@@ -68,8 +60,6 @@ suite.titlePath();
 
 **Returns:** `Array<string>`
 
----
-
 ## Properties
 
 ### `suite.location` — Added in: v1.10
@@ -78,15 +68,11 @@ Location in the source where the suite is defined. Missing for root and project 
 
 **Type:** `Location`
 
----
-
 ### `suite.parent` — Added in: v1.10
 
 Parent suite, missing for the root suite.
 
 **Type:** `Suite`
-
----
 
 ### `suite.suites` — Added in: v1.10
 
@@ -94,15 +80,11 @@ Child suites. See `Suite` for the hierarchy of suites.
 
 **Type:** `Array<Suite>`
 
----
-
 ### `suite.tests` — Added in: v1.10
 
 Test cases in the suite. Note that only test cases directly belonging to this suite are in the list. Any test cases defined in nested `test.describe()` groups are listed in the child `suite.suites`.
 
 **Type:** `Array<TestCase>`
-
----
 
 ### `suite.title` — Added in: v1.10
 
@@ -114,8 +96,6 @@ Suite title:
 - `test.describe()` title for group suite.
 
 **Type:** `string`
-
----
 
 ### `suite.type` — Added in: v1.44
 

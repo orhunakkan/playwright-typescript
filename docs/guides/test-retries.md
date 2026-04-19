@@ -10,8 +10,6 @@ Test retries let Playwright automatically re-run a failing test — useful for *
 
 By default, **retries are disabled.** You opt in.
 
----
-
 ## How Failures Work Under the Hood
 
 Playwright runs tests in **worker processes** — isolated OS processes, each with its own browser. When a test fails, the **entire worker is discarded** and a fresh one starts.
@@ -47,8 +45,6 @@ Worker #2 starts
 
 > **Key insight:** Each retry starts a brand-new worker. Failing tests cannot "infect" healthy ones.
 
----
-
 ## Configuring Retries
 
 ### CLI (one-off)
@@ -83,8 +79,6 @@ test.describe(() => {
 });
 ```
 
----
-
 ## How Playwright Categorizes Results
 
 | Status        | Meaning                             |
@@ -107,8 +101,6 @@ Running 3 tests using 1 worker
   2 passed  (4s)
 ```
 
----
-
 ## Detecting Retries at Runtime
 
 Use `testInfo.retry` inside any test, hook, or fixture:
@@ -125,8 +117,6 @@ test('my test', async ({ page }, testInfo) => {
 ```
 
 > `testInfo.retry` is `0` on the first run, `1` on the first retry, `2` on the second, etc.
-
----
 
 ## Serial Mode
 
@@ -172,8 +162,6 @@ Worker #2:
 ```
 
 > **Tip:** Prefer isolated, independent tests when possible. Serial mode is the exception, not the rule.
-
----
 
 ## Reusing a Single Page Across Tests
 

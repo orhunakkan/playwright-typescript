@@ -22,8 +22,6 @@ const { chromium } = require('playwright'); // Or 'firefox' or 'webkit'.
 
 > **Note:** Dialogs are dismissed automatically, unless there is a `page.on('dialog')` listener. When listener is present, it must either `dialog.accept()` or `dialog.dismiss()` the dialog — otherwise the page will freeze waiting for the dialog, and actions like `click` will never finish.
 
----
-
 ## Methods
 
 ### accept
@@ -43,8 +41,6 @@ await dialog.accept(promptText);
 
 **Returns:** `Promise<void>`
 
----
-
 ### defaultValue
 
 **Added before:** v1.9
@@ -56,8 +52,6 @@ dialog.defaultValue();
 ```
 
 **Returns:** `string`
-
----
 
 ### dismiss
 
@@ -71,8 +65,6 @@ await dialog.dismiss();
 
 **Returns:** `Promise<void>`
 
----
-
 ### message
 
 **Added before:** v1.9
@@ -85,8 +77,6 @@ dialog.message();
 
 **Returns:** `string`
 
----
-
 ### page
 
 **Added in:** v1.34
@@ -98,8 +88,6 @@ dialog.page();
 ```
 
 **Returns:** `null | Page`
-
----
 
 ### type
 

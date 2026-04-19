@@ -8,8 +8,6 @@
 
 Inspect network traffic, mock API responses, and test offline behavior.
 
----
-
 ## Inspect network requests
 
 ```bash
@@ -28,8 +26,6 @@ $ playwright-cli network --filter="api"
 # GET 200 https://api.example.com/users 12ms application/json
 # POST 201 https://api.example.com/users/create 45ms application/json
 ```
-
----
 
 ## Mock API responses
 
@@ -75,8 +71,6 @@ playwright-cli route "**/analytics/**" --status=204
 playwright-cli route "**/*" --remove-header=cookie,authorization
 ```
 
----
-
 ## Manage routes
 
 ```bash
@@ -84,8 +78,6 @@ playwright-cli route-list # list active routes
 playwright-cli unroute "**/api/users" # remove specific route
 playwright-cli unroute # remove all routes
 ```
-
----
 
 ## Conditional mocking with code
 
@@ -107,8 +99,6 @@ playwright-cli run-code "async (page) => {
   });
 }"
 ```
-
----
 
 ## Workflow: testing error handling
 
@@ -133,8 +123,6 @@ playwright-cli click e5
 playwright-cli snapshot
 # - heading "Users" [level=1]
 ```
-
----
 
 ## Test offline mode
 

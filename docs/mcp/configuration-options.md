@@ -21,8 +21,6 @@ To run headless:
 }
 ```
 
----
-
 ## Browser Selection
 
 ```json
@@ -36,15 +34,11 @@ To run headless:
 | `webkit`  | WebKit (Safari engine)  |
 | `msedge`  | Microsoft Edge          |
 
----
-
 ## Device Emulation
 
 ```json
 ["@playwright/mcp@latest", "--device=iPhone 15"]
 ```
-
----
 
 ## Viewport Size
 
@@ -52,15 +46,11 @@ To run headless:
 ["@playwright/mcp@latest", "--viewport-size=1280x720"]
 ```
 
----
-
 ## Proxy
 
 ```json
 ["@playwright/mcp@latest", "--proxy-server=http://myproxy:3128", "--proxy-bypass=localhost,*.internal.com"]
 ```
-
----
 
 ## Standalone HTTP Server
 
@@ -84,8 +74,6 @@ Then point your MCP client to the HTTP endpoint:
 
 - Use `--host 0.0.0.0` to bind to all interfaces (useful in containers)
 - Use `--shared-browser-context` to share a single browser context between multiple connected clients
-
----
 
 ## Configuration File
 
@@ -158,8 +146,6 @@ npx @playwright/mcp@latest --config path/to/config.json
 }
 ```
 
----
-
 ## Init Scripts
 
 Run code on every page **before** the page's own scripts:
@@ -176,8 +162,6 @@ Run code on every page **before** the page's own scripts:
 // setup.js
 window.isPlaywrightMCP = true;
 ```
-
----
 
 ## Init Page
 
@@ -201,8 +185,6 @@ export default async ({ page }) => {
   });
 };
 ```
-
----
 
 ## All Command-Line Options
 

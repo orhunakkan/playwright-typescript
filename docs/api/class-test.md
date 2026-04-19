@@ -16,8 +16,6 @@ test('basic test', async ({ page }) => {
 });
 ```
 
----
-
 ## Methods
 
 ## Methods
@@ -63,8 +61,6 @@ test(
 | `details.annotation` | `Object \| Array<Object>` (optional) | Annotations to add to the test.                                                                 |
 | `body`               | `function(fixtures): Promise<void>`  | Test function that takes one or two arguments: an object with fixtures and optional `TestInfo`. |
 
----
-
 ### `test.afterAll(hookFunction)` — Added in: v1.10
 
 Declares an `afterAll` hook that is executed once per worker after all tests. When called in the scope of a test file, runs after all tests in the file. When called inside a `test.describe()` group, runs after all tests in the group.
@@ -91,8 +87,6 @@ test.afterAll('cleanup db', async () => {
 | `title`        | `string` (optional)                 | Hook title for debugging.                                                              |
 | `hookFunction` | `function(fixtures): Promise<void>` | Hook function that takes an object with worker-level fixtures and optional `TestInfo`. |
 
----
-
 ### `test.afterEach(hookFunction)` — Added in: v1.10
 
 Declares an `afterEach` hook that is executed after each test. When called in the scope of a test file, runs after each test in the file. When called inside a `test.describe()` group, runs after each test in the group.
@@ -110,8 +104,6 @@ test.afterEach(async ({ page }, testInfo) => {
 | -------------- | ----------------------------------- | ------------------------------------------------------------------------- |
 | `title`        | `string` (optional)                 | Hook title for debugging.                                                 |
 | `hookFunction` | `function(fixtures): Promise<void>` | Hook function that takes an object with fixtures and optional `TestInfo`. |
-
----
 
 ### `test.beforeAll(hookFunction)` — Added in: v1.10
 
@@ -140,8 +132,6 @@ test.beforeAll('start server', async () => {
 
 > **Note:** `test.beforeAll()` is executed in the worker process. You can share data between `beforeAll` hooks and tests via worker-level fixtures (`scope: 'worker'`). Only test-level fixtures (default scope) are available in regular `test()` calls.
 
----
-
 ### `test.beforeEach(hookFunction)` — Added in: v1.10
 
 Declares a `beforeEach` hook that is executed before each test. When called in the scope of a test file, runs before each test in the file. When called inside a `test.describe()` group, runs before each test in the group.
@@ -159,8 +149,6 @@ test.beforeEach(async ({ page }, testInfo) => {
 | -------------- | ----------------------------------- | ------------------------------------------------------------------------- |
 | `title`        | `string` (optional)                 | Hook title for debugging.                                                 |
 | `hookFunction` | `function(fixtures): Promise<void>` | Hook function that takes an object with fixtures and optional `TestInfo`. |
-
----
 
 ### `test.describe(title, callback)` — Added in: v1.10
 
@@ -220,8 +208,6 @@ test.describe(() => {
 | `details.annotation` | `Object \| Array<Object>` (optional) | Annotations for all tests in this group. |
 | `callback`           | `function`                           | Group body.                              |
 
----
-
 ### `test.describe.configure(options?)` — Added in: v1.10
 
 Configures the enclosing scope. Can be executed either in the global scope or inside `test.describe()`.
@@ -248,8 +234,6 @@ test.describe('group', () => {
 | `options.retries`       | `number` (optional, v1.28)                       | Number of retries for each test.            |
 | `options.timeout`       | `number` (optional, v1.28)                       | Timeout in milliseconds for each test.      |
 
----
-
 ### `test.describe.fixme(title, callback)` — Added in: v1.25
 
 Declares a group of tests to be fixed (marked as fixme). Tests inside are not run, but shown in reports as fixme. Behaves similarly to `test.describe()` but marks all tests as fixme.
@@ -272,8 +256,6 @@ test.describe.fixme('broken tests', () => {
 | `title`    | `string`            | Group title.              |
 | `details`  | `Object` (optional) | Additional group details. |
 | `callback` | `function`          | Group body.               |
-
----
 
 ### `test.describe.only(title, callback)` — Added in: v1.10
 
@@ -301,8 +283,6 @@ test('not in the focused group', async ({ page }) => {
 | `details`  | `Object` (optional) | Additional group details. |
 | `callback` | `function`          | Group body.               |
 
----
-
 ### `test.describe.skip(title, callback)` — Added in: v1.10
 
 Declares a skipped group of tests. Tests inside are not run, and shown in the report as skipped.
@@ -325,8 +305,6 @@ test.describe.skip('skipped group', () => {
 | `title`    | `string`            | Group title.              |
 | `details`  | `Object` (optional) | Additional group details. |
 | `callback` | `function`          | Group body.               |
-
----
 
 ### `test.extend(fixtures)` — Added in: v1.10
 
@@ -352,8 +330,6 @@ export const test = base.extend<{ admin: AdminPage; userPage: UserPage }>({
 | `fixtures` | `Object` | An object containing fixtures and/or options. Learn more about fixtures format. |
 
 **Returns:** `Test`
-
----
 
 ### `test.fail(title, body)` — Added in: v1.10
 
@@ -393,8 +369,6 @@ test('sometimes fails', async ({ page }, testInfo) => {
 | `callback`    | `function` (optional) | Optional condition function called with test info.       |
 | `description` | `string` (optional)   | Optional description explaining why the test is failing. |
 
----
-
 ### `test.fail.only(title, body)` — Added in: v1.49
 
 Marks a test as failing and focuses it. Same as combining `test.fail()` and `test.only()`.
@@ -412,8 +386,6 @@ test.fail.only('focused failing test', async ({ page }) => {
 | `title`   | `string`                            | Test title.              |
 | `details` | `Object` (optional)                 | Additional test details. |
 | `body`    | `function(fixtures): Promise<void>` | Test function.           |
-
----
 
 ### `test.fixme(title, body)` — Added in: v1.10
 
@@ -453,8 +425,6 @@ test('sometimes broken', async ({ page }) => {
 | `callback`    | `function` (optional) | Optional condition function called with test info. |
 | `description` | `string` (optional)   | Optional description.                              |
 
----
-
 ### `test.info()` — Added in: v1.10
 
 Returns information about the currently running test. This method can only be called during the test execution, otherwise it throws.
@@ -468,8 +438,6 @@ test('example test', async ({ page }) => {
 ```
 
 **Returns:** `TestInfo`
-
----
 
 ### `test.only(title, body)` — Added in: v1.10
 
@@ -488,8 +456,6 @@ test.only('focus this test', async ({ page }) => {
 | `title`   | `string`                            | Test title.              |
 | `details` | `Object` (optional)                 | Additional test details. |
 | `body`    | `function(fixtures): Promise<void>` | Test function.           |
-
----
 
 ### `test.setTimeout(timeout)` — Added in: v1.10
 
@@ -516,8 +482,6 @@ test.beforeEach(async ({ page }, testInfo) => {
 | Parameter | Type     | Description              |
 | --------- | -------- | ------------------------ |
 | `timeout` | `number` | Timeout in milliseconds. |
-
----
 
 ### `test.skip(title, body)` — Added in: v1.10
 
@@ -557,8 +521,6 @@ test('conditionally skip', async ({ page }) => {
 | `callback`    | `function` (optional) | Optional condition function called with test info. |
 | `description` | `string` (optional)   | Optional description.                              |
 
----
-
 ### `test.slow()` — Added in: v1.10
 
 Marks a test as slow. Slow test will be given triple the default timeout.
@@ -587,8 +549,6 @@ test('conditionally slow', async ({ page }) => {
 | `condition`   | `boolean` (optional)  | Test is marked as slow when condition is `true`.   |
 | `callback`    | `function` (optional) | Optional condition function called with test info. |
 | `description` | `string` (optional)   | Optional description.                              |
-
----
 
 ### `test.step(title, body, options?)` — Added in: v1.10
 
@@ -628,8 +588,6 @@ const user = await test.step('Log in', async () => {
 
 **Returns:** `Promise<T>`
 
----
-
 ### `test.step.skip(title, body, options?)` — Added in: v1.50
 
 Declares a skipped test step. Similar to `test.step()` but the step is always skipped.
@@ -651,8 +609,6 @@ await test.step.skip('not ready yet', async () => {
 | `options.timeout`  | `number` (optional)      | Maximum time in milliseconds. |
 
 **Returns:** `Promise<T>`
-
----
 
 ### `test.use(options)` — Added in: v1.10
 
@@ -676,8 +632,6 @@ test('test with locale', async ({ page }) => {
 
 > **Note:** `test.use()` can only be called in a test file or in a `test.describe()` block. It cannot be called from a fixture or a hook. Use `test.extend()` to configure fixtures.
 
----
-
 ## Properties
 
 ### `test.expect` — Added in: v1.10
@@ -692,8 +646,6 @@ test('example', async ({ page }) => {
 ```
 
 **Type:** `Object`
-
----
 
 ## Deprecated
 
@@ -714,8 +666,6 @@ test.describe.parallel('group', () => {
 });
 ```
 
----
-
 ### `test.describe.parallel.only(title, callback)` — Added in: v1.10
 
 > **Note:** Please use `test.describe.configure({ mode: 'parallel' })` instead.
@@ -733,8 +683,6 @@ test.describe.parallel.only('focused parallel group', () => {
 });
 ```
 
----
-
 ### `test.describe.serial(title, callback)` — Added in: v1.10
 
 > **Note:** Please use `test.describe.configure({ mode: 'serial' })` instead.
@@ -751,8 +699,6 @@ test.describe.serial('group', () => {
   });
 });
 ```
-
----
 
 ### `test.describe.serial.only(title, callback)` — Added in: v1.10
 

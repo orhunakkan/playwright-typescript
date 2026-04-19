@@ -14,8 +14,6 @@ const username = await page.frameLocator('.frame-class').getByLabel('User Name')
 await username.fill('John');
 ```
 
----
-
 ## Frame objects
 
 One can access frame objects using the `page.frame()` API:

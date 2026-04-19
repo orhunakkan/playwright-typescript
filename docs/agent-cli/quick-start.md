@@ -13,8 +13,6 @@ Use playwright skills to test https://demo.playwright.dev/todomvc/.
 Take screenshots for all successful and failing scenarios.
 ```
 
----
-
 ## Manual walkthrough
 
 Run commands manually to see how the CLI works:
@@ -28,8 +26,6 @@ playwright-cli press Enter
 playwright-cli check e21
 playwright-cli screenshot
 ```
-
----
 
 ## Understanding the output
 
@@ -46,8 +42,6 @@ After each command, the CLI outputs a snapshot of the current page state:
 
 The snapshot file contains the **accessibility tree** with **element refs** that can be used for subsequent commands.
 
----
-
 ## Core workflow
 
 Every interaction follows this pattern:
@@ -56,8 +50,6 @@ Every interaction follows this pattern:
 2. **Snapshot** — each command returns the accessibility tree with element refs
 3. **Interact** — use refs to click, type, or fill
 4. **Re-snapshot** — each action returns updated state with new refs
-
----
 
 ## What's next
 

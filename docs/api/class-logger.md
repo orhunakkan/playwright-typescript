@@ -21,8 +21,6 @@ const { chromium } = require('playwright'); // Or 'firefox' or 'webkit'.
 })();
 ```
 
----
-
 ## Methods
 
 ### `logger.isEnabled(name, severity)` — Added before: v1.9
@@ -41,8 +39,6 @@ logger.isEnabled(name, severity);
 | `severity` | `"verbose" \| "info" \| "warning" \| "error"` | Severity level. |
 
 **Returns:** `boolean`
-
----
 
 ### `logger.log(name, severity, message, args, hints)` — Added before: v1.9
 

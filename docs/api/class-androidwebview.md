@@ -6,8 +6,6 @@
 
 **AndroidWebView** represents a WebView open on the `AndroidDevice`. WebView is usually obtained using `androidDevice.webView()`.
 
----
-
 ## Methods
 
 ### page
@@ -22,8 +20,6 @@ await androidWebView.page();
 
 **Returns:** `Promise<Page>`
 
----
-
 ### pid
 
 **Added in:** v1.9
@@ -36,8 +32,6 @@ androidWebView.pid();
 
 **Returns:** `number`
 
----
-
 ### pkg
 
 **Added in:** v1.9
@@ -49,8 +43,6 @@ androidWebView.pkg();
 ```
 
 **Returns:** `string`
-
----
 
 ## Events
 

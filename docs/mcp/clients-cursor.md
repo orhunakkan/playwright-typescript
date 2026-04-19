@@ -8,8 +8,6 @@
 
 **Install directly from Cursor.**
 
----
-
 ## Manual setup
 
 Go to **Cursor Settings → MCP → Add new MCP Server**.

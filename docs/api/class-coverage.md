@@ -27,8 +27,6 @@ const v8toIstanbul = require('v8-to-istanbul');
 })();
 ```
 
----
-
 ## Methods
 
 ### startCSSCoverage
@@ -48,8 +46,6 @@ await coverage.startCSSCoverage(options);
   - `resetOnNavigation` boolean (optional) — Whether to reset coverage on every navigation. Defaults to `true`.
 
 **Returns:** `Promise<void>`
-
----
 
 ### startJSCoverage
 
@@ -72,8 +68,6 @@ await coverage.startJSCoverage(options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### stopCSSCoverage
 
 **Added in:** v1.11
@@ -93,8 +87,6 @@ await coverage.stopCSSCoverage();
 - `ranges` Array\<Object\> — StyleSheet ranges that were used. Ranges are sorted and non-overlapping.
   - `start` number — A start offset in text, inclusive.
   - `end` number — An end offset in text, exclusive.
-
----
 
 ### stopJSCoverage
 

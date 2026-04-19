@@ -8,8 +8,6 @@
 
 In addition to configuring the test runner you can also configure Emulation, Network and Recording for the Browser or BrowserContext. These options are passed to the `use: {}` object in the Playwright config.
 
----
-
 ## Basic Options
 
 Set the base URL and storage state for all tests:
@@ -32,8 +30,6 @@ export default defineConfig({
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `testOptions.baseURL`      | Base URL used for all pages in the context. Allows navigating by using just the path, for example `page.goto('/settings')`. |
 | `testOptions.storageState` | Populates context with given storage state. Useful for easy authentication, learn more.                                     |
-
----
 
 ## Emulation Options
 
@@ -69,8 +65,6 @@ export default defineConfig({
 | `testOptions.permissions` | A list of permissions to grant to all pages in the context.                                   |
 | `testOptions.timezoneId`  | Changes the timezone of the context.                                                          |
 | `testOptions.viewport`    | Viewport used for all pages in the context.                                                   |
-
----
 
 ## Network Options
 
@@ -117,8 +111,6 @@ export default defineConfig({
 
 > You don't have to configure anything to mock network requests. Just define a custom Route that mocks the network for a browser context. See our network mocking guide to learn more.
 
----
-
 ## Recording Options
 
 With Playwright you can capture screenshots, record videos as well as traces of your test. By default these are turned off but you can enable them by setting the `screenshot`, `video` and `trace` options in your `playwright.config.js` file. Trace files, screenshots and videos will appear in the test output directory, typically `test-results`.
@@ -144,8 +136,6 @@ export default defineConfig({
 | `testOptions.screenshot` | Capture screenshots of your test. Options include `'off'`, `'on'` and `'only-on-failure'`                                                  |
 | `testOptions.trace`      | Playwright can produce test traces while running the tests. Options include: `'off'`, `'on'`, `'retain-on-failure'` and `'on-first-retry'` |
 | `testOptions.video`      | Playwright can record videos for your tests. Options include: `'off'`, `'on'`, `'retain-on-failure'` and `'on-first-retry'`                |
-
----
 
 ## Other Options
 
@@ -180,8 +170,6 @@ export default defineConfig({
 | `testOptions.headless`        | Whether to run the browser in headless mode meaning no browser is shown when running tests. Defaults to true.      |
 | `testOptions.testIdAttribute` | Changes the default data-testid attribute used by Playwright locators.                                             |
 
----
-
 ## More browser and context options
 
 Any options accepted by `browserType.launch()`, `browser.newContext()` or `browserType.connect()` can be put into `launchOptions`, `contextOptions` or `connectOptions` respectively in the `use` section.
@@ -200,8 +188,6 @@ export default defineConfig({
 ```
 
 However, most common ones like `headless` or `viewport` are available directly in the `use` section — see basic options, emulation or network.
-
----
 
 ## Explicit Context Creation and Option Inheritance
 
@@ -230,8 +216,6 @@ test('should inherit use options on context when using built-in browser fixture'
   await context.close();
 });
 ```
-
----
 
 ## Configuration Scopes
 
@@ -291,8 +275,6 @@ test.describe('french language block', () => {
   });
 });
 ```
-
----
 
 ## Reset an option
 

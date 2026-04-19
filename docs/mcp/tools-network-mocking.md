@@ -19,8 +19,6 @@ Inspect network traffic, mock API responses, and test offline behavior.
 }
 ```
 
----
-
 ## Inspect network requests
 
 ### browser_network_requests
@@ -41,8 +39,6 @@ POST 201 https://api.example.com/users/create   45ms  application/json
 GET 200 https://api.example.com/settings        12ms  application/json
 ```
 
----
-
 ## Mock API responses
 
 ### browser_route
@@ -57,8 +53,6 @@ Intercept requests matching a URL pattern and return a custom response.
 | contentType   | string   | no       | Content-Type header               |
 | headers       | object   | no       | Additional response headers       |
 | removeHeaders | string[] | no       | Headers to strip from request     |
-
----
 
 ## Mock an API endpoint
 
@@ -80,8 +74,6 @@ You: Mock the /api/users endpoint to return two test users.
   - listitem: "Alice"
   - listitem: "Bob"
 ```
-
----
 
 ## Test error handling
 
@@ -113,16 +105,12 @@ Remove the mock and verify recovery:
   - listitem: "Bob Smith"
 ```
 
----
-
 ## Block resources
 
 ```bash
 → browser_route { pattern: "**/*.jpg", status: 404 }
 → browser_route { pattern: "**/analytics/**", status: 204 }
 ```
-
----
 
 ## Strip authentication headers
 
@@ -133,8 +121,6 @@ Remove the mock and verify recovery:
 }
 → browser_reload  // Page shows 401 / login prompt
 ```
-
----
 
 ## Conditional mocking with code
 
@@ -154,8 +140,6 @@ For complex scenarios — delays, conditional responses, request body inspection
 }
 ```
 
----
-
 ## Manage routes
 
 ### browser_route_list
@@ -173,8 +157,6 @@ Pattern             Status  Content-Type
 | Parameter | Type   | Required | Description                            |
 | --------- | ------ | -------- | -------------------------------------- |
 | pattern   | string | no       | Pattern to remove. Omit to remove all. |
-
----
 
 ## Test offline mode
 

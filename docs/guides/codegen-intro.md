@@ -13,8 +13,6 @@ Playwright can generate tests automatically, providing a quick way to get starte
 - How to record a test
 - How to generate locators
 
----
-
 ## Running Codegen
 
 Use the `codegen` command to run the test generator followed by the URL of the website you want to generate tests for. The URL is optional and can be added directly in the browser window if omitted.
@@ -22,8 +20,6 @@ Use the `codegen` command to run the test generator followed by the URL of the w
 ```bash
 npx playwright codegen demo.playwright.dev/todomvc
 ```
-
----
 
 ## Recording a test
 
@@ -41,8 +37,6 @@ When you finish interacting with the page, press the **record** button to stop r
 
 To learn more about generating tests, check out the detailed guide on [Codegen](codegen.md).
 
----
-
 ## Generating locators
 
 You can generate locators with the test generator:
@@ -53,15 +47,11 @@ You can generate locators with the test generator:
 4. Edit the locator in the locator playground to fine-tune it and see the matching element highlighted in the browser window
 5. Use the **copy** button to copy the locator and paste it into your code
 
----
-
 ## Emulation
 
 You can generate tests using emulation for specific viewports, devices, color schemes, geolocation, language, or timezone. The test generator can also preserve authenticated state.
 
 Check out the [Test Generator guide](codegen.md) to learn more.
-
----
 
 ## What's Next
 

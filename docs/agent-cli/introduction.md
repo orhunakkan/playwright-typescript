@@ -33,8 +33,6 @@ After each command, the CLI outputs the current page state:
 
 The snapshot file contains the **accessibility tree** with **element refs** for the next command.
 
----
-
 ## Key Features
 
 - **Token-efficient** — concise CLI output avoids loading large tool schemas into the model context
@@ -43,8 +41,6 @@ The snapshot file contains the **accessibility tree** with **element refs** for 
 - **Ref-based** — accessibility snapshots with element refs for deterministic interaction
 - **Cross-browser** — Chrome, Firefox, WebKit, and Edge support
 - **Sessions** — multiple isolated browser instances with separate state
-
----
 
 ## Playwright CLI vs MCP
 
@@ -55,8 +51,6 @@ The snapshot file contains the **accessibility tree** with **element refs** for 
 | **Token cost**   | Lower — concise CLI output, skills loaded on demand               | Higher — tool schemas + snapshots in context      |
 | **Default mode** | Headless                                                          | Headed                                            |
 | **Setup**        | `npm install -g @playwright/cli`                                  | JSON config in MCP client                         |
-
----
 
 ## All Commands
 

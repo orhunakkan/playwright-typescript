@@ -21,8 +21,6 @@ const download = await downloadPromise;
 await download.saveAs('/path/to/save/at/' + download.suggestedFilename());
 ```
 
----
-
 ## Variations
 
 If you have no idea what initiates the download, you can still handle the event:

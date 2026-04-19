@@ -20,8 +20,6 @@ const jsHandle = await page.evaluateHandle('window');
 // Use jsHandle for evaluations.
 ```
 
----
-
 ## Element Handles
 
 > **Warning:** The use of `ElementHandle` is discouraged — use `Locator` objects and web-first assertions instead.
@@ -38,8 +36,6 @@ expect(boundingBox.width).toBe(100);
 const classNames = await elementHandle.getAttribute('class');
 expect(classNames.includes('highlighted')).toBeTruthy();
 ```
-
----
 
 ## Handles as parameters
 
@@ -62,8 +58,6 @@ await page.evaluate((arg) => arg.myArray.push(arg.newElement), {
 await myArrayHandle.dispose();
 ```
 
----
-
 ## Handle Lifecycle
 
 Handles can be acquired using the page methods such as `page.evaluateHandle()`, `page.$()` or `page.$$()` or their frame counterparts `frame.evaluateHandle()`, `frame.$()` or `frame.$$()`. Once created, handles will retain the object from garbage collection unless the page navigates or the handle is manually disposed via the `jsHandle.dispose()` method.
@@ -81,8 +75,6 @@ Handles can be acquired using the page methods such as `page.evaluateHandle()`, 
 - `page.evaluateHandle()`
 - `page.$()`
 - `page.$$()`
-
----
 
 ## Locator vs ElementHandle
 

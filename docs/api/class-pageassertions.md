@@ -15,8 +15,6 @@ test('navigates to login', async ({ page }) => {
 });
 ```
 
----
-
 ## Methods
 
 ### `pageAssertions.toHaveScreenshot(name, options?)` — Added in: v1.23
@@ -51,8 +49,6 @@ await expect(page).toHaveScreenshot('image.png');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `pageAssertions.toHaveScreenshot(options?)` — Added in: v1.23
 
 Waits until two consecutive page screenshots yield the same result, then compares the last screenshot with the expectation.
@@ -71,8 +67,6 @@ await expect(page).toHaveScreenshot();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `pageAssertions.toHaveTitle(titleOrRegExp, options?)` — Added in: v1.20
 
 Ensures the page has the given title.
@@ -89,8 +83,6 @@ await expect(page).toHaveTitle(/.*checkout/);
 | `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `pageAssertions.toHaveURL(url, options?)` — Added in: v1.20
 
@@ -113,8 +105,6 @@ await expect(page).toHaveURL((url) => url.searchParams.has('search'));
 
 **Returns:** `Promise<void>`
 
----
-
 ## Properties
 
 ### `pageAssertions.not` — Added in: v1.20
@@ -126,5 +116,3 @@ await expect(page).not.toHaveURL('error');
 ```
 
 **Type:** `PageAssertions`
-
----

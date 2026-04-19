@@ -18,8 +18,6 @@ test('navigates to login', async ({ page }) => {
 });
 ```
 
----
-
 ## Methods
 
 ### toBeOK
@@ -33,8 +31,6 @@ await expect(response).toBeOK();
 ```
 
 **Returns:** Promise<void>
-
----
 
 ## Properties
 

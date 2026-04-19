@@ -6,8 +6,6 @@
 
 **AndroidSocket** is a way to communicate with a process launched on the `AndroidDevice`. Use `androidDevice.open()` to open a socket.
 
----
-
 ## Methods
 
 ### close
@@ -21,8 +19,6 @@ await androidSocket.close();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### write
 
@@ -40,8 +36,6 @@ await androidSocket.write(data);
 
 **Returns:** `Promise<void>`
 
----
-
 ## Events
 
 ### on('close')
@@ -53,8 +47,6 @@ Emitted when the socket is closed.
 ```ts
 androidSocket.on('close', (data) => {});
 ```
-
----
 
 ### on('data')
 

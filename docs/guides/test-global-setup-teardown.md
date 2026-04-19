@@ -18,8 +18,6 @@ There are two ways to configure global setup and teardown: using a global setup 
 | Parallelism and retries                             | ✅ Supported via standard config   | ❌ Not applicable                          |
 | Config options like `headless` or `testIdAttribute` | ✅ Automatically applied           | ❌ Ignored                                 |
 
----
-
 ## Option 1: Project Dependencies
 
 Project dependencies are a list of projects that need to run before the tests in another project run. They can be useful for configuring the global setup actions so that one project depends on this running first. Using dependencies allows global setup to produce traces and other artifacts.
@@ -138,8 +136,6 @@ teardown('delete database', async ({}) => {
 ### Test filtering
 
 All test filtering options, such as `--grep`/`--grep-invert`, `--shard`, filtering directly by location in the command line, or using `test.only()`, directly select the primary tests to be run. If those tests belong to a project with dependencies, all tests from those dependencies will also run. You can pass `--no-deps` command line option to ignore all dependencies and teardowns.
-
----
 
 ## Option 2: Configure globalSetup and globalTeardown
 

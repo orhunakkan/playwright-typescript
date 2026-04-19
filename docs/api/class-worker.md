@@ -33,8 +33,6 @@ await worker.evaluate(pageFunction, arg);
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### `evaluateHandle()` — Added before v1.9
 
 Returns the return value of `pageFunction` as a `JSHandle`. The only difference between `worker.evaluate()` and `worker.evaluateHandle()` is that `worker.evaluateHandle()` returns `JSHandle`. If the function passed to `worker.evaluateHandle()` returns a `Promise`, then `worker.evaluateHandle()` would wait for the promise to resolve and return its value.
@@ -51,8 +49,6 @@ await worker.evaluateHandle(pageFunction, arg);
 
 **Returns:** `Promise<JSHandle>`
 
----
-
 ### `url()` — Added before v1.9
 
 ```ts
@@ -60,8 +56,6 @@ worker.url();
 ```
 
 **Returns:** `string`
-
----
 
 ### `waitForEvent()` — Added in: v1.57
 
@@ -96,8 +90,6 @@ worker.on('close', (data) => {});
 ```
 
 **Event data:** `Worker`
-
----
 
 ### `on('console')` — Added in: v1.57
 

@@ -8,8 +8,6 @@
 
 With Playwright you can test your app on any browser as well as emulate a real device such as a mobile phone or tablet. Simply configure the devices you would like to emulate and Playwright will simulate the browser behavior such as `userAgent`, `screenSize`, `viewport` and if it `hasTouch` enabled. You can also emulate the `geolocation`, `locale` and `timezone` for all tests or for a specific test as well as set the `permissions` to show notifications or change the `colorScheme`.
 
----
-
 ## Devices
 
 Playwright comes with a registry of device parameters using `playwright.devices` for selected desktop, tablet and mobile devices. It can be used to simulate browser behavior for a specific device such as user agent, screen size, viewport and if it has touch enabled. All tests will run with the specified device parameters.
@@ -56,8 +54,6 @@ const context = await browser.newContext({
   userAgent: undefined,
 });
 ```
-
----
 
 ## Viewport
 
@@ -136,8 +132,6 @@ test.describe('specific viewport block', () => {
 });
 ```
 
----
-
 ## Mobile
 
 Whether the meta viewport tag is taken into account and touch events are enabled.
@@ -161,8 +155,6 @@ export default defineConfig({
   ],
 });
 ```
-
----
 
 ## Locale & Timezone
 
@@ -209,8 +201,6 @@ const context = await browser.newContext({
 ```
 
 > **Note:** This only affects the browser timezone and locale, not the test runner timezone. To set the test runner timezone, you can use the `TZ` environment variable.
-
----
 
 ## Permissions
 
@@ -265,8 +255,6 @@ Revoke all permissions with `browserContext.clearPermissions()`:
 ```ts
 await context.clearPermissions();
 ```
-
----
 
 ## Geolocation
 
@@ -334,8 +322,6 @@ await context.setGeolocation({ longitude: 48.858455, latitude: 2.294474 });
 
 Note you can only change geolocation for all pages in the context.
 
----
-
 ## Color Scheme and Media
 
 Emulate the users `colorScheme`. Supported values are `'light'` and `'dark'`. You can also emulate the media type with `page.emulateMedia()`.
@@ -381,8 +367,6 @@ await page.emulateMedia({ colorScheme: 'dark' });
 await page.emulateMedia({ media: 'print' });
 ```
 
----
-
 ## User Agent
 
 The User Agent is included in the device and therefore you will rarely need to change it however if you do need to test a different user agent you can override it with the `userAgent` property.
@@ -407,8 +391,6 @@ const context = await browser.newContext({
 });
 ```
 
----
-
 ## Offline
 
 Emulate the network being offline.
@@ -424,8 +406,6 @@ export default defineConfig({
   },
 });
 ```
-
----
 
 ## JavaScript Enabled
 

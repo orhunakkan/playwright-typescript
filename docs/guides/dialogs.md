@@ -10,8 +10,6 @@ Playwright can interact with the web page dialogs such as alert, confirm, prompt
 
 For print dialogs, see the [Print dialogs](#print-dialogs) section below.
 
----
-
 ## alert(), confirm(), prompt() dialogs
 
 By default, dialogs are auto-dismissed by Playwright, so you don't have to handle them. However, you can register a dialog handler before the action that triggers the dialog to either `dialog.accept()` or `dialog.dismiss()` it.
@@ -34,8 +32,6 @@ await page.getByRole('button').click(); // Will hang here
 
 > **Note:** If there is no listener for `page.on('dialog')`, all dialogs are automatically dismissed.
 
----
-
 ## beforeunload dialog
 
 When `page.close()` is invoked with the truthy `runBeforeUnload` value, the page runs its unload handlers. This is the only case when `page.close()` does not wait for the page to actually close, because it might be that the page stays open in the end of the operation. You can register a dialog handler to handle the `beforeunload` dialog yourself:
@@ -47,8 +43,6 @@ page.on('dialog', async (dialog) => {
 });
 await page.close({ runBeforeUnload: true });
 ```
-
----
 
 ## Print dialogs
 

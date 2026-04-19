@@ -25,15 +25,11 @@ Whether to automatically download all the attachments. Defaults to `true` where 
 
 **Type:** `boolean`
 
----
-
 ### `testOptions.actionTimeout` — Added in: v1.10
 
 Default timeout for each Playwright action in milliseconds, defaults to `0` (no timeout).
 
 **Type:** `number`
-
----
 
 ### `testOptions.baseURL` — Added in: v1.10
 
@@ -41,15 +37,11 @@ When using `page.goto()`, `page.route()`, `page.waitForURL()`, `page.waitForRequ
 
 **Type:** `string`
 
----
-
 ### `testOptions.browserName` — Added in: v1.10
 
 Name of the browser that runs tests. Defaults to `'chromium'`. Most of the time you should set `browserName` in your `TestProject`.
 
 **Type:** `"chromium" | "firefox" | "webkit"`
-
----
 
 ### `testOptions.bypassCSP` — Added in: v1.10
 
@@ -57,15 +49,11 @@ Toggles bypassing page's Content-Security-Policy. Defaults to `false`.
 
 **Type:** `boolean`
 
----
-
 ### `testOptions.channel` — Added in: v1.10
 
 Browser distribution channel. Supported values are `"chrome"`, `"chrome-beta"`, `"chrome-dev"`, `"chrome-canary"`, `"msedge"`, `"msedge-beta"`, `"msedge-dev"`, `"msedge-canary"`. Read more about using Google Chrome and Microsoft Edge.
 
 **Type:** `string`
-
----
 
 ### `testOptions.clientCertificates` — Added in: v1.46
 
@@ -79,15 +67,11 @@ TLS Client Authentication allows the server to request a client certificate and 
 - `passphrase` `string` (optional) — Passphrase for the private key (PEM or PFX).
 - `origin` `string` — Exact origin that the certificate is valid for.
 
----
-
 ### `testOptions.colorScheme` — Added in: v1.10
 
 Emulates `prefers-colors-scheme` media feature, supported values are `'light'`, `'dark'`, `'no-preference'`. See `page.emulateMedia()` for more details. Passing `null` resets emulation to system defaults. Defaults to `'light'`.
 
 **Type:** `"light" | "dark" | "no-preference" | null`
-
----
 
 ### `testOptions.connectOptions` — Added in: v1.10
 
@@ -101,15 +85,11 @@ When connect options are specified, default `fixtures.browser`, `fixtures.contex
 - `exposeNetwork` `string` (optional) — Option to expose network available on the connecting client to the browser being connected to.
 - `slowMo` `number` (optional) — Slows down Playwright operations by the specified amount of milliseconds.
 
----
-
 ### `testOptions.contextOptions` — Added in: v1.10
 
 Options used to create the context, as passed to `browser.newContext()`. Specific options like `testOptions.viewport` take priority over this.
 
 **Type:** `Object`
-
----
 
 ### `testOptions.deviceScaleFactor` — Added in: v1.10
 
@@ -117,15 +97,11 @@ Specify device scale factor (can be thought of as a DPR). Defaults to `1`. Learn
 
 **Type:** `number`
 
----
-
 ### `testOptions.extraHTTPHeaders` — Added in: v1.10
 
 An object containing additional HTTP headers to be sent with every request.
 
 **Type:** `Object<string, string>`
-
----
 
 ### `testOptions.geolocation` — Added in: v1.10
 
@@ -137,23 +113,17 @@ Emulates geolocation coordinates.
 - `longitude` `number` — Longitude between `-180` and `180`.
 - `accuracy` `number` (optional) — Non-negative accuracy value. Defaults to `0`.
 
----
-
 ### `testOptions.hasTouch` — Added in: v1.10
 
 Specifies if viewport supports touch events. Defaults to `false`. Learn more about mobile emulation.
 
 **Type:** `boolean`
 
----
-
 ### `testOptions.headless` — Added in: v1.10
 
 Whether to run the browser in headless mode. More details for Chromium and Firefox. Defaults to `true` unless the `devtools` option is `true`.
 
 **Type:** `boolean`
-
----
 
 ### `testOptions.httpCredentials` — Added in: v1.10
 
@@ -166,15 +136,11 @@ Credentials for HTTP authentication. If no `origin` is specified, the username a
 - `origin` `string` (optional) — Restrict sending HTTP credentials on a specific origin (`scheme://host:port`).
 - `send` `"unauthorized" | "always"` (optional) — Strategy for when to send credentials. Defaults to `'unauthorized'`.
 
----
-
 ### `testOptions.ignoreHTTPSErrors` — Added in: v1.10
 
 Whether to ignore HTTPS errors when sending network requests. Defaults to `false`.
 
 **Type:** `boolean`
-
----
 
 ### `testOptions.isMobile` — Added in: v1.10
 
@@ -182,15 +148,11 @@ Whether the `meta viewport` tag is taken into account and touch events are enabl
 
 **Type:** `boolean`
 
----
-
 ### `testOptions.javaScriptEnabled` — Added in: v1.10
 
 Whether or not to enable JavaScript in the context. Defaults to `true`. Learn more about disabling JavaScript.
 
 **Type:** `boolean`
-
----
 
 ### `testOptions.launchOptions` — Added in: v1.10
 
@@ -200,15 +162,11 @@ Options used to launch the browser, as passed to `browserType.launch()`. Specifi
 
 **Type:** `Object`
 
----
-
 ### `testOptions.locale` — Added in: v1.10
 
 Specify user locale, for example `en-GB`, `de-DE`, etc. Locale will affect `navigator.language` value, `Accept-Language` request header value as well as number and date formatting rules. Defaults to `en-US`.
 
 **Type:** `string`
-
----
 
 ### `testOptions.navigationTimeout` — Added in: v1.10
 
@@ -216,23 +174,17 @@ Timeout for each navigation action in milliseconds. Defaults to `0` (no timeout)
 
 **Type:** `number`
 
----
-
 ### `testOptions.offline` — Added in: v1.10
 
 Whether to emulate network being offline. Defaults to `false`.
 
 **Type:** `boolean`
 
----
-
 ### `testOptions.permissions` — Added in: v1.10
 
 A list of permissions to grant to all pages in this context. See `browserContext.grantPermissions()` for more details. Defaults to none.
 
 **Type:** `Array<string>`
-
----
 
 ### `testOptions.proxy` — Added in: v1.10
 
@@ -244,8 +196,6 @@ Network proxy settings.
 - `bypass` `string` (optional) — Optional comma-separated domains to bypass proxy, for example `".com, chromium.org, .domain.com"`.
 - `username` `string` (optional) — Optional username to use if HTTP proxy requires authentication.
 - `password` `string` (optional) — Optional password to use if HTTP proxy requires authentication.
-
----
 
 ### `testOptions.screenshot` — Added in: v1.10
 
@@ -262,8 +212,6 @@ Whether to automatically capture a screenshot after each test. Defaults to `'off
 - `fullPage` `boolean` (optional) — When `true`, takes a screenshot of the full scrollable page. Defaults to `false`.
 - `omitBackground` `boolean` (optional) — Hides default white background and allows capturing screenshots with transparency. Not applicable to JPEG images. Defaults to `false`.
 
----
-
 ### `testOptions.serviceWorkers` — Added in: v1.10
 
 Whether to allow sites to register Service Workers. Defaults to `'allow'`.
@@ -272,8 +220,6 @@ Whether to allow sites to register Service Workers. Defaults to `'allow'`.
 - `'block'` — Playwright will block all registration of Service Workers.
 
 **Type:** `"allow" | "block"`
-
----
 
 ### `testOptions.storageState` — Added in: v1.10
 
@@ -284,23 +230,17 @@ Populates context with given storage state. This option can be used to initializ
 - `cookies` `Array<Object>` — Cookies to set for context.
 - `origins` `Array<Object>` — Origins with localStorage data to set for context.
 
----
-
 ### `testOptions.testIdAttribute` — Added in: v1.27
 
 Custom attribute to be used in `page.getByTestId()`. `data-testid` is used by default.
 
 **Type:** `string`
 
----
-
 ### `testOptions.timezoneId` — Added in: v1.10
 
 Changes the timezone of the context. See ICU's `metaZones.txt` for a list of supported timezone IDs. Defaults to the system timezone.
 
 **Type:** `string`
-
----
 
 ### `testOptions.trace` — Added in: v1.10
 
@@ -322,15 +262,11 @@ Whether to record trace for each test. Defaults to `'off'`.
 - `snapshots` `boolean` (optional) — Whether to capture DOM snapshot on every action. Defaults to `true`.
 - `sources` `boolean` (optional) — Whether to include source files for trace actions. Defaults to `true`.
 
----
-
 ### `testOptions.userAgent` — Added in: v1.10
 
 Specific user agent to use in this context.
 
 **Type:** `string`
-
----
 
 ### `testOptions.video` — Added in: v1.10
 
@@ -347,8 +283,6 @@ Whether to record video for each test. Defaults to `'off'`.
 - `size` `Object` (optional) — Size of the recorded video. If not specified, the size will be equal to `testOptions.viewport` scaled down to fit into `800x800`.
   - `width` `number`
   - `height` `number`
-
----
 
 ### `testOptions.viewport` — Added in: v1.10
 

@@ -8,8 +8,6 @@
 
 By default, you interact with page elements using **refs** from accessibility snapshots. For elements not exposed in the accessibility tree — canvas apps, maps, custom widgets — use **coordinate-based mouse commands** with screenshots as your visual reference.
 
----
-
 ## Commands
 
 | Command                | Description                               |
@@ -19,8 +17,6 @@ By default, you interact with page elements using **refs** from accessibility sn
 | `mouseup [button]`     | Release mouse button                      |
 | `mousewheel <dx> <dy>` | Scroll (dx=horizontal, dy=vertical)       |
 | `screenshot`           | Capture viewport for coordinate reference |
-
----
 
 ## Workflow: interacting with a canvas app
 
@@ -43,8 +39,6 @@ playwright-cli mouseup
 # Verify the result
 playwright-cli screenshot --filename=after-drag.png
 ```
-
----
 
 ## Workflow: clicking an icon without accessible name
 
@@ -69,8 +63,6 @@ playwright-cli snapshot
 # Now use refs for the rest
 playwright-cli fill e12 "New Name"
 ```
-
----
 
 ## When to use vision mode
 

@@ -6,8 +6,6 @@
 
 Playwright MCP manages browser state through profiles. By default, login state and cookies persist between sessions automatically.
 
----
-
 ## Profile modes
 
 ### Persistent (default)
@@ -49,13 +47,9 @@ Load initial state into an isolated session with `--storage-state`:
 ["@playwright/mcp@latest", "--isolated", "--storage-state=./auth-state.json"]
 ```
 
----
-
 ## Browser extension
 
 Connect to your existing browser tabs instead of launching a new browser. See **Browser Extension**.
-
----
 
 ## Saving and restoring state
 

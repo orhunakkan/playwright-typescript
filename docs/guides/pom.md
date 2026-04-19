@@ -10,8 +10,6 @@ Large test suites can be structured to optimize ease of authoring and maintenanc
 
 Page objects simplify authoring by creating a higher-level API which suits your application and simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition.
 
----
-
 ## Implementation
 
 We will create a `PlaywrightDevPage` helper class to encapsulate common operations on the playwright.dev page. Internally, it will use the page object.

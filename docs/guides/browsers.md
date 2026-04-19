@@ -10,8 +10,6 @@ Each version of Playwright needs specific versions of browser binaries to operat
 
 With every release, Playwright updates the versions of the browsers it supports, so that the latest Playwright would support the latest browsers at any moment. It means that every time you update Playwright, you might need to re-run the install CLI command.
 
----
-
 ## Install Browsers
 
 Playwright can install supported browsers. Running the command without arguments will install the default browsers:
@@ -31,8 +29,6 @@ See all supported browsers:
 ```bash
 npx playwright install --help
 ```
-
----
 
 ## Install System Dependencies
 
@@ -56,8 +52,6 @@ npx playwright install --with-deps chromium
 
 See system requirements for officially supported operating systems.
 
----
-
 ## Update Playwright Regularly
 
 By keeping your Playwright version up to date you will be able to use new features and test your app on the latest browser versions and catch failures before the latest browser version is released to the public.
@@ -76,8 +70,6 @@ Check the release notes to see what the latest version is and what changes have 
 # See what version of Playwright you have by running the following command
 npx playwright --version
 ```
-
----
 
 ## Configure Browsers
 
@@ -159,8 +151,6 @@ Running 1 test using 1 worker
 
 With the VS Code extension you can run your tests on different browsers by checking the checkbox next to the browser name in the Playwright sidebar.
 
----
-
 ## Chromium
 
 For Google Chrome, Microsoft Edge and other Chromium-based browsers, by default, Playwright uses open source Chromium builds. Since the Chromium project is ahead of the branded browsers, when the world is on Google Chrome N, Playwright already supports Chromium N+1 that will be released in Google Chrome and Microsoft Edge a few weeks later.
@@ -201,8 +191,6 @@ With the new headless mode, you can skip downloading the headless shell during b
 # only running tests headlessly
 npx playwright install --with-deps --no-shell
 ```
-
----
 
 ## Google Chrome & Microsoft Edge
 
@@ -258,15 +246,11 @@ Another reason for testing using official binaries is to test functionality rela
 **Enterprise policy:**
 Google Chrome and Microsoft Edge respect enterprise policies, which include limitations to the capabilities, network proxy, mandatory extensions that stand in the way of testing. So if you are part of the organization that uses such policies, it is easiest to use bundled Chromium for your local testing, you can still opt into stable channels on the bots that are typically free of such restrictions.
 
----
-
 ## Firefox
 
 Playwright's Firefox version matches the recent Firefox Stable build. Playwright doesn't work with the branded version of Firefox since it relies on patches.
 
 **Note:** Availability of certain features, which depend heavily on the underlying platform, may vary between operating systems. For example, available media codecs vary substantially between Linux, macOS and Windows.
-
----
 
 ## WebKit
 
@@ -275,8 +259,6 @@ Playwright's WebKit is derived from the latest WebKit main branch sources, often
 **Note:** Availability of certain features, which depend heavily on the underlying platform, may vary between operating systems. For example, available media codecs vary substantially between Linux, macOS and Windows.
 
 While running WebKit on Linux CI is usually the most affordable option, for the closest-to-Safari experience you should run WebKit on mac, for example if you do video playback.
-
----
 
 ## Install Behind a Firewall or a Proxy
 
@@ -304,8 +286,6 @@ If you are installing dependencies and need to use a proxy on Linux, make sure t
 sudo HTTPS_PROXY=https://192.0.2.1 npx playwright install-deps
 ```
 
----
-
 ## Download from Artifact Repository
 
 By default, Playwright downloads browsers from Microsoft's CDN. Sometimes companies maintain an internal artifact repository to host browser binaries. In this case, Playwright can be configured to download from a custom location using the `PLAYWRIGHT_DOWNLOAD_HOST` env variable:
@@ -319,8 +299,6 @@ It is also possible to use a per-browser download hosts using `PLAYWRIGHT_CHROMI
 ```bash
 PLAYWRIGHT_FIREFOX_DOWNLOAD_HOST=http://203.0.113.3 PLAYWRIGHT_DOWNLOAD_HOST=http://192.0.2.1 npx playwright install
 ```
-
----
 
 ## Managing Browser Binaries
 
@@ -379,8 +357,6 @@ Prints list of browsers from all playwright installations on the machine:
 ```bash
 npx playwright install --list
 ```
-
----
 
 ## Uninstall Browsers
 

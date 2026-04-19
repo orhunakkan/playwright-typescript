@@ -16,8 +16,6 @@ const { firefox } = require('playwright'); // Or 'chromium' or 'webkit'.
 })();
 ```
 
----
-
 ## Methods
 
 ### bind
@@ -44,8 +42,6 @@ await browser.bind(title, options);
 
 - `endpoint` string
 
----
-
 ### browserType
 
 **Added in:** v1.23
@@ -57,8 +53,6 @@ browser.browserType();
 ```
 
 **Returns:** `BrowserType`
-
----
 
 ### close
 
@@ -80,8 +74,6 @@ await browser.close(options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### contexts
 
 **Added before:** v1.9
@@ -97,8 +89,6 @@ console.log(browser.contexts().length); // prints `1`
 
 **Returns:** `Array<BrowserContext>`
 
----
-
 ### isConnected
 
 **Added before:** v1.9
@@ -110,8 +100,6 @@ browser.isConnected();
 ```
 
 **Returns:** `boolean`
-
----
 
 ### newBrowserCDPSession
 
@@ -126,8 +114,6 @@ await browser.newBrowserCDPSession();
 ```
 
 **Returns:** `Promise<CDPSession>`
-
----
 
 ### newContext
 
@@ -207,8 +193,6 @@ Creates a new browser context. It won't share cookies/cache with other browser c
 
 **Returns:** `Promise<BrowserContext>`
 
----
-
 ### newPage
 
 **Added before:** v1.9
@@ -225,8 +209,6 @@ await browser.newPage(options);
 - `options` Object (optional) — Same options as `browser.newContext()`.
 
 **Returns:** `Promise<Page>`
-
----
 
 ### removeAllListeners
 
@@ -249,8 +231,6 @@ await browser.removeAllListeners(type, options);
     - `'ignoreErrors'` — do not wait, all errors thrown by listeners after removal are silently caught
 
 **Returns:** `Promise<void>`
-
----
 
 ### startTracing
 
@@ -276,8 +256,6 @@ await browser.stopTracing();
 
 **Returns:** `Promise<void>`
 
----
-
 ### stopTracing
 
 **Added in:** v1.11
@@ -292,8 +270,6 @@ await browser.stopTracing();
 
 **Returns:** `Promise<Buffer>`
 
----
-
 ### unbind
 
 **Added in:** v1.59
@@ -306,8 +282,6 @@ await browser.unbind();
 
 **Returns:** `Promise<void>`
 
----
-
 ### version
 
 **Added before:** v1.9
@@ -319,8 +293,6 @@ browser.version();
 ```
 
 **Returns:** `string`
-
----
 
 ## Events
 

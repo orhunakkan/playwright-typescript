@@ -9,8 +9,6 @@
 - **Node.js 20 or newer**
 - An **MCP client**: VS Code, Cursor, Windsurf, Claude Code, Claude Desktop, or similar
 
----
-
 ## Installation
 
 Add the Playwright MCP server to your client:
@@ -29,8 +27,6 @@ Add the Playwright MCP server to your client:
 > See **Client Setup** for client-specific instructions.
 
 The browser downloads automatically on first use.
-
----
 
 ## First Interaction
 
@@ -61,8 +57,6 @@ The assistant calls MCP tools to open the browser, navigate, and interact — re
       - text: "1 item left"
 ```
 
----
-
 ## The Workflow
 
 Every MCP interaction follows this cycle:
@@ -74,16 +68,12 @@ Every MCP interaction follows this cycle:
 
 The browser opens in **headed mode** by default so you can watch. Pass `--headless` to run without a visible window.
 
----
-
 ## Example Prompts
 
 - Go to https://example.com and take a screenshot.
 - Open https://demo.playwright.dev/todomvc, add three todos, check off the first one, and take a screenshot.
 - Navigate to https://news.ycombinator.com and list the top 5 stories.
 - Save the current browser state to auth.json so we can skip login next time.
-
----
 
 ## Next Steps
 

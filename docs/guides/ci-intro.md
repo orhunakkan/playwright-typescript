@@ -8,8 +8,6 @@
 
 Playwright tests can be run on any CI provider. This guide covers one way of running tests on GitHub using GitHub Actions. If you would like to learn more, or how to configure other CI providers, check out our detailed doc on Continuous Integration.
 
----
-
 ## You will learn
 
 - How to set up GitHub Actions
@@ -17,8 +15,6 @@ Playwright tests can be run on any CI provider. This guide covers one way of run
 - How to view the HTML report
 - How to view the trace
 - How to publish report on the web
-
----
 
 ## Setting up GitHub Actions
 
@@ -66,25 +62,17 @@ The workflow performs these steps:
 
 To learn more about this, see "Understanding GitHub Actions".
 
----
-
 ## Create a Repo and Push to GitHub
 
 Once you have your GitHub Actions workflow setup, then all you need to do is create a repo on GitHub or push your code to an existing repository. Follow the instructions on GitHub and don't forget to initialize a git repository using the `git init` command so you can add, commit, and push your code.
-
----
 
 ## Opening the Workflows
 
 Click on the **Actions** tab to see the workflows. Here you see if your tests have passed or failed.
 
----
-
 ## Viewing Test Logs
 
 Clicking on the workflow run shows you all the actions that GitHub performed and clicking on **Run Playwright tests** shows the error messages, what was expected and what was received as well as the call log.
-
----
 
 ## HTML Report
 
@@ -107,8 +95,6 @@ To learn more about reports, check out our detailed guide on HTML Reporter.
 ### Viewing the Trace
 
 Once you have served the report using `npx playwright show-report`, click on the trace icon next to the test's file name. You can then view the trace of your tests and inspect each action to try to find out why the tests are failing.
-
----
 
 ## Publishing report on the web
 
@@ -150,13 +136,9 @@ The contents of the `$web` storage container can be accessed from a browser by u
 
 > **Note:** This step will not work for pull requests created from a forked repository because such workflow doesn't have access to the secrets.
 
----
-
 ## Properly handling Secrets
 
 Artifacts like trace files, HTML reports or even the console logs contain information about your test execution. They can contain sensitive data like user credentials for a test user, access tokens to a staging backend, testing source code, or sometimes even your application source code. Treat these files just as carefully as you treat that sensitive data. If you upload reports and traces as part of your CI workflow, make sure that you only upload them to trusted artifact stores, or that you encrypt the files before upload. The same is true for sharing artifacts with team members: use a trusted file share or encrypt the files before sharing.
-
----
 
 ## What's Next
 

@@ -13,8 +13,6 @@ Playwright Test has multiple configurable timeouts for various tasks.
 | Test timeout   | 30,000 ms | Timeout for each test. Set in config: `{ timeout: 60_000 }`. Override in test: `test.setTimeout(120_000)`                                          |
 | Expect timeout | 5,000 ms  | Timeout for each assertion. Set in config: `{ expect: { timeout: 10_000 } }`. Override in test: `expect(locator).toBeVisible({ timeout: 10_000 })` |
 
----
-
 ## Test timeout
 
 Playwright Test enforces a timeout for each test, 30 seconds by default. Time spent by the test function, fixture setups, and `beforeEach` hooks is included in the test timeout. Timed out test produces the following error:
@@ -85,8 +83,6 @@ test.beforeAll(async () => {
 
 API reference: `testInfo.setTimeout()`.
 
----
-
 ## Expect timeout
 
 Auto-retrying assertions like `expect(locator).toHaveText()` have a separate timeout, 5 seconds by default. Assertion timeout is unrelated to the test timeout. It produces the following error:
@@ -128,8 +124,6 @@ test('example', async ({ page }) => {
 });
 ```
 
----
-
 ## Global timeout
 
 Playwright Test supports a timeout for the whole test run. This prevents excess resource usage when everything went wrong. There is no default global timeout, but you can set a reasonable one in the config, for example one hour.
@@ -152,8 +146,6 @@ export default defineConfig({
 ```
 
 API reference: `testConfig.globalTimeout`.
-
----
 
 ## Advanced: low level timeouts
 
@@ -193,8 +185,6 @@ test('basic test', async ({ page }) => {
   await page.getByText('Get Started').click({ timeout: 10000 });
 });
 ```
-
----
 
 ## Fixture timeout
 

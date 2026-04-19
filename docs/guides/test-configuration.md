@@ -8,8 +8,6 @@
 
 Playwright has many options to configure how your tests are run. You can specify these options in the configuration file. Note that test runner options are top-level, do not put them into the `use` section.
 
----
-
 ## Basic Configuration
 
 Here are some of the most common configuration options.
@@ -65,8 +63,6 @@ export default defineConfig({
 | `testConfig.webServer`     | To launch a server during the tests, use the `webServer` option.                                                                                    |
 | `testConfig.workers`       | The maximum number of concurrent worker processes to use for parallelizing tests. Can also be set as percentage of logical CPU cores, e.g. `'50%'`. |
 
----
-
 ## Filtering Tests
 
 Filter tests by glob patterns or regular expressions.
@@ -87,8 +83,6 @@ export default defineConfig({
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `testConfig.testIgnore` | Glob patterns or regular expressions that should be ignored when looking for the test files. For example, `'*test-assets'`.                                             |
 | `testConfig.testMatch`  | Glob patterns or regular expressions that match test files. For example, `'*todo-tests/*.spec.ts'`. By default, Playwright runs `.*\(test\|spec\).(js\|ts\|mjs)` files. |
-
----
 
 ## Advanced Configuration
 
@@ -114,8 +108,6 @@ export default defineConfig({
 | `testConfig.globalTeardown` | Path to the global teardown file. This file will be required and run after all the tests. It must export a single function.                                                |
 | `testConfig.outputDir`      | Folder for test artifacts such as screenshots, videos, traces, etc.                                                                                                        |
 | `testConfig.timeout`        | Playwright enforces a timeout for each test, 30 seconds by default. Time spent by the test function, test fixtures and `beforeEach` hooks is included in the test timeout. |
-
----
 
 ## Expect Options
 

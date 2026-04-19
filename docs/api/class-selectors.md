@@ -6,8 +6,6 @@
 
 **Selectors** can be used to install custom selector engines. See extensibility for more information.
 
----
-
 ## Methods
 
 ## Methods
@@ -58,8 +56,6 @@ const { selectors, firefox } = require('@playwright/test');
 | `options.contentScript` | `boolean` (optional)           | Whether to run this selector engine in isolated JavaScript environment. This environment has access to the same DOM, but not any JavaScript objects from the frame's scripts. Defaults to `false`. Note that running as a content script is not guaranteed when this engine is used together with other registered engines. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `selectors.setTestIdAttribute(attributeName)` — Added in: v1.27
 

@@ -31,8 +31,6 @@ Playwright transpiler configuration.
 - `cwd` `string` (optional) — Current working directory of the build command.
 - `stdio` `"pipe" | "inherit"` (optional) — Defaults to `'pipe'`.
 
----
-
 ### `testConfig.captureGitInfo` — Added in: v1.51
 
 Playwright Test includes git information in the test results when running inside a git repository. This information is used by some reporters to display test results in a more informative way.
@@ -40,8 +38,6 @@ Playwright Test includes git information in the test results when running inside
 **Type:** `Object`
 
 - `git` `boolean` — Whether to capture git information.
-
----
 
 ### `testConfig.expect` — Added in: v1.10
 
@@ -72,15 +68,11 @@ Configuration for the `expect` assertion library.
   - `intervals` `Array<number>` (optional) — Probe intervals for `toPass()`.
   - `timeout` `number` (optional) — Maximum time for the `toPass()` assertion to pass.
 
----
-
 ### `testConfig.failOnFlakyTests` — Added in: v1.51
 
 Whether to fail the test run if any flaky tests are detected. A test is considered flaky when it passes on retry after previously failing. Defaults to `false`.
 
 **Type:** `boolean`
-
----
 
 ### `testConfig.forbidOnly` — Added in: v1.10
 
@@ -88,15 +80,11 @@ Whether to exit with an error if any tests or groups are marked as `test.only`. 
 
 **Type:** `boolean`
 
----
-
 ### `testConfig.fullyParallel` — Added in: v1.20
 
 Playwright Test runs tests in parallel. In order to achieve that, it runs several worker processes that run at the same time. By default, **test files** are run in parallel. Tests in a single file are run in order, in the same worker process. You can configure entire test suite to concurrently run all tests in all files using this option.
 
 **Type:** `boolean`
-
----
 
 ### `testConfig.globalSetup` — Added in: v1.10
 
@@ -104,15 +92,11 @@ Path to the global setup file. This file will be required and run before all the
 
 **Type:** `string`
 
----
-
 ### `testConfig.globalTeardown` — Added in: v1.10
 
 Path to the global teardown file. This file will be required and run after all the tests. It must export a single function. See also `testConfig.globalSetup`.
 
 **Type:** `string`
-
----
 
 ### `testConfig.globalTimeout` — Added in: v1.10
 
@@ -120,15 +104,11 @@ Maximum time in milliseconds the whole test suite can run. Zero means no limit. 
 
 **Type:** `number`
 
----
-
 ### `testConfig.grep` — Added in: v1.10
 
 Filter to only run tests with a title matching one of the patterns. For example, passing `--grep=usage` on the command line would only run tests whose title includes `"usage"`.
 
 **Type:** `RegExp | Array<RegExp>`
-
----
 
 ### `testConfig.grepInvert` — Added in: v1.10
 
@@ -136,15 +116,11 @@ Filter to only run tests with a title **not** matching one of the patterns. This
 
 **Type:** `RegExp | Array<RegExp>`
 
----
-
 ### `testConfig.ignoreSnapshots` — Added in: v1.26
 
 Whether to skip snapshot expectations, such as `expect(value).toMatchSnapshot()` and `await expect(page).toHaveScreenshot()`. Defaults to `false`.
 
 **Type:** `boolean`
-
----
 
 ### `testConfig.maxFailures` — Added in: v1.10
 
@@ -152,15 +128,11 @@ The maximum number of test failures for the whole test suite run. After reaching
 
 **Type:** `number`
 
----
-
 ### `testConfig.metadata` — Added in: v1.10
 
 Any JSON-serializable metadata that will be put directly to the test report.
 
 **Type:** `any`
-
----
 
 ### `testConfig.name` — Added in: v1.10
 
@@ -168,15 +140,11 @@ Config name is visible in the report.
 
 **Type:** `string`
 
----
-
 ### `testConfig.outputDir` — Added in: v1.10
 
 The output directory for files created during test execution. Each test run gets its own directory so they cannot conflict. Defaults to `<package.json-directory>/test-results`.
 
 **Type:** `string`
-
----
 
 ### `testConfig.preserveOutput` — Added in: v1.10
 
@@ -188,15 +156,11 @@ Whether to preserve test output in the `testConfig.outputDir`. Defaults to `'alw
 
 **Type:** `"always" | "never" | "failures-only"`
 
----
-
 ### `testConfig.projects` — Added in: v1.10
 
 Playwright Test supports running multiple test projects at the same time. See `TestProject` for more information.
 
 **Type:** `Array<TestProject>`
-
----
 
 ### `testConfig.quiet` — Added in: v1.10
 
@@ -204,15 +168,11 @@ Whether to suppress stdout and stderr from the tests. Defaults to `false`.
 
 **Type:** `boolean`
 
----
-
 ### `testConfig.repeatEach` — Added in: v1.10
 
 The number of times to repeat each test, useful for debugging flaky tests. Defaults to `0`.
 
 **Type:** `number`
-
----
 
 ### `testConfig.reportSlowTests` — Added in: v1.10
 
@@ -222,8 +182,6 @@ Whether to report slow test files. Pass `null` to disable this feature.
 
 - `max` `number` — The maximum number of slow test files to report. Defaults to `5`.
 - `threshold` `number` — Test duration in milliseconds that is considered slow. Defaults to `15000`.
-
----
 
 ### `testConfig.reporter` — Added in: v1.10
 
@@ -237,23 +195,17 @@ Each reporter can optionally receive options as a second argument.
 
 **Type:** `string | Array<[string, Object?]> | Object`
 
----
-
 ### `testConfig.respectGitIgnore` — Added in: v1.43
 
 Whether to use `.gitignore` file when searching for test files. Defaults to `true`.
 
 **Type:** `boolean`
 
----
-
 ### `testConfig.retries` — Added in: v1.10
 
 The maximum number of retry attempts given to failed tests. Learn more about test retries. Defaults to `0`.
 
 **Type:** `number`
-
----
 
 ### `testConfig.shard` — Added in: v1.10
 
@@ -263,8 +215,6 @@ Shard tests and execute only the selected shard. Specify in the one-based form l
 
 - `current` `number` — The index of the shard to execute, one-based.
 - `total` `number` — The total number of shards.
-
----
 
 ### `testConfig.snapshotPathTemplate` — Added in: v1.26
 
@@ -287,15 +237,11 @@ Supported tokens:
 | `{testFilePath}` | Relative path from `testDir` to test file                   |
 | `{testName}`     | File-system-sanitized test title including parent describes |
 
----
-
 ### `testConfig.tag` — Added in: v1.43
 
 Allows filtering tests by tags. Accepts a tag name or a list of tag names. Only tests with at least one of the specified tags will run.
 
 **Type:** `string | Array<string>`
-
----
 
 ### `testConfig.testDir` — Added in: v1.10
 
@@ -303,15 +249,11 @@ Directory that will be recursively scanned for test files. Defaults to the direc
 
 **Type:** `string`
 
----
-
 ### `testConfig.testIgnore` — Added in: v1.10
 
 Files matching one of these patterns are not executed as test files. Matching is performed against the absolute file path. Strings are treated as glob patterns.
 
 **Type:** `string | RegExp | Array<string | RegExp>`
-
----
 
 ### `testConfig.testMatch` — Added in: v1.10
 
@@ -319,23 +261,17 @@ Only the files matching one of these patterns are executed as test files. Matchi
 
 **Type:** `string | RegExp | Array<string | RegExp>`
 
----
-
 ### `testConfig.timeout` — Added in: v1.10
 
 Timeout for each test in milliseconds. Defaults to `30000` (30 seconds).
 
 **Type:** `number`
 
----
-
 ### `testConfig.tsconfig` — Added in: v1.26
 
 Path to a custom tsconfig file to use when importing TypeScript test files, hooks, fixtures, and page objects. Useful when the `tsconfig.json` in the project is not suitable for test code.
 
 **Type:** `string`
-
----
 
 ### `testConfig.updateSnapshots` — Added in: v1.10
 
@@ -348,8 +284,6 @@ Whether to update expected snapshots with the actual results produced by the tes
 
 **Type:** `"all" | "changed" | "missing" | "none"`
 
----
-
 ### `testConfig.updateSourceMethod` — Added in: v1.50
 
 The method to use for updating snapshot sources when `--update-snapshots` is used. Defaults to `'overwrite'`.
@@ -360,15 +294,11 @@ The method to use for updating snapshot sources when `--update-snapshots` is use
 
 **Type:** `"3way" | "overwrite" | "patch"`
 
----
-
 ### `testConfig.use` — Added in: v1.10
 
 Global options for all tests, for example `testOptions.browserName`. Learn more about configuration and see available options.
 
 **Type:** `TestOptions`
-
----
 
 ### `testConfig.webServer` — Added in: v1.10
 
@@ -387,8 +317,6 @@ Launch a development web server (or multiple) during the tests. See `testConfig.
 - `timeout` `number` (optional) — How long to wait for the server to start in milliseconds. Defaults to `60000`.
 - `gracefulShutdown` `Object` (optional) — How to gracefully shut down the server.
 
----
-
 ### `testConfig.workers` — Added in: v1.10
 
 The maximum number of concurrent worker processes to use for parallelizing tests. Can also be set as a percentage of logical CPU cores, e.g. `'50%'`. Playwright Test uses worker processes to run tests. There is always at least one worker process, but more can be used to speed up test execution.
@@ -396,8 +324,6 @@ The maximum number of concurrent worker processes to use for parallelizing tests
 Defaults to one half of the number of logical CPU cores. Learn more about parallelism and sharding with Playwright Test.
 
 **Type:** `number | string`
-
----
 
 ### `testConfig.snapshotDir` — Added in: v1.10 (Deprecated)
 

@@ -19,8 +19,6 @@ Follow the **MCP install guide** and add the following to your Claude Desktop co
 }
 ```
 
----
-
 ## Configuration file location
 
 | Platform | Path                                                              |

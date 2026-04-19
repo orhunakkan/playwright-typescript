@@ -16,15 +16,11 @@ The following examples rely on the `@axe-core/playwright` package which adds sup
 
 > **Disclaimer:** Automated accessibility tests can detect some common accessibility problems such as missing or invalid properties. But many accessibility problems can only be discovered through manual testing. We recommend using a combination of automated testing, manual accessibility assessments, and inclusive user testing. For manual assessments, we recommend Accessibility Insights for Web, a free and open source dev tool that walks you through assessing a website for WCAG 2.1 AA coverage.
 
----
-
 ## Example accessibility tests
 
 Accessibility tests work just like any other Playwright test. You can either create separate test cases for them, or integrate accessibility scans and assertions into your existing test cases.
 
 The following examples demonstrate a few basic accessibility testing scenarios.
-
----
 
 ## Scanning an entire page
 
@@ -52,8 +48,6 @@ test.describe('homepage', () => {
 });
 ```
 
----
-
 ## Configuring axe to scan a specific part of a page
 
 `@axe-core/playwright` supports many configuration options for axe. You can specify these options by using a Builder pattern with the `AxeBuilder` class.
@@ -79,8 +73,6 @@ test('navigation menu should not have automatically detectable accessibility vio
 });
 ```
 
----
-
 ## Scanning for WCAG violations
 
 By default, axe checks against a wide variety of accessibility rules. Some of these rules correspond to specific success criteria from the Web Content Accessibility Guidelines (WCAG), and others are "best practice" rules that are not specifically required by any WCAG criterion.
@@ -102,8 +94,6 @@ test('should not have any automatically detectable WCAG A or AA violations', asy
 ```
 
 You can find a complete listing of the rule tags axe-core supports in the "Axe-core Tags" section of the axe API documentation.
-
----
 
 ## Handling known issues
 
@@ -180,8 +170,6 @@ function violationFingerprints(accessibilityScanResults) {
 }
 ```
 
----
-
 ## Exporting scan results as a test attachment
 
 Most accessibility tests are primarily concerned with the `violations` property of the axe scan results. However, the scan results contain more than just violations. For example, the results also contain information about rules which passed and about elements which axe found to have inconclusive results for some rules.
@@ -206,8 +194,6 @@ test('example with attachment', async ({ page }, testInfo) => {
   expect(accessibilityScanResults.violations).toEqual([]);
 });
 ```
-
----
 
 ## Using a test fixture for common axe configuration
 

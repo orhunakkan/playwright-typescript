@@ -8,8 +8,6 @@
 
 The Playwright VS Code extension brings the power of Playwright Test directly into your editor, allowing you to run, debug, and generate tests with a seamless UI-driven experience. This guide will walk you through setting up the extension and using its core features to supercharge your end-to-end testing workflow.
 
----
-
 ## Prerequisites
 
 Before you begin, make sure you have the following installed:
@@ -17,21 +15,15 @@ Before you begin, make sure you have the following installed:
 - Node.js (LTS version recommended)
 - Visual Studio Code
 
----
-
 ## Getting Started
 
 ### Installation & Setup
 
 Install the Extension: Open the Extensions view in VS Code (Ctrl+Shift+X or Cmd+Shift+X) and search for "Playwright". Install the official extension from Microsoft. Install Playwright: Once the extension is installed, open the Command Palette (Ctrl+Shift+P or Cmd+Shift+P) and run the Test: Install Playwright command. Select Browsers: Choose the browsers you want for your tests (e.g., Chromium, Firefox, WebKit). You can also add a GitHub Actions workflow to run tests in CI. These settings can be changed later in your `playwright.config.ts` file.
 
----
-
 ## Opening the Testing Sidebar
 
 Click the Testing icon in the VS Code Activity Bar to open the Test Explorer. Here, you'll find your tests, as well as the Playwright sidebar for managing projects, tools, and settings.
-
----
 
 ## Core Features
 
@@ -45,15 +37,11 @@ The VS Code extension provides powerful debugging tools to help you identify and
 
 > **Note:** To learn more, see our Trace Viewer guide.
 
----
-
 ## Generating Tests with CodeGen
 
 CodeGen is Playwright's powerful test generation tool that automatically creates test code by recording your interactions with a web page. Instead of writing tests from scratch, you can simply navigate through your application while CodeGen captures your actions and converts them into reliable test code with proper locators and assertions. Record a New Test: Click Record new in the sidebar. A browser window will open. As you interact with the page, Playwright will automatically generate the test code. You can also generate assertions from the recording toolbar. Record at Cursor: Place your cursor inside an existing test and click Record at cursor to add new actions at that specific point. Pick a Locator: Use the Pick locator tool to click on any element in the opened browser. Playwright will determine the best locator and copy it to your clipboard, ready to be pasted into your code.
 
 > **Note:** To learn more, see our CodeGen guide.
-
----
 
 ## Advanced Features
 
@@ -84,8 +72,6 @@ If you have multiple `playwright.config.ts` files, you can switch between them u
 | Record a New Test  | Click Record new in the Playwright sidebar          |
 | Pick a Locator     | Click Pick locator in the Playwright sidebar        |
 | View Test Trace    | Enable Show Trace Viewer in the Playwright sidebar  |
-
----
 
 ## What's Next
 

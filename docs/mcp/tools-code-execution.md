@@ -6,8 +6,6 @@
 
 Run Playwright code for complex interactions beyond individual tool calls.
 
----
-
 ## browser_run_code
 
 Execute a Playwright code snippet. The function receives a `page` object with the full Playwright API.
@@ -15,8 +13,6 @@ Execute a Playwright code snippet. The function receives a `page` object with th
 | Parameter | Type   | Required | Description                |
 | --------- | ------ | -------- | -------------------------- |
 | code      | string | yes      | Playwright code to execute |
-
----
 
 ## Verify element content
 
@@ -28,8 +24,6 @@ Execute a Playwright code snippet. The function receives a `page` object with th
 }
 "3 items left"
 ```
-
----
 
 ## Set geolocation
 
@@ -45,8 +39,6 @@ Execute a Playwright code snippet. The function receives a `page` object with th
 }
 ```
 
----
-
 ## Wait for specific condition
 
 ```bash
@@ -58,8 +50,6 @@ Execute a Playwright code snippet. The function receives a `page` object with th
 }
 "Loading complete"
 ```
-
----
 
 ## Handle iframes
 
@@ -73,8 +63,6 @@ Execute a Playwright code snippet. The function receives a `page` object with th
 "$49.99"
 ```
 
----
-
 ## Clipboard operations
 
 ```bash
@@ -85,8 +73,6 @@ Execute a Playwright code snippet. The function receives a `page` object with th
   }"
 }
 ```
-
----
 
 ## browser_evaluate
 
@@ -112,8 +98,6 @@ Evaluate JavaScript directly on the page or a specific element.
 }
 "1280x720"
 ```
-
----
 
 ## When to use code execution
 

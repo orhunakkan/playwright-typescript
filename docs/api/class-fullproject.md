@@ -6,8 +6,6 @@
 
 Runtime representation of the test project configuration. It is accessible in the tests via `testInfo.project` and `workerInfo.project` and is passed to the test reporters. To see the format of the project in the Playwright configuration file please see `TestProject` instead.
 
----
-
 ## Properties
 
 ### dependencies
@@ -22,8 +20,6 @@ fullProject.dependencies;
 
 **Type:** `Array<string>`
 
----
-
 ### grep
 
 **Added in:** v1.10
@@ -35,8 +31,6 @@ fullProject.grep;
 ```
 
 **Type:** `RegExp | Array<RegExp>`
-
----
 
 ### grepInvert
 
@@ -50,8 +44,6 @@ fullProject.grepInvert;
 
 **Type:** `null | RegExp | Array<RegExp>`
 
----
-
 ### ignoreSnapshots
 
 **Added in:** v1.59
@@ -63,8 +55,6 @@ fullProject.ignoreSnapshots;
 ```
 
 **Type:** `boolean`
-
----
 
 ### metadata
 
@@ -78,8 +68,6 @@ fullProject.metadata;
 
 **Type:** `Metadata`
 
----
-
 ### name
 
 **Added in:** v1.10
@@ -91,8 +79,6 @@ fullProject.name;
 ```
 
 **Type:** `string`
-
----
 
 ### outputDir
 
@@ -106,8 +92,6 @@ fullProject.outputDir;
 
 **Type:** `string`
 
----
-
 ### repeatEach
 
 **Added in:** v1.10
@@ -119,8 +103,6 @@ fullProject.repeatEach;
 ```
 
 **Type:** `number`
-
----
 
 ### retries
 
@@ -134,8 +116,6 @@ fullProject.retries;
 
 **Type:** `number`
 
----
-
 ### snapshotDir
 
 **Added in:** v1.10
@@ -147,8 +127,6 @@ fullProject.snapshotDir;
 ```
 
 **Type:** `string`
-
----
 
 ### teardown
 
@@ -162,8 +140,6 @@ fullProject.teardown;
 
 **Type:** `string`
 
----
-
 ### testDir
 
 **Added in:** v1.10
@@ -175,8 +151,6 @@ fullProject.testDir;
 ```
 
 **Type:** `string`
-
----
 
 ### testIgnore
 
@@ -190,8 +164,6 @@ fullProject.testIgnore;
 
 **Type:** `string | RegExp | Array<string | RegExp>`
 
----
-
 ### testMatch
 
 **Added in:** v1.10
@@ -204,8 +176,6 @@ fullProject.testMatch;
 
 **Type:** `string | RegExp | Array<string | RegExp>`
 
----
-
 ### timeout
 
 **Added in:** v1.10
@@ -217,8 +187,6 @@ fullProject.timeout;
 ```
 
 **Type:** `number`
-
----
 
 ### use
 

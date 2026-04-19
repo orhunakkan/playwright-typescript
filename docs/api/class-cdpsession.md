@@ -20,8 +20,6 @@ await client.send('Animation.setPlaybackRate', {
 });
 ```
 
----
-
 ## Methods
 
 ### detach
@@ -35,8 +33,6 @@ await cdpSession.detach();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### send
 
@@ -54,8 +50,6 @@ await cdpSession.send(method, params);
 
 **Returns:** `Promise<Object>`
 
----
-
 ## Events
 
 ### on('close')
@@ -69,8 +63,6 @@ cdpSession.on('close', (data) => {});
 ```
 
 **Event data:** `CDPSession`
-
----
 
 ### on('event')
 

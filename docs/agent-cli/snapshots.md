@@ -8,8 +8,6 @@
 
 After each command, `playwright-cli` outputs a snapshot of the current browser state — an **accessibility tree** with **element refs** for interaction.
 
----
-
 ## Automatic snapshots
 
 Every command returns page info and a link to the snapshot file:
@@ -41,8 +39,6 @@ The snapshot file contains the accessibility tree:
     - link "Completed" [ref=e22]
 ```
 
----
-
 ## Element refs
 
 Each interactive element gets a unique **ref** (e.g., `e5`, `e10`). Refs are stable within a single snapshot but **invalidated when the page changes** — always re-snapshot after navigation.
@@ -54,8 +50,6 @@ Each interactive element gets a unique **ref** (e.g., `e5`, `e10`). Refs are sta
 | **Lifetime**   | Valid until the next page change                                  |
 | **Assignment** | Only interactive elements get refs (buttons, links, inputs, etc.) |
 
----
-
 ## On-demand snapshots
 
 ```bash
@@ -66,8 +60,6 @@ playwright-cli snapshot e34 # scope to element ref
 playwright-cli snapshot --depth=4 # limit tree depth
 ```
 
----
-
 ## Using refs
 
 ```bash
@@ -75,8 +67,6 @@ playwright-cli click e10 # check the checkbox
 playwright-cli fill e5 "Walk the dog" # type into textbox
 playwright-cli hover e20 # hover over "All" link
 ```
-
----
 
 ## Using selectors
 
@@ -93,8 +83,6 @@ playwright-cli click "getByTestId('submit-button')"
 playwright-cli click "getByText('Login')"
 ```
 
----
-
 ## Raw output
 
 Use `--raw` to strip page info and return only command output:
@@ -102,8 +90,6 @@ Use `--raw` to strip page info and return only command output:
 ```bash
 playwright-cli snapshot --raw | grep "button"
 ```
-
----
 
 ## Best practices
 

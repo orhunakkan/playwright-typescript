@@ -14,8 +14,6 @@ Capture the current page, a specific element, or the full scrollable page.
 | ref       | string  | no       | Element ref to screenshot a specific element |
 | fullPage  | boolean | no       | Capture full scrollable page                 |
 
----
-
 ## Page screenshot
 
 ```bash
@@ -24,8 +22,6 @@ You: Take a screenshot of the current page.
 → browser_take_screenshot
 → Returns: PNG image of the viewport
 ```
-
----
 
 ## Element screenshot
 
@@ -36,8 +32,6 @@ You: Take a screenshot of just the login form.
 → Returns: PNG image cropped to the element
 ```
 
----
-
 ## Full-page screenshot
 
 ```bash
@@ -46,8 +40,6 @@ You: Take a full-page screenshot including content below the fold.
 → browser_take_screenshot { fullPage: true }
 → Returns: PNG image of entire scrollable page
 ```
-
----
 
 ## When to use screenshots
 

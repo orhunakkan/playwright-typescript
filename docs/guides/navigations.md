@@ -8,8 +8,6 @@
 
 Playwright can navigate to URLs and handle navigations caused by the page interactions.
 
----
-
 ## Basic navigation
 
 Simplest form of a navigation is opening a URL:
@@ -22,8 +20,6 @@ await page.goto('https://example.com');
 The code above loads the page and waits for the web page to fire the `load` event. The `load` event is fired when the whole page has loaded, including all dependent resources such as stylesheets, scripts, iframes, and images.
 
 > **Note:** If the page does a client-side redirect before load, `page.goto()` will wait for the redirected page to fire the `load` event.
-
----
 
 ## When is the page loaded?
 
@@ -40,8 +36,6 @@ await page.getByText('Example Domain').click();
 
 For the scenario above, Playwright will wait for the text to become visible, will wait for the rest of the actionability checks to pass for that element, and will click it. Playwright operates as a very fast user - the moment it sees the button, it clicks it. In the general case, you don't need to worry about whether all the resources loaded, etc.
 
----
-
 ## Hydration
 
 At some point in time, you'll stumble upon a use case where Playwright performs an action, but nothing seemingly happens. Or you enter some text into the input field and it will disappear. The most probable reason behind that is a poor page hydration.
@@ -52,8 +46,6 @@ A simple way to verify if your page suffers from a poor hydration is to open Chr
 
 The right fix for this issue is to make sure that all the interactive controls are disabled until after the hydration, when the page is fully functional.
 
----
-
 ## Waiting for navigation
 
 Clicking an element could trigger multiple navigations. In these cases, it is recommended to explicitly `page.waitForURL()` to a specific url.
@@ -62,8 +54,6 @@ Clicking an element could trigger multiple navigations. In these cases, it is re
 await page.getByText('Click me').click();
 await page.waitForURL('**/login');
 ```
-
----
 
 ## Navigation events
 

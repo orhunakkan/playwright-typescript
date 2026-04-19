@@ -32,8 +32,6 @@ An example to trigger select-all with the keyboard:
 await page.keyboard.press('ControlOrMeta+A');
 ```
 
----
-
 ## Methods
 
 ### `keyboard.down(key)` — Added before: v1.9
@@ -56,8 +54,6 @@ await keyboard.down(key);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `keyboard.insertText(text)` — Added before: v1.9
 
 Dispatches only `input` event, does not emit the `keydown`, `keyup` or `keypress` events.
@@ -75,8 +71,6 @@ page.keyboard.insertText('咆');
 | `text`    | `string` | Sets input to the specified text value. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `keyboard.press(key, options?)` — Added before: v1.9
 
@@ -107,8 +101,6 @@ await browser.close();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `keyboard.type(text, options?)` — Added before: v1.9
 
 > **Caution:** In most cases, you should use `locator.fill()` instead. You only need to press keys one by one if there is special keyboard handling on the page — in this case use `locator.pressSequentially()`.
@@ -132,8 +124,6 @@ await page.keyboard.type('World', { delay: 100 }); // Types slower, like a user
 | `options.delay` | `number` (optional) | Time to wait between key presses in milliseconds. Defaults to `0`. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `keyboard.up(key)` — Added before: v1.9
 

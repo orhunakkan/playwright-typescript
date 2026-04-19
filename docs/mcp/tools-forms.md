@@ -21,8 +21,6 @@ Type text into an editable element (input, textarea, contenteditable).
 → browser_type { ref: "e8", text: "search query", slowly: true }  // triggers autocomplete
 ```
 
----
-
 ## browser_fill_form
 
 Fill multiple form fields at once. Supports textboxes, checkboxes, radio buttons, comboboxes, and sliders.
@@ -51,8 +49,6 @@ Fill multiple form fields at once. Supports textboxes, checkboxes, radio buttons
 
 This is more efficient than calling `browser_type` and `browser_click` for each field individually.
 
----
-
 ## browser_check / browser_uncheck
 
 Check or uncheck a checkbox or radio button.
@@ -65,8 +61,6 @@ Check or uncheck a checkbox or radio button.
 → browser_check { ref: "e9" }     // check the "Accept terms" checkbox
 → browser_uncheck { ref: "e9" }   // uncheck it
 ```
-
----
 
 ## Workflow: completing a multi-step form
 

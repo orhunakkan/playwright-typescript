@@ -22,8 +22,6 @@ await video.delete();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `path()` — Added before v1.9
 
 Returns the file system path this video will be recorded to. The video is guaranteed to be written to the filesystem upon closing the browser context.
@@ -35,8 +33,6 @@ await video.path();
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### `saveAs()` — Added in: v1.11
 

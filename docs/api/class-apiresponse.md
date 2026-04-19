@@ -6,8 +6,6 @@
 
 **APIResponse** class represents responses returned by `apiRequestContext.get()` and similar methods.
 
----
-
 ## Methods
 
 ### body
@@ -22,8 +20,6 @@ await apiResponse.body();
 
 **Returns:** `Promise<Buffer>`
 
----
-
 ### dispose
 
 **Added in:** v1.16
@@ -36,8 +32,6 @@ await apiResponse.dispose();
 
 **Returns:** `Promise<void>`
 
----
-
 ### headers
 
 **Added in:** v1.16
@@ -49,8 +43,6 @@ apiResponse.headers();
 ```
 
 **Returns:** `Object<string, string>`
-
----
 
 ### headersArray
 
@@ -67,8 +59,6 @@ apiResponse.headersArray();
 - `name` string — Name of the header.
 - `value` string — Value of the header.
 
----
-
 ### json
 
 **Added in:** v1.16
@@ -80,8 +70,6 @@ await apiResponse.json();
 ```
 
 **Returns:** `Promise<Serializable>`
-
----
 
 ### ok
 
@@ -95,8 +83,6 @@ apiResponse.ok();
 
 **Returns:** `boolean`
 
----
-
 ### status
 
 **Added in:** v1.16
@@ -108,8 +94,6 @@ apiResponse.status();
 ```
 
 **Returns:** `number`
-
----
 
 ### statusText
 
@@ -123,8 +107,6 @@ apiResponse.statusText();
 
 **Returns:** `string`
 
----
-
 ### text
 
 **Added in:** v1.16
@@ -136,8 +118,6 @@ await apiResponse.text();
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### url
 

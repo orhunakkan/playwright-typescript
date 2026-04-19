@@ -8,8 +8,6 @@
 
 Playwright comes with a **webServer** option in the config file which gives you the ability to launch a local dev server before running your tests. This is ideal for when writing your tests during development and when you don't have a staging or production url to test against.
 
----
-
 ## Configuring a web server
 
 Use the `webServer` property in your Playwright config to launch a development web server during the tests.
@@ -47,8 +45,6 @@ export default defineConfig({
 | `url`                  | URL of your http server that is expected to return a 2xx, 3xx, 400, 401, 402, or 403 status code when the server is ready to accept connections.                                                                                                                                                                                                                                                  |
 | `wait`                 | Consider command started only when given output has been produced. Takes an object with optional `stdout` and/or `stderr` regular expressions.                                                                                                                                                                                                                                                    |
 
----
-
 ## Adding a server timeout
 
 Webservers can sometimes take longer to boot up. In this case, you can increase the timeout to wait for the server to start.
@@ -68,8 +64,6 @@ export default defineConfig({
   },
 });
 ```
-
----
 
 ## Adding a baseURL
 
@@ -106,8 +100,6 @@ test('test', async ({ page }) => {
   await page.goto('./login');
 });
 ```
-
----
 
 ## Multiple web servers
 

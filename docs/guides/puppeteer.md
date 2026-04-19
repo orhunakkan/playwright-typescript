@@ -44,9 +44,7 @@ This guide describes migration to Playwright Library and Playwright Test from Pu
 
 `page.waitForNavigation` and `page.waitForSelector` remain, but in many cases will not be necessary due to auto-waiting. The use of `ElementHandle` is discouraged — use `Locator` objects and web-first assertions instead. Locators are strict: all operations on locators that imply some target DOM element will throw if more than one element matches.
 
----
-
-## Examples
+## 💡 Examples
 
 ### Automation example
 
@@ -144,8 +142,6 @@ Migration highlights:
 4. Locator creation with `page.locator()` is one of the few methods that is sync
 5. Use assertions to verify the state instead of `page.$eval()`
 
----
-
 ## Testing
 
 To improve testing, it is advised to use Locators and web-first Assertions. See Writing Tests.
@@ -153,8 +149,6 @@ To improve testing, it is advised to use Locators and web-first Assertions. See 
 It is common with Puppeteer to use `page.evaluate()` or `page.$eval()` to inspect an `ElementHandle` and extract the value of text content, attribute, class, etc. Web-first Assertions offer several matchers for this purpose — they are more reliable and readable.
 
 Playwright Test is the first-party recommended test runner for Playwright. It provides several features like Page Object Model, parallelism, fixtures, and reporters.
-
----
 
 ## Playwright Test Super Powers
 
@@ -171,8 +165,6 @@ You also get all these awesome tools that come bundled with Playwright Test:
 - Playwright Inspector
 - Playwright Test Code generation
 - Playwright Tracing for post-mortem debugging
-
----
 
 ## Further Reading
 

@@ -14,8 +14,6 @@ Processed configuration from the configuration file.
 
 **Type:** `FullConfig`
 
----
-
 ### `workerInfo.parallelIndex` — Added in: v1.10
 
 The index of the worker between `0` and `workers - 1`. It is guaranteed that workers running at the same time have a different `parallelIndex`. When a worker is restarted, for example after a failure, the new worker process has the same `parallelIndex`.
@@ -24,15 +22,11 @@ Also available as `process.env.TEST_PARALLEL_INDEX`. Learn more about parallelis
 
 **Type:** `number`
 
----
-
 ### `workerInfo.project` — Added in: v1.10
 
 Processed project configuration from the configuration file.
 
 **Type:** `FullProject`
-
----
 
 ### `workerInfo.workerIndex` — Added in: v1.10
 

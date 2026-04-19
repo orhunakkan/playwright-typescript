@@ -8,8 +8,6 @@
 
 You can either parameterize tests on a test level or on a project level.
 
----
-
 ## Parameterized Tests
 
 ```ts
@@ -26,8 +24,6 @@ You can either parameterize tests on a test level or on a project level.
   });
 });
 ```
-
----
 
 ## Before and after hooks
 
@@ -73,8 +69,6 @@ If you want to have hooks for each test, you can put them inside a `describe()` 
   });
 });
 ```
-
----
 
 ## Parameterized Projects
 
@@ -157,8 +151,6 @@ export const test = base.extend<TestOptions>({
 
 > Parameterized projects behavior has changed in version 1.18. Learn more.
 
----
-
 ## Passing Environment Variables
 
 You can use environment variables to configure tests from the command line. For example, consider the following test file that needs a username and a password. It is usually a good idea not to store your secrets in the source code, so we'll need a way to pass secrets from outside.
@@ -197,8 +189,6 @@ Now, you can run tests against a staging or a production environment:
 STAGING=1 npx playwright test
 ```
 
----
-
 ## env files
 
 To make environment variables easier to manage, consider something like `.env` files. Here is an example that uses `dotenv` package to read environment variables directly in the configuration file.
@@ -235,8 +225,6 @@ Run tests as usual, your environment variables should be picked up.
 ```bash
 npx playwright test
 ```
-
----
 
 ## Create tests via a CSV file
 

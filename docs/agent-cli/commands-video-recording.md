@@ -8,8 +8,6 @@
 
 Record browser sessions as **WebM videos** with chapter markers.
 
----
-
 ## Commands
 
 ```bash
@@ -17,8 +15,6 @@ playwright-cli video-start [filename] # start recording
 playwright-cli video-chapter <title> # add chapter marker
 playwright-cli video-stop # stop and save
 ```
-
----
 
 ## Basic recording
 
@@ -30,8 +26,6 @@ playwright-cli fill e3 "test"
 playwright-cli video-stop
 # Video saved to: .playwright-cli/demo.webm
 ```
-
----
 
 ## Chapter markers
 
@@ -64,15 +58,11 @@ playwright-cli video-chapter "Title" \
   --duration=2000 # show chapter card for 2 seconds
 ```
 
----
-
 ## Video size
 
 ```bash
 playwright-cli video-start --size=800x600
 ```
-
----
 
 ## Use cases
 
@@ -82,8 +72,6 @@ playwright-cli video-start --size=800x600
 | Test documentation | Record with chapter markers      |
 | Agent monitoring   | Record agent sessions for review |
 | Demo creation      | Record polished walkthrough      |
-
----
 
 ## Automatic recording
 

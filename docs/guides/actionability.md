@@ -41,13 +41,9 @@ Here is the complete list of actionability checks performed for each action:
 | `locator.pressSequentially()`      | -       | -      | -               | -       | -        |
 | `locator.setInputFiles()`          | -       | -      | -               | -       | -        |
 
----
-
 ## Forcing actions
 
 Some actions like `locator.click()` support `force` option that disables non-essential actionability checks, for example passing truthy `force` to `locator.click()` method will not check that the target element actually receives click events.
-
----
 
 ## Assertions
 
@@ -81,8 +77,6 @@ Playwright includes auto-retrying assertions that remove flakiness by waiting un
 
 Learn more in the [assertions guide](https://playwright.dev/docs/test-assertions).
 
----
-
 ## Visible
 
 Element is considered visible when it has non-empty bounding box and does not have `visibility:hidden` computed style.
@@ -93,13 +87,9 @@ Note that according to this definition:
 - Elements with `display:none` are **not considered visible**.
 - Elements with `opacity:0` **are considered visible**.
 
----
-
 ## Stable
 
 Element is considered stable when it has maintained the same bounding box for at least two consecutive animation frames.
-
----
 
 ## Enabled
 
@@ -109,16 +99,12 @@ Element is considered enabled when it is not disabled. Element is disabled when:
 - it is a `<button>`, `<select>`, `<input>`, `<textarea>`, `<option>` or `<optgroup>` that is a part of a `<fieldset>` with a `[disabled]` attribute;
 - it is a descendant of an element with `[aria-disabled=true]` attribute.
 
----
-
 ## Editable
 
 Element is considered editable when it is enabled and is not readonly. Element is readonly when:
 
 - it is a `<select>`, `<input>` or `<textarea>` with a `[readonly]` attribute;
 - it has an `[aria-readonly=true]` attribute and an aria role that supports it.
-
----
 
 ## Receives Events
 

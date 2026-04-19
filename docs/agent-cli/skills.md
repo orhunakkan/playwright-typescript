@@ -8,8 +8,6 @@
 
 Skills teach coding agents how to use `playwright-cli` effectively, providing structured reference documentation that agents can discover and use.
 
----
-
 ## Installing skills
 
 ```bash
@@ -17,8 +15,6 @@ playwright-cli install --skills
 ```
 
 This installs skill files locally so your coding agent can reference them for context about available commands and workflows.
-
----
 
 ## What skills provide
 
@@ -34,8 +30,6 @@ The installed skill includes detailed reference guides for common tasks:
 - **Video recording** — capture browser session videos
 - **Inspecting element attributes** — get element attributes not visible in snapshots
 
----
-
 ## Skills-less operation
 
 You can use `playwright-cli` without installing skills. Point your agent at the CLI and let it discover commands:
@@ -44,8 +38,6 @@ You can use `playwright-cli` without installing skills. Point your agent at the 
 Test the "add todo" flow on https://demo.playwright.dev/todomvc using playwright-cli.
 Check playwright-cli --help for available commands.
 ```
-
----
 
 ## Supported agents
 

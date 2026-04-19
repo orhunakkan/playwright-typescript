@@ -6,8 +6,6 @@
 
 Resolved configuration which is accessible via `testInfo.config` and is passed to the test reporters. To see the format of Playwright configuration file, please see `TestConfig` instead.
 
----
-
 ## Properties
 
 ### configFile
@@ -22,8 +20,6 @@ fullConfig.configFile;
 
 **Type:** `string`
 
----
-
 ### forbidOnly
 
 **Added in:** v1.10
@@ -35,8 +31,6 @@ fullConfig.forbidOnly;
 ```
 
 **Type:** `boolean`
-
----
 
 ### fullyParallel
 
@@ -50,8 +44,6 @@ fullConfig.fullyParallel;
 
 **Type:** `boolean`
 
----
-
 ### globalSetup
 
 **Added in:** v1.10
@@ -63,8 +55,6 @@ fullConfig.globalSetup;
 ```
 
 **Type:** `null | string`
-
----
 
 ### globalTeardown
 
@@ -78,8 +68,6 @@ fullConfig.globalTeardown;
 
 **Type:** `null | string`
 
----
-
 ### globalTimeout
 
 **Added in:** v1.10
@@ -91,8 +79,6 @@ fullConfig.globalTimeout;
 ```
 
 **Type:** `number`
-
----
 
 ### grep
 
@@ -106,8 +92,6 @@ fullConfig.grep;
 
 **Type:** `RegExp | Array<RegExp>`
 
----
-
 ### grepInvert
 
 **Added in:** v1.10
@@ -119,8 +103,6 @@ fullConfig.grepInvert;
 ```
 
 **Type:** `null | RegExp | Array<RegExp>`
-
----
 
 ### maxFailures
 
@@ -134,8 +116,6 @@ fullConfig.maxFailures;
 
 **Type:** `number`
 
----
-
 ### metadata
 
 **Added in:** v1.10
@@ -147,8 +127,6 @@ fullConfig.metadata;
 ```
 
 **Type:** `Metadata`
-
----
 
 ### preserveOutput
 
@@ -162,8 +140,6 @@ fullConfig.preserveOutput;
 
 **Type:** `"always" | "never" | "failures-only"`
 
----
-
 ### projects
 
 **Added in:** v1.10
@@ -176,8 +152,6 @@ fullConfig.projects;
 
 **Type:** `Array<FullProject>`
 
----
-
 ### quiet
 
 **Added in:** v1.10
@@ -189,8 +163,6 @@ fullConfig.quiet;
 ```
 
 **Type:** `boolean`
-
----
 
 ### reportSlowTests
 
@@ -207,8 +179,6 @@ fullConfig.reportSlowTests;
 - `max` number — The maximum number of slow test files to report.
 - `threshold` number — Test file duration in milliseconds that is considered slow.
 
----
-
 ### reporter
 
 **Added in:** v1.10
@@ -221,8 +191,6 @@ fullConfig.reporter;
 
 **Type:** `string | Array<Object> | "list" | "dot" | "line" | "github" | "json" | "junit" | "null" | "html"`
 
----
-
 ### rootDir
 
 **Added in:** v1.20
@@ -234,8 +202,6 @@ fullConfig.rootDir;
 ```
 
 **Type:** `string`
-
----
 
 ### shard
 
@@ -252,8 +218,6 @@ fullConfig.shard;
 - `total` number — The total number of shards.
 - `current` number — The index of the shard to execute, one-based.
 
----
-
 ### tags
 
 **Added in:** v1.57
@@ -265,8 +229,6 @@ fullConfig.tags;
 ```
 
 **Type:** `Array<string>`
-
----
 
 ### updateSnapshots
 
@@ -280,8 +242,6 @@ fullConfig.updateSnapshots;
 
 **Type:** `"all" | "changed" | "missing" | "none"`
 
----
-
 ### updateSourceMethod
 
 **Added in:** v1.50
@@ -293,8 +253,6 @@ fullConfig.updateSourceMethod;
 ```
 
 **Type:** `"overwrite" | "3way" | "patch"`
-
----
 
 ### version
 
@@ -308,8 +266,6 @@ fullConfig.version;
 
 **Type:** `string`
 
----
-
 ### webServer
 
 **Added in:** v1.10
@@ -321,8 +277,6 @@ fullConfig.webServer;
 ```
 
 **Type:** `null | Object`
-
----
 
 ### workers
 

@@ -8,8 +8,6 @@
 
 Web APIs are usually implemented as HTTP endpoints. Playwright provides APIs to mock and modify network traffic, both HTTP and HTTPS. Any requests that a page does, including XHRs and fetch requests, can be tracked, modified and mocked. With Playwright you can also mock using HAR files that contain multiple network requests made by the page.
 
----
-
 ## Mock API requests
 
 The following code will intercept all the calls to `**/api/v1/fruits` and will return a custom response instead. No requests to the API will be made. The test goes to the URL that uses the mocked route and asserts that mock data is present on the page.
@@ -29,8 +27,6 @@ test("mocks a fruit and doesn't call api", async ({ page }) => {
 ```
 
 You can see from the trace of the example test that the API was never called, it was however fulfilled with the mock data.
-
----
 
 ## Modify API responses
 
@@ -55,8 +51,6 @@ test('gets the json from api and adds a new fruit', async ({ page }) => {
 ```
 
 In the trace of our test we can see that the API was called and the response was modified. By inspecting the response we can see that our new fruit was added to the list.
-
----
 
 ## Mocking with HAR files
 
@@ -114,8 +108,6 @@ We recommend the `update` option to record HAR file for your test. However, you 
 # Save API requests from example.com as "example.har" archive.
 npx playwright open --save-har=example.har --save-har-glob="**/api/**" https://example.com
 ```
-
----
 
 ## Mock WebSockets
 

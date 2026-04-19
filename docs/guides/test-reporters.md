@@ -23,8 +23,6 @@ export default defineConfig({
 });
 ```
 
----
-
 ## Multiple reporters
 
 You can use multiple reporters at the same time. For example you can use `'list'` for nice terminal output and `'json'` to get a comprehensive json file with the test results.
@@ -37,8 +35,6 @@ export default defineConfig({
   reporter: [['list'], ['json', { outputFile: 'test-results.json' }]],
 });
 ```
-
----
 
 ## Reporters on CI
 
@@ -53,8 +49,6 @@ export default defineConfig({
   reporter: process.env.CI ? 'dot' : 'list',
 });
 ```
-
----
 
 ## Built-in reporters
 
@@ -362,8 +356,6 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
 });
 ```
-
----
 
 ## Custom reporters
 

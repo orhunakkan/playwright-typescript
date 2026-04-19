@@ -2,8 +2,6 @@
 
 > **Source:** [playwright.dev/docs/api/class-timeouterror](https://playwright.dev/docs/api/class-timeouterror)
 
----
-
 **TimeoutError** extends **Error**.
 
 TimeoutError is emitted whenever certain operations are terminated due to timeout, for example `locator.waitFor()` or `browserType.launch()`.

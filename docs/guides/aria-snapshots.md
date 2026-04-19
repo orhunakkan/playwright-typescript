@@ -21,8 +21,6 @@ await expect(page.getByRole('banner')).toMatchAriaSnapshot(`
 `);
 ```
 
----
-
 ## Assertion testing vs Snapshot testing
 
 Snapshot testing and assertion testing serve different purposes in test automation.
@@ -74,8 +72,6 @@ Snapshot testing captures a "snapshot" or representation of the entire state of 
 
 By combining snapshot testing for broad, structural checks and assertion testing for specific functionality, you can achieve a well-rounded testing strategy.
 
----
-
 ## Aria snapshots
 
 In Playwright, aria snapshots provide a YAML representation of the accessibility tree of a page. These snapshots can be stored and compared later to verify if the page structure remains consistent or meets defined expectations.
@@ -93,8 +89,6 @@ Each accessible element in the tree is represented as a YAML node:
 - **[attribute=value]:** Attributes and values, in square brackets, represent specific ARIA attributes, such as `checked`, `disabled`, `expanded`, `level`, `pressed`, or `selected`.
 
 These values are derived from ARIA attributes or calculated based on HTML semantics. To inspect the accessibility tree structure of a page, use the Chrome DevTools Accessibility Tab.
-
----
 
 ## Snapshot matching
 
@@ -119,8 +113,6 @@ When matching, the snapshot template is compared to the current accessibility tr
 - If the tree structure matches the template, the test passes; otherwise, it fails, indicating a mismatch between expected and actual accessibility states.
 - The comparison is case-sensitive and collapses whitespace, so indentation and line breaks are ignored.
 - The comparison is order-sensitive, meaning the order of elements in the snapshot template must match the order in the page's accessibility tree.
-
----
 
 ## Partial matching
 
@@ -162,8 +154,6 @@ Similarly, you can partially match children in lists or groups by omitting speci
 ```
 
 Partial matches let you create flexible snapshot tests that verify essential page structure without enforcing specific content or attributes.
-
----
 
 ## Strict matching
 
@@ -208,8 +198,6 @@ export default defineConfig({
 
 Individual snapshots can still override the global setting by including an explicit `/children` property in the template.
 
----
-
 ## Matching with regular expressions
 
 Regular expressions allow flexible matching for elements with dynamic or variable text. Accessible names and text can support regex patterns.
@@ -221,8 +209,6 @@ Regular expressions allow flexible matching for elements with dynamic or variabl
 ```yaml
 - heading /Issues \d+/
 ```
-
----
 
 ## Generating snapshots
 
@@ -253,8 +239,6 @@ Passing an empty string as the template in an assertion generates a snapshot on-
 await expect(locator).toMatchAriaSnapshot('');
 ```
 
----
-
 ## Snapshot patch files
 
 When updating snapshots, Playwright creates patch files that capture differences. These patch files can be reviewed, applied, and committed to source control, allowing teams to track structural changes over time and ensure updates are consistent with application requirements.
@@ -268,8 +252,6 @@ The way source code is updated can be changed using the `--update-source-method`
 ```bash
 npx playwright test --update-snapshots --update-source-method=3way
 ```
-
----
 
 ## Snapshots as separate files
 
@@ -293,8 +275,6 @@ export default defineConfig({
 });
 ```
 
----
-
 ## Using the Locator.ariaSnapshot method
 
 The `locator.ariaSnapshot()` method allows you to programmatically create a YAML representation of accessible elements within a locator's scope, especially helpful for generating snapshots dynamically during test execution.
@@ -305,8 +285,6 @@ console.log(snapshot);
 ```
 
 This command outputs the aria snapshot within the specified locator's scope in YAML format, which you can validate or store as needed.
-
----
 
 ## Accessibility tree examples
 
@@ -403,8 +381,6 @@ The value of `/url` may also be a regular expression:
 ```yaml
 - group: Summary
 ```
-
----
 
 ## Attributes and states
 

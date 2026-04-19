@@ -15,8 +15,6 @@ const download = await downloadPromise;
 await download.saveAs('/path/to/save/at/' + download.suggestedFilename());
 ```
 
----
-
 ## Methods
 
 ### cancel
@@ -30,8 +28,6 @@ await download.cancel();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### createReadStream
 
@@ -47,8 +43,6 @@ await download.createReadStream();
 
 **Returns:** `Promise<Readable>`
 
----
-
 ### delete
 
 **Added before:** v1.9
@@ -60,8 +54,6 @@ await download.delete();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### failure
 
@@ -75,8 +67,6 @@ await download.failure();
 
 **Returns:** `Promise<null | string>`
 
----
-
 ### page
 
 **Added in:** v1.12
@@ -89,8 +79,6 @@ download.page();
 
 **Returns:** `Page`
 
----
-
 ### path
 
 **Added before:** v1.9
@@ -102,8 +90,6 @@ await download.path();
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### saveAs
 
@@ -121,8 +107,6 @@ await download.saveAs('/path/to/save/at/' + download.suggestedFilename());
 
 **Returns:** `Promise<void>`
 
----
-
 ### suggestedFilename
 
 **Added before:** v1.9
@@ -134,8 +118,6 @@ download.suggestedFilename();
 ```
 
 **Returns:** `string`
-
----
 
 ### url
 

@@ -8,8 +8,6 @@
 
 Connect to an existing browser instead of launching a new one.
 
----
-
 ## Commands
 
 | Command                   | Description                                   |
@@ -18,8 +16,6 @@ Connect to an existing browser instead of launching a new one.
 | `attach --cdp=<url>`      | Connect via Chrome DevTools Protocol endpoint |
 | `attach --endpoint=<url>` | Connect to a Playwright server endpoint       |
 | `attach --extension`      | Connect via Playwright MCP Bridge extension   |
-
----
 
 ## Attach by channel name
 
@@ -43,8 +39,6 @@ playwright-cli attach --cdp=msedge-dev
 
 This is the simplest way to connect — no need to start Chrome with special flags or know the debugging port.
 
----
-
 ## CDP endpoint
 
 Connect to any Chromium-based browser with a Chrome DevTools Protocol endpoint:
@@ -66,8 +60,6 @@ Works with:
 - Electron apps exposing CDP
 - Cloud browser services (Browserbase, etc.)
 
----
-
 ## Playwright server endpoint
 
 Connect to a remote Playwright server:
@@ -76,8 +68,6 @@ Connect to a remote Playwright server:
 playwright-cli attach --endpoint=ws://localhost:3000
 playwright-cli snapshot
 ```
-
----
 
 ## Browser extension
 
@@ -93,8 +83,6 @@ playwright-cli attach --extension
 - **Browser extensions** — interact with pages that depend on installed extensions
 - **Existing tabs** — automate pages you already have open
 
----
-
 ## Named sessions
 
 Attach creates a session. Use `-s` to name it:
@@ -104,8 +92,6 @@ playwright-cli attach --cdp=chrome -s=debug-session
 playwright-cli -s=debug-session snapshot
 playwright-cli -s=debug-session click e5
 ```
-
----
 
 ## Workflow: connect to your running Chrome
 
@@ -123,8 +109,6 @@ playwright-cli screenshot --filename=current-state.png
 # 4. Save state for future headless sessions
 playwright-cli state-save auth.json
 ```
-
----
 
 ## Workflow: debugging a remote browser
 

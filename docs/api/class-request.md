@@ -13,8 +13,6 @@ Whenever the page sends a request for a network resource the following sequence 
 
 > **Note:** HTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with `'requestfinished'` event. If request gets a `'redirect'` response, the request is successfully finished with the `requestfinished` event, and a new request is issued to a redirected url.
 
----
-
 ## Methods
 
 ## Methods
@@ -29,8 +27,6 @@ await request.allHeaders();
 
 **Returns:** `Promise<Object<string, string>>`
 
----
-
 ### `request.existingResponse()` — Added in: v1.59
 
 Returns the `Response` object if the response has already been received, `null` otherwise. Unlike `request.response()`, this method does not wait for the response to arrive.
@@ -40,8 +36,6 @@ request.existingResponse();
 ```
 
 **Returns:** `null | Response`
-
----
 
 ### `request.failure()` — Added before v1.9
 
@@ -58,8 +52,6 @@ page.on('requestfailed', (request) => {
 | Property    | Type     | Description                                             |
 | ----------- | -------- | ------------------------------------------------------- |
 | `errorText` | `string` | Human-readable error message, e.g. `'net::ERR_FAILED'`. |
-
----
 
 ### `request.frame()` — Added before v1.9
 
@@ -79,8 +71,6 @@ else if (request.isNavigationRequest()) console.log(`request ${request.url()} is
 else console.log(`request ${request.url()} from a frame ${request.frame().url()}`);
 ```
 
----
-
 ### `request.headerValue(name)` — Added in: v1.15
 
 Returns the value of the header matching the name. The name is case-insensitive.
@@ -97,8 +87,6 @@ await request.headerValue(name);
 
 **Returns:** `Promise<null | string>`
 
----
-
 ### `request.headers()` — Added before v1.9
 
 An object with the request HTTP headers. The header names are lower-cased. Note that this method does not return security-related headers, including cookie-related ones. You can use `request.allHeaders()` for complete list of headers that include cookie information.
@@ -108,8 +96,6 @@ request.headers();
 ```
 
 **Returns:** `Object<string, string>`
-
----
 
 ### `request.headersArray()` — Added in: v1.15
 
@@ -126,8 +112,6 @@ await request.headersArray();
 | `name`   | `string` | Name of the header.  |
 | `value`  | `string` | Value of the header. |
 
----
-
 ### `request.isNavigationRequest()` — Added before v1.9
 
 Whether this request is driving frame's navigation. Some navigation requests are issued before the corresponding frame is created, and therefore do not have `request.frame()` available.
@@ -137,8 +121,6 @@ request.isNavigationRequest();
 ```
 
 **Returns:** `boolean`
-
----
 
 ### `request.method()` — Added before v1.9
 
@@ -150,8 +132,6 @@ request.method();
 
 **Returns:** `string`
 
----
-
 ### `request.postData()` — Added before v1.9
 
 Request's post body, if any.
@@ -161,8 +141,6 @@ request.postData();
 ```
 
 **Returns:** `null | string`
-
----
 
 ### `request.postDataBuffer()` — Added before v1.9
 
@@ -174,8 +152,6 @@ request.postDataBuffer();
 
 **Returns:** `null | Buffer`
 
----
-
 ### `request.postDataJSON()` — Added before v1.9
 
 Returns parsed request's body for `form-urlencoded` and JSON as a fallback if any. When the response is `application/x-www-form-urlencoded` then a key/value object of the values will be returned. Otherwise it will be parsed as JSON.
@@ -185,8 +161,6 @@ request.postDataJSON();
 ```
 
 **Returns:** `null | Serializable`
-
----
 
 ### `request.redirectedFrom()` — Added before v1.9
 
@@ -200,8 +174,6 @@ console.log(response.request().redirectedFrom().url()); // 'http://example.com'
 
 **Returns:** `null | Request`
 
----
-
 ### `request.redirectedTo()` — Added before v1.9
 
 New request issued by the browser if the server responded with redirect. This method is the opposite of `request.redirectedFrom()`.
@@ -211,8 +183,6 @@ console.log(request.redirectedFrom().redirectedTo() === request); // true
 ```
 
 **Returns:** `null | Request`
-
----
 
 ### `request.resourceType()` — Added before v1.9
 
@@ -224,8 +194,6 @@ request.resourceType();
 
 **Returns:** `string`
 
----
-
 ### `request.response()` — Added before v1.9
 
 Returns the matching `Response` object, or `null` if the response was not received due to error.
@@ -235,8 +203,6 @@ await request.response();
 ```
 
 **Returns:** `Promise<null | Response>`
-
----
 
 ### `request.serviceWorker()` — Added in: v1.24
 
@@ -249,8 +215,6 @@ request.serviceWorker();
 **Returns:** `null | Worker`
 
 > **Note:** This method is Chromium only. It's safe to call when using other browsers, but it will always be `null`. Requests originated in a Service Worker do not have a `request.frame()` available.
-
----
 
 ### `request.sizes()` — Added in: v1.15
 
@@ -268,8 +232,6 @@ await request.sizes();
 | `requestHeadersSize`  | `number` | Total number of bytes from the start of the HTTP request message until (and including) the double CRLF before the body.  |
 | `responseBodySize`    | `number` | Size of the received response body (encoded) in bytes.                                                                   |
 | `responseHeadersSize` | `number` | Total number of bytes from the start of the HTTP response message until (and including) the double CRLF before the body. |
-
----
 
 ### `request.timing()` — Added before v1.9
 
@@ -295,8 +257,6 @@ console.log(request.timing());
 | `requestStart`          | `number` | Time immediately before the browser starts requesting the resource from the server, cache, or local resource. Relative to `startTime`, -1 if not available.                       |
 | `responseStart`         | `number` | Time immediately after the browser receives the first byte of the response. Relative to `startTime`, -1 if not available.                                                         |
 | `responseEnd`           | `number` | Time immediately after the browser receives the last byte of the resource or immediately before the transport connection is closed. Relative to `startTime`, -1 if not available. |
-
----
 
 ### `request.url()` — Added before v1.9
 

@@ -16,8 +16,6 @@ await page.goto('https://example.com');
 await context.close();
 ```
 
----
-
 ## Methods
 
 ### addCookies
@@ -45,8 +43,6 @@ await browserContext.addCookies([cookieObject1, cookieObject2]);
   - `partitionKey` string (optional) — For partitioned third-party cookies (aka CHIPS), the partition key.
 
 **Returns:** `Promise<void>`
-
----
 
 ### addInitScript
 
@@ -78,8 +74,6 @@ await browserContext.addInitScript({ path: 'preload.js' });
 
 **Returns:** `Promise<Disposable>`
 
----
-
 ### browser
 
 **Added before:** v1.9
@@ -91,8 +85,6 @@ browserContext.browser();
 ```
 
 **Returns:** `null | Browser`
-
----
 
 ### clearCookies
 
@@ -118,8 +110,6 @@ await context.clearCookies({ name: 'session-id', domain: 'my-origin.com' });
 
 **Returns:** `Promise<void>`
 
----
-
 ### clearPermissions
 
 **Added before:** v1.9
@@ -134,8 +124,6 @@ context.clearPermissions();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### close
 
@@ -156,8 +144,6 @@ await browserContext.close(options);
   - `reason` string (optional) _(Added in: v1.40)_ — The reason to be reported to the operations interrupted by the context closure.
 
 **Returns:** `Promise<void>`
-
----
 
 ### cookies
 
@@ -185,8 +171,6 @@ await browserContext.cookies(urls);
 - `secure` boolean
 - `sameSite` `"Strict" | "Lax" | "None"`
 - `partitionKey` string (optional)
-
----
 
 ### exposeBinding
 
@@ -223,8 +207,6 @@ const { webkit } = require('playwright'); // Or 'chromium' or 'firefox'.
 
 **Returns:** `Promise<Disposable>`
 
----
-
 ### exposeFunction
 
 **Added before:** v1.9
@@ -259,8 +241,6 @@ const crypto = require('crypto');
 
 **Returns:** `Promise<Disposable>`
 
----
-
 ### grantPermissions
 
 **Added before:** v1.9
@@ -283,8 +263,6 @@ await browserContext.grantPermissions(permissions, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### isClosed
 
 **Added in:** v1.59
@@ -296,8 +274,6 @@ browserContext.isClosed();
 ```
 
 **Returns:** `boolean`
-
----
 
 ### newCDPSession
 
@@ -317,8 +293,6 @@ await browserContext.newCDPSession(page);
 
 **Returns:** `Promise<CDPSession>`
 
----
-
 ### newPage
 
 **Added before:** v1.9
@@ -331,8 +305,6 @@ await browserContext.newPage();
 
 **Returns:** `Promise<Page>`
 
----
-
 ### pages
 
 **Added before:** v1.9
@@ -344,8 +316,6 @@ browserContext.pages();
 ```
 
 **Returns:** `Array<Page>`
-
----
 
 ### removeAllListeners
 
@@ -365,8 +335,6 @@ await browserContext.removeAllListeners(type, options);
   - `behavior` `"wait" | "ignoreErrors" | "default"` (optional) — Specifies whether to wait for already running listeners.
 
 **Returns:** `Promise<void>`
-
----
 
 ### route
 
@@ -408,8 +376,6 @@ await context.route('/api/**', async (route) => {
 
 **Returns:** `Promise<Disposable>`
 
----
-
 ### routeFromHAR
 
 **Added in:** v1.23
@@ -432,8 +398,6 @@ await browserContext.routeFromHAR(har, options);
   - `url` string | RegExp (optional) — A glob pattern or regular expression to match the request URL.
 
 **Returns:** `Promise<void>`
-
----
 
 ### routeWebSocket
 
@@ -458,8 +422,6 @@ await context.routeWebSocket('/ws', async (ws) => {
 
 **Returns:** `Promise<void>`
 
----
-
 ### serviceWorkers
 
 **Added in:** v1.11
@@ -473,8 +435,6 @@ browserContext.serviceWorkers();
 ```
 
 **Returns:** `Array<Worker>`
-
----
 
 ### setDefaultNavigationTimeout
 
@@ -492,8 +452,6 @@ browserContext.setDefaultNavigationTimeout(timeout);
 
 - `timeout` number — Maximum navigation time in milliseconds.
 
----
-
 ### setDefaultTimeout
 
 **Added before:** v1.9
@@ -509,8 +467,6 @@ browserContext.setDefaultTimeout(timeout);
 **Arguments:**
 
 - `timeout` number — Maximum time in milliseconds. Pass 0 to disable timeout.
-
----
 
 ### setExtraHTTPHeaders
 
@@ -529,8 +485,6 @@ await browserContext.setExtraHTTPHeaders(headers);
 - `headers` Object\<string, string\> — An object containing additional HTTP headers to be sent with every request. All header values must be strings.
 
 **Returns:** `Promise<void>`
-
----
 
 ### setGeolocation
 
@@ -553,8 +507,6 @@ await browserContext.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 
 **Returns:** `Promise<void>`
 
----
-
 ### setOffline
 
 **Added before:** v1.9
@@ -568,8 +520,6 @@ await browserContext.setOffline(offline);
 - `offline` boolean — Whether to emulate network being offline for the browser context.
 
 **Returns:** `Promise<void>`
-
----
 
 ### setStorageState
 
@@ -587,8 +537,6 @@ await context.setStorageState('state.json');
 - `storageState` string | Object — Populates context with given storage state.
 
 **Returns:** `Promise<void>`
-
----
 
 ### storageState
 
@@ -609,8 +557,6 @@ await browserContext.storageState(options);
 
 **Returns:** `Promise<Object>`
 
----
-
 ### unroute
 
 **Added before:** v1.9
@@ -629,8 +575,6 @@ await browserContext.unroute(url, handler);
 
 **Returns:** `Promise<void>`
 
----
-
 ### unrouteAll
 
 **Added in:** v1.41
@@ -648,8 +592,6 @@ await browserContext.unrouteAll(options);
   - `behavior` `"wait" | "ignoreErrors" | "default"` (optional) — Specifies whether to wait for already running handlers.
 
 **Returns:** `Promise<void>`
-
----
 
 ### waitForEvent
 
@@ -672,8 +614,6 @@ const page = await pagePromise;
 
 **Returns:** `Promise<Object>`
 
----
-
 ## Properties
 
 ### clock
@@ -684,8 +624,6 @@ Playwright has ability to mock clock and passage of time.
 
 **Type:** `Clock`
 
----
-
 ### debugger
 
 **Added in:** v1.59
@@ -693,8 +631,6 @@ Playwright has ability to mock clock and passage of time.
 Debugger allows to pause and resume the execution.
 
 **Type:** `Debugger`
-
----
 
 ### request
 
@@ -704,15 +640,11 @@ API testing helper associated with this context. Requests made with this API wil
 
 **Type:** `APIRequestContext`
 
----
-
 ### tracing
 
 **Added in:** v1.12
 
 **Type:** `Tracing`
-
----
 
 ## Events
 
@@ -732,8 +664,6 @@ browserContext.on('close', (data) => {});
 
 **Event data:** `BrowserContext`
 
----
-
 ### on('console')
 
 **Added in:** v1.34
@@ -751,8 +681,6 @@ await page.evaluate(() => console.log('hello', 5, { foo: 'bar' }));
 
 **Event data:** `ConsoleMessage`
 
----
-
 ### on('dialog')
 
 **Added in:** v1.34
@@ -769,8 +697,6 @@ context.on('dialog', (dialog) => {
 
 **Event data:** `Dialog`
 
----
-
 ### on('page')
 
 **Added before:** v1.9
@@ -786,8 +712,6 @@ console.log(await newPage.evaluate('location.href'));
 
 **Event data:** `Page`
 
----
-
 ### on('request')
 
 **Added in:** v1.12
@@ -799,8 +723,6 @@ browserContext.on('request', (data) => {});
 ```
 
 **Event data:** `Request`
-
----
 
 ### on('requestfailed')
 
@@ -816,8 +738,6 @@ browserContext.on('requestfailed', (data) => {});
 
 **Event data:** `Request`
 
----
-
 ### on('requestfinished')
 
 **Added in:** v1.12
@@ -830,8 +750,6 @@ browserContext.on('requestfinished', (data) => {});
 
 **Event data:** `Request`
 
----
-
 ### on('response')
 
 **Added in:** v1.12
@@ -843,8 +761,6 @@ browserContext.on('response', (data) => {});
 ```
 
 **Event data:** `Response`
-
----
 
 ### on('serviceworker')
 
@@ -860,8 +776,6 @@ browserContext.on('serviceworker', (data) => {});
 
 **Event data:** `Worker`
 
----
-
 ### on('weberror')
 
 **Added in:** v1.38
@@ -873,8 +787,6 @@ browserContext.on('weberror', (data) => {});
 ```
 
 **Event data:** `WebError`
-
----
 
 ## Deprecated
 
@@ -888,8 +800,6 @@ _Deprecated: Background pages have been removed from Chromium together with Mani
 browserContext.on('backgroundpage', (data) => {});
 ```
 
----
-
 ### backgroundPages
 
 **Added in:** v1.11
@@ -901,8 +811,6 @@ browserContext.backgroundPages();
 ```
 
 **Returns:** `Array<Page>`
-
----
 
 ### setHTTPCredentials
 

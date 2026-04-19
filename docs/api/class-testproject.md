@@ -26,8 +26,6 @@ List of project names that this project depends on. Playwright Test will run all
 
 **Type:** `Array<string>`
 
----
-
 ### `testProject.expect` — Added in: v1.10
 
 Configuration for the `expect` assertion library. See `testConfig.expect` for more details.
@@ -56,15 +54,11 @@ Configuration for the `expect` assertion library. See `testConfig.expect` for mo
   - `intervals` `Array<number>` (optional) — Probe intervals for the `expect(value).toPass()` assertion.
   - `timeout` `number` (optional) — Maximum time for the `toPass()` assertion to pass. Defaults to `testConfig.expect.timeout`.
 
----
-
 ### `testProject.fullyParallel` — Added in: v1.20
 
 Playwright Test runs tests in parallel. In order to achieve that, it runs several worker processes that run at the same time. By default, **test files** are run in parallel. Tests in a single file are run in order, in the same worker process. You can configure entire test project to concurrently run all tests in all files using this option.
 
 **Type:** `boolean`
-
----
 
 ### `testProject.grep` — Added in: v1.10
 
@@ -72,15 +66,11 @@ Filter to only run tests with a title matching one of the patterns. By default, 
 
 **Type:** `RegExp | Array<RegExp>`
 
----
-
 ### `testProject.grepInvert` — Added in: v1.10
 
 Filter to only run tests with a title **not** matching one of the patterns. This is the opposite of `testProject.grep`. Also available globally and per-project as `grepInvert` in the config.
 
 **Type:** `RegExp | Array<RegExp>`
-
----
 
 ### `testProject.ignoreSnapshots` — Added in: v1.26
 
@@ -88,15 +78,11 @@ Whether to skip snapshot expectations, such as `expect(value).toMatchSnapshot()`
 
 **Type:** `boolean`
 
----
-
 ### `testProject.metadata` — Added in: v1.10
 
 Arbitrary metadata that will be serialized and sent to reporters.
 
 **Type:** `any`
-
----
 
 ### `testProject.name` — Added in: v1.10
 
@@ -104,15 +90,11 @@ Project name is visible in the report and during test execution. Use `testConfig
 
 **Type:** `string`
 
----
-
 ### `testProject.outputDir` — Added in: v1.10
 
 The output directory for files created during test execution. Each test run gets its own directory so they cannot conflict. Defaults to `<package.json-directory>/test-results`.
 
 **Type:** `string`
-
----
 
 ### `testProject.repeatEach` — Added in: v1.10
 
@@ -120,15 +102,11 @@ The number of times to repeat each test, useful for debugging flaky tests.
 
 **Type:** `number`
 
----
-
 ### `testProject.respectGitIgnore` — Added in: v1.43
 
 Whether to skip entries from `.gitignore` when searching for test files.
 
 **Type:** `boolean`
-
----
 
 ### `testProject.retries` — Added in: v1.10
 
@@ -136,15 +114,11 @@ The maximum number of retry attempts given to failed tests. Learn more about tes
 
 **Type:** `number`
 
----
-
 ### `testProject.snapshotDir` — Added in: v1.10
 
 The base directory, relative to the config file, for snapshot files created with `toMatchSnapshot`. Defaults to `testProject.testDir`. The directory for each test can be accessed by `testInfo.snapshotDir` and `testInfo.snapshotPath()`.
 
 **Type:** `string`
-
----
 
 ### `testProject.snapshotPathTemplate` — Added in: v1.28
 
@@ -166,8 +140,6 @@ Supported tokens:
 | `{testFileName}` | Test file name with extension                               |
 | `{testFilePath}` | Relative path from `testDir` to test file                   |
 | `{testName}`     | File-system-sanitized test title including parent describes |
-
----
 
 ### `testProject.teardown` — Added in: v1.34
 
@@ -198,15 +170,11 @@ export default defineConfig({
 
 **Type:** `string`
 
----
-
 ### `testProject.testDir` — Added in: v1.10
 
 Directory that will be recursively scanned for test files. Defaults to the directory of the configuration file. Use `testConfig.testDir` to change this option for all projects.
 
 **Type:** `string`
-
----
 
 ### `testProject.testIgnore` — Added in: v1.10
 
@@ -214,23 +182,17 @@ Files matching one of these patterns are not executed as test files. Matching is
 
 **Type:** `string | RegExp | Array<string | RegExp>`
 
----
-
 ### `testProject.testMatch` — Added in: v1.10
 
 Only the files matching one of these patterns are executed as test files. Matching is performed against the absolute file path. By default, Playwright looks for files matching `**/*.@(spec|test).?(c|m)[jt]s?(x)`. Use `testConfig.testMatch` to change this option for all projects.
 
 **Type:** `string | RegExp | Array<string | RegExp>`
 
----
-
 ### `testProject.timeout` — Added in: v1.10
 
 Timeout for each test in milliseconds. Defaults to 30 seconds. Each test can configure its own timeout with `test.setTimeout()`. Use `testConfig.timeout` to change this option for all projects.
 
 **Type:** `number`
-
----
 
 ### `testProject.use` — Added in: v1.10
 
@@ -250,8 +212,6 @@ export default defineConfig({
 ```
 
 **Type:** `TestOptions`
-
----
 
 ### `testProject.workers` — Added in: v1.52
 

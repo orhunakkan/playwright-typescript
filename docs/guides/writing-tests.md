@@ -16,8 +16,6 @@ You will learn:
 - How tests run in isolation
 - How to use test hooks
 
----
-
 ## First test
 
 Take a look at the following example to see how to write a test.
@@ -41,8 +39,6 @@ test('get started link', async ({ page }) => {
 ```
 
 > Add `// @ts-check` at the start of each test file when using JavaScript in VS Code to get automatic type checking.
-
----
 
 ## Actions
 
@@ -89,8 +85,6 @@ Here are the most popular Playwright actions. For the complete list, check the L
 | `locator.setInputFiles()` | Pick files to upload            |
 | `locator.selectOption()`  | Select option in the drop down  |
 
----
-
 ## Assertions
 
 Playwright includes test assertions in the form of `expect` function. To make an assertion, call `expect(value)` and choose a matcher that reflects the expectation. Playwright includes **async matchers** that wait until the expected condition is met. Using these matchers makes tests non-flaky and resilient.
@@ -120,8 +114,6 @@ Playwright also includes generic matchers like `toEqual`, `toContain`, `toBeTrut
 expect(success).toBeTruthy();
 ```
 
----
-
 ## Test Isolation
 
 Playwright Test is based on the concept of **test fixtures** such as the built-in `page` fixture, which is passed into your test. Pages are isolated between tests due to the **Browser Context**, which is equivalent to a brand new browser profile. Every test gets a fresh environment, even when multiple tests run in a single browser.
@@ -137,8 +129,6 @@ test('another test', async ({ page }) => {
   // "page" in this second test is completely isolated from the first test.
 });
 ```
-
----
 
 ## Using Test Hooks
 

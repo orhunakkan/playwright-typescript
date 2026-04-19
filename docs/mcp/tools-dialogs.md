@@ -6,8 +6,6 @@
 
 Handle browser dialogs (alert, confirm, prompt) that block page interaction.
 
----
-
 ## browser_handle_dialog
 
 | Parameter  | Type    | Required | Description                          |
@@ -17,8 +15,6 @@ Handle browser dialogs (alert, confirm, prompt) that block page interaction.
 
 When a dialog appears, other tools will report it in their response. Handle the dialog before continuing.
 
----
-
 ## Alert dialog
 
 ```bash
@@ -27,8 +23,6 @@ When a dialog appears, other tools will report it in their response. Handle the 
 
 → browser_handle_dialog { accept: true }
 ```
-
----
 
 ## Confirm dialog
 
@@ -40,8 +34,6 @@ When a dialog appears, other tools will report it in their response. Handle the 
 → browser_handle_dialog { accept: false } // click Cancel
 ```
 
----
-
 ## Prompt dialog
 
 ```bash
@@ -50,8 +42,6 @@ When a dialog appears, other tools will report it in their response. Handle the 
 
 → browser_handle_dialog { accept: true, promptText: "My new name" }
 ```
-
----
 
 ## Workflow
 

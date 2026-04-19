@@ -8,8 +8,6 @@
 
 Playwright provides native support for most of the browser features. However, there are some experimental APIs and APIs which are not (yet) fully supported by all browsers. Playwright usually doesn't provide dedicated automation APIs in such cases. You can use mocks to test the behavior of your application in such cases. This guide gives a few examples. Let's consider a web app that uses battery API to show your device's battery status. We'll mock the battery API and check that the page correctly displays the battery status.
 
----
-
 ## Creating mocks
 
 Since the page may be calling the API very early while loading it's important to setup all the mocks before the page started loading. The easiest way to achieve that is to call `page.addInitScript()`:
@@ -54,8 +52,6 @@ test('show battery status', async ({ page }) => {
 });
 ```
 
----
-
 ## Mocking read-only APIs
 
 Some APIs are read-only so you won't be able to assign to a navigator property. For example,
@@ -74,8 +70,6 @@ await page.addInitScript(() => {
   });
 });
 ```
-
----
 
 ## Verifying API calls
 
@@ -107,8 +101,6 @@ test('log battery calls', async ({ page }) => {
   expect(log).toEqual(['getBattery', 'addEventListener:chargingchange', 'addEventListener:levelchange']);
 });
 ```
-
----
 
 ## Updating mock
 

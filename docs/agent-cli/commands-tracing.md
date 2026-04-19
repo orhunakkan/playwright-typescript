@@ -8,16 +8,12 @@
 
 Record execution traces that capture **DOM snapshots**, **screenshots**, **network activity**, and **console logs** at every step.
 
----
-
 ## Commands
 
 ```bash
 playwright-cli tracing-start # start recording
 playwright-cli tracing-stop # stop and save
 ```
-
----
 
 ## Basic recording
 
@@ -44,8 +40,6 @@ The Trace Viewer shows a timeline of every action with:
 - Console messages
 - Timing
 
----
-
 ## Workflow: debugging a failing scenario
 
 ```bash
@@ -68,8 +62,6 @@ playwright-cli console error
 playwright-cli tracing-stop
 # Share trace with the team for full timeline analysis
 ```
-
----
 
 ## Automatic session recording
 

@@ -82,8 +82,6 @@ await webSocketRoute.close(options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `connectToServer()` — Added in: v1.48
 
 By default, routed WebSocket does not connect to the server, so you can mock entire WebSocket communication. This method connects to the actual WebSocket server, and returns the server-side `WebSocketRoute` instance, giving the ability to send and receive messages from the server.
@@ -99,8 +97,6 @@ webSocketRoute.connectToServer();
 
 **Returns:** `WebSocketRoute`
 
----
-
 ### `onClose()` — Added in: v1.48
 
 Allows handling `WebSocket.close`. By default, closing one side of the connection, either in the page or on the server, will close the other side. However, when `webSocketRoute.onClose()` handler is set up, the default forwarding of closure is disabled, and handler should take care of it.
@@ -112,8 +108,6 @@ webSocketRoute.onClose(handler);
 **Arguments:**
 
 - `handler` `function(number | undefined): Promise<Object> | Object` — Function that will handle WebSocket closure. Receives an optional close code and an optional close reason.
-
----
 
 ### `onMessage()` — Added in: v1.48
 
@@ -129,8 +123,6 @@ webSocketRoute.onMessage(handler);
 
 - `handler` `function(string): Promise<Object> | Object` — Function that will handle messages.
 
----
-
 ### `send()` — Added in: v1.48
 
 Sends a message to the WebSocket. When called on the original WebSocket, sends the message to the page. When called on the result of `webSocketRoute.connectToServer()`, sends the message to the server.
@@ -142,8 +134,6 @@ webSocketRoute.send(message);
 **Arguments:**
 
 - `message` `string | Buffer` — Message to send.
-
----
 
 ### `url()` — Added in: v1.48
 

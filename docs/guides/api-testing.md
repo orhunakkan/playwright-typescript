@@ -14,8 +14,6 @@ Playwright can be used to get access to the REST API of your application. Someti
 
 All of that could be achieved via **APIRequestContext** methods.
 
----
-
 ## Writing API Test
 
 **APIRequestContext** can send all kinds of HTTP(S) requests over network. The following example demonstrates how to use Playwright to test issues creation via GitHub API. The test suite will do the following:
@@ -23,8 +21,6 @@ All of that could be achieved via **APIRequestContext** methods.
 - Create a new repository before running tests.
 - Create a few issues and validate server state.
 - Delete the repository after running tests.
-
----
 
 ## Configuration
 
@@ -65,8 +61,6 @@ export default defineConfig({
   },
 });
 ```
-
----
 
 ## Writing tests
 
@@ -115,8 +109,6 @@ test('should create a feature request', async ({ request }) => {
 });
 ```
 
----
-
 ## Setup and teardown
 
 These tests assume that repository exists. You probably want to create a new one before running tests and delete it afterwards. Use `beforeAll` and `afterAll` hooks for that.
@@ -136,8 +128,6 @@ test.afterAll(async ({ request }) => {
   expect(response.ok()).toBeTruthy();
 });
 ```
-
----
 
 ## Using request context
 
@@ -173,13 +163,9 @@ const USER = 'github-username';
 })();
 ```
 
----
-
 ## Sending API requests from UI tests
 
 While running tests inside browsers you may want to make calls to the HTTP API of your application. It may be helpful if you need to prepare server state before running a test or to check some postconditions on the server after performing some actions in the browser. All of that could be achieved via **APIRequestContext** methods.
-
----
 
 ## Establishing preconditions
 
@@ -224,8 +210,6 @@ test('last created issue should be first in the list', async ({ page }) => {
   await expect(firstIssue).toHaveText('[Feature] request 1');
 });
 ```
-
----
 
 ## Validating postconditions
 
@@ -275,8 +259,6 @@ test('last created issue should be on the server', async ({ page }) => {
 });
 ```
 
----
-
 ## Reusing authentication state
 
 Web apps use cookie-based or token-based authentication, where authenticated state is stored as cookies. Playwright provides `apiRequestContext.storageState()` method that can be used to retrieve storage state from an authenticated context and then create new contexts with that state.
@@ -293,8 +275,6 @@ await requestContext.storageState({ path: 'state.json' });
 // Create a new context with the saved storage state.
 const context = await browser.newContext({ storageState: 'state.json' });
 ```
-
----
 
 ## Context request vs global request
 

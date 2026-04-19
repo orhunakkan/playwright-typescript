@@ -20,8 +20,6 @@ await expect(page.getByTestId('status')).toHaveText('Submitted');
 
 Playwright will be re-testing the element with the test id of `status` until the fetched element has the `"Submitted"` text. It will re-fetch the element and check it over and over, until the condition is met or until the timeout is reached. You can either pass this timeout or configure it once via the `testConfig.expect` value in the test config. By default, the timeout for assertions is set to 5 seconds. Learn more about various timeouts.
 
----
-
 ## Auto-retrying assertions
 
 The following assertions will retry until the assertion passes, or the assertion timeout is reached. Note that retrying assertions are async, so you must `await` them.
@@ -59,8 +57,6 @@ The following assertions will retry until the assertion passes, or the assertion
 | `await expect(page).toHaveURL()`                      | Page has a URL                                |
 | `await expect(response).toBeOK()`                     | Response has an OK status                     |
 
----
-
 ## Non-retrying assertions
 
 These assertions allow to test any conditions, but do not auto-retry. Most of the time, web pages show information asynchronously, and using non-retrying assertions can lead to a flaky test. Prefer auto-retrying assertions whenever possible. For more complex assertions that need to be retried, use `expect.poll` or `expect.toPass`.
@@ -91,8 +87,6 @@ These assertions allow to test any conditions, but do not auto-retry. Most of th
 | `expect(value).toStrictEqual()`          | Value is similar, including property types            |
 | `expect(value).toThrow()`                | Function throws an error                              |
 
----
-
 ## Asymmetric matchers
 
 These expressions can be nested in other assertions to allow more relaxed matching against a given condition.
@@ -108,8 +102,6 @@ These expressions can be nested in other assertions to allow more relaxed matchi
 | `expect.stringContaining()` | String contains a substring               |
 | `expect.stringMatching()`   | String matches a regular expression       |
 
----
-
 ## Negating matchers
 
 In general, we can expect the opposite to be true by adding a `.not` to the front of the matchers:
@@ -118,8 +110,6 @@ In general, we can expect the opposite to be true by adding a `.not` to the fron
 expect(value).not.toEqual(0);
 await expect(locator).not.toContainText('some text');
 ```
-
----
 
 ## Soft assertions
 
@@ -145,8 +135,6 @@ expect(test.info().errors).toHaveLength(0);
 ```
 
 Note that soft assertions only work with Playwright test runner.
-
----
 
 ## Custom expect message
 
@@ -185,8 +173,6 @@ Soft assertions also support custom message:
 expect.soft(value, 'my soft assertion').toBe(56);
 ```
 
----
-
 ## expect.configure
 
 You can create your own pre-configured `expect` instance to have its own defaults such as timeout and soft.
@@ -199,8 +185,6 @@ await slowExpect(locator).toHaveText('Submit');
 const softExpect = expect.configure({ soft: true });
 await softExpect(locator).toHaveText('Submit');
 ```
-
----
 
 ## expect.poll
 
@@ -256,8 +240,6 @@ await softExpect
 
 This allows the test to continue even if the assertion inside `poll` fails.
 
----
-
 ## expect.toPass
 
 You can retry blocks of code until they are passing successfully.
@@ -284,8 +266,6 @@ await expect(async () => {
 ```
 
 Note that by default `toPass` has timeout 0 and does not respect custom expect timeout.
-
----
 
 ## Add custom matchers using expect.extend
 
@@ -350,8 +330,6 @@ test('amount', async () => {
 ```
 
 > **Note:** Do not confuse Playwright's `expect` with the `expect` library. The latter is not fully integrated with Playwright test runner, so make sure to use Playwright's own `expect`.
-
----
 
 ## Combine custom matchers from multiple modules
 

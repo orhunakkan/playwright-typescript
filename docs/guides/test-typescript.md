@@ -28,8 +28,6 @@ For local development, you can run `tsc` in watch mode like this:
 npx tsc -p tsconfig.json --noEmit -w
 ```
 
----
-
 ## tsconfig.json
 
 Playwright will pick up `tsconfig.json` for each source file it loads. Note that Playwright only supports the following tsconfig options: `allowJs`, `baseUrl`, `paths` and `references`. We recommend setting up a separate `tsconfig.json` in the tests directory so that you can change some preferences specifically for the tests.
@@ -98,8 +96,6 @@ export default defineConfig({
   tsconfig: './tsconfig.test.json',
 });
 ```
-
----
 
 ## Manually compile tests with TypeScript
 

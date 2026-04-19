@@ -20,8 +20,6 @@ const { webkit } = require('playwright');
 
 The Page class emits various events which can be handled using Node's native EventEmitter methods (`on`, `once`, `removeListener`).
 
----
-
 ## Methods
 
 ### `page.addInitScript()` — Added before v1.9
@@ -49,8 +47,6 @@ await page.addInitScript((mock) => {
 
 **Returns:** `Promise<Disposable>`
 
----
-
 ### `page.addLocatorHandler()` — Added in: v1.42
 
 Sets up a handler that activates when a specified locator (e.g., a "Sign up" overlay) becomes visible. The handler's job is to remove the overlay so the test can proceed.
@@ -72,8 +68,6 @@ await page.addLocatorHandler(page.getByText('Sign up to the newsletter'), async 
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.addScriptTag()` — Added before v1.9
 
 Adds a `<script>` tag into the page with the desired url or content. Returns the added tag when the script's onload fires or when the script content was injected.
@@ -94,8 +88,6 @@ await page.addScriptTag({ content: 'window.x = 1;' });
 
 **Returns:** `Promise<ElementHandle>`
 
----
-
 ### `page.addStyleTag()` — Added before v1.9
 
 Adds a `<link rel="stylesheet">` tag or a `<style>` tag into the page. Returns the added tag when the stylesheet's onload fires.
@@ -115,8 +107,6 @@ await page.addStyleTag({ content: 'body { background: red; }' });
 
 **Returns:** `Promise<ElementHandle>`
 
----
-
 ### `page.ariaSnapshot()` — Added in: v1.59
 
 Captures the aria snapshot of the page.
@@ -135,8 +125,6 @@ const snapshot = await page.ariaSnapshot();
 
 **Returns:** `Promise<string>`
 
----
-
 ### `page.bringToFront()` — Added before v1.9
 
 Brings page to front (activates tab).
@@ -146,8 +134,6 @@ await page.bringToFront();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.cancelPickLocator()` — Added in: v1.59
 
@@ -159,8 +145,6 @@ await page.cancelPickLocator();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.clearConsoleMessages()` — Added in: v1.59
 
 Clears all stored console messages from this page. Subsequent calls to `page.consoleMessages()` will only return messages logged after the clear.
@@ -171,8 +155,6 @@ await page.clearConsoleMessages();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.clearPageErrors()` — Added in: v1.59
 
 Clears all stored page errors from this page. Subsequent calls to `page.pageErrors()` will only return errors thrown after the clear.
@@ -182,8 +164,6 @@ await page.clearPageErrors();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.close()` — Added before v1.9
 
@@ -203,8 +183,6 @@ await page.close({ runBeforeUnload: true });
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.consoleMessages()` — Added in: v1.56
 
 Returns up to 200 last console messages from this page.
@@ -221,8 +199,6 @@ const messages = await page.consoleMessages();
 
 **Returns:** `Promise<Array<ConsoleMessage>>`
 
----
-
 ### `page.content()` — Added before v1.9
 
 Gets the full HTML contents of the page, including the doctype.
@@ -233,8 +209,6 @@ const html = await page.content();
 
 **Returns:** `Promise<string>`
 
----
-
 ### `page.context()` — Added before v1.9
 
 Get the browser context that the page belongs to.
@@ -244,8 +218,6 @@ const context = page.context();
 ```
 
 **Returns:** `BrowserContext`
-
----
 
 ### `page.dragAndDrop()` — Added in: v1.13
 
@@ -276,8 +248,6 @@ await page.dragAndDrop('#source', '#target', {
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.emulateMedia()` — Added before v1.9
 
 Changes the CSS media type and/or media features.
@@ -299,8 +269,6 @@ await page.emulateMedia({ colorScheme: 'dark' });
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.evaluate()` — Added before v1.9
 
 Returns the value of the `pageFunction` invocation. If the function returns a Promise, it will be awaited. Non-serializable values resolve to `undefined`.
@@ -318,8 +286,6 @@ console.log(result); // 56
 | `arg`          | `EvaluationArgument` (optional) | Optional argument to pass to `pageFunction`.  |
 
 **Returns:** `Promise<Serializable>`
-
----
 
 ### `page.evaluateHandle()` — Added before v1.9
 
@@ -339,8 +305,6 @@ const docHandle = await page.evaluateHandle('document');
 
 **Returns:** `Promise<JSHandle>`
 
----
-
 ### `page.exposeBinding()` — Added before v1.9
 
 Adds a function called `name` on the `window` object of every frame. When called, the function executes `callback` and returns a Promise. The first argument of the callback contains caller info: `{ browserContext, page, frame }`.
@@ -359,8 +323,6 @@ await page.exposeBinding('pageURL', ({ page }) => page.url());
 
 **Returns:** `Promise<Disposable>`
 
----
-
 ### `page.exposeFunction()` — Added before v1.9
 
 Adds a function called `name` on the `window` object of every frame. When called, executes `callback` and returns a Promise. Functions survive navigations.
@@ -377,8 +339,6 @@ await page.exposeFunction('sha256', (text) => crypto.createHash('sha256').update
 | `callback` | `function` | Callback function which will be called in Playwright's context. |
 
 **Returns:** `Promise<Disposable>`
-
----
 
 ### `page.frame()` — Added before v1.9
 
@@ -397,8 +357,6 @@ const frame = page.frame({ url: /.*domain.*/ });
 
 **Returns:** `null | Frame`
 
----
-
 ### `page.frameLocator()` — Added in: v1.17
 
 Creates a frame locator for working with iframes.
@@ -416,8 +374,6 @@ await locator.click();
 
 **Returns:** `FrameLocator`
 
----
-
 ### `page.frames()` — Added before v1.9
 
 An array of all frames attached to the page.
@@ -427,8 +383,6 @@ const frames = page.frames();
 ```
 
 **Returns:** `Array<Frame>`
-
----
 
 ### `page.getByAltText()` — Added in: v1.27
 
@@ -446,8 +400,6 @@ await page.getByAltText('Playwright logo').click();
 | `options.exact` | `boolean` (optional) | Whether to find an exact match (case-sensitive, whole-string). Defaults to `false`. |
 
 **Returns:** `Locator`
-
----
 
 ### `page.getByLabel()` — Added in: v1.27
 
@@ -467,8 +419,6 @@ await page.getByLabel('Password').fill('secret');
 
 **Returns:** `Locator`
 
----
-
 ### `page.getByPlaceholder()` — Added in: v1.27
 
 Locates input elements by the placeholder text.
@@ -485,8 +435,6 @@ await page.getByPlaceholder('name@example.com').fill('playwright@microsoft.com')
 | `options.exact` | `boolean` (optional) | Whether to find an exact match. Defaults to `false`. |
 
 **Returns:** `Locator`
-
----
 
 ### `page.getByRole()` — Added in: v1.27
 
@@ -515,8 +463,6 @@ await page.getByRole('button', { name: /submit/i }).click();
 
 **Returns:** `Locator`
 
----
-
 ### `page.getByTestId()` — Added in: v1.27
 
 Locates an element by its test id attribute (defaults to `data-testid`).
@@ -532,8 +478,6 @@ await page.getByTestId('directions').click();
 | `testId`  | `string \| RegExp` | Id to locate the element by. |
 
 **Returns:** `Locator`
-
----
 
 ### `page.getByText()` — Added in: v1.27
 
@@ -554,8 +498,6 @@ page.getByText(/^hello$/i);
 
 **Returns:** `Locator`
 
----
-
 ### `page.getByTitle()` — Added in: v1.27
 
 Locates elements by their `title` attribute.
@@ -572,8 +514,6 @@ await expect(page.getByTitle('Issues count')).toHaveText('25 issues');
 | `options.exact` | `boolean` (optional) | Whether to find an exact match. Defaults to `false`. |
 
 **Returns:** `Locator`
-
----
 
 ### `page.goBack()` — Added before v1.9
 
@@ -592,8 +532,6 @@ await page.goBack();
 
 **Returns:** `Promise<null | Response>`
 
----
-
 ### `page.goForward()` — Added before v1.9
 
 Navigate to the next page in history. Returns the main resource response, or `null` if cannot go forward.
@@ -610,8 +548,6 @@ await page.goForward();
 | `options.waitUntil` | `"load" \| "domcontentloaded" \| "networkidle" \| "commit"` (optional) | When to consider operation succeeded. Defaults to `load`.           |
 
 **Returns:** `Promise<null | Response>`
-
----
 
 ### `page.goto()` — Added before v1.9
 
@@ -633,8 +569,6 @@ await page.goto('https://example.com', { waitUntil: 'domcontentloaded' });
 
 **Returns:** `Promise<null | Response>`
 
----
-
 ### `page.isClosed()` — Added before v1.9
 
 Indicates that the page has been closed.
@@ -644,8 +578,6 @@ const closed = page.isClosed();
 ```
 
 **Returns:** `boolean`
-
----
 
 ### `page.locator()` — Added in: v1.14
 
@@ -668,8 +600,6 @@ page.locator('css=article', { hasText: 'Playwright' });
 
 **Returns:** `Locator`
 
----
-
 ### `page.mainFrame()` — Added before v1.9
 
 The page's main frame. Page is guaranteed to have a main frame which persists during navigations.
@@ -680,8 +610,6 @@ const frame = page.mainFrame();
 
 **Returns:** `Frame`
 
----
-
 ### `page.opener()` — Added before v1.9
 
 Returns the opener for popup pages and `null` for others. If the opener has been closed, returns `null`.
@@ -691,8 +619,6 @@ const opener = await page.opener();
 ```
 
 **Returns:** `Promise<null | Page>`
-
----
 
 ### `page.pageErrors()` — Added in: v1.56
 
@@ -710,8 +636,6 @@ const errors = await page.pageErrors();
 
 **Returns:** `Promise<Array<Error>>`
 
----
-
 ### `page.pause()` — Added in: v1.9
 
 Pauses script execution. Playwright will stop executing the script and wait for the user to press 'Resume' in the page overlay or call `playwright.resume()` in DevTools. Requires headed mode.
@@ -721,8 +645,6 @@ await page.pause();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.pdf()` — Added before v1.9
 
@@ -755,8 +677,6 @@ await page.pdf({ path: 'page.pdf' });
 
 **Returns:** `Promise<Buffer>`
 
----
-
 ### `page.pickLocator()` — Added in: v1.59
 
 Enters pick locator mode where hovering over elements highlights them and shows the corresponding locator. Once the user clicks an element, the mode deactivates and returns the Locator.
@@ -767,8 +687,6 @@ console.log(locator);
 ```
 
 **Returns:** `Promise<Locator>`
-
----
 
 ### `page.reload()` — Added before v1.9
 
@@ -787,8 +705,6 @@ await page.reload();
 
 **Returns:** `Promise<null | Response>`
 
----
-
 ### `page.removeAllListeners()` — Added in: v1.47
 
 Removes all the listeners of the given type (or all registered listeners if no type given). Allows waiting for async listeners to complete or ignoring errors from them.
@@ -806,8 +722,6 @@ await page.removeAllListeners('request', { behavior: 'wait' });
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.removeLocatorHandler()` — Added in: v1.44
 
 Removes all locator handlers added by `page.addLocatorHandler()` for a specific locator.
@@ -824,8 +738,6 @@ await page.removeLocatorHandler(locator);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.requestGC()` — Added in: v1.48
 
 Request the page to perform garbage collection. Useful for detecting memory leaks.
@@ -838,8 +750,6 @@ expect(await page.evaluate(() => !globalThis.suspectWeakRef.deref())).toBe(true)
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.requests()` — Added in: v1.56
 
 Returns up to 100 last network requests from this page. Returned requests should be accessed immediately.
@@ -849,8 +759,6 @@ const requests = await page.requests();
 ```
 
 **Returns:** `Promise<Array<Request>>`
-
----
 
 ### `page.route()` — Added before v1.9
 
@@ -870,8 +778,6 @@ await page.route(/\.(png|jpg)$/, (route) => route.abort());
 | `options.times` | `number` (optional)                                        | Added in v1.15. How many times a route should be used. Defaults to always. |
 
 **Returns:** `Promise<Disposable>`
-
----
 
 ### `page.routeFromHAR()` — Added in: v1.23
 
@@ -895,8 +801,6 @@ await page.routeFromHAR('recording.har', { url: /api/ });
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.routeWebSocket()` — Added in: v1.48
 
 Allows modifying WebSocket connections made by the page. Only WebSockets created after this method is called are routed.
@@ -917,8 +821,6 @@ await page.routeWebSocket('/ws', (ws) => {
 | `handler` | `function(WebSocketRoute): Promise<Object> \| Object`      | Handler function to route the WebSocket.          |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.screenshot()` — Added before v1.9
 
@@ -949,8 +851,6 @@ await page.screenshot({ fullPage: true });
 
 **Returns:** `Promise<Buffer>`
 
----
-
 ### `page.setContent()` — Added before v1.9
 
 Sets the HTML content of the page (internally calls `document.write()`).
@@ -969,8 +869,6 @@ await page.setContent('<h1>Hello world</h1>');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.setDefaultNavigationTimeout()` — Added before v1.9
 
 Changes the default maximum navigation time for navigation-related methods. Takes priority over `page.setDefaultTimeout()`, `browserContext.setDefaultTimeout()`, and `browserContext.setDefaultNavigationTimeout()`.
@@ -986,8 +884,6 @@ page.setDefaultNavigationTimeout(30000);
 | `timeout` | `number` | Maximum navigation time in milliseconds. |
 
 **Returns:** `void`
-
----
 
 ### `page.setDefaultTimeout()` — Added before v1.9
 
@@ -1005,8 +901,6 @@ page.setDefaultTimeout(30000);
 
 **Returns:** `void`
 
----
-
 ### `page.setExtraHTTPHeaders()` — Added before v1.9
 
 Sets extra HTTP headers sent with every request the page initiates.
@@ -1022,8 +916,6 @@ await page.setExtraHTTPHeaders({ 'X-Custom-Header': 'value' });
 | `headers` | `Object<string, string>` | An object containing additional HTTP headers. All header values must be strings. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.setViewportSize()` — Added before v1.9
 
@@ -1043,8 +935,6 @@ await page.goto('https://example.com');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.title()` — Added before v1.9
 
 Returns the page's title.
@@ -1054,8 +944,6 @@ const title = await page.title();
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### `page.unroute()` — Added before v1.9
 
@@ -1075,8 +963,6 @@ await page.unroute(url, handler);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.unrouteAll()` — Added in: v1.41
 
 Removes all routes created with `page.route()` and `page.routeFromHAR()`.
@@ -1094,8 +980,6 @@ await page.unrouteAll({ behavior: 'wait' });
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.url()` — Added before v1.9
 
 Returns the page's URL.
@@ -1105,8 +989,6 @@ const url = page.url();
 ```
 
 **Returns:** `string`
-
----
 
 ### `page.video()` — Added before v1.9
 
@@ -1118,8 +1000,6 @@ const video = page.video();
 
 **Returns:** `null | Video`
 
----
-
 ### `page.viewportSize()` — Added before v1.9
 
 Returns the page viewport size.
@@ -1130,8 +1010,6 @@ const size = page.viewportSize();
 ```
 
 **Returns:** `null | Object` — `{ width: number, height: number }`
-
----
 
 ### `page.waitForEvent()` — Added before v1.9
 
@@ -1151,8 +1029,6 @@ const download = await downloadPromise;
 | `optionsOrPredicate` | `function \| Object` (optional) | A predicate or options object with `predicate` and `timeout`. |
 
 **Returns:** `Promise<Object>`
-
----
 
 ### `page.waitForFunction()` — Added before v1.9
 
@@ -1175,8 +1051,6 @@ await watchDog;
 
 **Returns:** `Promise<JSHandle>`
 
----
-
 ### `page.waitForLoadState()` — Added before v1.9
 
 Returns when the required load state has been reached.
@@ -1194,8 +1068,6 @@ await page.waitForLoadState();
 | `options.timeout` | `number` (optional)                                        | Maximum operation time in milliseconds. Defaults to 0 (no timeout). |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.waitForRequest()` — Added before v1.9
 
@@ -1216,8 +1088,6 @@ const request = await requestPromise;
 
 **Returns:** `Promise<Request>`
 
----
-
 ### `page.waitForResponse()` — Added before v1.9
 
 Returns the matched response.
@@ -1236,8 +1106,6 @@ const response = await responsePromise;
 | `options.timeout` | `number` (optional)                                                   | Maximum wait time in milliseconds. Defaults to 30 seconds. |
 
 **Returns:** `Promise<Response>`
-
----
 
 ### `page.waitForURL()` — Added in: v1.11
 
@@ -1258,8 +1126,6 @@ await page.waitForURL('**/target.html');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.workers()` — Added before v1.9
 
 Returns all dedicated WebWorkers associated with the page.
@@ -1270,8 +1136,6 @@ const workers = page.workers();
 
 **Returns:** `Array<Worker>`
 
----
-
 ## Properties
 
 ### `page.clock` — Added in: v1.45
@@ -1280,15 +1144,11 @@ Playwright has ability to mock clock and passage of time.
 
 **Type:** `Clock`
 
----
-
 ### `page.coverage` — Added before v1.9
 
 Browser-specific Coverage implementation. Only available for Chromium.
 
 **Type:** `Coverage`
-
----
 
 ### `page.keyboard` — Added before v1.9
 
@@ -1296,23 +1156,17 @@ Keyboard interface for this page.
 
 **Type:** `Keyboard`
 
----
-
 ### `page.mouse` — Added before v1.9
 
 Mouse interface for this page.
 
 **Type:** `Mouse`
 
----
-
 ### `page.request` — Added in: v1.16
 
 API testing helper associated with this page. Returns the same instance as `browserContext.request` on the page's context.
 
 **Type:** `APIRequestContext`
-
----
 
 ### `page.screencast` — Added in: v1.59
 
@@ -1328,15 +1182,11 @@ await page.screencast.stop();
 
 **Type:** `Screencast`
 
----
-
 ### `page.touchscreen` — Added before v1.9
 
 Touchscreen interface for this page.
 
 **Type:** `Touchscreen`
-
----
 
 ## Events
 
@@ -1349,8 +1199,6 @@ page.on('close', (data) => {});
 ```
 
 **Event data:** `Page`
-
----
 
 ### `page.on('console')` — Added before v1.9
 
@@ -1366,8 +1214,6 @@ page.on('console', async (msg) => {
 
 **Event data:** `ConsoleMessage`
 
----
-
 ### `page.on('crash')` — Added before v1.9
 
 Emitted when the page crashes (e.g., out of memory).
@@ -1382,8 +1228,6 @@ try {
 
 **Event data:** `Page`
 
----
-
 ### `page.on('dialog')` — Added before v1.9
 
 Emitted when a JavaScript dialog appears (`alert`, `prompt`, `confirm`, `beforeunload`). Listener must either `dialog.accept()` or `dialog.dismiss()` the dialog.
@@ -1393,8 +1237,6 @@ page.on('dialog', (dialog) => dialog.accept());
 ```
 
 **Event data:** `Dialog`
-
----
 
 ### `page.on('domcontentloaded')` — Added in: v1.9
 
@@ -1406,8 +1248,6 @@ page.on('domcontentloaded', (data) => {});
 
 **Event data:** `Page`
 
----
-
 ### `page.on('download')` — Added before v1.9
 
 Emitted when attachment download started.
@@ -1417,8 +1257,6 @@ page.on('download', (data) => {});
 ```
 
 **Event data:** `Download`
-
----
 
 ### `page.on('filechooser')` — Added in: v1.9
 
@@ -1432,8 +1270,6 @@ page.on('filechooser', async (fileChooser) => {
 
 **Event data:** `FileChooser`
 
----
-
 ### `page.on('frameattached')` — Added in: v1.9
 
 Emitted when a frame is attached.
@@ -1443,8 +1279,6 @@ page.on('frameattached', (data) => {});
 ```
 
 **Event data:** `Frame`
-
----
 
 ### `page.on('framedetached')` — Added in: v1.9
 
@@ -1456,8 +1290,6 @@ page.on('framedetached', (data) => {});
 
 **Event data:** `Frame`
 
----
-
 ### `page.on('framenavigated')` — Added in: v1.9
 
 Emitted when a frame is navigated to a new URL.
@@ -1468,8 +1300,6 @@ page.on('framenavigated', (data) => {});
 
 **Event data:** `Frame`
 
----
-
 ### `page.on('load')` — Added before v1.9
 
 Emitted when the JavaScript `load` event is dispatched.
@@ -1479,8 +1309,6 @@ page.on('load', (data) => {});
 ```
 
 **Event data:** `Page`
-
----
 
 ### `page.on('pageerror')` — Added in: v1.9
 
@@ -1493,8 +1321,6 @@ page.on('pageerror', (exception) => {
 ```
 
 **Event data:** `Error`
-
----
 
 ### `page.on('popup')` — Added before v1.9
 
@@ -1509,8 +1335,6 @@ console.log(await popup.evaluate('location.href'));
 
 **Event data:** `Page`
 
----
-
 ### `page.on('request')` — Added before v1.9
 
 Emitted when a page issues a request. The request object is read-only.
@@ -1520,8 +1344,6 @@ page.on('request', (data) => {});
 ```
 
 **Event data:** `Request`
-
----
 
 ### `page.on('requestfailed')` — Added in: v1.9
 
@@ -1535,8 +1357,6 @@ page.on('requestfailed', (request) => {
 
 **Event data:** `Request`
 
----
-
 ### `page.on('requestfinished')` — Added in: v1.9
 
 Emitted when a request finishes successfully after downloading the response body.
@@ -1546,8 +1366,6 @@ page.on('requestfinished', (data) => {});
 ```
 
 **Event data:** `Request`
-
----
 
 ### `page.on('response')` — Added before v1.9
 
@@ -1559,8 +1377,6 @@ page.on('response', (data) => {});
 
 **Event data:** `Response`
 
----
-
 ### `page.on('websocket')` — Added in: v1.9
 
 Emitted when WebSocket request is sent.
@@ -1571,8 +1387,6 @@ page.on('websocket', (data) => {});
 
 **Event data:** `WebSocket`
 
----
-
 ### `page.on('worker')` — Added before v1.9
 
 Emitted when a dedicated WebWorker is spawned by the page.
@@ -1582,8 +1396,6 @@ page.on('worker', (data) => {});
 ```
 
 **Event data:** `Worker`
-
----
 
 ## Deprecated
 
@@ -1606,8 +1418,6 @@ const element = await page.$('css=button');
 
 **Returns:** `Promise<null | ElementHandle>`
 
----
-
 ### `page.$$()` — Added in: v1.9
 
 > **Discouraged:** Use locator-based `page.locator()` instead.
@@ -1625,8 +1435,6 @@ const elements = await page.$$('css=button');
 | `selector` | `string` | A selector to query for. |
 
 **Returns:** `Promise<Array<ElementHandle>>`
-
----
 
 ### `page.$eval()` — Added in: v1.9
 
@@ -1649,8 +1457,6 @@ const searchValue = await page.$eval('#search', (el) => el.value);
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### `page.$$eval()` — Added in: v1.9
 
 > **Discouraged:** Use `locator.evaluateAll()` or web-first assertions instead.
@@ -1670,8 +1476,6 @@ const divCounts = await page.$$eval('div', (divs, min) => divs.length >= min, 10
 | `arg`          | `EvaluationArgument` (optional)      | Optional argument to pass to `pageFunction`.  |
 
 **Returns:** `Promise<Serializable>`
-
----
 
 ### `page.check()` — Added before v1.9
 
@@ -1696,8 +1500,6 @@ await page.check('input[type=checkbox]');
 | `options.trial`       | `boolean` (optional) | Added in v1.11. Only perform actionability checks, skip the action. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.click()` — Added before v1.9
 
@@ -1727,8 +1529,6 @@ await page.click('button#submit');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.dblclick()` — Added before v1.9
 
 > **Discouraged:** Use locator-based `locator.dblclick()` instead.
@@ -1756,8 +1556,6 @@ await page.dblclick('button#edit');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.dispatchEvent()` — Added before v1.9
 
 > **Discouraged:** Use locator-based `locator.dispatchEvent()` instead.
@@ -1779,8 +1577,6 @@ await page.dispatchEvent('button#submit', 'click');
 | `options.timeout` | `number` (optional)             | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.fill()` — Added before v1.9
 
@@ -1805,8 +1601,6 @@ await page.fill('#username', 'admin');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.focus()` — Added before v1.9
 
 > **Discouraged:** Use locator-based `locator.focus()` instead.
@@ -1826,8 +1620,6 @@ await page.focus('#username');
 | `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.getAttribute()` — Added before v1.9
 
@@ -1849,8 +1641,6 @@ const href = await page.getAttribute('a', 'href');
 | `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<null | string>`
-
----
 
 ### `page.hover()` — Added before v1.9
 
@@ -1877,8 +1667,6 @@ await page.hover('button#menu');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.innerHTML()` — Added before v1.9
 
 > **Discouraged:** Use locator-based `locator.innerHTML()` instead.
@@ -1898,8 +1686,6 @@ const html = await page.innerHTML('.main-container');
 | `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<string>`
-
----
 
 ### `page.innerText()` — Added before v1.9
 
@@ -1921,8 +1707,6 @@ const text = await page.innerText('h1');
 
 **Returns:** `Promise<string>`
 
----
-
 ### `page.inputValue()` — Added in: v1.13
 
 > **Discouraged:** Use locator-based `locator.inputValue()` instead.
@@ -1942,8 +1726,6 @@ const value = await page.inputValue('#search');
 | `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<string>`
-
----
 
 ### `page.isChecked()` — Added before v1.9
 
@@ -1965,8 +1747,6 @@ const checked = await page.isChecked('input[type=checkbox]');
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### `page.isDisabled()` — Added before v1.9
 
 > **Discouraged:** Use locator-based `locator.isDisabled()` instead.
@@ -1986,8 +1766,6 @@ const disabled = await page.isDisabled('button');
 | `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### `page.isEditable()` — Added before v1.9
 
@@ -2009,8 +1787,6 @@ const editable = await page.isEditable('input#name');
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### `page.isEnabled()` — Added before v1.9
 
 > **Discouraged:** Use locator-based `locator.isEnabled()` instead.
@@ -2030,8 +1806,6 @@ const enabled = await page.isEnabled('button');
 | `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### `page.isHidden()` — Added before v1.9
 
@@ -2053,8 +1827,6 @@ const hidden = await page.isHidden('.overlay');
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### `page.isVisible()` — Added before v1.9
 
 > **Discouraged:** Use locator-based `locator.isVisible()` instead.
@@ -2074,8 +1846,6 @@ const visible = await page.isVisible('button#submit');
 | `options.timeout` | `number` (optional)  | Deprecated. This option is ignored.                               |
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### `page.press()` — Added before v1.9
 
@@ -2100,8 +1870,6 @@ await page.press('body', 'Control+c');
 | `options.timeout`     | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.selectOption()` — Added before v1.9
 
@@ -2128,8 +1896,6 @@ page.selectOption('select#colors', ['red', 'green', 'blue']);
 
 **Returns:** `Promise<Array<string>>`
 
----
-
 ### `page.setChecked()` — Added in: v1.15
 
 > **Discouraged:** Use locator-based `locator.setChecked()` instead.
@@ -2155,8 +1921,6 @@ await page.setChecked('input[type=checkbox]', true);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.setInputFiles()` — Added before v1.9
 
 > **Discouraged:** Use locator-based `locator.setInputFiles()` instead.
@@ -2178,8 +1942,6 @@ await page.setInputFiles('input[type=file]', 'myfile.pdf');
 | `options.timeout`     | `number` (optional)                                  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.tap()` — Added before v1.9
 
@@ -2206,8 +1968,6 @@ await page.tap('button#menu');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.textContent()` — Added before v1.9
 
 > **Discouraged:** Use locator-based `locator.textContent()` instead.
@@ -2227,8 +1987,6 @@ const text = await page.textContent('h1');
 | `options.timeout` | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<null | string>`
-
----
 
 ### `page.type()` — Added before v1.9
 
@@ -2252,8 +2010,6 @@ await page.type('#editor', 'Hello World');
 | `options.timeout`     | `number` (optional)  | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `page.uncheck()` — Added before v1.9
 
@@ -2279,8 +2035,6 @@ await page.uncheck('input[type=checkbox]');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `page.waitForNavigation()` — Added before v1.9
 
 > **Deprecated:** Use `page.waitForURL()` instead.
@@ -2303,8 +2057,6 @@ await navigationPromise;
 
 **Returns:** `Promise<null | Response>`
 
----
-
 ### `page.waitForSelector()` — Added before v1.9
 
 > **Discouraged:** Use web assertions or `locator.waitFor()` instead.
@@ -2325,8 +2077,6 @@ const element = await page.waitForSelector('img');
 | `options.timeout` | `number` (optional)                                            | Maximum time in milliseconds. Defaults to 0 (no timeout).         |
 
 **Returns:** `Promise<null | ElementHandle>`
-
----
 
 ### `page.waitForTimeout()` — Added before v1.9
 

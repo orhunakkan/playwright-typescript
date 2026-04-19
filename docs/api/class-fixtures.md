@@ -16,8 +16,6 @@ test('basic test', async ({ page }) => {
 
 Given the test above, Playwright Test will set up the `page` fixture before running the test, and tear it down after the test has finished.
 
----
-
 ## Properties
 
 ### browser
@@ -35,8 +33,6 @@ test.beforeAll(async ({ browser }) => {
 
 **Type:** `Browser`
 
----
-
 ### browserName
 
 **Added in:** v1.10
@@ -52,8 +48,6 @@ test('skip this test in Firefox', async ({ page, browserName }) => {
 
 **Type:** `"chromium" | "firefox" | "webkit"`
 
----
-
 ### context
 
 **Added in:** v1.10
@@ -68,8 +62,6 @@ test('example test', async ({ page, context }) => {
 ```
 
 **Type:** `BrowserContext`
-
----
 
 ### page
 
@@ -90,8 +82,6 @@ test('basic test', async ({ page }) => {
 ```
 
 **Type:** `Page`
-
----
 
 ### request
 

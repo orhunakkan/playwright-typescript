@@ -10,8 +10,6 @@ Each Playwright browser context has associated with it `APIRequestContext` insta
 
 **Cookie management:** `APIRequestContext` returned by `browserContext.request` and `page.request` shares cookie storage with the corresponding `BrowserContext`. Each API request will have `Cookie` header populated with the values from the browser context. If the API response contains `Set-Cookie` header it will automatically update `BrowserContext` cookies and requests made from the page will pick them up. If you want API requests to not interfere with the browser cookies you should create a new `APIRequestContext` by calling `apiRequest.newContext()`.
 
----
-
 ## Methods
 
 ### delete
@@ -42,8 +40,6 @@ await apiRequestContext.delete(url, options);
 
 **Returns:** `Promise<APIResponse>`
 
----
-
 ### dispose
 
 **Added in:** v1.16
@@ -61,8 +57,6 @@ await apiRequestContext.dispose(options);
   - `reason` string (optional) _(Added in: v1.45)_ — The reason to be reported to the operations interrupted by the context disposal.
 
 **Returns:** `Promise<void>`
-
----
 
 ### fetch
 
@@ -108,8 +102,6 @@ await request.fetch('https://example.com/api/uploadForm', { multipart: form });
 
 **Returns:** `Promise<APIResponse>`
 
----
-
 ### get
 
 **Added in:** v1.16
@@ -142,8 +134,6 @@ await request.get('https://example.com/api/getText', { params: queryString });
 
 **Returns:** `Promise<APIResponse>`
 
----
-
 ### head
 
 **Added in:** v1.16
@@ -162,8 +152,6 @@ await apiRequestContext.head(url, options);
 
 **Returns:** `Promise<APIResponse>`
 
----
-
 ### patch
 
 **Added in:** v1.16
@@ -181,8 +169,6 @@ await apiRequestContext.patch(url, options);
 - `options` Object (optional) — Same options as `fetch` method except `method`.
 
 **Returns:** `Promise<APIResponse>`
-
----
 
 ### post
 
@@ -225,8 +211,6 @@ await request.post('https://example.com/api/uploadForm', { multipart: form });
 
 **Returns:** `Promise<APIResponse>`
 
----
-
 ### put
 
 **Added in:** v1.16
@@ -244,8 +228,6 @@ await apiRequestContext.put(url, options);
 - `options` Object (optional) — Same options as `fetch` method except `method`.
 
 **Returns:** `Promise<APIResponse>`
-
----
 
 ### storageState
 

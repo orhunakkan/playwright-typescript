@@ -15,8 +15,6 @@ test('status becomes submitted', async ({ page }) => {
 });
 ```
 
----
-
 ## Methods
 
 ### `locatorAssertions.toBeAttached(options?)` — Added in: v1.33
@@ -35,8 +33,6 @@ await expect(page.getByText('Hidden text')).toBeAttached();
 | `options.timeout`  | `number` (optional)  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toBeChecked(options?)` — Added in: v1.20
 
@@ -57,8 +53,6 @@ await expect(locator).toBeChecked();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toBeDisabled(options?)` — Added in: v1.20
 
 Ensures the Locator points to a disabled element. An element is disabled if it has the `disabled` attribute or is disabled via `aria-disabled`.
@@ -75,8 +69,6 @@ await expect(locator).toBeDisabled();
 | `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toBeEditable(options?)` — Added in: v1.20
 
@@ -96,8 +88,6 @@ await expect(locator).toBeEditable();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toBeEmpty(options?)` — Added in: v1.20
 
 Ensures the Locator points to an empty editable element or a DOM node with no text.
@@ -114,8 +104,6 @@ await expect(locator).toBeEmpty();
 | `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toBeEnabled(options?)` — Added in: v1.20
 
@@ -135,8 +123,6 @@ await expect(locator).toBeEnabled();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toBeFocused(options?)` — Added in: v1.20
 
 Ensures the Locator points to a focused DOM node.
@@ -154,8 +140,6 @@ await expect(locator).toBeFocused();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toBeHidden(options?)` — Added in: v1.20
 
 Ensures the Locator either does not resolve to any DOM node, or resolves to a non-visible one.
@@ -172,8 +156,6 @@ await expect(locator).toBeHidden();
 | `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toBeInViewport(options?)` — Added in: v1.31
 
@@ -195,8 +177,6 @@ await expect(locator).toBeInViewport({ ratio: 0.5 });
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toBeVisible(options?)` — Added in: v1.20
 
 Ensures the Locator points to an attached and visible DOM node.
@@ -214,8 +194,6 @@ await expect(page.getByTestId('todo-item').first()).toBeVisible();
 | `options.timeout` | `number` (optional)                  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toContainClass(expected, options?)` — Added in: v1.52
 
@@ -243,8 +221,6 @@ await expect(locator).toContainClass(['inactive', 'active', 'inactive']);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toContainText(expected, options?)` — Added in: v1.20
 
 Ensures the Locator points to an element that contains the given text. All nested elements are considered when computing text content.
@@ -270,8 +246,6 @@ When an array is passed, a matching subset of elements (in the same order) must 
 
 > **Note:** When `expected` is a string, Playwright normalizes whitespaces and line breaks before matching. RegExp is matched as-is.
 
----
-
 ### `locatorAssertions.toHaveAccessibleDescription(description, options?)` — Added in: v1.44
 
 Ensures the Locator points to an element with a given accessible description.
@@ -290,8 +264,6 @@ await expect(locator).toHaveAccessibleDescription('Save results to disk');
 | `options.timeout`    | `number` (optional)  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toHaveAccessibleErrorMessage(errorMessage, options?)` — Added in: v1.50
 
@@ -312,8 +284,6 @@ await expect(locator).toHaveAccessibleErrorMessage('Username is required.');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toHaveAccessibleName(name, options?)` — Added in: v1.44
 
 Ensures the Locator points to an element with a given accessible name.
@@ -332,8 +302,6 @@ await expect(locator).toHaveAccessibleName('Save to disk');
 | `options.timeout`    | `number` (optional)  | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toHaveAttribute(name, value, options?)` — Added in: v1.20
 
@@ -355,8 +323,6 @@ await expect(locator).toHaveAttribute('type', 'text');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toHaveAttribute(name, options?)` — Added in: v1.39
 
 Ensures the Locator points to an element with the given attribute (presence check only).
@@ -375,8 +341,6 @@ await expect(locator).not.toHaveAttribute('open');
 | `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toHaveClass(expected, options?)` — Added in: v1.20
 
@@ -399,8 +363,6 @@ When an array is passed, asserts each element against the corresponding expected
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toHaveCount(count, options?)` — Added in: v1.20
 
 Ensures the Locator resolves to an exact number of DOM nodes.
@@ -418,8 +380,6 @@ await expect(list).toHaveCount(3);
 | `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toHaveCSS(name, value, options?)` — Added in: v1.20
 
@@ -440,8 +400,6 @@ await expect(locator).toHaveCSS('display', 'flex');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toHaveId(id, options?)` — Added in: v1.20
 
 Ensures the Locator points to an element with the given DOM Node ID.
@@ -459,8 +417,6 @@ await expect(locator).toHaveId('lastname');
 | `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toHaveJSProperty(name, value, options?)` — Added in: v1.20
 
@@ -481,8 +437,6 @@ await expect(locator).toHaveJSProperty('loaded', true);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toHaveRole(role, options?)` — Added in: v1.44
 
 Ensures the Locator points to an element with the given ARIA role. Role is matched as a string; ARIA role hierarchy is not considered.
@@ -500,8 +454,6 @@ await expect(locator).toHaveRole('button');
 | `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toHaveScreenshot(name, options?)` — Added in: v1.23
 
@@ -533,8 +485,6 @@ await expect(locator).toHaveScreenshot('image.png');
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toHaveScreenshot(options?)` — Added in: v1.23
 
 Waits until two consecutive locator screenshots yield the same result, then compares the last screenshot with the expectation.
@@ -553,8 +503,6 @@ await expect(locator).toHaveScreenshot();
 | `options` | `Object` (optional) | Same option properties as `toHaveScreenshot(name, options?)`. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toHaveText(expected, options?)` — Added in: v1.20
 
@@ -581,8 +529,6 @@ When an array is passed, the locator resolves to a list of elements where each e
 
 > **Note:** When `expected` is a string, Playwright normalizes whitespaces and line breaks before matching. RegExp is matched as-is.
 
----
-
 ### `locatorAssertions.toHaveValue(value, options?)` — Added in: v1.20
 
 Ensures the Locator points to an element with the given input value. Supports regular expressions.
@@ -600,8 +546,6 @@ await expect(locator).toHaveValue(/[0-9]/);
 | `options.timeout` | `number` (optional) | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toHaveValues(values, options?)` — Added in: v1.23
 
@@ -621,8 +565,6 @@ await expect(locator).toHaveValues([/R/, /G/]);
 | `options.timeout` | `number` (optional)       | Time to retry the assertion in ms. Defaults to `TestConfig.expect` timeout. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `locatorAssertions.toMatchAriaSnapshot(expected, options?)` — Added in: v1.49
 
@@ -644,8 +586,6 @@ await expect(page.locator('body')).toMatchAriaSnapshot(`
 
 **Returns:** `Promise<void>`
 
----
-
 ### `locatorAssertions.toMatchAriaSnapshot(options?)` — Added in: v1.50
 
 Asserts that the target element matches a stored accessibility snapshot in a `.aria.yml` file.
@@ -664,8 +604,6 @@ await expect(page.locator('body')).toMatchAriaSnapshot({ name: 'body.aria.yml' }
 
 **Returns:** `Promise<void>`
 
----
-
 ## Properties
 
 ### `locatorAssertions.not` — Added in: v1.20
@@ -677,5 +615,3 @@ await expect(locator).not.toContainText('error');
 ```
 
 **Type:** `LocatorAssertions`
-
----

@@ -24,8 +24,6 @@ npx playwright install --with-deps
 npx playwright test
 ```
 
----
-
 ## Workers
 
 We recommend setting workers to `1` in CI environments to prioritize stability and reproducibility. Running tests sequentially ensures each test gets the full system resources, avoiding potential conflicts. However, if you have a powerful self-hosted CI system, you may enable parallel tests. For wider parallelization, consider sharding — distributing tests across multiple CI jobs.
@@ -39,8 +37,6 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
 });
 ```
-
----
 
 ## CI configurations
 
@@ -188,13 +184,9 @@ jobs:
           retention-days: 30
 ```
 
----
-
 ### Docker
 
 We have a pre-built Docker image which can either be used directly or as a reference to update your existing Docker definitions. Make sure to follow the Recommended Docker Configuration to ensure the best performance.
-
----
 
 ### Azure Pipelines
 
@@ -342,8 +334,6 @@ steps:
       CI: 'true'
 ```
 
----
-
 ### CircleCI
 
 Running Playwright on CircleCI is very similar to running on GitHub Actions. In order to specify the pre-built Playwright Docker image, simply modify the agent definition with `docker:` in your config like so:
@@ -369,8 +359,6 @@ playwright-job-name:
     - run: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; npx playwright test --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
 ```
 
----
-
 ### Jenkins
 
 Jenkins supports Docker agents for pipelines. Use the Playwright Docker image to run tests on Jenkins.
@@ -393,8 +381,6 @@ pipeline {
 }
 ```
 
----
-
 ### Bitbucket Pipelines
 
 Bitbucket Pipelines can use public Docker images as build environments. To run Playwright tests on Bitbucket, use our public Docker image (see Dockerfile).
@@ -402,8 +388,6 @@ Bitbucket Pipelines can use public Docker images as build environments. To run P
 ```yaml
 image: mcr.microsoft.com/playwright:v1.58.2-noble
 ```
-
----
 
 ### GitLab CI
 
@@ -454,8 +438,6 @@ tests:
     - npx playwright test --project=$PROJECT --shard=$SHARD
 ```
 
----
-
 ### Google Cloud Build
 
 To run Playwright tests on Google Cloud Build, use our public Docker image (see Dockerfile).
@@ -467,8 +449,6 @@ steps:
     env:
       - 'CI=true'
 ```
-
----
 
 ### Drone
 
@@ -485,13 +465,9 @@ steps:
       - npx playwright test
 ```
 
----
-
 ## Caching browsers
 
 Caching browser binaries is not recommended, since the amount of time it takes to restore the cache is comparable to the time it takes to download the binaries. Especially under Linux, operating system dependencies need to be installed, which are not cacheable. If you still want to cache the browser binaries between CI runs, cache these directories in your CI configuration, against a hash of the Playwright version.
-
----
 
 ## Debugging browser launches
 
@@ -500,8 +476,6 @@ Playwright supports the `DEBUG` environment variable to output debug logs during
 ```bash
 DEBUG=pw:browser npx playwright test
 ```
-
----
 
 ## Running headed
 

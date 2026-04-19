@@ -14,23 +14,17 @@ Error cause. Set when there is a cause for the error. Will be `undefined` if the
 
 **Type:** `TestInfoError`
 
----
-
 ### `testInfoError.message` — Added in: v1.10
 
 Error message. Set when `Error` (or its subclass) has been thrown.
 
 **Type:** `string`
 
----
-
 ### `testInfoError.stack` — Added in: v1.10
 
 Error stack. Set when `Error` (or its subclass) has been thrown.
 
 **Type:** `string`
-
----
 
 ### `testInfoError.value` — Added in: v1.10
 

@@ -8,8 +8,6 @@
 
 The CLI and MCP share the same underlying Playwright tools, organized into capability groups. In the CLI all capabilities are **always available** — there's no gating. This page maps commands to their capability groups for reference.
 
----
-
 ## Core
 
 **Always available.** Basic browser automation.
@@ -29,8 +27,6 @@ The CLI and MCP share the same underlying Playwright tools, organized into capab
 | `resize`                             | Resize browser window                |
 | `eval`, `run-code`                   | Execute JavaScript / Playwright code |
 
----
-
 ## Network
 
 Network inspection and mocking.
@@ -45,8 +41,6 @@ Network inspection and mocking.
 
 See **Network & Mocking** for usage.
 
----
-
 ## Storage
 
 Cookie, localStorage, and sessionStorage management plus state persistence.
@@ -59,8 +53,6 @@ Cookie, localStorage, and sessionStorage management plus state persistence.
 | `sessionstorage-list/get/set/delete/clear` | Manage sessionStorage           |
 
 See **Storage & Authentication** for usage.
-
----
 
 ## Vision
 
@@ -76,8 +68,6 @@ Coordinate-based mouse interaction using pixel positions from screenshots. Usefu
 
 See **Vision Mode** for when and how to use coordinate-based interaction.
 
----
-
 ## DevTools
 
 Tracing, video recording, and test debugging.
@@ -90,8 +80,6 @@ Tracing, video recording, and test debugging.
 | `show`                                       | Open visual dashboard   |
 | `pause-at`, `resume`, `step-over`            | Test debugging          |
 
----
-
 ## PDF
 
 PDF generation.
@@ -99,8 +87,6 @@ PDF generation.
 | Command | Description        |
 | ------- | ------------------ |
 | `pdf`   | Export page as PDF |
-
----
 
 ## Testing
 

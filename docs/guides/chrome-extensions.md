@@ -26,8 +26,6 @@ const { chromium } = require('playwright');
 })();
 ```
 
----
-
 ## Service worker idle suspension (MV3)
 
 Chrome MV3 service workers are automatically suspended after ~30 seconds of inactivity and restarted on demand. When this happens, Playwright keeps the same Worker object alive — no new `'serviceworker'` event is emitted. New `evaluate()` calls issued during the restart window are stalled until the new context is ready and then resume automatically:
@@ -40,8 +38,6 @@ await sw.evaluate(() => sendMessage({ type: 'ping' })); // just works
 ```
 
 > **Note:** `evaluate()` calls that were already in-flight at the exact moment of suspension will throw with `"Service worker restarted"`, matching the behaviour of page navigations mid-flight.
-
----
 
 ## Testing
 

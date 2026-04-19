@@ -19,8 +19,6 @@ Playwright has experimental support for Android automation. This includes Chrome
 - Device needs to be awake to produce screenshots (enabling "Stay awake" developer mode will help)
 - Not all tests have been run against the device, so not everything works
 
----
-
 ## Example Usage
 
 ```ts
@@ -60,8 +58,6 @@ const { _android: android } = require('playwright');
 })();
 ```
 
----
-
 ## Methods
 
 ### connect
@@ -85,8 +81,6 @@ await android.connect(endpoint, options);
 
 **Returns:** Promise<AndroidDevice>
 
----
-
 ### devices
 
 **Added in:** v1.9
@@ -106,8 +100,6 @@ await android.devices(options);
   - `port` number (optional) — Optional port to establish ADB server connection. Default: `5037`
 
 **Returns:** Promise<Array<AndroidDevice>>
-
----
 
 ### launchServer
 
@@ -163,8 +155,6 @@ const { _android } = require('playwright');
 ⚠️ **Warning:** Any process or web page with knowledge of the wsPath can take control of the OS user. Use an unguessable token when using this option.
 
 **Returns:** Promise<BrowserServer>
-
----
 
 ### setDefaultTimeout
 

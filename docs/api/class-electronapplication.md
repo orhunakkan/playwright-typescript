@@ -43,8 +43,6 @@ const { _electron: electron } = require('playwright');
 })();
 ```
 
----
-
 ## Methods
 
 ### browserWindow
@@ -67,8 +65,6 @@ await electronApplication.browserWindow(page);
 
 **Returns:** `Promise<JSHandle>`
 
----
-
 ### close
 
 **Added in:** v1.9
@@ -85,8 +81,6 @@ await electronApplication.close();
 
 **Returns:** `Promise<void>`
 
----
-
 ### context
 
 **Added in:** v1.9
@@ -102,8 +96,6 @@ electronApplication.context();
 ```
 
 **Returns:** `BrowserContext`
-
----
 
 ### evaluate
 
@@ -129,8 +121,6 @@ await electronApplication.evaluate(pageFunction, arg);
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### evaluateHandle
 
 **Added in:** v1.9
@@ -155,8 +145,6 @@ await electronApplication.evaluateHandle(pageFunction, arg);
 
 **Returns:** `Promise<JSHandle>`
 
----
-
 ### firstWindow
 
 **Added in:** v1.9
@@ -180,8 +168,6 @@ const window = await electronApp.firstWindow();
 
 **Returns:** `Promise<Page>`
 
----
-
 ### process
 
 **Added in:** v1.21
@@ -197,8 +183,6 @@ electronApplication.process();
 ```
 
 **Returns:** `ChildProcess`
-
----
 
 ### waitForEvent
 
@@ -227,8 +211,6 @@ Either a predicate that receives an event or an options object. Optional.
 
 **Returns:** `Promise<Object>`
 
----
-
 ### windows
 
 **Added in:** v1.9
@@ -245,8 +227,6 @@ electronApplication.windows();
 
 **Returns:** `Array<Page>`
 
----
-
 ## Events
 
 ### on('close')
@@ -262,8 +242,6 @@ This event is issued when the application process has been terminated.
 ```ts
 electronApplication.on('close', (data) => {});
 ```
-
----
 
 ### on('console')
 
@@ -285,8 +263,6 @@ await electronApp.evaluate(() => console.log('hello', 5, { foo: 'bar' }));
 ```
 
 **Event data:** `ConsoleMessage`
-
----
 
 ### on('window')
 

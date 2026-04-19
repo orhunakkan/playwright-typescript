@@ -21,8 +21,6 @@ await page.mouse.move(0, 0);
 await page.mouse.up();
 ```
 
----
-
 ## Methods
 
 ### `mouse.click(x, y, options?)` — Added before: v1.9
@@ -46,8 +44,6 @@ await mouse.click(x, y, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `mouse.dblclick(x, y, options?)` — Added before: v1.9
 
 Shortcut for `mouse.move()`, `mouse.down()`, `mouse.up()`, `mouse.down()` and `mouse.up()`.
@@ -68,8 +64,6 @@ await mouse.dblclick(x, y, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `mouse.down(options?)` — Added before: v1.9
 
 Dispatches a `mousedown` event.
@@ -87,8 +81,6 @@ await mouse.down(options);
 | `options.clickCount` | `number` (optional)                        | Defaults to `1`. See `UIEvent.detail`. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `mouse.move(x, y, options?)` — Added before: v1.9
 
@@ -109,8 +101,6 @@ await mouse.move(x, y, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### `mouse.up(options?)` — Added before: v1.9
 
 Dispatches a `mouseup` event.
@@ -128,8 +118,6 @@ await mouse.up(options);
 | `options.clickCount` | `number` (optional)                        | Defaults to `1`. See `UIEvent.detail`. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `mouse.wheel(deltaX, deltaY)` — Added in: v1.15
 

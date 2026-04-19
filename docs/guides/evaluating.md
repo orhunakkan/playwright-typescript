@@ -21,8 +21,6 @@ const status = await page.evaluate(async () => {
 });
 ```
 
----
-
 ## Different environments
 
 Evaluated scripts run in the browser environment, while your test runs in a testing environment. This means you cannot use variables from your test in the page and vice versa. Instead, you should pass them explicitly as an argument.
@@ -46,8 +44,6 @@ const result = await page.evaluate((data) => {
   window.myApp.use(data);
 }, data);
 ```
-
----
 
 ## Evaluation Argument
 
@@ -79,8 +75,6 @@ await page.evaluate(([b1, b2]) => b1.textContent + b2.textContent, [button1, but
 // Any mix of serializables and handles works.
 await page.evaluate((x) => x.button1.textContent + x.list[0].textContent + String(x.foo), { button1, list: [button2], foo: null });
 ```
-
----
 
 ## Init scripts
 

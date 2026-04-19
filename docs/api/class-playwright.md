@@ -26,8 +26,6 @@ This object can be used to launch or connect to Chromium, returning instances of
 
 **Type:** `BrowserType`
 
----
-
 ### `playwright.devices` — Added before v1.9
 
 Returns a dictionary of devices to be used with `browser.newContext()` or `browser.newPage()`.
@@ -48,8 +46,6 @@ const iPhone = devices['iPhone 6'];
 
 **Type:** `Object`
 
----
-
 ### `playwright.errors` — Added before v1.9
 
 Playwright methods might throw errors if they are unable to fulfill a request. For example, `locator.waitFor()` might fail if the selector doesn't match any nodes during the given timeframe. For certain types of errors Playwright uses specific error classes. These classes are available via `playwright.errors`.
@@ -68,15 +64,11 @@ try {
 
 - `TimeoutError` `function` — A class of `TimeoutError`.
 
----
-
 ### `playwright.firefox` — Added before v1.9
 
 This object can be used to launch or connect to Firefox, returning instances of `Browser`.
 
 **Type:** `BrowserType`
-
----
 
 ### `playwright.request` — Added in: v1.16
 
@@ -84,15 +76,11 @@ Exposes API that can be used for the Web API testing.
 
 **Type:** `APIRequest`
 
----
-
 ### `playwright.selectors` — Added before v1.9
 
 Selectors can be used to install custom selector engines. See extensibility for more information.
 
 **Type:** `Selectors`
-
----
 
 ### `playwright.webkit` — Added before v1.9
 

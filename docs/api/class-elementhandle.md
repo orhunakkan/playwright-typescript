@@ -19,8 +19,6 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 
 The difference between the Locator and ElementHandle is that the ElementHandle points to a particular element, while Locator captures the logic of how to retrieve an element. With the locator, every time the element is used, up-to-date DOM element is located in the page using the selector.
 
----
-
 ## Methods
 
 ### boundingBox
@@ -41,8 +39,6 @@ await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 - `width` number — the width of the element in pixels.
 - `height` number — the height of the element in pixels.
 
----
-
 ### contentFrame
 
 **Added before:** v1.9
@@ -55,8 +51,6 @@ await elementHandle.contentFrame();
 
 **Returns:** `Promise<null | Frame>`
 
----
-
 ### ownerFrame
 
 **Added before:** v1.9
@@ -68,8 +62,6 @@ await elementHandle.ownerFrame();
 ```
 
 **Returns:** `Promise<null | Frame>`
-
----
 
 ### waitForElementState
 
@@ -97,8 +89,6 @@ await elementHandle.waitForElementState(state, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ## Deprecated
 
 ### $
@@ -119,8 +109,6 @@ await elementHandle.$(selector);
 
 **Returns:** `Promise<null | ElementHandle>`
 
----
-
 ### $$
 
 **Added in:** v1.9
@@ -138,8 +126,6 @@ await elementHandle.$$(selector);
 - `selector` string — A selector to query for.
 
 **Returns:** `Promise<Array<ElementHandle>>`
-
----
 
 ### $eval
 
@@ -163,8 +149,6 @@ expect(await tweetHandle.$eval('.retweets', (node) => node.innerText)).toBe('10'
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### $$eval
 
 **Added in:** v1.9
@@ -185,8 +169,6 @@ expect(await feedHandle.$$eval('.tweet', (nodes) => nodes.map((n) => n.innerText
 - `arg` EvaluationArgument (optional) — Optional argument to pass to `pageFunction`.
 
 **Returns:** `Promise<Serializable>`
-
----
 
 ### check
 
@@ -211,8 +193,6 @@ await elementHandle.check(options);
   - `trial` boolean (optional) _(Added in: v1.11)_ — When set, only performs the actionability checks and skips the action.
 
 **Returns:** `Promise<void>`
-
----
 
 ### click
 
@@ -243,8 +223,6 @@ await elementHandle.click(options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### dblclick
 
 **Added before:** v1.9
@@ -265,8 +243,6 @@ await elementHandle.dblclick(options);
 - `options` Object (optional) — Same options as `click` except no `clickCount`.
 
 **Returns:** `Promise<void>`
-
----
 
 ### dispatchEvent
 
@@ -293,8 +269,6 @@ await elementHandle.dispatchEvent('dragstart', { dataTransfer });
 
 **Returns:** `Promise<void>`
 
----
-
 ### fill
 
 **Added before:** v1.9
@@ -318,8 +292,6 @@ await elementHandle.fill(value, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### focus
 
 **Added before:** v1.9
@@ -333,8 +305,6 @@ await elementHandle.focus();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### getAttribute
 
@@ -353,8 +323,6 @@ await elementHandle.getAttribute(name);
 - `name` string — Attribute name to get the value for.
 
 **Returns:** `Promise<null | string>`
-
----
 
 ### hover
 
@@ -381,8 +349,6 @@ await elementHandle.hover(options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### innerHTML
 
 **Added before:** v1.9
@@ -397,8 +363,6 @@ await elementHandle.innerHTML();
 
 **Returns:** `Promise<string>`
 
----
-
 ### innerText
 
 **Added before:** v1.9
@@ -412,8 +376,6 @@ await elementHandle.innerText();
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### inputValue
 
@@ -435,8 +397,6 @@ await elementHandle.inputValue(options);
 
 **Returns:** `Promise<string>`
 
----
-
 ### isChecked
 
 **Added before:** v1.9
@@ -450,8 +410,6 @@ await elementHandle.isChecked();
 ```
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### isDisabled
 
@@ -467,8 +425,6 @@ await elementHandle.isDisabled();
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### isEditable
 
 **Added before:** v1.9
@@ -482,8 +438,6 @@ await elementHandle.isEditable();
 ```
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### isEnabled
 
@@ -499,8 +453,6 @@ await elementHandle.isEnabled();
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### isHidden
 
 **Added before:** v1.9
@@ -515,8 +467,6 @@ await elementHandle.isHidden();
 
 **Returns:** `Promise<boolean>`
 
----
-
 ### isVisible
 
 **Added before:** v1.9
@@ -530,8 +480,6 @@ await elementHandle.isVisible();
 ```
 
 **Returns:** `Promise<boolean>`
-
----
 
 ### press
 
@@ -555,8 +503,6 @@ await elementHandle.press(key, options);
   - `timeout` number (optional) — Maximum time in milliseconds. Defaults to 0 - no timeout.
 
 **Returns:** `Promise<void>`
-
----
 
 ### screenshot
 
@@ -588,8 +534,6 @@ await elementHandle.screenshot(options);
 
 **Returns:** `Promise<Buffer>`
 
----
-
 ### scrollIntoViewIfNeeded
 
 **Added before:** v1.9
@@ -609,8 +553,6 @@ await elementHandle.scrollIntoViewIfNeeded(options);
   - `timeout` number (optional) — Maximum time in milliseconds. Defaults to 0 - no timeout.
 
 **Returns:** `Promise<void>`
-
----
 
 ### selectOption
 
@@ -639,8 +581,6 @@ handle.selectOption(['red', 'green', 'blue']);
 
 **Returns:** `Promise<Array<string>>`
 
----
-
 ### selectText
 
 **Added before:** v1.9
@@ -661,8 +601,6 @@ await elementHandle.selectText(options);
   - `timeout` number (optional) — Maximum time in milliseconds. Defaults to 0 - no timeout.
 
 **Returns:** `Promise<void>`
-
----
 
 ### setChecked
 
@@ -689,8 +627,6 @@ await elementHandle.setChecked(checked, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### setInputFiles
 
 **Added before:** v1.9
@@ -712,8 +648,6 @@ await elementHandle.setInputFiles(files, options);
   - `timeout` number (optional) — Maximum time in milliseconds. Defaults to 0 - no timeout.
 
 **Returns:** `Promise<void>`
-
----
 
 ### tap
 
@@ -742,8 +676,6 @@ await elementHandle.tap(options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### textContent
 
 **Added before:** v1.9
@@ -757,8 +689,6 @@ await elementHandle.textContent();
 ```
 
 **Returns:** `Promise<null | string>`
-
----
 
 ### type
 
@@ -783,8 +713,6 @@ await elementHandle.type(text, options);
 
 **Returns:** `Promise<void>`
 
----
-
 ### uncheck
 
 **Added before:** v1.9
@@ -808,8 +736,6 @@ await elementHandle.uncheck(options);
   - `trial` boolean (optional) _(Added in: v1.11)_ — When set, only performs the actionability checks and skips the action.
 
 **Returns:** `Promise<void>`
-
----
 
 ### waitForSelector
 

@@ -17,8 +17,6 @@ Save the current page as a PDF file. Requires the **pdf capability**.
 }
 ```
 
----
-
 ## browser_pdf_save
 
 Save the current page as a PDF file. The PDF is saved to the output directory.
@@ -29,8 +27,6 @@ PDF saved to: /output/page-2024-03-15.pdf
 ```
 
 > **Note:** PDF export requires the **pdf capability**, shown in the configuration above.
-
----
 
 ## Use cases
 

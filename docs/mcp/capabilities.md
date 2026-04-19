@@ -8,8 +8,6 @@
 
 **Capabilities** control which tools the MCP server exposes to the LLM. By default, only **core tools** are enabled. Add capabilities to unlock additional tool groups.
 
----
-
 ## Enabling Capabilities
 
 ### Via CLI argument
@@ -38,8 +36,6 @@ PLAYWRIGHT_MCP_CAPS=vision,pdf,devtools
   "capabilities": ["core", "vision", "pdf", "devtools", "network", "storage", "testing"]
 }
 ```
-
----
 
 ## Capability Reference
 
@@ -178,8 +174,6 @@ Configuration introspection.
 "--caps=config"
 ```
 
----
-
 ## Common Configurations
 
 ### Minimal (default)
@@ -236,8 +230,6 @@ Core + network for API inspection + storage for cookies:
 ```json
 ["@playwright/mcp@latest", "--caps=network,storage"]
 ```
-
----
 
 ## Why Capabilities Exist
 

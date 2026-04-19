@@ -6,8 +6,6 @@
 
 **Response** class represents responses which are received by page.
 
----
-
 ## Methods
 
 ## Methods
@@ -22,8 +20,6 @@ await response.allHeaders();
 
 **Returns:** `Promise<Object<string, string>>`
 
----
-
 ### `response.body()` — Added before v1.9
 
 Returns the buffer with response body.
@@ -33,8 +29,6 @@ await response.body();
 ```
 
 **Returns:** `Promise<Buffer>`
-
----
 
 ### `response.finished()` — Added before v1.9
 
@@ -46,8 +40,6 @@ await response.finished();
 
 **Returns:** `Promise<null | Error>`
 
----
-
 ### `response.frame()` — Added before v1.9
 
 Returns the `Frame` that initiated this response.
@@ -58,8 +50,6 @@ response.frame();
 
 **Returns:** `Frame`
 
----
-
 ### `response.fromServiceWorker()` — Added in: v1.23
 
 Indicates whether this Response was fulfilled by a Service Worker's Fetch Handler (i.e. via `FetchEvent.respondWith`).
@@ -69,8 +59,6 @@ response.fromServiceWorker();
 ```
 
 **Returns:** `boolean`
-
----
 
 ### `response.headerValue(name)` — Added in: v1.15
 
@@ -88,8 +76,6 @@ await response.headerValue(name);
 
 **Returns:** `Promise<null | string>`
 
----
-
 ### `response.headerValues(name)` — Added in: v1.15
 
 Returns all values of the headers matching the name, for example `set-cookie`. The name is case-insensitive.
@@ -106,8 +92,6 @@ await response.headerValues(name);
 
 **Returns:** `Promise<Array<string>>`
 
----
-
 ### `response.headers()` — Added before v1.9
 
 An object with the response HTTP headers. The header names are lower-cased. Note that this method does not return security-related headers, including cookie-related ones. You can use `response.allHeaders()` for complete list of headers that include cookie information.
@@ -117,8 +101,6 @@ response.headers();
 ```
 
 **Returns:** `Object<string, string>`
-
----
 
 ### `response.headersArray()` — Added in: v1.15
 
@@ -135,8 +117,6 @@ await response.headersArray();
 | `name`   | `string` | Name of the header.  |
 | `value`  | `string` | Value of the header. |
 
----
-
 ### `response.httpVersion()` — Added in: v1.59
 
 Returns the http version used by the response.
@@ -146,8 +126,6 @@ await response.httpVersion();
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### `response.json()` — Added before v1.9
 
@@ -159,8 +137,6 @@ await response.json();
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### `response.ok()` — Added before v1.9
 
 Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
@@ -171,8 +147,6 @@ response.ok();
 
 **Returns:** `boolean`
 
----
-
 ### `response.request()` — Added before v1.9
 
 Returns the matching `Request` object.
@@ -182,8 +156,6 @@ response.request();
 ```
 
 **Returns:** `Request`
-
----
 
 ### `response.securityDetails()` — Added in: v1.13
 
@@ -203,8 +175,6 @@ await response.securityDetails();
 | `validFrom`   | `number` (optional) | Unix timestamp (in seconds) specifying when this cert becomes valid.   |
 | `validTo`     | `number` (optional) | Unix timestamp (in seconds) specifying when this cert becomes invalid. |
 
----
-
 ### `response.serverAddr()` — Added in: v1.13
 
 Returns the IP address and port of the server.
@@ -220,8 +190,6 @@ await response.serverAddr();
 | `ipAddress` | `string` | IPv4 or IPv6 address of the server. |
 | `port`      | `number` | Port number.                        |
 
----
-
 ### `response.status()` — Added before v1.9
 
 Contains the status code of the response (e.g., 200 for a success).
@@ -231,8 +199,6 @@ response.status();
 ```
 
 **Returns:** `number`
-
----
 
 ### `response.statusText()` — Added before v1.9
 
@@ -244,8 +210,6 @@ response.statusText();
 
 **Returns:** `string`
 
----
-
 ### `response.text()` — Added before v1.9
 
 Returns the text representation of response body.
@@ -255,8 +219,6 @@ await response.text();
 ```
 
 **Returns:** `Promise<string>`
-
----
 
 ### `response.url()` — Added before v1.9
 

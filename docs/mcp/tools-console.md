@@ -6,8 +6,6 @@
 
 Access browser console output for debugging. Console tools are part of the **core capability** and always available.
 
----
-
 ## browser_console_messages
 
 | Parameter | Type   | Required | Description                                                                                 |
@@ -29,13 +27,9 @@ Access browser console output for debugging. Console tools are part of the **cor
         at app.js:42:15
 ```
 
----
-
 ## browser_console_clear
 
 Clear the console message buffer.
-
----
 
 ## Workflow: debugging a broken page
 

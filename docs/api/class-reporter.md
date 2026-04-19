@@ -57,8 +57,6 @@ Additionally, `reporter.onStdOut()` and `reporter.onStdErr()` are called when st
 
 > **Note:** If your custom reporter does not print anything to the terminal, implement `reporter.printsToStdio()` and return `false`.
 
----
-
 ## Methods
 
 ## Methods
@@ -78,8 +76,6 @@ reporter.onBegin(config, suite);
 | `config`  | `FullConfig` | Resolved configuration.                                          |
 | `suite`   | `Suite`      | The root suite that contains all projects, files and test cases. |
 
----
-
 ### `reporter.onEnd(result)` — Added in: v1.10
 
 Called after all tests have been run, or testing has been interrupted. Note that this method may return a `Promise` and Playwright Test will await it. Reporter is allowed to override the status and hence affect the exit code of the test runner.
@@ -98,8 +94,6 @@ await reporter.onEnd(result);
 
 **Returns:** `Promise<Object>` — optional `{ status?: "passed" | "failed" | "timedout" | "interrupted" }`
 
----
-
 ### `reporter.onError(error)` — Added in: v1.10
 
 Called on some global error, for example unhandled exception in the worker process.
@@ -114,8 +108,6 @@ reporter.onError(error);
 | --------- | ----------- | ----------- |
 | `error`   | `TestError` | The error.  |
 
----
-
 ### `reporter.onExit()` — Added in: v1.33
 
 Called immediately before test runner exits. At this point all the reporters have received the `reporter.onEnd()` signal, so all the reports should be built. You can run the code that uploads the reports in this hook.
@@ -125,8 +117,6 @@ await reporter.onExit();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### `reporter.onStdErr(chunk, test, result)` — Added in: v1.10
 
@@ -144,8 +134,6 @@ reporter.onStdErr(chunk, test, result);
 | `test`    | `void \| TestCase`   | Test that was running. May be `void` if no test is running. |
 | `result`  | `void \| TestResult` | Result of the test run, populated while the test runs.      |
 
----
-
 ### `reporter.onStdOut(chunk, test, result)` — Added in: v1.10
 
 Called when something has been written to the standard output in the worker process.
@@ -161,8 +149,6 @@ reporter.onStdOut(chunk, test, result);
 | `chunk`   | `string \| Buffer`   | Output chunk.                                               |
 | `test`    | `void \| TestCase`   | Test that was running. May be `void` if no test is running. |
 | `result`  | `void \| TestResult` | Result of the test run, populated while the test runs.      |
-
----
 
 ### `reporter.onStepBegin(test, result, step)` — Added in: v1.10
 
@@ -180,8 +166,6 @@ reporter.onStepBegin(test, result, step);
 | `result`  | `TestResult` | Result of the test run, populated while the test runs. |
 | `step`    | `TestStep`   | Test step instance that has started.                   |
 
----
-
 ### `reporter.onStepEnd(test, result, step)` — Added in: v1.10
 
 Called when a test step finished in the worker process.
@@ -198,8 +182,6 @@ reporter.onStepEnd(test, result, step);
 | `result`  | `TestResult` | Result of the test run.               |
 | `step`    | `TestStep`   | Test step instance that has finished. |
 
----
-
 ### `reporter.onTestBegin(test, result)` — Added in: v1.10
 
 Called after a test has been started in the worker process.
@@ -215,8 +197,6 @@ reporter.onTestBegin(test, result);
 | `test`    | `TestCase`   | Test that has been started.                            |
 | `result`  | `TestResult` | Result of the test run, populated while the test runs. |
 
----
-
 ### `reporter.onTestEnd(test, result)` — Added in: v1.10
 
 Called after a test has been finished in the worker process.
@@ -231,8 +211,6 @@ reporter.onTestEnd(test, result);
 | --------- | ------------ | ---------------------------- |
 | `test`    | `TestCase`   | Test that has been finished. |
 | `result`  | `TestResult` | Result of the test run.      |
-
----
 
 ### `reporter.printsToStdio()` — Added in: v1.10
 

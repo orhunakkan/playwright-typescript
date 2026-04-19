@@ -17,8 +17,6 @@ Manage cookies, localStorage, sessionStorage, and save/restore full browser stat
 }
 ```
 
----
-
 ## Storage state
 
 Save and restore the full browser state (cookies + localStorage) in a single file. This is the primary way to persist authentication across sessions.
@@ -48,8 +46,6 @@ Restore a previously saved state.
 - heading "Dashboard" [level=1]
 ```
 
----
-
 ## Workflow: save login, skip it next time
 
 ```bash
@@ -75,8 +71,6 @@ Or load state automatically on server startup:
 ```json
 ["@playwright/mcp@latest", "--caps=storage", "--isolated", "--storage-state=./auth-state.json"]
 ```
-
----
 
 ## Cookies
 
@@ -118,8 +112,6 @@ _ga        GA1.2...   .example.com    false     false   2026-01-01
 
 Delete a specific cookie by name, or clear all cookies.
 
----
-
 ## Workflow: test logout by clearing cookies
 
 ```bash
@@ -129,8 +121,6 @@ Delete a specific cookie by name, or clear all cookies.
 - heading "Sign in" [level=1]
 - textbox "Email" [ref=e3]
 ```
-
----
 
 ## localStorage
 
@@ -156,8 +146,6 @@ onboarding_done    true
 // Onboarding wizard appears
 - heading "Welcome! Let's get started" [level=1]
 ```
-
----
 
 ## sessionStorage
 

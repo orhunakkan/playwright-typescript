@@ -14,13 +14,9 @@ Playwright Test runs tests in parallel. In order to achieve that, it runs severa
 
 You can control the number of parallel worker processes and limit the number of failures in the whole test suite for efficiency.
 
----
-
 ## Worker processes
 
 All tests run in worker processes. These processes are OS processes, running independently, orchestrated by the test runner. All workers have identical environments and each starts its own browser. You can't communicate between the workers. Playwright Test reuses a single worker as much as it can to make testing faster, so multiple test files are usually run in a single worker one after another. Workers are always shutdown after a test failure to guarantee pristine environment for following tests.
-
----
 
 ## Limit workers
 
@@ -44,8 +40,6 @@ export default defineConfig({
 });
 ```
 
----
-
 ## Disable parallelism
 
 You can disable any parallelism by allowing just a single worker at any time. Either set `workers: 1` option in the configuration file or pass `--workers=1` to the command line.
@@ -53,8 +47,6 @@ You can disable any parallelism by allowing just a single worker at any time. Ei
 ```bash
 npx playwright test --workers=1
 ```
-
----
 
 ## Parallelize tests in a single file
 
@@ -102,8 +94,6 @@ export default defineConfig({
 });
 ```
 
----
-
 ## Serial mode
 
 You can annotate inter-dependent tests as serial. If one of the serial tests fails, all subsequent tests are skipped. All tests in a group are retried together.
@@ -135,8 +125,6 @@ test('runs second', async () => {
 });
 ```
 
----
-
 ## Opt out of fully parallel mode
 
 If your configuration applies parallel mode to all tests using `testConfig.fullyParallel`, you might still want to run some tests with default settings. You can override the mode per describe:
@@ -149,8 +137,6 @@ test.describe('runs in parallel with other describes', () => {
 });
 ```
 
----
-
 ## Shard tests between multiple machines
 
 Playwright Test can shard a test suite, so that it can be executed on multiple machines. See sharding guide for more details.
@@ -158,8 +144,6 @@ Playwright Test can shard a test suite, so that it can be executed on multiple m
 ```bash
 npx playwright test --shard=2/3
 ```
-
----
 
 ## Limit failures and fail fast
 
@@ -183,15 +167,11 @@ export default defineConfig({
 });
 ```
 
----
-
 ## Worker index and parallel index
 
 Each worker process is assigned two ids: a unique **worker index** that starts with 1, and a **parallel index** that is between 0 and `workers - 1`. When a worker is restarted, for example after a failure, the new worker process has the same `parallelIndex` and a new `workerIndex`.
 
 You can read an index from environment variables `process.env.TEST_WORKER_INDEX` and `process.env.TEST_PARALLEL_INDEX`, or access them through `testInfo.workerIndex` and `testInfo.parallelIndex`.
-
----
 
 ## Isolate test data between parallel workers
 
@@ -234,8 +214,6 @@ test('test', async ({ dbUserName }) => {
   // Use the user name in the test.
 });
 ```
-
----
 
 ## Control test order
 

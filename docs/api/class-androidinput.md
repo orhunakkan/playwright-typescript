@@ -28,8 +28,6 @@ await androidInput.drag(from, to, steps);
 
 **Returns:** `Promise<void>`
 
----
-
 ### press
 
 **Added in:** v1.9
@@ -45,8 +43,6 @@ await androidInput.press(key);
 - `key` [AndroidKey] — Key to press.
 
 **Returns:** `Promise<void>`
-
----
 
 ### swipe
 
@@ -70,8 +66,6 @@ await androidInput.swipe(from, segments, steps);
 
 **Returns:** `Promise<void>`
 
----
-
 ### tap
 
 **Added in:** v1.9
@@ -89,8 +83,6 @@ await androidInput.tap(point);
   - `y` number — The point to tap at.
 
 **Returns:** `Promise<void>`
-
----
 
 ### type
 

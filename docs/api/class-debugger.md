@@ -6,8 +6,6 @@
 
 API for controlling the Playwright debugger. The debugger allows pausing script execution and inspecting the page. Obtain the debugger instance via `browserContext.debugger`.
 
----
-
 ## Methods
 
 ### next
@@ -21,8 +19,6 @@ await debugger.next();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### pausedDetails
 
@@ -42,8 +38,6 @@ debugger.pausedDetails();
   - `column` number (optional)
 - `title` string
 
----
-
 ### requestPause
 
 **Added in:** v1.59
@@ -58,8 +52,6 @@ await debugger.requestPause();
 
 **Returns:** `Promise<void>`
 
----
-
 ### resume
 
 **Added in:** v1.59
@@ -71,8 +63,6 @@ await debugger.resume();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### runTo
 
@@ -92,8 +82,6 @@ await debugger.runTo(location);
   - `column` number (optional)
 
 **Returns:** `Promise<void>`
-
----
 
 ## Events
 

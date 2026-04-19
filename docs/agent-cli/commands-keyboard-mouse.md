@@ -16,8 +16,6 @@
 
 `Enter`, `Tab`, `Escape`, `Backspace`, `Delete`, `Space`, `ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight`, `Home`, `End`, `PageUp`, `PageDown`
 
----
-
 ## Key combinations
 
 ```bash
@@ -28,8 +26,6 @@ playwright-cli press Shift+Tab # focus previous
 playwright-cli press Alt+Enter # alt+enter
 ```
 
----
-
 ## Keyboard navigation
 
 ```bash
@@ -39,8 +35,6 @@ playwright-cli press ArrowDown # navigate dropdown
 playwright-cli press ArrowDown
 playwright-cli press Enter # select option
 ```
-
----
 
 ## Mouse
 
@@ -70,8 +64,6 @@ playwright-cli mousewheel 0 500
 # Scroll right 200 pixels
 playwright-cli mousewheel 200 0
 ```
-
----
 
 ## When to use mouse commands
 

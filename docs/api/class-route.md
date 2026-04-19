@@ -6,8 +6,6 @@
 
 Whenever a network route is set up with `page.route()` or `browserContext.route()`, the **Route** object allows to handle the route. Learn more about networking.
 
----
-
 ## Methods
 
 ## Methods
@@ -28,8 +26,6 @@ await route.abort(errorCode);
 | `errorCode` | `string` (optional) | Error code. Defaults to `'failed'`. One of: `'aborted'`, `'accessdenied'`, `'addressunreachable'`, `'blockedbyclient'`, `'blockedbyresponse'`, `'connectionaborted'`, `'connectionclosed'`, `'connectionfailed'`, `'connectionrefused'`, `'connectionreset'`, `'internetdisconnected'`, `'namenotresolved'`, `'timedout'`, `'failed'`. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `route.continue(options?)` — Added before v1.9
 
@@ -61,8 +57,6 @@ await page.route('**/*', async (route, request) => {
 > **Note:** The `headers` option applies to both the routed request and any redirects it initiates. However, `url`, `method`, and `postData` only apply to the original request and are not carried over to redirected requests. `route.continue()` will immediately send the request to the network, other matching handlers won't be invoked. Use `route.fallback()` if you want the next matching handler in the chain to be invoked.
 
 > **Warning:** Some request headers are forbidden and cannot be overridden (for example, `Cookie`, `Host`, `Content-Length` and others). If an override is provided for a forbidden header, it will be ignored and the original request header will be used. To set custom cookies, use `browserContext.addCookies()`.
-
----
 
 ### `route.fallback(options?)` — Added in: v1.23
 
@@ -106,8 +100,6 @@ await page.route('**/*', async (route, request) => {
 
 **Returns:** `Promise<void>`
 
----
-
 ### `route.fetch(options?)` — Added in: v1.29
 
 Performs the request and fetches result without fulfilling it, so that the response could be modified and then fulfilled.
@@ -136,8 +128,6 @@ await page.route('https://dog.ceo/api/breeds/list/all', async (route) => {
 **Returns:** `Promise<APIResponse>`
 
 > **Note:** The `headers` option will apply to the fetched request as well as any redirects initiated by it. If you want to only apply headers to the original request but not to redirects, look into `route.continue()` instead.
-
----
 
 ### `route.fulfill(options?)` — Added before v1.9
 
@@ -170,8 +160,6 @@ await page.route('**/xhr_endpoint', (route) => route.fulfill({ path: 'mock_data.
 | `options.status`      | `number` (optional)                 | Response status code, defaults to 200.                                                                    |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `route.request()` — Added before v1.9
 

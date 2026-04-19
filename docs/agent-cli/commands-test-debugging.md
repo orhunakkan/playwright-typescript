@@ -8,8 +8,6 @@
 
 Use the CLI to debug Playwright test failures interactively.
 
----
-
 ## Connecting to a paused test
 
 Start a test with the debug flag:
@@ -40,8 +38,6 @@ playwright-cli resume # continue
 playwright-cli step-over # step to next action
 playwright-cli pause-at test.ts:42 # set a breakpoint
 ```
-
----
 
 ## Workflow: investigating a flaky test
 

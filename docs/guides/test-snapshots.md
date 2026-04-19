@@ -19,8 +19,6 @@ test('example test', async ({ page }) => {
 
 > Browser rendering can vary based on the host OS, version, settings, hardware, power source (battery vs. power adapter), headless mode, and other factors. For consistent screenshots, run tests in the same environment where the baseline screenshots were generated.
 
----
-
 ## Generating screenshots
 
 When you run above for the first time, test runner will say:
@@ -45,8 +43,6 @@ The snapshot name `example-test-1-chromium-darwin.png` consists of a few parts:
 
 The snapshot name and path can be configured with `testConfig.snapshotPathTemplate` in the playwright config. Note that `toHaveScreenshot()` also accepts an array of path segments to the snapshot file such as `expect().toHaveScreenshot(['relative', 'path', 'to', 'snapshot.png'])`. However, this path must stay within the snapshots directory for each test file (i.e. `a.spec.js-snapshots`), otherwise it will throw.
 
----
-
 ## Updating screenshots
 
 Sometimes you need to update the reference screenshot, for example when the page has changed. Do this with the `--update-snapshots` flag.
@@ -54,8 +50,6 @@ Sometimes you need to update the reference screenshot, for example when the page
 ```bash
 npx playwright test --update-snapshots
 ```
-
----
 
 ## Options
 
@@ -117,8 +111,6 @@ export default defineConfig({
   },
 });
 ```
-
----
 
 ## Non-image snapshots
 

@@ -8,8 +8,6 @@
 
 Playwright Test is based on the concept of **test fixtures**. Test fixtures are used to establish the environment for each test, giving the test everything it needs and nothing else. Test fixtures are isolated between tests. With fixtures, you can group tests based on their meaning, instead of their common setup.
 
----
-
 ## Built-in fixtures
 
 You have already used test fixtures in your first test.
@@ -32,8 +30,6 @@ The `{ page }` argument tells Playwright Test to set up the `page` fixture and p
 | `browser`     | `Browser`           | Browsers are shared across tests to optimize resources.                                       |
 | `browserName` | `string`            | The name of the browser currently running the test. Either `chromium`, `firefox` or `webkit`. |
 | `request`     | `APIRequestContext` | Isolated `APIRequestContext` instance for this test run.                                      |
-
----
 
 ## Without fixtures
 
@@ -107,8 +103,6 @@ test.describe('todo tests', () => {
 });
 ```
 
----
-
 ## With fixtures
 
 Fixtures have a number of advantages over before/after hooks:
@@ -147,8 +141,6 @@ test('should remove an item', async ({ todoPage }) => {
   // ...
 });
 ```
-
----
 
 ## Creating a fixture
 
@@ -190,8 +182,6 @@ export { expect } from '@playwright/test';
 
 > Custom fixture names should start with a letter or underscore, and can contain only letters, numbers, and underscores.
 
----
-
 ## Using a fixture
 
 Just mention a fixture in your test function argument, and the test runner will take care of it. Fixtures are also available in hooks and other fixtures. If you use TypeScript, fixtures will be type safe.
@@ -208,8 +198,6 @@ test('basic test', async ({ todoPage, page }) => {
   await expect(page.getByTestId('todo-title')).toContainText(['something nice']);
 });
 ```
-
----
 
 ## Overriding fixtures
 
@@ -245,8 +233,6 @@ export const test = base.extend({
   },
 });
 ```
-
----
 
 ## Worker-scoped fixtures
 
@@ -302,8 +288,6 @@ export const test = base.extend<{}, { account: Account }>({
 export { expect } from '@playwright/test';
 ```
 
----
-
 ## Automatic fixtures
 
 Automatic fixtures are set up for each test/worker, even when the test does not list them directly. To create an automatic fixture, use the tuple syntax and pass `{ auto: true }`.
@@ -341,8 +325,6 @@ export const test = base.extend<{ saveLogs: void }>({
 export { expect } from '@playwright/test';
 ```
 
----
-
 ## Fixture timeout
 
 Fixture is considered to be a part of a test, and so its setup and teardown running time counts towards the test timeout. You can set a separate larger timeout for such a fixture, and keep the overall test timeout small.
@@ -364,8 +346,6 @@ test('example test', async ({ slowFixture }) => {
   // ...
 });
 ```
-
----
 
 ## Fixtures-options
 
@@ -425,8 +405,6 @@ export default defineConfig<MyOptions>({
 });
 ```
 
----
-
 ## Box fixtures
 
 Usually, custom fixtures are reported as separate steps in the UI mode, Trace Viewer and various test reports. They also appear in error messages from the test runner. For frequently used fixtures, this can mean lots of noise. You can stop the fixtures steps from being shown in the UI by "boxing" it.
@@ -446,8 +424,6 @@ export const test = base.extend({
 
 You can also mark the fixture as `box: 'self'` to only hide that particular fixture, but include all the steps inside the fixture in the test report.
 
----
-
 ## Custom fixture title
 
 Instead of the usual fixture name, you can give fixtures a custom title that will be shown in test reports and error messages.
@@ -464,8 +440,6 @@ export const test = base.extend({
   ],
 });
 ```
-
----
 
 ## Adding global beforeEach/afterEach hooks
 
@@ -500,8 +474,6 @@ test('basic', async ({ page }) => {
 });
 ```
 
----
-
 ## Adding global beforeAll/afterAll hooks
 
 `test.beforeAll()` and `test.afterAll()` hooks run before/after all tests declared in the same file and same `test.describe()` block, once per worker process. If you want to declare hooks that run before/after all tests in every file, declare them as auto fixtures with `scope: 'worker'`:
@@ -535,8 +507,6 @@ test('basic', async ({}) => {
 ```
 
 Note that the fixtures will still run once per worker process, but you don't need to redeclare them in every file.
-
----
 
 ## Combine custom fixtures from multiple modules
 

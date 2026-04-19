@@ -18,8 +18,6 @@ Annotations collected during the test run.
 - `description` `string` (optional) — Optional description.
 - `location` `Location` (optional) — Optional location in the source where the annotation is added.
 
----
-
 ### `testResult.attachments` — Added in: v1.10
 
 The list of files or buffers attached to the test result. Some reporters show test attachments.
@@ -31,15 +29,11 @@ The list of files or buffers attached to the test result. Some reporters show te
 - `path` `string` (optional) — Optional path on the filesystem to the attached file.
 - `body` `Buffer` (optional) — Optional attachment body used instead of a file.
 
----
-
 ### `testResult.duration` — Added in: v1.10
 
 Running time in milliseconds.
 
 **Type:** `number`
-
----
 
 ### `testResult.error` — Added in: v1.10
 
@@ -47,15 +41,11 @@ First error thrown during test execution, if any.
 
 **Type:** `TestError`
 
----
-
 ### `testResult.errors` — Added in: v1.10
 
 Errors thrown during test execution, if any.
 
 **Type:** `Array<TestError>`
-
----
 
 ### `testResult.parallelIndex` — Added in: v1.30
 
@@ -63,15 +53,11 @@ The index of the worker between `0` and `workers - 1`. It is guaranteed that wor
 
 **Type:** `number`
 
----
-
 ### `testResult.retry` — Added in: v1.10
 
 When test is retried multiple times, each retry attempt is given a sequential number. See `testConfig.retries` to configure the number of retries.
 
 **Type:** `number`
-
----
 
 ### `testResult.startTime` — Added in: v1.10
 
@@ -79,15 +65,11 @@ Start time of this particular test run.
 
 **Type:** `Date`
 
----
-
 ### `testResult.status` — Added in: v1.10
 
 Actual test result. See also `testCase.expectedStatus`.
 
 **Type:** `"passed" | "failed" | "timedOut" | "skipped" | "interrupted"`
-
----
 
 ### `testResult.stderr` — Added in: v1.10
 
@@ -95,23 +77,17 @@ Anything written to the standard error during the test run.
 
 **Type:** `Array<string | Buffer>`
 
----
-
 ### `testResult.stdout` — Added in: v1.10
 
 Anything written to the standard output during the test run.
 
 **Type:** `Array<string | Buffer>`
 
----
-
 ### `testResult.steps` — Added in: v1.10
 
 List of steps inside this test run.
 
 **Type:** `Array<TestStep>`
-
----
 
 ### `testResult.workerIndex` — Added in: v1.10
 

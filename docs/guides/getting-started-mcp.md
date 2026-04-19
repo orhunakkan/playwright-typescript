@@ -8,16 +8,12 @@
 
 The Playwright MCP server provides browser automation capabilities through the Model Context Protocol, enabling LLMs to interact with web pages using structured accessibility snapshots. It works with VS Code, Cursor, Windsurf, Claude Desktop, and any other MCP client — no vision models required.
 
----
-
 ## Prerequisites
 
 Before you begin, make sure you have the following installed:
 
 - Node.js 18 or newer
 - An MCP client: VS Code, Cursor, Windsurf, Claude Code, Claude Desktop, or similar
-
----
 
 ## Getting Started
 
@@ -58,13 +54,9 @@ claude mcp add playwright npx @playwright/mcp@latest
 
 Follow the MCP install guide and use the standard config above.
 
----
-
 ## Other clients
 
 The standard configuration works with most MCP clients, including Windsurf, Cline, Goose, Kiro, Codex, Copilot CLI, and others. Consult your client's MCP documentation for where to place the config.
-
----
 
 ## First interaction
 
@@ -73,8 +65,6 @@ Once the server is connected, ask your AI assistant to interact with a web page:
 > Navigate to https://demo.playwright.dev/todomvc and add a few todo items.
 
 The assistant will use Playwright MCP tools to open the browser, navigate to the page, and interact with elements — all through structured accessibility snapshots rather than screenshots.
-
----
 
 ## Core Features
 
@@ -129,8 +119,6 @@ Save and restore browser state including cookies and localStorage:
 - **Save state:** Persist authentication and session data to a file.
 - **Restore state:** Load previously saved state into a new session.
 - **Cookie management:** List, get, set, and delete individual cookies.
-
----
 
 ## Configuration
 
@@ -219,8 +207,6 @@ Then point your MCP client to the HTTP endpoint:
 | Mock an API         | Ask: "Mock the /api/users endpoint to return ..."    |
 | Use headed mode     | Default. Pass `--headless` to disable                |
 | Choose a browser    | Pass `--browser=firefox` in args                     |
-
----
 
 ## What's Next
 

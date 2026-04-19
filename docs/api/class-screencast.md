@@ -6,8 +6,6 @@
 
 **Screencast** allows recording and annotating the browser in a screencast format. You can add overlays, chapters, and action decorations to the video.
 
----
-
 ## Methods
 
 ## Methods
@@ -22,8 +20,6 @@ await screencast.hideActions();
 
 **Returns:** `Promise<void>`
 
----
-
 ### `screencast.hideOverlays()` — Added in: v1.59
 
 Hides all overlays from the screencast.
@@ -33,8 +29,6 @@ await screencast.hideOverlays();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### `screencast.showActions(options?)` — Added in: v1.59
 
@@ -56,8 +50,6 @@ await disposable.dispose();
 
 **Returns:** `Promise<Disposable>`
 
----
-
 ### `screencast.showChapter(title, options?)` — Added in: v1.59
 
 Shows a chapter marker in the screencast.
@@ -76,8 +68,6 @@ await screencast.showChapter('Checkout', { description: 'User completes purchase
 | `options.duration`    | `number` (optional) | Duration in milliseconds to display the chapter marker. Defaults to 2000. |
 
 **Returns:** `Promise<void>`
-
----
 
 ### `screencast.showOverlay(html, options?)` — Added in: v1.59
 
@@ -98,8 +88,6 @@ await overlay.dispose();
 
 **Returns:** `Promise<Disposable>`
 
----
-
 ### `screencast.showOverlays()` — Added in: v1.59
 
 Shows all previously hidden overlays.
@@ -109,8 +97,6 @@ await screencast.showOverlays();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### `screencast.start(options?)` — Added in: v1.59
 
@@ -134,8 +120,6 @@ await screencast.stop();
 | `options.size.height` | `number`              | Video height in pixels.          |
 
 **Returns:** `Promise<Disposable>`
-
----
 
 ### `screencast.stop()` — Added in: v1.59
 

@@ -18,8 +18,6 @@ await browserServer.close();
 
 **Returns:** `Promise<void>`
 
----
-
 ### kill
 
 **Added before:** v1.9
@@ -32,8 +30,6 @@ await browserServer.kill();
 
 **Returns:** `Promise<void>`
 
----
-
 ### process
 
 **Added before:** v1.9
@@ -45,8 +41,6 @@ browserServer.process();
 ```
 
 **Returns:** `ChildProcess`
-
----
 
 ### wsEndpoint
 
@@ -61,8 +55,6 @@ browserServer.wsEndpoint();
 ```
 
 **Returns:** `string`
-
----
 
 ## Events
 

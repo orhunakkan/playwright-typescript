@@ -6,8 +6,6 @@
 
 Accurately simulating time-dependent behavior is essential for verifying the correctness of applications. Note that clock is installed for the entire `BrowserContext`, so the time in all the pages and iframes is controlled by the same clock.
 
----
-
 ## Methods
 
 ### fastForward
@@ -26,8 +24,6 @@ await page.clock.fastForward('30:00');
 - `ticks` number | string — Time may be the number of milliseconds to advance the clock by or a human-readable string. Valid string formats are `"08"` for eight seconds, `"01:00"` for one minute and `"02:34:10"` for two hours, 34 minutes and ten seconds.
 
 **Returns:** `Promise<void>`
-
----
 
 ### install
 
@@ -48,8 +44,6 @@ await clock.install(options);
   - `time` number | string | Date (optional) — Time to initialize with, current system time by default.
 
 **Returns:** `Promise<void>`
-
----
 
 ### pauseAt
 
@@ -78,8 +72,6 @@ await page.clock.pauseAt(new Date('2024-12-10T10:00:00'));
 
 **Returns:** `Promise<void>`
 
----
-
 ### resume
 
 **Added in:** v1.45
@@ -91,8 +83,6 @@ await clock.resume();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### runFor
 
@@ -111,8 +101,6 @@ await page.clock.runFor('30:00');
 
 **Returns:** `Promise<void>`
 
----
-
 ### setFixedTime
 
 **Added in:** v1.45
@@ -130,8 +118,6 @@ await page.clock.setFixedTime('2020-02-02');
 - `time` number | string | Date — Time to be set in milliseconds.
 
 **Returns:** `Promise<void>`
-
----
 
 ### setSystemTime
 

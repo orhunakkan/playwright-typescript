@@ -8,8 +8,6 @@
 
 The CLI keeps the browser profile **in memory** by default — cookies and storage state are preserved between CLI calls within a session but lost when the browser closes.
 
----
-
 ## Named sessions
 
 Run multiple isolated browser instances:
@@ -36,8 +34,6 @@ Each session has its own:
 - Navigation history
 - Console log
 
----
-
 ## Environment variable
 
 ```bash
@@ -45,8 +41,6 @@ PLAYWRIGHT_CLI_SESSION=todo-app claude .
 ```
 
 All `playwright-cli` commands in that agent session use the **todo-app** browser instance.
-
----
 
 ## Profile persistence
 
@@ -80,8 +74,6 @@ playwright-cli open https://example.com --persistent
 playwright-cli open https://example.com --profile=./my-profile
 ```
 
----
-
 ## Session management
 
 ```bash
@@ -91,8 +83,6 @@ playwright-cli close-all # close all browsers
 playwright-cli kill-all # force kill (for unresponsive browsers)
 playwright-cli -s=name delete-data # delete stored profile data
 ```
-
----
 
 ## Dashboard
 
@@ -115,8 +105,6 @@ The dashboard provides:
 - Take over when an agent gets stuck on a CAPTCHA or 2FA
 - Close stale sessions or delete data from the UI
 
----
-
 ## Saving and restoring state
 
 Save authenticated state for reuse across sessions:
@@ -128,8 +116,6 @@ playwright-cli state-save auth-state.json
 # Later: restore state in a new session
 playwright-cli state-load auth-state.json
 ```
-
----
 
 ## Workflow: isolated testing
 

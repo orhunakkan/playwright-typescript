@@ -255,8 +255,6 @@ await using page = await context.newPage();
 
 This version was also tested against the following stable channels: Google Chrome 146, Microsoft Edge 146.
 
----
-
 ## Version 1.58
 
 ### Timeline
@@ -288,8 +286,6 @@ If you're using merged reports, the HTML report Speedboard tab now shows the Tim
 - WebKit 26.0
 
 This version was also tested against the following stable channels: Google Chrome 144, Microsoft Edge 144.
-
----
 
 ## Version 1.57
 
@@ -345,8 +341,6 @@ After 3 years of being deprecated, `page.accessibility` was removed from the API
 - Mozilla Firefox 144.0.2
 - WebKit 26.0
 
----
-
 ## Version 1.56
 
 ### Playwright Test Agents
@@ -387,8 +381,6 @@ npx playwright init-agents --loop=opencode
 - Mozilla Firefox 142.0.1
 - WebKit 26.0
 
----
-
 ## Version 1.55
 
 ### New APIs
@@ -408,8 +400,6 @@ Codegen can now generate automatic `toBeVisible()` assertions for common UI inte
 - Chromium 140.0.7339.16
 - Mozilla Firefox 141.0
 - WebKit 26.0
-
----
 
 ## Version 1.54
 
@@ -444,8 +434,6 @@ npx playwright codegen --user-data-dir=./user-data
 - Mozilla Firefox 140.0.2
 - WebKit 26.0
 
----
-
 ## Version 1.53
 
 ### Trace Viewer and HTML Reporter Updates
@@ -476,8 +464,6 @@ await button.click();
 - Chromium 138.0.7204.4
 - Mozilla Firefox 139.0
 - WebKit 18.5
-
----
 
 ## Version 1.52
 
@@ -512,8 +498,6 @@ await expect(locator).toMatchAriaSnapshot(`
 - Chromium 136.0.7103.25
 - Mozilla Firefox 137.0
 - WebKit 18.4
-
----
 
 ## Version 1.51
 
@@ -586,8 +570,6 @@ test('some test', async ({ page, isMobile }) => {
 - Mozilla Firefox 135.0
 - WebKit 18.4
 
----
-
 ## Version 1.50
 
 ### Test runner
@@ -632,8 +614,6 @@ Added method `expect(locator).toHaveAccessibleErrorMessage()` to assert the Loca
 - Mozilla Firefox 134.0
 - WebKit 18.2
 
----
-
 ## Version 1.49
 
 ### Aria snapshots
@@ -669,8 +649,6 @@ This change affects you if you're using one of the following channels in your `p
 - Mozilla Firefox 132.0
 - WebKit 18.2
 
----
-
 ## Version 1.48
 
 ### WebSocket routing
@@ -690,8 +668,6 @@ await page.routeWebSocket('/ws', (ws) => {
 - Chromium 130.0.6723.19
 - Mozilla Firefox 130.0
 - WebKit 18.0
-
----
 
 ## Version 1.47
 
@@ -725,8 +701,6 @@ test('query params', async ({ request }) => {
 - Chromium 129.0.6668.29
 - Mozilla Firefox 130.0
 - WebKit 18.0
-
----
 
 ## Version 1.46
 
@@ -782,8 +756,6 @@ test('example test', async ({ mount }) => {
 - Mozilla Firefox 128.0
 - WebKit 18.0
 
----
-
 ## Version 1.45
 
 ### Clock
@@ -822,8 +794,6 @@ PLAYWRIGHT_FORCE_TTY=80 npx playwright test
 - Mozilla Firefox 127.0
 - WebKit 17.4
 
----
-
 ## Version 1.44
 
 ### New APIs
@@ -858,8 +828,6 @@ await page.removeLocatorHandler(locator);
 - Chromium 124.0.6367.8
 - Mozilla Firefox 124.0
 - WebKit 17.4
-
----
 
 ## Version 1.43
 
@@ -908,8 +876,6 @@ await expect(locator).toBeVisible();
 - Chromium 123.0.6312.4
 - Mozilla Firefox 123.0
 - WebKit 17.4
-
----
 
 ## Version 1.42
 
@@ -965,8 +931,6 @@ test(
 - Mozilla Firefox 123.0
 - WebKit 17.4
 
----
-
 ## Version 1.41
 
 ### New APIs
@@ -980,8 +944,6 @@ test(
 - Chromium 121.0.6167.57
 - Mozilla Firefox 121.0
 - WebKit 17.4
-
----
 
 ## Version 1.40
 
@@ -1012,8 +974,6 @@ test('test', async ({ page }) => {
 - Chromium 120.0.6099.28
 - Mozilla Firefox 119.0
 - WebKit 17.4
-
----
 
 ## Version 1.39
 
@@ -1086,8 +1046,6 @@ async function login(page) {
 - Mozilla Firefox 118.0.1
 - WebKit 17.4
 
----
-
 ## Version 1.38
 
 ### UI Mode Updates
@@ -1110,8 +1068,6 @@ The following methods were deprecated: `page.type()`, `frame.type()`, `locator.t
 - Chromium 117.0.5938.62
 - Mozilla Firefox 117.0
 - WebKit 17.0
-
----
 
 ## Version 1.37
 
@@ -1141,8 +1097,6 @@ Playwright now supports Debian 12 Bookworm on both x86_64 and arm64 for Chromium
 - Mozilla Firefox 115.0
 - WebKit 17.0
 
----
-
 ## Version 1.36
 
 Summer maintenance release.
@@ -1152,8 +1106,6 @@ Summer maintenance release.
 - Chromium 115.0.5790.75
 - Mozilla Firefox 115.0
 - WebKit 17.0
-
----
 
 ## Version 1.35
 
@@ -1197,8 +1149,6 @@ $ npx playwright-core install # the new way to install browsers when using playw
 - Chromium 115.0.5790.13
 - Mozilla Firefox 113.0
 - WebKit 16.4
-
----
 
 ## Version 1.34
 
@@ -1261,8 +1211,6 @@ const button = page.getByRole('button').and(page.getByTitle('Subscribe'));
 - Mozilla Firefox 113.0
 - WebKit 16.4
 
----
-
 ## Version 1.33
 
 ### Locators Update
@@ -1293,8 +1241,6 @@ await rowLocator
 - Mozilla Firefox 112.0
 - WebKit 16.4
 
----
-
 ## Version 1.32
 
 ### Introducing UI Mode (preview)
@@ -1310,8 +1256,6 @@ npx playwright test --ui
 - Chromium 112.0.5615.29
 - Mozilla Firefox 111.0
 - WebKit 16.4
-
----
 
 ## Version 1.31
 
@@ -1365,8 +1309,6 @@ await expect(button).toBeInViewport({ ratio: 0.5 });
 - Mozilla Firefox 109.0
 - WebKit 16.4
 
----
-
 ## Version 1.30
 
 ### Browser Versions
@@ -1374,8 +1316,6 @@ await expect(button).toBeInViewport({ ratio: 0.5 });
 - Chromium 110.0.5481.38
 - Mozilla Firefox 108.0.2
 - WebKit 16.4
-
----
 
 ## Version 1.29
 
@@ -1433,8 +1373,6 @@ export default defineConfig({
 - Mozilla Firefox 107.0
 - WebKit 16.4
 
----
-
 ## Version 1.28
 
 ### Playwright Tools
@@ -1461,8 +1399,6 @@ test('runs second', async ({ page }) => {});
 - Mozilla Firefox 106.0
 - WebKit 16.4
 
----
-
 ## Version 1.27
 
 ### Locators
@@ -1482,8 +1418,6 @@ await expect(page.getByText('Welcome, John!')).toBeVisible();
 - Mozilla Firefox 105.0.1
 - WebKit 16.0
 
----
-
 ## Version 1.26
 
 ### Assertions
@@ -1498,8 +1432,6 @@ await expect(page.getByText('Welcome, John!')).toBeVisible();
 - Chromium 106.0.5249.30
 - Mozilla Firefox 104.0
 - WebKit 16.0
-
----
 
 ## Version 1.25
 
@@ -1534,8 +1466,6 @@ npx playwright test --trace=on
 - Chromium 105.0.5195.19
 - Mozilla Firefox 103.0
 - WebKit 16.0
-
----
 
 ## Version 1.24
 
@@ -1584,8 +1514,6 @@ test.describe(() => {
 - Chromium 103.0.5060.53 (updated per stable)
 - Mozilla Firefox 102.0
 - WebKit 16.0
-
----
 
 ## Version 1.23
 
@@ -1636,8 +1564,6 @@ test('should work', async ({ page }) => {
 - Mozilla Firefox 100.0
 - WebKit 16.0
 
----
-
 ## Version 1.22
 
 ### Highlights
@@ -1677,8 +1603,6 @@ await submitButton.click();
 - Mozilla Firefox 99.0
 - WebKit 15.4
 
----
-
 ## Version 1.21
 
 ### Highlights
@@ -1701,8 +1625,6 @@ await expect
 - Chromium 101.0.4921.0
 - Mozilla Firefox 97.0.1
 - WebKit 15.4
-
----
 
 ## Version 1.20
 
@@ -1733,8 +1655,6 @@ expect(await page.screenshot()).toMatchSnapshot({
 - Chromium 101.0.4921.0
 - Mozilla Firefox 97.0.1
 - WebKit 15.4
-
----
 
 ## Version 1.19
 
@@ -1773,8 +1693,6 @@ await page.locator('article', { has: page.locator('.highlight') }).click();
 - Mozilla Firefox 96.0.1
 - WebKit 15.4
 
----
-
 ## Version 1.18
 
 ### Locator Improvements
@@ -1808,8 +1726,6 @@ npm init playwright@latest new-project
 - Mozilla Firefox 95.0
 - WebKit 15.4
 
----
-
 ## Version 1.17
 
 ### Frame Locators
@@ -1836,8 +1752,6 @@ Playwright now supports Ubuntu 20.04 ARM64. You can now run Playwright tests ins
 - Chromium 98.0.4758.0 (updated per stable)
 - Mozilla Firefox 94.0
 - WebKit 15.4
-
----
 
 ## Version 1.16
 
@@ -1909,8 +1823,6 @@ test('context fetch', async ({ page }) => {
 - Mozilla Firefox 93.0
 - WebKit 15.4
 
----
-
 ## Version 1.15
 
 ### Mouse Wheel
@@ -1954,8 +1866,6 @@ npx playwright test --debug
 - Chromium 96.0.4641.0
 - Mozilla Firefox 92.0
 - WebKit 15.0
-
----
 
 ## Version 1.14
 
@@ -2046,8 +1956,6 @@ export default defineConfig({
 - Mozilla Firefox 91.0
 - WebKit 15.0
 
----
-
 ## Version 1.13
 
 ### Playwright Test
@@ -2065,8 +1973,6 @@ export default defineConfig({
 - Chromium 93.0.4576.0
 - Mozilla Firefox 90.0
 - WebKit 14.2
-
----
 
 ## Version 1.12
 
@@ -2111,8 +2017,6 @@ npx playwright show-trace trace.zip
 - Mozilla Firefox 89.0
 - WebKit 14.2
 
----
-
 ## Version 1.11
 
 New video: Playwright: A New Test Automation Framework for the Modern Web.
@@ -2131,8 +2035,6 @@ New video: Playwright: A New Test Automation Framework for the Modern Web.
 - Mozilla Firefox 89.0b6
 - WebKit 14.2
 
----
-
 ## Version 1.10
 
 Playwright for Java v1.10 is now stable! Run Playwright against Google Chrome and Microsoft Edge stable channels with the new `channels` API.
@@ -2142,8 +2044,6 @@ Playwright for Java v1.10 is now stable! Run Playwright against Google Chrome an
 - Chromium 90.0.4430.0
 - Mozilla Firefox 87.0b10
 - WebKit 14.2
-
----
 
 ## Version 1.9
 
@@ -2163,8 +2063,6 @@ New `has-text` pseudo-class for CSS selectors. `:has-text("example")` matches an
 - Mozilla Firefox 86.0b10
 - WebKit 14.1
 
----
-
 ## Version 1.8
 
 - Selecting elements based on layout with `:left-of()`, `:right-of()`, `:above()` and `:below()`.
@@ -2177,8 +2075,6 @@ New `has-text` pseudo-class for CSS selectors. `:has-text("example")` matches an
 - Chromium 90.0.4392.0
 - Mozilla Firefox 85.0b5
 - WebKit 14.1
-
----
 
 ## Version 1.7
 

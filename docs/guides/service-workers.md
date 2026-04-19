@@ -12,8 +12,6 @@
 
 Service Workers provide a browser-native method of handling requests made by a page with the native Fetch API (`fetch`) along with other network-requested assets (like scripts, css, and images). They can act as a network proxy between the page and the external network to perform caching logic or can provide users with an offline experience if the Service Worker adds a `FetchEvent` listener. Many sites that use Service Workers simply use them as a transparent optimization technique. While users might notice a faster experience, the app's implementation is unaware of their existence. Running the app with or without Service Workers enabled appears functionally equivalent.
 
----
-
 ## How to Disable Service Workers
 
 Playwright allows to disable Service Workers during testing. This makes tests more predictable and performant. However, if your actual page uses a Service Worker, the behavior might be different. To disable service workers, set `testOptions.serviceWorkers` to `'block'`.
@@ -25,8 +23,6 @@ export default defineConfig({
   use: { serviceWorkers: 'allow' },
 });
 ```
-
----
 
 ## Accessing Service Workers and Waiting for Activation
 
@@ -49,8 +45,6 @@ await page.evaluate(async () => {
   });
 });
 ```
-
----
 
 ## Network Events and Routing
 
@@ -96,8 +90,6 @@ Since the example Service Worker just acts a basic transparent "proxy":
 
 > **Caution:** It's important to note: calling `request.frame()` or `response.frame()` will throw an exception, if called on a Request/Response that has a non-null `request.serviceWorker()`.
 
----
-
 ## Routing Service Worker Requests Only
 
 ```ts
@@ -114,8 +106,6 @@ await context.route('**', async (route) => {
   }
 });
 ```
-
----
 
 ## Known Limitations
 

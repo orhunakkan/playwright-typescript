@@ -30,8 +30,6 @@ Press a key or key combination.
 
 Type text into an element. See **Forms** for details.
 
----
-
 ## Mouse (Vision mode)
 
 These tools are available when the **vision capability** is enabled (`--caps=vision`). They use pixel coordinates from screenshots rather than element refs from snapshots.
@@ -85,8 +83,6 @@ Drag from one position to another.
 ```bash
 → browser_mouse_drag_xy { startX: 100, startY: 200, endX: 400, endY: 200 }
 ```
-
----
 
 ## When to use mouse tools
 

@@ -8,8 +8,6 @@
 
 A **Model Context Protocol server** that provides browser automation capabilities using Playwright. Enables LLMs to interact with web pages through **structured accessibility snapshots** — no vision models required.
 
----
-
 ## Example
 
 You: Navigate to https://demo.playwright.dev/todomvc and add "Buy groceries".
@@ -37,8 +35,6 @@ You: Navigate to https://demo.playwright.dev/todomvc and add "Buy groceries".
 
 The LLM reads the accessibility snapshot, finds element refs like `e5`, and uses them to interact — clicking buttons, filling forms, checking checkboxes. **No screenshots or coordinate guessing needed.**
 
----
-
 ## Key Features
 
 - **Snapshot-based** — operates on the accessibility tree, not pixels. Each interactive element gets a unique ref for deterministic interaction
@@ -47,8 +43,6 @@ The LLM reads the accessibility snapshot, finds element refs like `e5`, and uses
 - **Full automation** — 40+ tools covering navigation, forms, network mocking, storage, tracing, video, and more
 - **Persistent sessions** — login state and cookies preserved between sessions by default
 - **Works everywhere** — VS Code, Cursor, Windsurf, Claude Code, Claude Desktop, and any MCP client
-
----
 
 ## Quick Start
 
@@ -69,8 +63,6 @@ The browser opens in **headed mode** by default so you can see what's happening.
 
 > See **Installation** for client-specific setup.
 
----
-
 ## Playwright MCP vs Playwright CLI
 
 | Feature          | MCP                                               | Playwright CLI                                                    |
@@ -80,8 +72,6 @@ The browser opens in **headed mode** by default so you can see what's happening.
 | **Token cost**   | Higher — tool schemas + snapshots in context      | Lower — concise CLI output, skills loaded on demand               |
 | **Default mode** | Headed                                            | Headless                                                          |
 | **Setup**        | JSON config in MCP client                         | `npm install -g @playwright/cli`                                  |
-
----
 
 ## Available Tools
 

@@ -26,8 +26,6 @@ await msg.args()[0].jsonValue(); // hello
 await msg.args()[1].jsonValue(); // 42
 ```
 
----
-
 ## Methods
 
 ### args
@@ -41,8 +39,6 @@ consoleMessage.args();
 ```
 
 **Returns:** `Array<JSHandle>`
-
----
 
 ### location
 
@@ -58,8 +54,6 @@ consoleMessage.location();
 - `lineNumber` number — 0-based line number in the resource.
 - `columnNumber` number — 0-based column number in the resource.
 
----
-
 ### page
 
 **Added in:** v1.34
@@ -71,8 +65,6 @@ consoleMessage.page();
 ```
 
 **Returns:** `null | Page`
-
----
 
 ### text
 
@@ -86,8 +78,6 @@ consoleMessage.text();
 
 **Returns:** `string`
 
----
-
 ### timestamp
 
 **Added in:** v1.59
@@ -100,8 +90,6 @@ consoleMessage.timestamp();
 
 **Returns:** `number`
 
----
-
 ### type
 
 **Added before:** v1.9
@@ -111,8 +99,6 @@ consoleMessage.type();
 ```
 
 **Returns:** `"log" | "debug" | "info" | "error" | "warning" | "dir" | "dirxml" | "table" | "trace" | "clear" | "startGroup" | "startGroupCollapsed" | "endGroup" | "assert" | "profile" | "profileEnd" | "count" | "time" | "timeEnd"`
-
----
 
 ### worker
 

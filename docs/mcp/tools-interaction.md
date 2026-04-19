@@ -14,8 +14,6 @@ Click, hover, drag, and select elements using refs from accessibility snapshots.
 | browser_select_option | Select a dropdown option       |
 | browser_resize        | Resize the browser window      |
 
----
-
 ## Targeting elements
 
 Every interaction tool takes a **ref parameter** that identifies the target element. Refs come from accessibility snapshots returned by `browser_snapshot` or after navigation.
@@ -30,8 +28,6 @@ Every interaction tool takes a **ref parameter** that identifies the target elem
 → browser_click { ref: "e12" }  // clicks the Submit button
 ```
 
----
-
 ## browser_click
 
 Click an element on the page.
@@ -44,8 +40,6 @@ Click an element on the page.
 → browser_click { ref: "e12" }  // clicks the Submit button
 → browser_click { ref: "e15" }  // clicks the Learn more link
 ```
-
----
 
 ## browser_hover
 
@@ -64,8 +58,6 @@ Hover over an element to trigger tooltips, dropdowns, or hover states.
 - menuitem "Logout" [ref=e22]
 ```
 
----
-
 ## browser_drag
 
 Drag one element and drop it onto another.
@@ -78,8 +70,6 @@ Drag one element and drop it onto another.
 ```bash
 → browser_drag { startRef: "e5", endRef: "e10" }
 ```
-
----
 
 ## browser_select_option
 
@@ -97,8 +87,6 @@ Select one or more options in a `<select>` dropdown.
 → browser_select_option { ref: "e7", values: ["United States"] }
 ```
 
----
-
 ## browser_resize
 
 Resize the browser window.
@@ -112,8 +100,6 @@ Resize the browser window.
 → browser_resize { width: 375, height: 812 }   // mobile viewport
 → browser_resize { width: 1920, height: 1080 }  // desktop
 ```
-
----
 
 ## Workflow: filling a form and submitting
 

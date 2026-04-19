@@ -14,8 +14,6 @@ Manage browser tabs — list, create, close, or switch between them.
 | url       | string | no       | URL for `new` action                |
 | index     | number | no       | Tab index for `select` or `close`   |
 
----
-
 ## List all tabs
 
 ```bash
@@ -26,16 +24,12 @@ Tab 2: "Google" - https://google.com
 * active: Tab 0
 ```
 
----
-
 ## Open a new tab
 
 ```bash
 → browser_tabs { action: "new", url: "https://example.com" }
 → Returns snapshot of the new tab
 ```
-
----
 
 ## Switch to a tab
 
@@ -44,16 +38,12 @@ Tab 2: "Google" - https://google.com
 → Returns snapshot of the selected tab
 ```
 
----
-
 ## Close a tab
 
 ```bash
 → browser_tabs { action: "close" }  // close current tab
 → browser_tabs { action: "close", index: 2 }  // close specific tab
 ```
-
----
 
 ## Workflow: comparing two pages
 

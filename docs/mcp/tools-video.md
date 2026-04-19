@@ -17,8 +17,6 @@ Record browser sessions as WebM videos with chapter markers. Requires the **devt
 }
 ```
 
----
-
 ## browser_start_video
 
 | Parameter | Type   | Required | Description            |
@@ -27,16 +25,12 @@ Record browser sessions as WebM videos with chapter markers. Requires the **devt
 | width     | number | no       | Video width in pixels  |
 | height    | number | no       | Video height in pixels |
 
----
-
 ## browser_stop_video
 
 ```bash
 → browser_stop_video
 Video saved to: /output/login-flow.webm
 ```
-
----
 
 ## browser_video_chapter
 
@@ -47,8 +41,6 @@ Add chapter markers for structured recordings.
 | title       | string | yes      | Chapter title          |
 | description | string | no       | Chapter description    |
 | duration    | number | no       | Display duration in ms |
-
----
 
 ## Workflow: recording a bug reproduction
 
@@ -85,8 +77,6 @@ Add chapter markers for structured recordings.
 // Attach cart-bug-repro.webm to the bug report
 ```
 
----
-
 ## Automatic recording
 
 Record all sessions automatically using the environment variable:
@@ -115,8 +105,6 @@ Or via the config file:
   }
 }
 ```
-
----
 
 ## Use cases
 

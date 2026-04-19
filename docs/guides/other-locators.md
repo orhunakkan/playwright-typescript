@@ -10,8 +10,6 @@
 
 In addition to recommended locators like `page.getByRole()` and `page.getByText()`, Playwright supports a variety of other locators described in this guide.
 
----
-
 ## CSS locator
 
 > **Note:** We recommend prioritizing user-visible locators like text or accessible role instead of using CSS that is tied to the implementation and could break when the page changes.
@@ -133,8 +131,6 @@ await page.locator(':nth-match(:text("Buy"), 3)').waitFor();
 
 > **Note:** Unlike `:nth-child()`, elements do not have to be siblings — they could be anywhere on the page.
 
----
-
 ## N-th element locator
 
 You can narrow down query to the n-th match using the `nth=` locator passing a zero-based index.
@@ -145,8 +141,6 @@ await page.locator('button').locator('nth=0').click();
 // Click last button
 await page.locator('button').locator('nth=-1').click();
 ```
-
----
 
 ## Parent element locator
 
@@ -170,8 +164,6 @@ Alternatively, if you cannot find a suitable locator for the parent element, use
 const parent = page.getByText('Hello').locator('xpath=..');
 ```
 
----
-
 ## XPath locator
 
 > **Warning:** We recommend prioritizing user-visible locators like text or accessible role instead of using XPath that is tied to the implementation and easily breaks when the page changes.
@@ -194,8 +186,6 @@ Pipe operator (`|`) can be used to specify multiple selectors in XPath. It will 
 // Waits for either confirmation dialog or load spinner.
 await page.locator(`//span[contains(@class, 'spinner__loading')]|//div[@id='confirmation']`).waitFor();
 ```
-
----
 
 ## Label to form control retargeting
 
@@ -228,8 +218,6 @@ However, other methods will target the label itself:
 await expect(page.locator('label')).toHaveText('Password');
 ```
 
----
-
 ## Legacy text locator
 
 > **Warning:** We recommend the modern text locator instead.
@@ -252,8 +240,6 @@ Legacy text locator has a few variations:
 
 > **Note:** Input elements of type `button` and `submit` are matched by their `value` instead of text content.
 
----
-
 ## id, data-testid, data-test-id, data-test selectors
 
 > **Warning:** We recommend locating by test id instead.
@@ -269,8 +255,6 @@ await page.locator('data-test-id=submit').click();
 
 > **Note:** Attribute selectors are not CSS selectors, so anything CSS-specific like `:enabled` is not supported. For more features, use a proper CSS selector, e.g. `css=[data-test="login"]:enabled`.
 
----
-
 ## Chaining selectors
 
 > **Warning:** We recommend chaining locators instead.
@@ -284,8 +268,6 @@ document.querySelector('article').querySelector('.bar > .baz').querySelector('sp
 ```
 
 If a selector needs to include `>>` in the body, it should be escaped inside a string: `text="some >> text"`.
-
----
 
 ## Intermediate matches
 

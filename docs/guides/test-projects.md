@@ -8,8 +8,6 @@
 
 A **project** is a logical group of tests running with the same configuration. We use projects so we can run tests on different browsers and devices. Projects are configured in the `playwright.config.ts` file and once configured you can then run your tests on all projects or only on a specific project. You can also use projects to run the same tests in different configurations. For example, you can run the same tests in a logged-in and logged-out state. By setting up projects you can also run a group of tests with different timeouts or retries or a group of tests against different environments such as staging and production, splitting tests per package/functionality and more.
 
----
-
 ## Configure projects for multiple browsers
 
 By using projects you can run your tests in multiple browsers such as chromium, webkit and firefox as well as branded browsers such as Google Chrome and Microsoft Edge. Playwright can also run on emulated tablet and mobile devices. See the registry of device parameters for a complete list of selected desktop, tablet and mobile devices.
@@ -53,8 +51,6 @@ export default defineConfig({
 });
 ```
 
----
-
 ## Run projects
 
 Playwright will run all projects by default.
@@ -82,8 +78,6 @@ Running 1 test using 1 worker
 ```
 
 The VS Code test runner runs your tests on the default browser of Chrome. To run on other/multiple browsers click the play button's dropdown from the testing sidebar and choose another profile or modify the default profile by clicking **Select Default Profile** and select the browsers you wish to run your tests on.
-
----
 
 ## Configure projects for multiple environments
 
@@ -114,8 +108,6 @@ export default defineConfig({
 });
 ```
 
----
-
 ## Splitting tests into projects
 
 We can split tests into projects and use filters to run a subset of tests. For example, we can create a project that runs tests using a filter matching all tests with a specific file name. We can then have another group of tests that ignore specific test files.
@@ -142,8 +134,6 @@ export default defineConfig({
   ],
 });
 ```
-
----
 
 ## Dependencies
 
@@ -194,21 +184,15 @@ Running order:
 
 By default, these projects will run in parallel, subject to the maximum workers limit. If there are more than one dependency then these project dependencies will be run first and in parallel. If the tests from a dependency fails then the tests that rely on this project will not be run.
 
----
-
 ## Teardown
 
 You can also teardown your setup by adding a `testProject.teardown` property to your setup project. Teardown will run after all dependent projects have run. See the teardown guide for more information.
-
----
 
 ## Test filtering
 
 All test filtering options, such as `--grep`/`--grep-invert`, `--shard`, filtering directly by location in the command line, or using `test.only()`, directly select the primary tests to be run. If those tests belong to a project with dependencies, all tests from those dependencies will also run.
 
 You can pass `--no-deps` command line option to ignore all dependencies and teardowns. Only your directly selected projects will run.
-
----
 
 ## Custom project parameters
 

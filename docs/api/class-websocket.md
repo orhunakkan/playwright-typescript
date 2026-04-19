@@ -20,8 +20,6 @@ webSocket.isClosed();
 
 **Returns:** `boolean`
 
----
-
 ### `url()` — Added before v1.9
 
 Contains the URL of the WebSocket.
@@ -31,8 +29,6 @@ webSocket.url();
 ```
 
 **Returns:** `string`
-
----
 
 ### `waitForEvent()` — Added before v1.9
 
@@ -66,8 +62,6 @@ webSocket.on('close', (data) => {});
 
 **Event data:** `WebSocket`
 
----
-
 ### `on('framereceived')` — Added in: v1.9
 
 Fired when the websocket receives a frame.
@@ -80,8 +74,6 @@ webSocket.on('framereceived', (data) => {});
 
 - `payload` `string | Buffer` — Frame payload.
 
----
-
 ### `on('framesent')` — Added in: v1.9
 
 Fired when the websocket sends a frame.
@@ -93,8 +85,6 @@ webSocket.on('framesent', (data) => {});
 **Event data:** `Object`
 
 - `payload` `string | Buffer` — Frame payload.
-
----
 
 ### `on('socketerror')` — Added in: v1.9
 

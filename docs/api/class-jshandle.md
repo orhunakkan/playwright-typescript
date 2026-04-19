@@ -15,8 +15,6 @@ JSHandle prevents the referenced JavaScript object being garbage collected unles
 
 JSHandle instances can be used as an argument in `page.$eval()`, `page.evaluate()`, and `page.evaluateHandle()` methods.
 
----
-
 ## Methods
 
 ### `jsHandle.asElement()` — Added before: v1.9
@@ -29,8 +27,6 @@ jsHandle.asElement();
 
 **Returns:** `null | ElementHandle`
 
----
-
 ### `jsHandle.dispose()` — Added before: v1.9
 
 The `jsHandle.dispose` method stops referencing the element handle.
@@ -40,8 +36,6 @@ await jsHandle.dispose();
 ```
 
 **Returns:** `Promise<void>`
-
----
 
 ### `jsHandle.evaluate(pageFunction, arg?)` — Added before: v1.9
 
@@ -63,8 +57,6 @@ expect(await tweetHandle.evaluate((node) => node.innerText)).toBe('10 retweets')
 
 **Returns:** `Promise<Serializable>`
 
----
-
 ### `jsHandle.evaluateHandle(pageFunction, arg?)` — Added before: v1.9
 
 Returns the return value of `pageFunction` as a `JSHandle`. This method passes this handle as the first argument to `pageFunction`.
@@ -85,8 +77,6 @@ await jsHandle.evaluateHandle(pageFunction, arg);
 
 **Returns:** `Promise<JSHandle>`
 
----
-
 ### `jsHandle.getProperties()` — Added before: v1.9
 
 The method returns a map with own property names as keys and JSHandle instances for the property values.
@@ -100,8 +90,6 @@ await handle.dispose();
 ```
 
 **Returns:** `Promise<Map<string, JSHandle>>`
-
----
 
 ### `jsHandle.getProperty(propertyName)` — Added before: v1.9
 
@@ -118,8 +106,6 @@ await jsHandle.getProperty(propertyName);
 | `propertyName` | `string` | Property to get. |
 
 **Returns:** `Promise<JSHandle>`
-
----
 
 ### `jsHandle.jsonValue()` — Added before: v1.9
 

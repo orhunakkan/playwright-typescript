@@ -21,8 +21,6 @@ await page.locator('#submit').click();
 console.log(page.url());
 ```
 
----
-
 ## Multiple pages
 
 Each browser context can host multiple pages (tabs). Each page behaves like a focused, active page. Bringing the page to front is not required. Pages inside a context respect context-level emulation, like viewport sizes, custom network routes or browser locale.
@@ -34,8 +32,6 @@ const pageTwo = await context.newPage();
 // Get pages of a browser context
 const allPages = context.pages();
 ```
-
----
 
 ## Handling new pages
 
@@ -60,8 +56,6 @@ context.on('page', async (page) => {
   console.log(await page.title());
 });
 ```
-
----
 
 ## Handling popups
 

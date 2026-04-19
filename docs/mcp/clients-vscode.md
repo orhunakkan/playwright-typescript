@@ -8,15 +8,11 @@
 
 Click one of the buttons below to install directly:
 
----
-
 ## CLI install
 
 ```bash
 code --add-mcp '{"name":"playwright","command":"npx","args":["@playwright/mcp@latest"]}'
 ```
-
----
 
 ## Manual setup
 

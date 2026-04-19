@@ -34,8 +34,6 @@ test('event should work', async ({ mount }) => {
 });
 ```
 
----
-
 ## How to get started
 
 Adding Playwright Test to an existing project is easy. Below are the steps to enable Playwright Test for a React or Vue project.
@@ -110,8 +108,6 @@ npm run test-ct
 ```
 
 Further reading: configure reporting, browsers, tracing. Refer to Playwright config for configuring your project.
-
----
 
 ## Test stories
 
@@ -206,8 +202,6 @@ test('changes the image', async ({ mount }) => {
 
 As a result, for every component you'll have a story file that exports all the stories that are actually tested. These stories live in the browser and "convert" complex object into the simple objects that can be accessed in the test.
 
----
-
 ## Under the hood
 
 Here is how component testing works:
@@ -215,8 +209,6 @@ Here is how component testing works:
 Once the tests are executed, Playwright creates a list of components that the tests need. It then compiles a bundle that includes these components and serves it using a local static web server. Upon the `mount` call within the test, Playwright navigates to the facade page `/playwright/index.html` of this bundle and tells it to render the component. Events are marshalled back to the Node.js environment to allow verification.
 
 Playwright is using Vite to create the components bundle and serve it.
-
----
 
 ## API reference
 
@@ -439,8 +431,6 @@ test('update', async ({ mount }) => {
 });
 ```
 
----
-
 ## Handling network requests
 
 Playwright provides an experimental `router` fixture to intercept and handle network requests. There are two ways to use the `router` fixture:
@@ -479,8 +469,6 @@ test('example test', async ({ mount, router }) => {
   // ...
 });
 ```
-
----
 
 ## Frequently asked questions
 
