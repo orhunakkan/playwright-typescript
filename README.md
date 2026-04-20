@@ -4,8 +4,8 @@
 
 [![CI - Code Quality](https://github.com/orhunakkan/playwright-typescript/actions/workflows/code-quality.yml/badge.svg)](https://github.com/orhunakkan/playwright-typescript/actions/workflows/code-quality.yml)
 [![CI - Playwright Tests](https://github.com/orhunakkan/playwright-typescript/actions/workflows/playwright-reusable.yml/badge.svg)](https://github.com/orhunakkan/playwright-typescript/actions/workflows/playwright-reusable.yml)
-![Playwright](https://img.shields.io/badge/Playwright-1.58.2-2EAD33?logo=playwright&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-1.59.1-2EAD33?logo=playwright&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)
 ![ESLint](https://img.shields.io/badge/ESLint-9-4B32C3?logo=eslint&logoColor=white)
 ![Prettier](https://img.shields.io/badge/Prettier-3.8-F7B93E?logo=prettier&logoColor=black)
@@ -30,23 +30,25 @@ This framework is a TypeScript reimplementation of the test scenarios from [_Han
 
 ## Tech Stack
 
-| Tool                                                                                                          | Version | Purpose                                               |
-| ------------------------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
-| [Playwright](https://playwright.dev/)                                                                         | 1.58.2  | Browser automation, API testing, assertions           |
-| [TypeScript](https://www.typescriptlang.org/)                                                                 | 5.9     | Strongly-typed test code                              |
-| [Faker.js](https://fakerjs.dev/)                                                                              | 10.4.0  | Dynamic, randomized test data generation              |
-| [axe-core / @axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) | 4.11.1  | Automated WCAG 2.1 AA accessibility scanning          |
-| [GitHub Actions](https://github.com/features/actions)                                                         | —       | CI/CD pipeline orchestration                          |
-| [Docker](https://www.docker.com/)                                                                             | —       | Consistent cross-platform visual regression execution |
-| [ESLint](https://eslint.org/)                                                                                 | 9       | Static analysis with Playwright-specific rules        |
-| [Prettier](https://prettier.io/)                                                                              | 3.8     | Opinionated code formatting                           |
+| Tool                                                                                                          | Version | Purpose                                                  |
+| ------------------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------- |
+| [Playwright](https://playwright.dev/)                                                                         | 1.59.1  | Browser automation, API testing, assertions              |
+| [TypeScript](https://www.typescriptlang.org/)                                                                 | 6.0     | Strongly-typed test code                                 |
+| [Faker.js](https://fakerjs.dev/)                                                                              | 10.4.0  | Dynamic, randomized test data generation                 |
+| [axe-core / @axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) | 4.11.1  | Automated WCAG 2.1 AA accessibility scanning             |
+| [Allure](https://allurereport.org/)                                                                           | 3.6.0   | Structured test reporting with features/stories/severity |
+| [GitHub Actions](https://github.com/features/actions)                                                         | —       | CI/CD pipeline orchestration                             |
+| [Docker](https://www.docker.com/)                                                                             | —       | Visual regression consistency + PostgreSQL for DB tests  |
+| [ESLint](https://eslint.org/)                                                                                 | 9       | Static analysis with Playwright-specific rules           |
+| [Prettier](https://prettier.io/)                                                                              | 3.8     | Opinionated code formatting                              |
 
 ---
 
 ## Key Features
 
-- **Cross-browser E2E testing** across Chromium, Firefox, and Microsoft Edge
+- **Cross-browser E2E testing** across Chromium, Firefox, Microsoft Edge, Mobile Safari, and Mobile Chrome
 - **REST API test suites** with serial execution, shared auth tokens, and full CRUD coverage
+- **Database integration testing** — direct PostgreSQL queries via `db-client` to verify API ↔ DB consistency, covering constraints, cascades, soft deletes, isolation, pagination, and audit trails
 - **Page Object Model** with cleanly separated `locators` and `actions` objects per page
 - **Visual regression testing** using per-browser screenshot baselines stored in version control
 - **Accessibility testing** with automated WCAG 2.1 AA scanning across all 29 pages via axe-core
@@ -55,6 +57,7 @@ This framework is a TypeScript reimplementation of the test scenarios from [_Han
 - **Shadow DOM testing** using Playwright's automatic shadow-piercing locator engine
 - **Cookie & session management** via pre-recorded fixture files loaded before test sessions
 - **Faker.js integration** for unique, randomized payloads on every test run
+- **Allure reporting** with feature/story/severity tagging for structured, navigable test results
 - **Flaky test simulation** to validate retry and stability mechanisms
 - **CI/CD with parallel jobs**, HTML report artifacts, and automated email notifications on completion
 
@@ -67,10 +70,19 @@ playwright-typescript/
 ├── tests/
 │   ├── api/                          # REST API test suites (serial mode)
 │   │   ├── notes-health-check.spec.ts
-│   │   ├── notes-notes-all-flow.spec.ts      # Full notes CRUD flow
-│   │   ├── notes-notes-errors.spec.ts        # Error/validation scenarios
-│   │   ├── notes-users-all-flow.spec.ts      # Full user lifecycle flow
-│   │   └── notes-users-errors.spec.ts        # Auth & registration errors
+│   │   ├── notes-notes-all-flow.spec.ts          # Full notes CRUD flow
+│   │   ├── notes-notes-errors.spec.ts            # Error/validation scenarios
+│   │   ├── notes-users-all-flow.spec.ts          # Full user lifecycle flow
+│   │   └── notes-users-errors.spec.ts            # Auth & registration errors
+│   ├── db/                           # DB integration tests (serial mode)
+│   │   ├── chapter-db-01-consistency.spec.ts     # API response ↔ DB row parity
+│   │   ├── chapter-db-02-constraints.spec.ts     # Unique/NOT NULL constraint enforcement
+│   │   ├── chapter-db-03-cascade.spec.ts         # Foreign key cascade deletes
+│   │   ├── chapter-db-04-soft-delete.spec.ts     # Soft delete / tombstone flag
+│   │   ├── chapter-db-05-isolation.spec.ts       # Cross-user data isolation
+│   │   ├── chapter-db-06-pagination.spec.ts      # Pagination row count validation
+│   │   ├── chapter-db-07-sanitization.spec.ts    # Input sanitization verification
+│   │   └── chapter-db-08-audit-trail.spec.ts     # created_at / updated_at accuracy
 │   └── e2e/                          # Browser-based E2E tests (parallel)
 │       ├── chapter0-visual-regression-tests.spec.ts
 │       ├── chapter3-webdriver-fundamentals.spec.ts
@@ -79,7 +91,9 @@ playwright-typescript/
 │       ├── chapter7-page-object-model.spec.ts
 │       ├── chapter8-testing-framework-specifics.spec.ts
 │       ├── chapter9-third-party-integrations.spec.ts
-│       └── chapter10-accessibility-testing.spec.ts
+│       ├── chapter10-accessibility-testing.spec.ts
+│       ├── chapter11-mobile-testing.spec.ts      # Touch interactions, mobile viewport
+│       └── playwright-docs-link-monitoring.spec.ts # Docs link health + content diffing
 ├── pages/                            # Page Object Model classes (29 pages)
 │   ├── login-form.page.ts
 │   ├── web-form.page.ts
@@ -89,11 +103,18 @@ playwright-typescript/
 │   ├── error-listeners.ts            # Console/network/page error capture
 │   ├── calculator.ts                 # Helpers for calculator page interactions
 │   ├── a11y.ts                       # AxeBuilder wrapper (WCAG 2.1 AA defaults)
-│   └── api-schema-validator.ts       # Schema assertions for API response shapes
+│   ├── api-schema-validator.ts       # Schema assertions for API response shapes
+│   └── db-client.ts                  # PostgreSQL client (queryOne/queryMany/seed/truncate)
 ├── fixtures/
+│   ├── auth/                         # Saved authentication states
 │   ├── cookies/                      # Saved accept/reject cookie states
-│   ├── notes-api-payloads/           # TypeScript interfaces + Faker generators
+│   ├── db-payloads/                  # TypeScript types + Faker generators for DB layer
+│   ├── notes-api-payloads/           # TypeScript interfaces + Faker generators for API layer
+│   ├── page-fixtures/                # Custom Playwright fixture wiring for POM classes
+│   ├── playwright-docs-links/        # Sidebar link JSON for docs link monitoring
 │   └── reference-snapshots/          # Visual regression PNG baselines (80+)
+├── config/
+│   └── env.ts                        # Typed environment variable access
 ├── .github/
 │   └── workflows/
 │       ├── code-quality.yml          # Typecheck + lint + format on every push
@@ -112,7 +133,7 @@ playwright-typescript/
 
 - [Node.js](https://nodejs.org/) v18 or higher
 - npm (included with Node.js)
-- [Docker](https://www.docker.com/) (only required for visual regression tests)
+- [Docker](https://www.docker.com/) (required for visual regression tests and DB integration tests)
 
 ### Installation
 
@@ -153,6 +174,8 @@ npx playwright test
 npx playwright test --project="Desktop Chrome"
 npx playwright test --project="Desktop Firefox"
 npx playwright test --project="Desktop Edge"
+npx playwright test --project="Mobile Safari"
+npx playwright test --project="Mobile Chrome"
 ```
 
 ### By File or Test Name
@@ -166,6 +189,27 @@ npx playwright test -g "shadow DOM"
 
 # Run all API tests
 npx playwright test tests/api/
+```
+
+### Database Integration Tests
+
+```bash
+# Start PostgreSQL container
+npm run docker:up
+
+# Run DB integration tests (serial, workers=1)
+npm run test:db
+
+# Stop and remove containers when done
+npm run docker:down
+```
+
+### Allure Reports
+
+```bash
+npm run report:allure:serve     # generate + open live Allure server
+npm run report:allure:generate  # generate static report
+npm run report:allure:open      # open previously generated report
 ```
 
 ### Visual Regression Tests (Docker)
@@ -230,7 +274,9 @@ npm run format:check    # Check formatting without writing
 | `chapter8-testing-framework-specifics`   | Framework Features | Flaky test simulation (configurable failure rate), retry validation, calculator operations, test stability tooling                                                                                                                                    |
 | `chapter9-third-party-integrations`      | Integrations       | File download validation (PDF, PNG), A/B test variation detection, content type verification                                                                                                                                                          |
 | `chapter10-accessibility-testing`        | Accessibility      | WCAG 2.1 AA automated scans across all 29 pages via axe-core; violations attached as JSON artifacts                                                                                                                                                   |
+| `chapter11-mobile-testing`               | Mobile Testing     | Touch interactions, touchscreen API, mobile-only test skipping via `isMobile`, mobile viewport assertions across Mobile Safari and Mobile Chrome                                                                                                      |
 | `chapter0-visual-regression`             | Visual Testing     | Full-page screenshot comparisons across 25+ pages and 3 browsers; per-browser PNG baselines in version control                                                                                                                                        |
+| `playwright-docs-link-monitoring`        | Link Health        | Automated link validation against the Playwright docs sidebar; sentence-level content diffing with snapshot comparison                                                                                                                                |
 
 ### API Tests
 
@@ -243,6 +289,21 @@ npm run format:check    # Check formatting without writing
 | `notes-notes-errors`   | Notes error handling | Unauthorized access, invalid payloads, missing resource; full error response structure validation |
 
 All API test suites use `test.describe.configure({ mode: 'serial' })` to chain dependent steps and share state (auth tokens, resource IDs) across tests within a file.
+
+### DB Tests
+
+| File                         | Scope               | Techniques Demonstrated                                                   |
+| ---------------------------- | ------------------- | ------------------------------------------------------------------------- |
+| `chapter-db-01-consistency`  | API ↔ DB parity     | Assert API response exactly matches the DB row via direct SQL query       |
+| `chapter-db-02-constraints`  | Unique/NOT NULL     | Verify DB-level constraint violations surface correctly through the API   |
+| `chapter-db-03-cascade`      | Foreign key cascade | Confirm cascading deletes propagate from users → notes at the DB level    |
+| `chapter-db-04-soft-delete`  | Soft delete         | Assert deleted records remain in DB with a tombstone flag                 |
+| `chapter-db-05-isolation`    | Data isolation      | Verify one user cannot access another user's data at the DB level         |
+| `chapter-db-06-pagination`   | Pagination          | Confirm API pagination matches DB row counts and ordering                 |
+| `chapter-db-07-sanitization` | Input sanitization  | Ensure stored values in DB are properly sanitized                         |
+| `chapter-db-08-audit-trail`  | Audit fields        | Verify `created_at`/`updated_at` timestamps are set and updated correctly |
+
+All DB tests reset state via `truncateAll()` in `beforeEach`, seed data through direct SQL using `seedUser()`/`seedNote()`, trigger behaviour via HTTP, then assert the result against a fresh SQL query.
 
 ---
 
@@ -310,6 +371,29 @@ await acceptCookiesBeforeSession(context); // loads fixtures/cookies/accept-cook
 ### Faker.js Test Data
 
 All API payloads use Faker.js to generate unique data on every run, preventing state pollution between test executions and making tests resilient against uniqueness constraints.
+
+### DB Integration Test Layer
+
+DB tests apply a three-layer verification pattern: seed state directly via SQL, trigger behaviour through the HTTP API, then assert the outcome via a fresh SQL query. This catches gaps that pure API tests miss — constraint violations, cascade behaviour, and timestamp accuracy that the API may not expose directly.
+
+```typescript
+test.describe.configure({ mode: 'serial' });
+
+test.beforeEach(async () => {
+  await truncateAll(); // wipe all tables between tests
+});
+
+test('API response matches DB row', async ({ request }) => {
+  const user = await seedUser();
+  const note = await seedNote(user.id);
+
+  const res = await request.get(`/notes/${note.id}`, { headers: getAuthHeaders(user.token) });
+  const body = await res.json();
+
+  const row = await queryOne<NoteRow>('SELECT * FROM notes WHERE id = $1', [note.id]);
+  expect(body.data.title).toBe(row.title);
+});
+```
 
 ---
 
