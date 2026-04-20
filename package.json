@@ -19,7 +19,8 @@
     "report:allure:open": "allure open allure-report",
     "test:db": "npx playwright test --project=\"DB Tests\" --workers=1",
     "docker:up": "docker compose up -d --wait",
-    "docker:down": "docker compose down -v"
+    "docker:down": "docker compose down -v",
+    "test:perf": "npx artillery run --dotenv .env tests/performance/chapter12-performance-testing.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.0",
@@ -34,6 +35,7 @@
     "@typescript-eslint/parser": "^8.58.0",
     "allure-commandline": "^2.38.1",
     "allure-playwright": "^3.6.0",
+    "artillery": "^2.0.30",
     "eslint": "^9.39.4",
     "eslint-plugin-playwright": "^2.10.1",
     "prettier": "^3.8.1",

@@ -1,0 +1,4 @@
+{
+  "//": "Required to override the root 'type: module' (ESM). Artillery compiles the .ts config to .js and Node.js must treat that output as CommonJS — without this, the run fails with 'module is not defined in ES module scope'.",
+  "type": "commonjs"
+}
