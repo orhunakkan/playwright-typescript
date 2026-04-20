@@ -38,7 +38,7 @@
     "artillery": "^2.0.30",
     "eslint": "^9.39.4",
     "eslint-plugin-playwright": "^2.10.1",
-    "prettier": "^3.8.1",
+    "prettier": "^3.8.3",
     "typescript": "^6.0.2"
   }
 }
