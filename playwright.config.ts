@@ -81,5 +81,23 @@ export default defineConfig({
       testDir: './tests/e2e',
       use: { ...devices['Pixel 7'] },
     },
+
+    {
+      name: 'sauce-auth-setup',
+      testDir: './tests/sauce',
+      testMatch: '**/*.setup.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
+      name: 'Sauce Auth Chrome',
+      testDir: './tests/sauce',
+      testMatch: '**/*.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.auth/sauce-user.json',
+      },
+      dependencies: ['sauce-auth-setup'],
+    },
   ],
 });

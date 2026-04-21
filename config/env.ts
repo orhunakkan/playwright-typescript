@@ -7,6 +7,7 @@ function requireEnv(key: string): string {
 export const config = {
   e2eUrl: requireEnv('PRACTICE_E2E_URL'),
   apiUrl: requireEnv('PRACTICE_API_URL'),
+  sauceDemoUrl: requireEnv('SAUCE_DEMO_URL'),
   env: process.env.TEST_ENV ?? 'dev',
   // DB vars use optional fallback so existing API/E2E tests run without Docker
   dbHost: process.env.DB_HOST ?? '',

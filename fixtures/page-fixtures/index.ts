@@ -1,4 +1,6 @@
 import { test as base, expect } from '@playwright/test';
+import { SauceLoginPage } from '../../pages/sauce-login.page';
+import { SauceInventoryPage } from '../../pages/sauce-inventory.page';
 import { ABTestingPage } from '../../pages/ab-testing.page';
 import { ConsoleLogsPage } from '../../pages/console-logs.page';
 import { CookiesPage } from '../../pages/cookies.page';
@@ -59,6 +61,8 @@ type PageFixtures = {
   submittedFormPage: SubmittedFormPage;
   webFormPage: WebFormPage;
   webStoragePage: WebStoragePage;
+  sauceLoginPage: SauceLoginPage;
+  sauceInventoryPage: SauceInventoryPage;
 };
 
 const test = base.extend<PageFixtures>({
@@ -148,6 +152,12 @@ const test = base.extend<PageFixtures>({
   },
   webStoragePage: async ({ page }, use) => {
     await use(new WebStoragePage(page));
+  },
+  sauceLoginPage: async ({ page }, use) => {
+    await use(new SauceLoginPage(page));
+  },
+  sauceInventoryPage: async ({ page }, use) => {
+    await use(new SauceInventoryPage(page));
   },
 });
 
