@@ -1,14 +1,8 @@
 import { test, expect } from '@playwright/test';
 import * as allure from 'allure-js-commons';
-import { config } from '../../config/env.js';
-import { truncateAll, seedUser, queryMany } from '../../utilities/db-client.js';
-import { generateDbUserPayload, generatePostgRestNotePayload } from '../../fixtures/db-payloads/db-payload-generators.js';
+import { faker } from '@faker-js/faker';
+import { truncateAll, seedUser, queryMany, queryRaw } from '../../utilities/db-client.js';
 import type { UserRow, NoteRow } from '../../fixtures/db-payloads/db-types.js';
-
-// PostgREST error mappings used in this file:
-//   Unique constraint violation  → 409 Conflict
-//   NOT NULL constraint violation → 400 Bad Request
-//   CHECK constraint violation   → 400 Bad Request
 
 test.describe.configure({ mode: 'serial' });
 
@@ -20,51 +14,52 @@ test.describe('DB Constraints — unique, not-null, and check enforcement', () =
     await truncateAll();
   });
 
-  test('duplicate email → 409, DB contains only one user row', async ({ request }) => {
-    const payload = generateDbUserPayload();
+  test('duplicate email → unique violation (23505), DB contains only one user row', async () => {
+    const name = faker.person.fullName();
+    const email = faker.internet.email().toLowerCase();
 
-    const first = await request.post(`${config.postgreStUrl}/users`, {
-      data: payload,
-      headers: { 'Content-Type': 'application/json', Prefer: 'return=representation' },
-    });
-    expect(first.status()).toBe(201);
+    await queryRaw('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email]);
 
-    // Attempt to insert the same email again
-    const second = await request.post(`${config.postgreStUrl}/users`, {
-      data: payload,
-      headers: { 'Content-Type': 'application/json' },
-    });
-    expect(second.status()).toBe(409);
+    let pgCode: string | undefined;
+    try {
+      await queryRaw('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email]);
+    } catch (err: any) {
+      pgCode = err.code;
+    }
 
-    // The DB must still hold exactly one row for this email
-    const rows = await queryMany<UserRow>('SELECT * FROM users WHERE email = $1', [payload.email]);
+    expect(pgCode).toBe('23505');
+
+    const rows = await queryMany<UserRow>('SELECT * FROM users WHERE email = $1', [email]);
     expect(rows).toHaveLength(1);
   });
 
-  test('null title → 400, DB contains zero note rows', async ({ request }) => {
+  test('null title → not-null violation (23502), DB contains zero note rows', async () => {
     const user = await seedUser();
 
-    // Omit the required `title` field
-    const response = await request.post(`${config.postgreStUrl}/notes`, {
-      data: { description: 'no title', category: 'Work', user_id: user.id },
-      headers: { 'Content-Type': 'application/json' },
-    });
-    expect(response.status()).toBe(400);
+    let pgCode: string | undefined;
+    try {
+      await queryRaw('INSERT INTO notes (title, category, user_id) VALUES (NULL, $1, $2)', ['Work', user.id]);
+    } catch (err: any) {
+      pgCode = err.code;
+    }
 
-    // No partial row should have been written
+    expect(pgCode).toBe('23502');
+
     const rows = await queryMany<NoteRow>('SELECT * FROM notes WHERE user_id = $1', [user.id]);
     expect(rows).toHaveLength(0);
   });
 
-  test('invalid category value → 400, DB contains zero note rows', async ({ request }) => {
+  test('invalid category value → check violation (23514), DB contains zero note rows', async () => {
     const user = await seedUser();
-    const payload = { ...generatePostgRestNotePayload(user.id), category: 'InvalidCategory' };
 
-    const response = await request.post(`${config.postgreStUrl}/notes`, {
-      data: payload,
-      headers: { 'Content-Type': 'application/json' },
-    });
-    expect(response.status()).toBe(400);
+    let pgCode: string | undefined;
+    try {
+      await queryRaw('INSERT INTO notes (title, category, user_id) VALUES ($1, $2, $3)', ['Test note', 'InvalidCategory', user.id]);
+    } catch (err: any) {
+      pgCode = err.code;
+    }
+
+    expect(pgCode).toBe('23514');
 
     const rows = await queryMany<NoteRow>('SELECT * FROM notes WHERE user_id = $1', [user.id]);
     expect(rows).toHaveLength(0);

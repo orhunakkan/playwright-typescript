@@ -1,14 +1,7 @@
 import { test, expect } from '@playwright/test';
 import * as allure from 'allure-js-commons';
-import { config } from '../../config/env.js';
-import { truncateAll, seedUser, queryOne, queryMany } from '../../utilities/db-client.js';
-import { xssNotePayload } from '../../fixtures/db-payloads/db-payload-generators.js';
-import type { NoteRow, PostgRestNoteRow } from '../../fixtures/db-payloads/db-types.js';
-
-// Security assertions in this file:
-//   XSS payload   — stored as a literal string, not executed
-//   SQL injection  — parameterised queries prevent interpretation; table survives
-// Both PostgREST (prepared statements) and pg (parameterised queries) protect against SQLi.
+import { truncateAll, seedUser, queryOne, queryMany, queryRaw } from '../../utilities/db-client.js';
+import type { NoteRow } from '../../fixtures/db-payloads/db-types.js';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -20,51 +13,33 @@ test.describe('DB Sanitization — XSS and SQL injection stored as plain text', 
     await truncateAll();
   });
 
-  test('XSS script tag is stored verbatim in DB and returned unchanged by API', async ({ request }) => {
+  test('XSS script tag is stored verbatim via parameterized query', async () => {
     const user = await seedUser();
-    const payload = xssNotePayload(user.id);
+    const xssTitle = '<script>alert("xss")</script>';
 
-    const response = await request.post(`${config.postgreStUrl}/notes`, {
-      data: payload,
-      headers: { 'Content-Type': 'application/json', Prefer: 'return=representation' },
-    });
-    expect(response.status()).toBe(201);
+    const result = await queryRaw('INSERT INTO notes (title, category, user_id) VALUES ($1, $2, $3) RETURNING id', [xssTitle, 'Work', user.id]);
+    const insertedId = result.rows[0].id;
 
-    const [apiNote] = (await response.json()) as PostgRestNoteRow[];
-
-    // DB must store the raw string — no HTML encoding or stripping
-    const dbRow = await queryOne<NoteRow>('SELECT * FROM notes WHERE id = $1', [apiNote.id]);
-    expect(dbRow!.title).toBe('<script>alert("xss")</script>');
-
-    // API must return the same raw string (no double-encoding at the HTTP layer)
-    expect(apiNote.title).toBe('<script>alert("xss")</script>');
+    const dbRow = await queryOne<NoteRow>('SELECT * FROM notes WHERE id = $1', [insertedId]);
+    expect(dbRow!.title).toBe(xssTitle);
   });
 
-  test('SQL injection in description is stored as a literal string', async ({ request }) => {
+  test('SQL injection in description is stored as a literal string', async () => {
     const user = await seedUser();
-    const payload = xssNotePayload(user.id);
+    const sqliDescription = "'; DROP TABLE notes; --";
 
-    const response = await request.post(`${config.postgreStUrl}/notes`, {
-      data: payload,
-      headers: { 'Content-Type': 'application/json', Prefer: 'return=representation' },
-    });
-    expect(response.status()).toBe(201);
+    const result = await queryRaw('INSERT INTO notes (title, description, category, user_id) VALUES ($1, $2, $3, $4) RETURNING id', ['Test note', sqliDescription, 'Personal', user.id]);
+    const insertedId = result.rows[0].id;
 
-    const [apiNote] = (await response.json()) as PostgRestNoteRow[];
-    const dbRow = await queryOne<NoteRow>('SELECT * FROM notes WHERE id = $1', [apiNote.id]);
-
-    // The SQL injection string must be stored verbatim — not executed
-    expect(dbRow!.description).toBe("'; DROP TABLE notes; --");
+    const dbRow = await queryOne<NoteRow>('SELECT * FROM notes WHERE id = $1', [insertedId]);
+    expect(dbRow!.description).toBe(sqliDescription);
   });
 
-  test('notes table still exists and is queryable after SQL injection attempt', async ({ request }) => {
+  test('notes table still exists and is queryable after SQL injection attempt', async () => {
     const user = await seedUser();
-    await request.post(`${config.postgreStUrl}/notes`, {
-      data: xssNotePayload(user.id),
-      headers: { 'Content-Type': 'application/json' },
-    });
 
-    // If the DROP TABLE had executed, this query would throw
+    await queryRaw('INSERT INTO notes (title, description, category, user_id) VALUES ($1, $2, $3, $4)', ['Test note', "'; DROP TABLE notes; --", 'Home', user.id]);
+
     const rows = await queryMany<NoteRow>('SELECT * FROM notes');
     expect(rows.length).toBeGreaterThanOrEqual(1);
   });

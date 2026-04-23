@@ -11,7 +11,7 @@ let pool: pg.Pool | null = null;
 function getPool(): pg.Pool {
   if (!pool) {
     if (!config.dbHost || !config.dbName) {
-      throw new Error('DB config is missing. Ensure DB_HOST, DB_NAME, DB_USER, DB_PASSWORD are set in your .env file and Docker is running (npm run docker:up).');
+      throw new Error('DB config is missing. Ensure DB_HOST, DB_NAME, DB_USER, DB_PASSWORD are set in your .env file.');
     }
     pool = new Pool({
       host: config.dbHost,

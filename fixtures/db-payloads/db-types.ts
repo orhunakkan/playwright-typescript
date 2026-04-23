@@ -21,27 +21,3 @@ export interface NoteRow {
   updated_at: Date;
   user_id: string;
 }
-
-// ─── PostgREST JSON types ─────────────────────────────────────────────────────
-// Used when parsing HTTP responses from PostgREST.
-// JSON serialises timestamps as ISO strings and has no native Date type.
-
-export interface PostgRestUserRow {
-  id: string;
-  name: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PostgRestNoteRow {
-  id: string;
-  title: string;
-  description: string | null;
-  category: string;
-  completed: boolean;
-  deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-}

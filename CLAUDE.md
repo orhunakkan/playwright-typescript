@@ -129,10 +129,8 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 - `npm run test:visual` — run visual regression tests in Docker
 - `npm run test:visual:update` — update visual regression snapshots in Docker
 
-### Database & Docker
+### Database
 
-- `npm run docker:up` — start PostgreSQL container (docker compose, waits until healthy)
-- `npm run docker:down` — stop and remove containers + volumes
 - `npm run typecheck` — TypeScript type check (no emit)
 - `npm run test:db` — run DB tests via `npx playwright test --project="DB Tests" --workers=1`
 
@@ -148,7 +146,7 @@ Control a live browser session from terminal. Use `-s=<session>` for named sessi
 ## Test Projects (playwright.config.ts)
 
 1. API Tests — `tests/api/`, no browser
-2. DB Tests — `tests/db/`, no browser, PostgreSQL via docker compose
+2. DB Tests — `tests/db/`, no browser, native PostgreSQL 18 (direct SQL only)
 3. Desktop Chrome — `tests/e2e/`
 4. Desktop Firefox — `tests/e2e/`
 5. Desktop Edge — `tests/e2e/`
