@@ -12,15 +12,15 @@
     "typecheck": "tsc --noEmit",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test:visual": "docker run --rm -v .:/work -w /work -e TEST_ENV=dev mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/e2e/chapter0-visual-regression-tests.spec.ts",
-    "test:visual:update": "docker run --rm -v .:/work -w /work -e TEST_ENV=dev mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/e2e/chapter0-visual-regression-tests.spec.ts --update-snapshots",
+    "test:visual": "docker run --rm -v .:/work -w /work -e TEST_ENV=dev mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/e2e/visual-regression.spec.ts",
+    "test:visual:update": "docker run --rm -v .:/work -w /work -e TEST_ENV=dev mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/e2e/visual-regression.spec.ts --update-snapshots",
     "report:allure:serve": "allure serve allure-results",
     "report:allure:generate": "allure generate allure-results --clean -o allure-report",
     "report:allure:open": "allure open allure-report",
     "test:db": "npx playwright test --project=\"DB Tests\" --workers=1",
     "docker:up": "docker compose up -d --wait",
     "docker:down": "docker compose down -v",
-    "test:perf": "npx artillery run --dotenv .env tests/performance/chapter12-performance-testing.ts"
+    "test:perf": "npx artillery run --dotenv .env tests/performance/performance-testing.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.0",

@@ -6,7 +6,7 @@
 
 - `npx playwright test` — run all tests
 - `npx playwright test --project="Desktop Chrome"` — single browser
-- `npx playwright test tests/e2e/chapter3*.spec.ts` — single file
+- `npx playwright test tests/e2e/webdriver-fundamentals.spec.ts` — single file
 - `npx playwright test -g "should login"` — run tests matching title (grep)
 - `npx playwright test --headed` — headed mode (see the browser)
 - `npx playwright test --workers=1` — run sequentially (useful for debugging)
@@ -181,7 +181,7 @@ DB tests in `tests/db/` follow a specific pattern:
 - Reset state in `beforeEach` via `truncateAll()` from `db-client`
 - Seed data directly via `seedUser()` / `seedNote()` (SQL inserts with Faker defaults)
 - Make HTTP requests via `request` fixture, then query DB to verify consistency
-- Chapter-based naming: `chapter-db-01-*.spec.ts` through `chapter-db-08-*.spec.ts`
+- Tests named `db-consistency.spec.ts` through `db-audit-trail.spec.ts`
 - Uses Allure decorators (`allure.feature()`, `allure.story()`, `allure.severity()`)
 - Requires Docker running: `npm run docker:up` before running `npm run test:db`
 

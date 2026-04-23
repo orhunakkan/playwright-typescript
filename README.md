@@ -75,24 +75,24 @@ playwright-typescript/
 │   │   ├── notes-users-all-flow.spec.ts          # Full user lifecycle flow
 │   │   └── notes-users-errors.spec.ts            # Auth & registration errors
 │   ├── db/                           # DB integration tests (serial mode)
-│   │   ├── chapter-db-01-consistency.spec.ts     # API response ↔ DB row parity
-│   │   ├── chapter-db-02-constraints.spec.ts     # Unique/NOT NULL constraint enforcement
-│   │   ├── chapter-db-03-cascade.spec.ts         # Foreign key cascade deletes
-│   │   ├── chapter-db-04-soft-delete.spec.ts     # Soft delete / tombstone flag
-│   │   ├── chapter-db-05-isolation.spec.ts       # Cross-user data isolation
-│   │   ├── chapter-db-06-pagination.spec.ts      # Pagination row count validation
-│   │   ├── chapter-db-07-sanitization.spec.ts    # Input sanitization verification
-│   │   └── chapter-db-08-audit-trail.spec.ts     # created_at / updated_at accuracy
+│   │   ├── db-consistency.spec.ts                # API response ↔ DB row parity
+│   │   ├── db-constraints.spec.ts                # Unique/NOT NULL constraint enforcement
+│   │   ├── db-cascade.spec.ts                    # Foreign key cascade deletes
+│   │   ├── db-soft-delete.spec.ts                # Soft delete / tombstone flag
+│   │   ├── db-isolation.spec.ts                  # Cross-user data isolation
+│   │   ├── db-pagination.spec.ts                 # Pagination row count validation
+│   │   ├── db-sanitization.spec.ts               # Input sanitization verification
+│   │   └── db-audit-trail.spec.ts                # created_at / updated_at accuracy
 │   └── e2e/                          # Browser-based E2E tests (parallel)
-│       ├── chapter0-visual-regression-tests.spec.ts
-│       ├── chapter3-webdriver-fundamentals.spec.ts
-│       ├── chapter4-browser-agnostic-features.spec.ts
-│       ├── chapter5-browser-specific-manipulation.spec.ts
-│       ├── chapter7-page-object-model.spec.ts
-│       ├── chapter8-testing-framework-specifics.spec.ts
-│       ├── chapter9-third-party-integrations.spec.ts
-│       ├── chapter10-accessibility-testing.spec.ts
-│       ├── chapter11-mobile-testing.spec.ts      # Touch interactions, mobile viewport
+│       ├── visual-regression.spec.ts
+│       ├── webdriver-fundamentals.spec.ts
+│       ├── browser-features.spec.ts
+│       ├── browser-apis.spec.ts
+│       ├── page-object-model.spec.ts
+│       ├── framework-features.spec.ts
+│       ├── third-party-integrations.spec.ts
+│       ├── accessibility-testing.spec.ts
+│       ├── mobile-testing.spec.ts                # Touch interactions, mobile viewport
 │       └── playwright-docs-link-monitoring.spec.ts # Docs link health + content diffing
 ├── pages/                            # Page Object Model classes (29 pages)
 │   ├── login-form.page.ts
@@ -182,7 +182,7 @@ npx playwright test --project="Mobile Chrome"
 
 ```bash
 # Run a specific test file
-npx playwright test tests/e2e/chapter3-webdriver-fundamentals.spec.ts
+npx playwright test tests/e2e/webdriver-fundamentals.spec.ts
 
 # Run tests matching a title pattern
 npx playwright test -g "shadow DOM"
@@ -265,18 +265,18 @@ npm run format:check    # Check formatting without writing
 
 ### E2E Tests
 
-| File                                     | Area               | Techniques Demonstrated                                                                                                                                                                                                                               |
-| ---------------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `chapter3-webdriver-fundamentals`        | Core WebDriver     | Text inputs, passwords, textareas, disabled/readonly fields, select dropdowns, datalists, checkboxes, radio buttons, color pickers, date pickers, range sliders, file upload, form submission, pagination, hover menus, drag-and-drop, canvas drawing |
-| `chapter4-browser-agnostic-features`     | Browser Features   | Cookies (add/modify/delete), session & local storage, frames (frameset), iframes, alert/confirm/prompt dialogs, Bootstrap modals, shadow DOM (open), infinite scroll, long page scrolling, keyboard navigation                                        |
-| `chapter5-browser-specific-manipulation` | Browser APIs       | Geolocation mocking with permission grants, desktop notification permission, `getUserMedia` fake streams, browser locale switching (en-US / es-ES), console log/error capture                                                                         |
-| `chapter7-page-object-model`             | POM Pattern        | Login form, slow async login with spinner states, full POM encapsulation of locators and actions                                                                                                                                                      |
-| `chapter8-testing-framework-specifics`   | Framework Features | Flaky test simulation (configurable failure rate), retry validation, calculator operations, test stability tooling                                                                                                                                    |
-| `chapter9-third-party-integrations`      | Integrations       | File download validation (PDF, PNG), A/B test variation detection, content type verification                                                                                                                                                          |
-| `chapter10-accessibility-testing`        | Accessibility      | WCAG 2.1 AA automated scans across all 29 pages via axe-core; violations attached as JSON artifacts                                                                                                                                                   |
-| `chapter11-mobile-testing`               | Mobile Testing     | Touch interactions, touchscreen API, mobile-only test skipping via `isMobile`, mobile viewport assertions across Mobile Safari and Mobile Chrome                                                                                                      |
-| `chapter0-visual-regression`             | Visual Testing     | Full-page screenshot comparisons across 25+ pages and 3 browsers; per-browser PNG baselines in version control                                                                                                                                        |
-| `playwright-docs-link-monitoring`        | Link Health        | Automated link validation against the Playwright docs sidebar; sentence-level content diffing with snapshot comparison                                                                                                                                |
+| File                              | Area               | Techniques Demonstrated                                                                                                                                                                                                                               |
+| --------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `webdriver-fundamentals`          | Core WebDriver     | Text inputs, passwords, textareas, disabled/readonly fields, select dropdowns, datalists, checkboxes, radio buttons, color pickers, date pickers, range sliders, file upload, form submission, pagination, hover menus, drag-and-drop, canvas drawing |
+| `browser-features`                | Browser Features   | Cookies (add/modify/delete), session & local storage, frames (frameset), iframes, alert/confirm/prompt dialogs, Bootstrap modals, shadow DOM (open), infinite scroll, long page scrolling, keyboard navigation                                        |
+| `browser-apis`                    | Browser APIs       | Geolocation mocking with permission grants, desktop notification permission, `getUserMedia` fake streams, browser locale switching (en-US / es-ES), console log/error capture                                                                         |
+| `page-object-model`               | POM Pattern        | Login form, slow async login with spinner states, full POM encapsulation of locators and actions                                                                                                                                                      |
+| `framework-features`              | Framework Features | Flaky test simulation (configurable failure rate), retry validation, calculator operations, test stability tooling                                                                                                                                    |
+| `third-party-integrations`        | Integrations       | File download validation (PDF, PNG), A/B test variation detection, content type verification                                                                                                                                                          |
+| `accessibility-testing`           | Accessibility      | WCAG 2.1 AA automated scans across all 29 pages via axe-core; violations attached as JSON artifacts                                                                                                                                                   |
+| `mobile-testing`                  | Mobile Testing     | Touch interactions, touchscreen API, mobile-only test skipping via `isMobile`, mobile viewport assertions across Mobile Safari and Mobile Chrome                                                                                                      |
+| `visual-regression`               | Visual Testing     | Full-page screenshot comparisons across 25+ pages and 3 browsers; per-browser PNG baselines in version control                                                                                                                                        |
+| `playwright-docs-link-monitoring` | Link Health        | Automated link validation against the Playwright docs sidebar; sentence-level content diffing with snapshot comparison                                                                                                                                |
 
 ### API Tests
 
@@ -292,16 +292,16 @@ All API test suites use `test.describe.configure({ mode: 'serial' })` to chain d
 
 ### DB Tests
 
-| File                         | Scope               | Techniques Demonstrated                                                   |
-| ---------------------------- | ------------------- | ------------------------------------------------------------------------- |
-| `chapter-db-01-consistency`  | API ↔ DB parity     | Assert API response exactly matches the DB row via direct SQL query       |
-| `chapter-db-02-constraints`  | Unique/NOT NULL     | Verify DB-level constraint violations surface correctly through the API   |
-| `chapter-db-03-cascade`      | Foreign key cascade | Confirm cascading deletes propagate from users → notes at the DB level    |
-| `chapter-db-04-soft-delete`  | Soft delete         | Assert deleted records remain in DB with a tombstone flag                 |
-| `chapter-db-05-isolation`    | Data isolation      | Verify one user cannot access another user's data at the DB level         |
-| `chapter-db-06-pagination`   | Pagination          | Confirm API pagination matches DB row counts and ordering                 |
-| `chapter-db-07-sanitization` | Input sanitization  | Ensure stored values in DB are properly sanitized                         |
-| `chapter-db-08-audit-trail`  | Audit fields        | Verify `created_at`/`updated_at` timestamps are set and updated correctly |
+| File              | Scope               | Techniques Demonstrated                                                   |
+| ----------------- | ------------------- | ------------------------------------------------------------------------- |
+| `db-consistency`  | API ↔ DB parity     | Assert API response exactly matches the DB row via direct SQL query       |
+| `db-constraints`  | Unique/NOT NULL     | Verify DB-level constraint violations surface correctly through the API   |
+| `db-cascade`      | Foreign key cascade | Confirm cascading deletes propagate from users → notes at the DB level    |
+| `db-soft-delete`  | Soft delete         | Assert deleted records remain in DB with a tombstone flag                 |
+| `db-isolation`    | Data isolation      | Verify one user cannot access another user's data at the DB level         |
+| `db-pagination`   | Pagination          | Confirm API pagination matches DB row counts and ordering                 |
+| `db-sanitization` | Input sanitization  | Ensure stored values in DB are properly sanitized                         |
+| `db-audit-trail`  | Audit fields        | Verify `created_at`/`updated_at` timestamps are set and updated correctly |
 
 All DB tests reset state via `truncateAll()` in `beforeEach`, seed data through direct SQL using `seedUser()`/`seedNote()`, trigger behaviour via HTTP, then assert the result against a fresh SQL query.
 

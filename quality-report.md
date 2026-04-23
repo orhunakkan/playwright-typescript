@@ -18,11 +18,11 @@ _Last evaluated: 2026-04-16_
 
 **Allure Reporting** — Fully integrated with `allure-playwright`, three npm scripts (`serve`, `generate`, `open`), environment info in reporter config, and `allure-results/` output. This goes well beyond the built-in HTML reporter and shows stakeholder communication awareness.
 
-**Database Testing** — `utilities/db-client.ts` provides `truncateAll()`, `seedUser()`, and `seedNote()` helpers. Eight dedicated DB test files (`chapter-db-01` through `chapter-db-08`) cover consistency, constraints, audit trails, and more. Tests use `beforeEach` cleanup with `truncateAll()`.
+**Database Testing** — `utilities/db-client.ts` provides `truncateAll()`, `seedUser()`, and `seedNote()` helpers. Eight dedicated DB test files (`db-consistency` through `db-audit-trail`) cover consistency, constraints, audit trails, and more. Tests use `beforeEach` cleanup with `truncateAll()`.
 
 **API Schema Validation** — `utilities/api-schema-validator.ts` provides `expectMatchesSchema()` and `expectArrayMatchesSchema()` with predefined schemas (`UserDataSchema`, `LoginDataSchema`, `NoteDataSchema`, `ErrorResponseSchema`, etc.). Used consistently across all API test files.
 
-**Mobile Testing** — Dedicated `chapter11-mobile-testing.spec.ts` with touch interactions (`page.touchscreen.tap()`), viewport assertions, media emulation (dark color scheme, reduced motion), and `isMobile` fixture gating. Two device configs: iPhone 15 Pro Max and Pixel 7.
+**Mobile Testing** — Dedicated `mobile-testing.spec.ts` with touch interactions (`page.touchscreen.tap()`), viewport assertions, media emulation (dark color scheme, reduced motion), and `isMobile` fixture gating. Two device configs: iPhone 15 Pro Max and Pixel 7.
 
 **Cross-browser + Visual Regression + Accessibility** — Having all three in one framework with per-browser baselines and Docker-based snapshot updates is comprehensive.
 
@@ -50,7 +50,7 @@ _Last evaluated: 2026-04-16_
 - Higher-level action methods (`loginAndVerifySuccess()` rather than always doing `login()` + `expect()` in tests)
 - `waitForPageLoad()` methods that encapsulate readiness checks
 
-**Test organization** — Chapter-based naming (`chapter3`, `chapter4`) reveals this is from a book. For a portfolio, reorganize by **feature domain** (forms, navigation, storage, media, accessibility) — it signals you're thinking like a test architect, not a student. The `test.describe()` blocks within files are well-named; it's the file names that need attention.
+**Test organization** — Tests are now organized by feature domain (`webdriver-fundamentals`, `browser-features`, `browser-apis`, etc.), signalling test-architect thinking rather than curriculum-following.
 
 **ESLint config is minimal** — `eslint.config.js` includes `playwright.configs['flat/recommended']` and `@typescript-eslint/parser`, but no additional strictness rules. Add: `@typescript-eslint/no-explicit-any`, `@typescript-eslint/explicit-function-return-type`, `playwright/no-force-option`, `playwright/no-wait-for-timeout`.
 
@@ -62,14 +62,14 @@ _Last evaluated: 2026-04-16_
 
 ## Priority Recommendations (Biggest Impact First)
 
-| Priority | What                                  | Why it matters                                        | Effort |
-| -------- | ------------------------------------- | ----------------------------------------------------- | ------ |
-| 1        | Add `page.route()` network mocking    | Fills the biggest remaining Playwright capability gap | Medium |
-| 2        | Add `globalSetup` + `storageState`    | Core Playwright pattern, expected for senior          | Medium |
-| 3        | Rename tests by domain, not chapter   | Removes "student project" perception instantly        | Low    |
-| 4        | Enable `strict: true` in tsconfig     | Quick win for TypeScript credibility                  | Low    |
-| 5        | Add stricter ESLint rules             | Shows code quality discipline beyond defaults         | Low    |
-| 6        | Enrich POM with composable components | Demonstrates architectural thinking in page objects   | Medium |
+| Priority | What                                    | Why it matters                                        | Effort |
+| -------- | --------------------------------------- | ----------------------------------------------------- | ------ |
+| 1        | Add `page.route()` network mocking      | Fills the biggest remaining Playwright capability gap | Medium |
+| 2        | Add `globalSetup` + `storageState`      | Core Playwright pattern, expected for senior          | Medium |
+| 3        | ~~Rename tests by domain, not chapter~~ | **Done** — files renamed to domain-focused names      | —      |
+| 4        | Enable `strict: true` in tsconfig       | Quick win for TypeScript credibility                  | Low    |
+| 5        | Add stricter ESLint rules               | Shows code quality discipline beyond defaults         | Low    |
+| 6        | Enrich POM with composable components   | Demonstrates architectural thinking in page objects   | Medium |
 
 ---
 
@@ -91,10 +91,10 @@ _Last evaluated: 2026-04-16_
 | Global setup/teardown               | Missing         | Still missing                                                                              |
 | TypeScript strictness               | Weak            | Still weak — no `strict: true`                                                             |
 | POM richness                        | Thin            | Still thin — basic locators/actions pattern                                                |
-| Test organization                   | Chapter-based   | Still chapter-based file names                                                             |
+| Test organization                   | Chapter-based   | **Addressed** — Files renamed to domain-focused names                                      |
 | ESLint strictness                   | Minimal         | Still minimal — recommended rules only                                                     |
 | Retry/flake handling                | Basic           | Still basic — CI retries only                                                              |
 
 ---
 
-**Bottom line:** Significant progress since the initial review. Eight of the original gaps have been fully addressed, including the high-impact items: custom fixtures, environment management, Allure reporting, database testing, mobile testing, and API schema validation. The framework now reads as a **capable senior-level portfolio** rather than a learning project. The remaining gaps — network mocking, global setup/storageState, and test file reorganization — are the final pieces that would push it from "strong senior candidate" to "staff-level test architect."
+**Bottom line:** Significant progress since the initial review. Nine of the original gaps have been fully addressed, including the high-impact items: custom fixtures, environment management, Allure reporting, database testing, mobile testing, API schema validation, and domain-focused test naming. The framework now reads as a **capable senior-level portfolio** rather than a learning project. The remaining gaps — network mocking, global setup/storageState — are the final pieces that would push it from "strong senior candidate" to "staff-level test architect."

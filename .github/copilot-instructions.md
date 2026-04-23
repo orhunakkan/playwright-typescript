@@ -13,13 +13,13 @@
 ### Running tests
 
 - Run all Playwright projects: `npx playwright test`
-- Run one spec file: `npx playwright test tests\e2e\chapter7-page-object-model.spec.ts`
+- Run one spec file: `npx playwright test tests\e2e\page-object-model.spec.ts`
 - Run one test by title: `npx playwright test -g "should login successfully"`
-- Run one spec in one browser project: `npx playwright test tests\e2e\chapter7-page-object-model.spec.ts --project="Desktop Chrome"`
+- Run one spec in one browser project: `npx playwright test tests\e2e\page-object-model.spec.ts --project="Desktop Chrome"`
 - Run all API tests: `npx playwright test --project="API Tests"`
 - Run one API spec: `npx playwright test tests\api\notes-notes-all-flow.spec.ts --project="API Tests"`
 - Run DB tests: `npm run test:db`
-- Run one DB spec: `npx playwright test tests\db\chapter-db-01-consistency.spec.ts --project="DB Tests" --workers=1`
+- Run one DB spec: `npx playwright test tests\db\db-consistency.spec.ts --project="DB Tests" --workers=1`
 - Run visual regression suite in Docker: `npm run test:visual`
 - Update visual baselines in Docker: `npm run test:visual:update`
 - Open HTML report: `npx playwright show-report`
@@ -38,7 +38,7 @@
 - The page object layer uses one class per page under `pages/`. Each class exposes `readonly locators` and `readonly actions`, and navigation methods usually build URLs from `config.e2eUrl`.
 - API coverage lives in `tests/api/`. These suites use Playwright's `request` fixture, Faker-based payload generators in `fixtures/notes-api-payloads/`, and strict schema assertions from `utilities/api-schema-validator.ts`.
 - DB coverage lives in `tests/db/`. These specs hit PostgREST over HTTP and validate persisted state directly through `utilities/db-client.ts`, which manages a lazily created PostgreSQL pool and seeding helpers.
-- Visual regression is implemented as a normal Playwright spec (`tests/e2e/chapter0-visual-regression-tests.spec.ts`) but snapshot paths are centralized by `snapshotPathTemplate` in `playwright.config.ts`, so baselines land under `fixtures/reference-snapshots\{testFileName}\{testName}\`.
+- Visual regression is implemented as a normal Playwright spec (`tests/e2e/visual-regression.spec.ts`) but snapshot paths are centralized by `snapshotPathTemplate` in `playwright.config.ts`, so baselines land under `fixtures/reference-snapshots\{testFileName}\{testName}\`.
 
 ## Key conventions
 
