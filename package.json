@@ -23,7 +23,7 @@
     "test:perf": "npx artillery run --dotenv .env tests/performance/performance-testing.ts"
   },
   "dependencies": {
-    "dotenv": "^17.4.0",
+    "dotenv": "^17.4.2",
     "pg": "^8.20.0"
   },
   "devDependencies": {
