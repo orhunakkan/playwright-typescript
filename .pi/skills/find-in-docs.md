@@ -1,3 +1,7 @@
+---
+description: Navigation index for locating the correct local Playwright documentation file for any API class, guide topic, MCP, or agent CLI question.
+---
+
 # Skill: Find in Local Playwright Docs
 
 ## Protocol

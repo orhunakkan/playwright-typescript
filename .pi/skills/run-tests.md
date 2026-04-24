@@ -1,3 +1,7 @@
+---
+description: All commands for running tests by project, file, tag, or npm script, including useful CLI flags and post-run reporting steps.
+---
+
 # Skill: Run Tests
 
 All commands are run from the repository root. Ensure the correct `.env` file exists before running.

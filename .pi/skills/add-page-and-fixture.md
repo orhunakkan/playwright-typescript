@@ -1,3 +1,7 @@
+---
+description: Step-by-step guide for creating a new page object, registering it in the fixture index, and scaffolding the matching E2E spec file.
+---
+
 # Skill: Add a New Page and Fixture
 
 Follow these steps in order. Do not skip Step 5 — it catches problems before any test runs.

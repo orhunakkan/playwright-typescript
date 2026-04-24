@@ -1,3 +1,7 @@
+---
+description: When and how to safely update pixel-perfect visual regression baselines using Docker, including review, staging, and commit steps.
+---
+
 # Skill: Update Visual Regression Snapshots
 
 Visual regression tests compare live browser screenshots pixel-by-pixel against committed baseline images. This skill covers when it is safe to update baselines and exactly how to do it.

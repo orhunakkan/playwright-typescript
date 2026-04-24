@@ -1,3 +1,7 @@
+---
+description: How to generate, open, and interpret the four test reporters — Playwright HTML, JSON, and Allure — including cleanup and artifact reference.
+---
+
 # Skill: Generate and View Reports
 
 This framework has four active reporters configured in `playwright.config.ts`. Each serves a different purpose.
