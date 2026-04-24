@@ -1,6 +1,5 @@
 import { expect } from '@playwright/test';
 import { test } from '../../fixtures/page-fixtures';
-import { config } from '../../config/env';
 
 test.describe('Authentication State Reuse — storageState', () => {
   test('navigating to protected page lands on inventory without login redirect', async ({ sauceInventoryPage, page }) => {
