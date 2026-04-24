@@ -43,7 +43,7 @@ export class RandomCalculatorPage {
       equalsButton: page.locator('#calculator .keys span').filter({ hasText: '=' }),
       dotButton: page.locator('#calculator .keys span').filter({ hasText: '.' }),
       digitButton: (digit: string) => page.locator('#calculator .keys span').filter({ hasText: digit }).first(),
-      copyright: page.getByText('Copyright © 2021-2025'),
+      copyright: page.getByText('Copyright © 2021-2026'),
     };
 
     this.actions = {

@@ -132,7 +132,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
 
     test('should verify page title and copyright', async ({ page }) => {
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
+      await expect(page.getByText('Copyright © 2021-2026')).toBeAttached();
     });
 
     test('should tab between form fields', async ({ loginFormPage, page }) => {
@@ -272,7 +272,7 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
 
     test('should verify page title and copyright on slow login page', async ({ page }) => {
       await expect.soft(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect.soft(page.getByText('Copyright © 2021-2025')).toBeAttached();
+      await expect.soft(page.getByText('Copyright © 2021-2026')).toBeAttached();
       await expect.soft(page.getByRole('link', { name: 'Boni García' })).toBeVisible();
     });
   });

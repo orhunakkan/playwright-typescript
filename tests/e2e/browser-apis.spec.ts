@@ -80,7 +80,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
 
     test('should verify page title and copyright', async ({ page }) => {
       await expect.soft(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect.soft(page.getByText('Copyright © 2021-2025')).toBeAttached();
+      await expect.soft(page.getByText('Copyright © 2021-2026')).toBeAttached();
     });
 
     test('should handle geolocation permission denied', async ({ browser }) => {
@@ -179,7 +179,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     });
 
     test('should verify page has copyright footer', async ({ page }) => {
-      await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
+      await expect(page.getByText('Copyright © 2021-2026')).toBeAttached();
       await expect(page.getByRole('link', { name: 'Boni García' })).toBeVisible();
     });
 
@@ -547,7 +547,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should have correct page structure', async ({ consoleLogsPage, page }) => {
       await consoleLogsPage.actions.goto();
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
+      await expect(page.getByText('Copyright © 2021-2026')).toBeAttached();
     });
 
     test('should verify exact console.info message text', async ({ consoleLogsPage, page }) => {

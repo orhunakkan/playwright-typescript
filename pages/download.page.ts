@@ -23,7 +23,7 @@ export class DownloadPage {
       webDriverManagerDoc: page.getByRole('link', { name: 'WebDriverManager doc' }),
       seleniumJupiterLogo: page.getByRole('link', { name: 'Selenium-Jupiter logo' }),
       seleniumJupiterDoc: page.getByRole('link', { name: 'Selenium-Jupiter doc' }),
-      copyright: page.getByText('Copyright © 2021-2025'),
+      copyright: page.getByText('Copyright © 2021-2026'),
     };
 
     this.actions = {

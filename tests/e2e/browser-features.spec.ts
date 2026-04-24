@@ -70,7 +70,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
     test('should verify page title and copyright', async ({ page }) => {
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(page.getByText('Copyright © 2021-2025')).toBeAttached();
+      await expect(page.getByText('Copyright © 2021-2026')).toBeAttached();
     });
 
     test('should get scroll position after scrolling', async ({ page }) => {
@@ -383,7 +383,7 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       const footerFrame = framesPage.locators.footerFrame();
       expect(footerFrame).not.toBeNull();
 
-      await expect(footerFrame!.locator('text=Copyright © 2021-2025')).toBeVisible();
+      await expect(footerFrame!.locator('text=Copyright © 2021-2026')).toBeVisible();
       await expect(footerFrame!.getByRole('link', { name: 'Boni García' })).toBeVisible();
     });
 
