@@ -259,23 +259,23 @@ The parameterised loop over 29 pages with axe-core is a clean, maintainable patt
 
 ## 4. Summary Scorecard
 
-| Dimension                          | Rating    | Key Evidence                                                                        |
-| ---------------------------------- | --------- | ----------------------------------------------------------------------------------- |
-| Project Architecture               | ★★★★★    | Clean 3-tier separation; fixture system; multi-env config                           |
-| TypeScript / Type Safety           | ★★★★☆    | `strict: true`, zero tsc errors; `any` leaks in 2 files                             |
-| Page Object Model                  | ★★★★☆    | Consistent `.locators`/`.actions` pattern; legacy `>>` selectors in one spec        |
-| API Test Design                    | ★★★★★    | Serial token chaining; schema validation utility; error coverage                    |
-| DB Integration Tests               | ★★★★★    | `pg_sleep`, sanitization, views, cascades — rarely seen in portfolios               |
-| E2E Browser Coverage               | ★★★★☆    | Shadow DOM, getUserMedia, locale, notifications — strong; one legacy selector file  |
-| Visual Regression                  | ★★★★★    | Docker-pinned; per-browser baselines in VC; A/B determinism via Math.random mock   |
-| Accessibility Coverage             | ★★★★☆    | 29-page axe scan with artifact attach; no violation baseline thresholds             |
-| Mobile Testing                     | ★★★☆☆    | Correct structure, correct guards; scenario count is thin                           |
-| Performance Testing                | ★★★☆☆    | Correct tool choice and phases; no SLA assertions; dist file committed              |
-| Tooling & CI                       | ★★★★☆    | tsc + eslint + prettier all green; TypeScript-aware lint rules not activated        |
-| Reporting (Allure)                 | ★★★★☆    | Consistent feature/story/severity; 2 specs missing annotations                     |
-| Data Management (Faker)            | ★★★★★    | All dynamic data uses Faker; no hardcoded test strings in test payloads             |
-| Code Consistency                   | ★★★★☆    | One rule-break file (webdriver-fundamentals); 3 noteCategories definitions          |
-| Documentation                      | ★★★★★    | README is thorough; `.env` pattern documented; arch decisions explained             |
+| Dimension                | Rating | Key Evidence                                                                       |
+| ------------------------ | ------ | ---------------------------------------------------------------------------------- |
+| Project Architecture     | ★★★★★  | Clean 3-tier separation; fixture system; multi-env config                          |
+| TypeScript / Type Safety | ★★★★☆  | `strict: true`, zero tsc errors; `any` leaks in 2 files                            |
+| Page Object Model        | ★★★★☆  | Consistent `.locators`/`.actions` pattern; legacy `>>` selectors in one spec       |
+| API Test Design          | ★★★★★  | Serial token chaining; schema validation utility; error coverage                   |
+| DB Integration Tests     | ★★★★★  | `pg_sleep`, sanitization, views, cascades — rarely seen in portfolios              |
+| E2E Browser Coverage     | ★★★★☆  | Shadow DOM, getUserMedia, locale, notifications — strong; one legacy selector file |
+| Visual Regression        | ★★★★★  | Docker-pinned; per-browser baselines in VC; A/B determinism via Math.random mock   |
+| Accessibility Coverage   | ★★★★☆  | 29-page axe scan with artifact attach; no violation baseline thresholds            |
+| Mobile Testing           | ★★★☆☆  | Correct structure, correct guards; scenario count is thin                          |
+| Performance Testing      | ★★★☆☆  | Correct tool choice and phases; no SLA assertions; dist file committed             |
+| Tooling & CI             | ★★★★☆  | tsc + eslint + prettier all green; TypeScript-aware lint rules not activated       |
+| Reporting (Allure)       | ★★★★☆  | Consistent feature/story/severity; 2 specs missing annotations                     |
+| Data Management (Faker)  | ★★★★★  | All dynamic data uses Faker; no hardcoded test strings in test payloads            |
+| Code Consistency         | ★★★★☆  | One rule-break file (webdriver-fundamentals); 3 noteCategories definitions         |
+| Documentation            | ★★★★★  | README is thorough; `.env` pattern documented; arch decisions explained            |
 
 ---
 
@@ -283,24 +283,24 @@ The parameterised loop over 29 pages with axe-core is a clean, maintainable patt
 
 The following items are ordered by severity. All are concrete, bounded, and achievable.
 
-| # | File(s)                                             | Issue                                                      | Effort   |
-| - | --------------------------------------------------- | ---------------------------------------------------------- | -------- |
-| 1 | `tests/e2e/webdriver-fundamentals.spec.ts`          | Replace `>> text=` selectors with modern `filter`/`getByText` | Low    |
-| 2 | `tests/db/db-constraints.spec.ts`                   | Replace `catch (err: any)` with `pg.DatabaseError` cast    | Low      |
-| 3 | `tests/sauce/sauce-auth.setup.ts`                   | Move `standard_user` / `secret_sauce` to `.env` + `config`| Low      |
-| 4 | `tests/performance/performance-testing.ts`          | Replace direct `process.env` with `config.e2eUrl`          | Low      |
-| 5 | `fixtures/notes-api-payloads/notes-request-payloads.ts` + `utilities/db-client.ts` | Consolidate `noteCategories` to single source; add `as const` | Low |
-| 6 | `tests/sauce/storage-state.spec.ts`                 | Add `test.describe.configure({ mode: 'serial' })` + Allure | Low      |
-| 7 | `tests/e2e/playwright-docs-link-monitoring.spec.ts` | Add Allure `feature`, `story`, `severity` annotations      | Low      |
-| 8 | `tests/api/notes-notes-errors.spec.ts`              | Replace hardcoded `6489a0cee4b0000000000000` with comment  | Low      |
-| 9 | `tests/performance/dist/`                           | Add `tests/performance/dist/` to `.gitignore`              | Low      |
-| 10 | `eslint.config.js`                                  | Enable `@typescript-eslint/no-explicit-any` and peer rules | Medium   |
-| 11 | `fixtures/db-payloads/db-payload-generators.ts`     | Import `NoteCategory` into `db-client.ts` or delete file   | Low      |
-| 12 | `utilities/error-listeners.ts`                      | Wire `attachAllErrorListeners` into fixture `beforeEach`   | Medium   |
-| 13 | `utilities/calculator.ts`                           | Move raw selectors into page object `.locators` namespace  | Medium   |
-| 14 | `utilities/db-client.ts`                            | Call `closePool()` in a `globalTeardown` or `afterAll`     | Low      |
-| 15 | `tests/performance/performance-testing.ts`          | Add Artillery `ensure` blocks for latency SLA thresholds   | Medium   |
+| #   | File(s)                                                                            | Issue                                                         | Effort |
+| --- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------- | ------ |
+| 1   | `tests/e2e/webdriver-fundamentals.spec.ts`                                         | Replace `>> text=` selectors with modern `filter`/`getByText` | Low    |
+| 2   | `tests/db/db-constraints.spec.ts`                                                  | Replace `catch (err: any)` with `pg.DatabaseError` cast       | Low    |
+| 3   | `tests/sauce/sauce-auth.setup.ts`                                                  | Move `standard_user` / `secret_sauce` to `.env` + `config`    | Low    |
+| 4   | `tests/performance/performance-testing.ts`                                         | Replace direct `process.env` with `config.e2eUrl`             | Low    |
+| 5   | `fixtures/notes-api-payloads/notes-request-payloads.ts` + `utilities/db-client.ts` | Consolidate `noteCategories` to single source; add `as const` | Low    |
+| 6   | `tests/sauce/storage-state.spec.ts`                                                | Add `test.describe.configure({ mode: 'serial' })` + Allure    | Low    |
+| 7   | `tests/e2e/playwright-docs-link-monitoring.spec.ts`                                | Add Allure `feature`, `story`, `severity` annotations         | Low    |
+| 8   | `tests/api/notes-notes-errors.spec.ts`                                             | Replace hardcoded `6489a0cee4b0000000000000` with comment     | Low    |
+| 9   | `tests/performance/dist/`                                                          | Add `tests/performance/dist/` to `.gitignore`                 | Low    |
+| 10  | `eslint.config.js`                                                                 | Enable `@typescript-eslint/no-explicit-any` and peer rules    | Medium |
+| 11  | `fixtures/db-payloads/db-payload-generators.ts`                                    | Import `NoteCategory` into `db-client.ts` or delete file      | Low    |
+| 12  | `utilities/error-listeners.ts`                                                     | Wire `attachAllErrorListeners` into fixture `beforeEach`      | Medium |
+| 13  | `utilities/calculator.ts`                                                          | Move raw selectors into page object `.locators` namespace     | Medium |
+| 14  | `utilities/db-client.ts`                                                           | Call `closePool()` in a `globalTeardown` or `afterAll`        | Low    |
+| 15  | `tests/performance/performance-testing.ts`                                         | Add Artillery `ensure` blocks for latency SLA thresholds      | Medium |
 
 ---
 
-*Report generated by architectural review of all 5,286 lines of test, page, utility, fixture, and configuration code in the repository.*
+_Report generated by architectural review of all 5,286 lines of test, page, utility, fixture, and configuration code in the repository._
