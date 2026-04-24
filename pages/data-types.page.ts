@@ -53,7 +53,7 @@ export class DataTypesPage {
       submitButton: page.getByRole('button', { name: 'Submit' }),
       formInputs: page.locator('form input.form-control'),
       form: page.locator('form'),
-      copyright: page.getByText('Copyright © 2021-2025'),
+      copyright: page.getByText(/Copyright © 2021/),
       resultField: (id: string) => page.locator(`#${id}`),
     };
 
