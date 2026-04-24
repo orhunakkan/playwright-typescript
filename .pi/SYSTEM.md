@@ -118,7 +118,7 @@ This project keeps a complete, version-matched copy of the Playwright documentat
 - For any Playwright API method question → the answer is in `docs/api/`
 - For any Playwright feature or how-to question → the answer is in `docs/guides/`
 - **Never answer a Playwright API or behaviour question from training data alone** — training data may be stale
-- Use `.pi/skills/find-in-docs.md` as the navigation index to locate the exact file — do not read the entire `docs/` folder
+- Use `.pi/skills/find-in-docs/SKILL.md` as the navigation index to locate the exact file — do not read the entire `docs/` folder
 - Read only the single file that is relevant — one file answers one question
 
 ---

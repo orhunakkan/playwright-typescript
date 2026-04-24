@@ -1,4 +1,5 @@
 ---
+name: reports
 description: How to generate, open, and interpret the four test reporters — Playwright HTML, JSON, and Allure — including cleanup and artifact reference.
 ---
 

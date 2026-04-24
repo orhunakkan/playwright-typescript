@@ -1,4 +1,5 @@
 ---
+name: add-page-and-fixture
 description: Step-by-step guide for creating a new page object, registering it in the fixture index, and scaffolding the matching E2E spec file.
 ---
 

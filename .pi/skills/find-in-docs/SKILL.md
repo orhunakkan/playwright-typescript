@@ -1,4 +1,5 @@
 ---
+name: find-in-docs
 description: Navigation index for locating the correct local Playwright documentation file for any API class, guide topic, MCP, or agent CLI question.
 ---
 
@@ -29,12 +30,14 @@ One file per Playwright class. Read only the class you need.
 | Generic assertions — `expect(value).toBe`, `toEqual`, `toContain`, `toMatchObject`, etc. | `docs/api/class-genericassertions.md`     |
 | Snapshot assertions — `toMatchSnapshot`, `toHaveScreenshot`                              | `docs/api/class-snapshotassertions.md`    |
 | API response assertions — `toBeOK`                                                       | `docs/api/class-apiresponseassertions.md` |
+| APIRequest — `apiRequest.newContext()`, creating standalone API request context instances  | `docs/api/class-apirequest.md`            |
 | API request context — `request.get/post/put/patch/delete`, `fetch`                       | `docs/api/class-apirequestcontext.md`     |
 | API response — `response.json()`, `response.status()`, `response.headers()`              | `docs/api/class-apiresponse.md`           |
 | API request object — `request.url()`, `request.method()`, `request.postData()`           | `docs/api/class-request.md`               |
 | Browser context — cookies, storage state, permissions, new page, route                   | `docs/api/class-browsercontext.md`        |
 | Browser — `browser.newContext()`, `browser.newPage()`, `browser.close()`                 | `docs/api/class-browser.md`               |
 | Browser type — `chromium`, `firefox`, `webkit`, `launch`, `connect`                      | `docs/api/class-browsertype.md`           |
+| BrowserServer — `browserServer.wsEndpoint()`, browser launched as a server               | `docs/api/class-browserserver.md`         |
 | Keyboard — `keyboard.press()`, `keyboard.type()`, `keyboard.down()`                      | `docs/api/class-keyboard.md`              |
 | Mouse — `mouse.click()`, `mouse.move()`, `mouse.wheel()`                                 | `docs/api/class-mouse.md`                 |
 | Touchscreen — `touchscreen.tap()`                                                        | `docs/api/class-touchscreen.md`           |
@@ -70,15 +73,24 @@ One file per Playwright class. Read only the class you need.
 | TestCase — reporter test case object                                                     | `docs/api/class-testcase.md`              |
 | TestResult — reporter test result object                                                 | `docs/api/class-testresult.md`            |
 | TestStep — reporter step object                                                          | `docs/api/class-teststep.md`              |
-| TestError / TestInfoError — error objects                                                | `docs/api/class-testerror.md`             |
+| TestError — test error object thrown by assertions and Playwright APIs                   | `docs/api/class-testerror.md`             |
+| TestInfoError — error information stored in `testInfo.errors`                            | `docs/api/class-testinfoerror.md`         |
 | TimeoutError — timeout error type                                                        | `docs/api/class-timeouterror.md`          |
 | WebError — uncaught page error type                                                      | `docs/api/class-weberror.md`              |
 | Video — `video.path()`, `video.saveAs()`                                                 | `docs/api/class-video.md`                 |
+| Screencast — `screencast.path()`, screen recording from CDP sessions                     | `docs/api/class-screencast.md`            |
 | Playwright (root object) — `playwright.chromium`, `playwright.devices`                   | `docs/api/class-playwright.md`            |
 | Logger — custom logger interface                                                         | `docs/api/class-logger.md`                |
 | Location — source location type                                                          | `docs/api/class-location.md`              |
 | WorkerInfo — worker-level info in fixtures                                               | `docs/api/class-workerinfo.md`            |
 | Debugger — `debugger` object in `test.use`                                               | `docs/api/class-debugger.md`              |
+| Android — `android.devices()`, connecting to Android devices via ADB                     | `docs/api/class-android.md`               |
+| AndroidDevice — `androidDevice.shell()`, `androidDevice.input`, WebView access           | `docs/api/class-androiddevice.md`         |
+| AndroidInput — touch, swipe, and key input on Android devices                            | `docs/api/class-androidinput.md`          |
+| AndroidSocket — socket connections on Android devices                                    | `docs/api/class-androidsocket.md`         |
+| AndroidWebView — `androidWebView.page()`, automating WebViews on Android                 | `docs/api/class-androidwebview.md`        |
+| Electron — `electron.launch()`, launching Electron applications for testing              | `docs/api/class-electron.md`              |
+| ElectronApplication — `electronApp.evaluate()`, window access, Electron app control      | `docs/api/class-electronapplication.md`   |
 
 ---
 
@@ -91,7 +103,11 @@ One file per Playwright class. Read only the class you need.
 | Getting started — writing your first test  | `docs/guides/writing-tests.md` |
 | Running tests — CLI flags and options      | `docs/guides/running-tests.md` |
 | Full CLI reference (`npx playwright test`) | `docs/guides/test-cli.md`      |
-| Introduction / overview                    | `docs/guides/intro.md`         |
+| Introduction / overview                    | `docs/guides/intro.md`                  |
+| Getting started with VS Code extension     | `docs/guides/getting-started-vscode.md` |
+| Getting started with CLI tool              | `docs/guides/getting-started-cli.md`    |
+| Getting started with MCP                   | `docs/guides/getting-started-mcp.md`    |
+| Best practices — recommended patterns and anti-patterns | `docs/guides/best-practices.md` |
 
 ### Selectors & Locators
 
@@ -151,6 +167,7 @@ One file per Playwright class. Read only the class you need.
 | Fixtures — custom fixtures, `base.extend`, scope           | `docs/guides/test-fixtures.md`              |
 | Page Object Model — POM pattern                            | `docs/guides/pom.md`                        |
 | Global setup / teardown                                    | `docs/guides/test-global-setup-teardown.md` |
+| Component testing — React, Vue, Svelte, Solid              | `docs/guides/test-components.md`            |
 
 ### Configuration
 
@@ -160,6 +177,7 @@ One file per Playwright class. Read only the class you need.
 | Projects — multiple browser/device targets                        | `docs/guides/test-projects.md`      |
 | Use options — `use: {}` block (viewport, locale, baseURL, etc.)   | `docs/guides/test-use-options.md`   |
 | TypeScript — TS setup, tsconfig tips                              | `docs/guides/test-typescript.md`    |
+| Languages — TypeScript, JavaScript, Python, Java, C# support      | `docs/guides/languages.md`          |
 | Web server — `webServer` config option                            | `docs/guides/test-webserver.md`     |
 | Browsers — Chromium, Firefox, WebKit, channels                    | `docs/guides/browsers.md`           |
 | Extensibility — custom matchers, custom fixtures                  | `docs/guides/extensibility.md`      |
@@ -197,6 +215,7 @@ One file per Playwright class. Read only the class you need.
 | WebView2                                                  | `docs/guides/webview2.md`              |
 | Selenium Grid                                             | `docs/guides/selenium-grid.md`         |
 | Library mode — using Playwright without the test runner   | `docs/guides/library.md`               |
+| Test agents — AI-assisted test agents and execution       | `docs/guides/test-agents.md`           |
 
 ### CI & Infrastructure
 
@@ -227,20 +246,63 @@ One file per Playwright class. Read only the class you need.
 
 Documentation for the Playwright MCP (Model Context Protocol) server. Read these only if the task involves MCP configuration, tools, or client setup.
 
-| Topic                    | File                                |
-| ------------------------ | ----------------------------------- |
-| Introduction             | `docs/mcp/introduction.md`          |
-| Installation             | `docs/mcp/installation.md`          |
-| Available tools overview | `docs/mcp/capabilities.md`          |
-| Configuration options    | `docs/mcp/configuration-options.md` |
-| Vision mode              | `docs/mcp/vision-mode.md`           |
-| Snapshots                | `docs/mcp/snapshots.md`             |
+### MCP Core
+
+| Topic                    | File                        |
+| ------------------------ | --------------------------- |
+| Introduction             | `docs/mcp/introduction.md`  |
+| Installation             | `docs/mcp/installation.md`  |
+| Available tools overview | `docs/mcp/capabilities.md`  |
+| Vision mode              | `docs/mcp/vision-mode.md`   |
+| Snapshots                | `docs/mcp/snapshots.md`     |
+
+### MCP Configuration
+
+| Topic                            | File                                           |
+| -------------------------------- | ---------------------------------------------- |
+| Configuration options            | `docs/mcp/configuration-options.md`            |
+| Browser extension configuration  | `docs/mcp/configuration-browser-extension.md`  |
+| User profile configuration       | `docs/mcp/configuration-user-profile.md`       |
+
+### MCP Client Setup
+
+| Topic          | File                                 |
+| -------------- | ------------------------------------ |
+| Claude Code    | `docs/mcp/clients-claude-code.md`    |
+| Claude Desktop | `docs/mcp/clients-claude-desktop.md` |
+| Cursor         | `docs/mcp/clients-cursor.md`         |
+| VS Code        | `docs/mcp/clients-vscode.md`         |
+| Windsurf       | `docs/mcp/clients-windsurf.md`       |
+| Other clients  | `docs/mcp/clients-other-clients.md`  |
+
+### MCP Tools Reference
+
+| Topic                                  | File                                |
+| -------------------------------------- | ----------------------------------- |
+| Assertions tools                       | `docs/mcp/tools-assertions.md`      |
+| Code execution tools                   | `docs/mcp/tools-code-execution.md`  |
+| Console tools                          | `docs/mcp/tools-console.md`         |
+| Dialog handling tools                  | `docs/mcp/tools-dialogs.md`         |
+| Form interaction tools                 | `docs/mcp/tools-forms.md`           |
+| Page interaction tools                 | `docs/mcp/tools-interaction.md`     |
+| Keyboard and mouse tools               | `docs/mcp/tools-keyboard-mouse.md`  |
+| Navigation tools                       | `docs/mcp/tools-navigation.md`      |
+| Network mocking tools                  | `docs/mcp/tools-network-mocking.md` |
+| PDF generation tools                   | `docs/mcp/tools-pdf.md`             |
+| Screenshot tools                       | `docs/mcp/tools-screenshots.md`     |
+| Storage tools (cookies, localStorage)  | `docs/mcp/tools-storage.md`         |
+| Tab management tools                   | `docs/mcp/tools-tabs.md`            |
+| Tracing tools                          | `docs/mcp/tools-tracing.md`         |
+| Video recording tools                  | `docs/mcp/tools-video.md`           |
+| Waiting / synchronisation tools        | `docs/mcp/tools-waiting.md`         |
 
 ---
 
 ## Agent CLI Docs → `docs/agent-cli/`
 
 Documentation for the Playwright agent CLI. Read these only if the task involves the agent CLI.
+
+### Agent CLI Core
 
 | Topic                  | File                              |
 | ---------------------- | --------------------------------- |
@@ -249,3 +311,25 @@ Documentation for the Playwright agent CLI. Read these only if the task involves
 | Quick start            | `docs/agent-cli/quick-start.md`   |
 | Configuration          | `docs/agent-cli/configuration.md` |
 | Available capabilities | `docs/agent-cli/capabilities.md`  |
+| Sessions               | `docs/agent-cli/sessions.md`      |
+| Skills                 | `docs/agent-cli/skills.md`        |
+| Snapshots              | `docs/agent-cli/snapshots.md`     |
+| Vision mode            | `docs/agent-cli/vision-mode.md`   |
+
+### Agent CLI Commands Reference
+
+| Topic                       | File                                          |
+| --------------------------- | --------------------------------------------- |
+| Attach to existing session  | `docs/agent-cli/commands-attach.md`           |
+| Console evaluation          | `docs/agent-cli/commands-console-eval.md`     |
+| Dialog handling             | `docs/agent-cli/commands-dialogs.md`          |
+| Page interaction            | `docs/agent-cli/commands-interaction.md`      |
+| Keyboard and mouse          | `docs/agent-cli/commands-keyboard-mouse.md`   |
+| Navigation                  | `docs/agent-cli/commands-navigation.md`       |
+| Network routing             | `docs/agent-cli/commands-network-routing.md`  |
+| Screenshots and PDF         | `docs/agent-cli/commands-screenshots-pdf.md`  |
+| Storage                     | `docs/agent-cli/commands-storage.md`          |
+| Tab management              | `docs/agent-cli/commands-tabs.md`             |
+| Test debugging              | `docs/agent-cli/commands-test-debugging.md`   |
+| Tracing                     | `docs/agent-cli/commands-tracing.md`          |
+| Video recording             | `docs/agent-cli/commands-video-recording.md`  |

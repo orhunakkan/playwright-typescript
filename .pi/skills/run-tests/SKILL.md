@@ -1,4 +1,5 @@
 ---
+name: run-tests
 description: All commands for running tests by project, file, tag, or npm script, including useful CLI flags and post-run reporting steps.
 ---
 

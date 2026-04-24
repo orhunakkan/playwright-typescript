@@ -1,4 +1,5 @@
 ---
+name: update-visual-snapshots
 description: When and how to safely update pixel-perfect visual regression baselines using Docker, including review, staging, and commit steps.
 ---
 
