@@ -106,11 +106,11 @@ runs:
       uses: dawidd6/action-send-mail@v16
       with:
         server_address: ${{ inputs.smtp_server }}
-        server_port:    ${{ inputs.smtp_port }}
-        username:       ${{ inputs.email }}
-        password:       ${{ inputs.password }}
-        to:             ${{ inputs.email }}
-        from:           ${{ inputs.email }}
+        server_port: ${{ inputs.smtp_port }}
+        username: ${{ inputs.email }}
+        password: ${{ inputs.password }}
+        to: ${{ inputs.email }}
+        from: ${{ inputs.email }}
         subject: '${{ steps.stats.outputs.prefix }}: Playwright ${{ inputs.suite }} Test Report'
         body: |
           ${{ steps.stats.outputs.emoji }} ${{ inputs.suite }} — ${{ inputs.repo }}
