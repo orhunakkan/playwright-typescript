@@ -1,5 +1,8 @@
 name: Playwright Tests
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Triggers
+# ─────────────────────────────────────────────────────────────────────────────
 on:
   push:
     branches:
@@ -8,21 +11,22 @@ on:
     branches:
       - main
   schedule:
+    # Weekdays at 06:00 UTC — smoke + critical tags only
     - cron: '0 6 * * 1-5'
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment URL to test'
+        description: 'E2E base URL to test'
         required: false
         default: 'https://bonigarcia.dev/selenium-webdriver-java'
         type: string
       api_url:
-        description: 'API URL to test'
+        description: 'API base URL to test'
         required: false
         default: 'https://practice.expandtesting.com/notes/api'
         type: string
       test_env:
-        description: 'Environment name (dev, staging, prod)'
+        description: 'Environment name (dev | staging | prod)'
         required: false
         default: 'dev'
         type: string
@@ -33,406 +37,254 @@ on:
         type: string
       api_url:
         required: false
+        default: 'https://practice.expandtesting.com/notes/api'
         type: string
       test_env:
-        description: 'Environment name (dev, staging, prod)'
+        description: 'Environment name (dev | staging | prod)'
         required: false
         default: 'dev'
         type: string
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Least-privilege token — no job in this workflow writes to the repo
+# ─────────────────────────────────────────────────────────────────────────────
+permissions:
+  contents: read
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shared environment
+# ─────────────────────────────────────────────────────────────────────────────
 env:
   PRACTICE_E2E_URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
   PRACTICE_API_URL: ${{ inputs.api_url || 'https://practice.expandtesting.com/notes/api' }}
   TEST_ENV: ${{ inputs.test_env || 'dev' }}
-  PLAYWRIGHT_JSON_OUTPUT_FILE: ./playwright-report/test-results.json
+  # SauceDemo is a public practice site — no secret required.
+  # config/env.ts calls requireEnv('SAUCE_DEMO_URL') at import time, so
+  # every job that loads a page object needs this to be present.
+  SAUCE_DEMO_URL: 'https://www.saucedemo.com'
 
+# Cancel in-flight runs for the same branch/PR when a new commit arrives
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Reusable browser-cache step (referenced in each job that needs browsers)
+# ─────────────────────────────────────────────────────────────────────────────
+
 jobs:
-  test-web:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
-      - name: Cache Playwright browsers
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('package-lock.json') }}
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests for ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
-        run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            npx playwright test tests/e2e/webdriver-fundamentals.spec.ts tests/e2e/browser-features.spec.ts tests/e2e/browser-apis.spec.ts tests/e2e/page-object-model.spec.ts tests/e2e/framework-features.spec.ts tests/e2e/third-party-integrations.spec.ts --project="Desktop Chrome" --project="Desktop Firefox" --project="Desktop Edge" --grep "@smoke|@critical"
-            npx playwright test tests/pw-documents/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
-          else
-            npx playwright test tests/e2e/webdriver-fundamentals.spec.ts tests/e2e/browser-features.spec.ts tests/e2e/browser-apis.spec.ts tests/e2e/page-object-model.spec.ts tests/e2e/framework-features.spec.ts tests/e2e/third-party-integrations.spec.ts --project="Desktop Chrome" --project="Desktop Firefox" --project="Desktop Edge"
-          fi
-      - uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
-          path: |
-            playwright-report/
-          retention-days: 30
 
-      # Email reporting directly from JSON output using direct calculations
-      - name: Generate test statistics
-        id: get-test-stats
-        if: ${{ !cancelled() }}
-        run: |
-          if [ -f "playwright-report/test-results.json" ]; then
-            TOTAL_COUNT=$(jq '.stats | .expected + .skipped + .unexpected + .flaky' playwright-report/test-results.json || echo "0")
-            PASSED_COUNT=$(jq '.stats.expected' playwright-report/test-results.json || echo "0")
-            FAILED_COUNT=$(jq '.stats.unexpected' playwright-report/test-results.json || echo "0")
-            SKIPPED_COUNT=$(jq '.stats.skipped' playwright-report/test-results.json || echo "0")
-            FLAKY_COUNT=$(jq '.stats.flaky' playwright-report/test-results.json || echo "0")
-
-            # Ensure no null values
-            TOTAL_COUNT=${TOTAL_COUNT:-0}
-            PASSED_COUNT=${PASSED_COUNT:-0}
-            FAILED_COUNT=${FAILED_COUNT:-0}
-            SKIPPED_COUNT=${SKIPPED_COUNT:-0}
-            FLAKY_COUNT=${FLAKY_COUNT:-0}
-
-            # Set subject prefix based on test results
-            if [ "$FAILED_COUNT" -eq 0 ]; then
-              echo "status_emoji=✅" >> $GITHUB_OUTPUT
-              echo "subject_prefix=SUCCESS" >> $GITHUB_OUTPUT
-            else
-              echo "status_emoji=❌" >> $GITHUB_OUTPUT
-              echo "subject_prefix=FAILURE" >> $GITHUB_OUTPUT
-            fi
-
-            # Output test statistics for use in email
-            echo "total=$TOTAL_COUNT" >> $GITHUB_OUTPUT
-            echo "passed=$PASSED_COUNT" >> $GITHUB_OUTPUT
-            echo "failed=$FAILED_COUNT" >> $GITHUB_OUTPUT
-            echo "skipped=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
-            echo "flaky=$FLAKY_COUNT" >> $GITHUB_OUTPUT
-          else
-            # Fallback for missing test results file
-            echo "subject_prefix=ERROR" >> $GITHUB_OUTPUT
-            echo "total=0" >> $GITHUB_OUTPUT
-            echo "passed=0" >> $GITHUB_OUTPUT
-            echo "failed=0" >> $GITHUB_OUTPUT
-            echo "skipped=0" >> $GITHUB_OUTPUT
-            echo "flaky=0" >> $GITHUB_OUTPUT
-            echo "error_msg=Test Results Summary not found. Please check the GitHub Action run for details." >> $GITHUB_OUTPUT
-          fi
-
-      - name: Send Playwright report via email
-        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-test-stats.outputs.total != 0 }}
-        uses: dawidd6/action-send-mail@v16
-        with:
-          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          to: ${{ vars.NOTIFICATION_EMAIL }}
-          from: ${{ vars.NOTIFICATION_EMAIL }}
-          subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
-          body: |
-            ${{ steps.get-test-stats.outputs.status_emoji || '' }} Test Results Summary for ${{ github.server_url }}/${{ github.repository }}:
-
-            Total Tests: ${{ steps.get-test-stats.outputs.total }}
-            Passed: ${{ steps.get-test-stats.outputs.passed }}
-            Failed: ${{ steps.get-test-stats.outputs.failed }}
-            Skipped: ${{ steps.get-test-stats.outputs.skipped }}
-            Flaky: ${{ steps.get-test-stats.outputs.flaky }}
-
-            PRACTICE_E2E_URL=${{ env.PRACTICE_E2E_URL }}
-            PRACTICE_API_URL=${{ env.PRACTICE_API_URL }}
-
-            View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-            The test artifacts are available directly in the GitHub Actions run.
-
-            ${{ steps.get-test-stats.outputs.error_msg || '' }}
-      - name: Send Playwright error notification
-        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-test-stats.outputs.total == 0 }}
-        uses: dawidd6/action-send-mail@v16
-        with:
-          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          to: ${{ vars.NOTIFICATION_EMAIL }}
-          from: ${{ vars.NOTIFICATION_EMAIL }}
-          subject: '${{ steps.get-test-stats.outputs.subject_prefix }}: Playwright Test Report'
-          body: |
-            An error was thrown while generating the test results summary for ${{ github.server_url }}/${{ github.repository }}.
-            Please check the GitHub Action run for details.
-            View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-  test-mobile:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
-      - name: Cache Playwright browsers
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('package-lock.json') }}
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium webkit
-      - name: Run mobile tests (Mobile Safari & Chrome)
-        run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            npx playwright test tests/e2e/webdriver-fundamentals.spec.ts tests/e2e/browser-features.spec.ts tests/e2e/browser-apis.spec.ts tests/e2e/page-object-model.spec.ts tests/e2e/framework-features.spec.ts tests/e2e/third-party-integrations.spec.ts --project="Mobile Safari" --project="Mobile Chrome" --grep "@smoke|@critical"
-          else
-            npx playwright test tests/e2e/webdriver-fundamentals.spec.ts tests/e2e/browser-features.spec.ts tests/e2e/browser-apis.spec.ts tests/e2e/page-object-model.spec.ts tests/e2e/framework-features.spec.ts tests/e2e/third-party-integrations.spec.ts --project="Mobile Safari" --project="Mobile Chrome"
-          fi
-      - uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: mobile-report
-          path: |
-            playwright-report/
-          retention-days: 30
-
-      # Email reporting directly from JSON output using direct calculations
-      - name: Generate mobile test statistics
-        id: get-mobile-test-stats
-        if: ${{ !cancelled() }}
-        run: |
-          if [ -f "playwright-report/test-results.json" ]; then
-            TOTAL_COUNT=$(jq '.stats | .expected + .skipped + .unexpected + .flaky' playwright-report/test-results.json || echo "0")
-            PASSED_COUNT=$(jq '.stats.expected' playwright-report/test-results.json || echo "0")
-            FAILED_COUNT=$(jq '.stats.unexpected' playwright-report/test-results.json || echo "0")
-            SKIPPED_COUNT=$(jq '.stats.skipped' playwright-report/test-results.json || echo "0")
-            FLAKY_COUNT=$(jq '.stats.flaky' playwright-report/test-results.json || echo "0")
-
-            # Ensure no null values
-            TOTAL_COUNT=${TOTAL_COUNT:-0}
-            PASSED_COUNT=${PASSED_COUNT:-0}
-            FAILED_COUNT=${FAILED_COUNT:-0}
-            SKIPPED_COUNT=${SKIPPED_COUNT:-0}
-            FLAKY_COUNT=${FLAKY_COUNT:-0}
-
-            # Set subject prefix based on test results
-            if [ "$FAILED_COUNT" -eq 0 ]; then
-              echo "status_emoji=✅" >> $GITHUB_OUTPUT
-              echo "subject_prefix=SUCCESS" >> $GITHUB_OUTPUT
-            else
-              echo "status_emoji=❌" >> $GITHUB_OUTPUT
-              echo "subject_prefix=FAILURE" >> $GITHUB_OUTPUT
-            fi
-
-            # Output test statistics for use in email
-            echo "total=$TOTAL_COUNT" >> $GITHUB_OUTPUT
-            echo "passed=$PASSED_COUNT" >> $GITHUB_OUTPUT
-            echo "failed=$FAILED_COUNT" >> $GITHUB_OUTPUT
-            echo "skipped=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
-            echo "flaky=$FLAKY_COUNT" >> $GITHUB_OUTPUT
-          else
-            # Fallback for missing test results file
-            echo "subject_prefix=ERROR" >> $GITHUB_OUTPUT
-            echo "total=0" >> $GITHUB_OUTPUT
-            echo "passed=0" >> $GITHUB_OUTPUT
-            echo "failed=0" >> $GITHUB_OUTPUT
-            echo "skipped=0" >> $GITHUB_OUTPUT
-            echo "flaky=0" >> $GITHUB_OUTPUT
-            echo "error_msg=Test Results Summary not found. Please check the GitHub Action run for details." >> $GITHUB_OUTPUT
-          fi
-
-      - name: Send mobile report via email
-        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-mobile-test-stats.outputs.total != 0 }}
-        uses: dawidd6/action-send-mail@v16
-        with:
-          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          to: ${{ vars.NOTIFICATION_EMAIL }}
-          from: ${{ vars.NOTIFICATION_EMAIL }}
-          subject: '${{ steps.get-mobile-test-stats.outputs.subject_prefix }}: Playwright Mobile Test Report (Mobile Safari & Chrome)'
-          body: |
-            ${{ steps.get-mobile-test-stats.outputs.status_emoji || '' }} Mobile Test Results Summary for ${{ github.server_url }}/${{ github.repository }}:
-
-            Projects: Mobile Safari (iPhone 15 Pro Max) · Mobile Chrome (Pixel 7)
-
-            Total Tests: ${{ steps.get-mobile-test-stats.outputs.total }}
-            Passed: ${{ steps.get-mobile-test-stats.outputs.passed }}
-            Failed: ${{ steps.get-mobile-test-stats.outputs.failed }}
-            Skipped: ${{ steps.get-mobile-test-stats.outputs.skipped }}
-            Flaky: ${{ steps.get-mobile-test-stats.outputs.flaky }}
-
-            PRACTICE_E2E_URL=${{ env.PRACTICE_E2E_URL }}
-
-            View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-            The test artifacts are available directly in the GitHub Actions run.
-
-            ${{ steps.get-mobile-test-stats.outputs.error_msg || '' }}
-      - name: Send mobile error notification
-        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-mobile-test-stats.outputs.total == 0 }}
-        uses: dawidd6/action-send-mail@v16
-        with:
-          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          to: ${{ vars.NOTIFICATION_EMAIL }}
-          from: ${{ vars.NOTIFICATION_EMAIL }}
-          subject: '${{ steps.get-mobile-test-stats.outputs.subject_prefix }}: Playwright Mobile Test Report (Mobile Safari & Chrome)'
-          body: |
-            An error was thrown while generating the mobile test results summary for ${{ github.server_url }}/${{ github.repository }}.
-            Please check the GitHub Action run for details.
-            View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-  test-a11y:
+  # ───────────────────────────────────────────────────────────────────────────
+  # API Tests
+  # No browser required — uses Playwright's request fixture only.
+  # ───────────────────────────────────────────────────────────────────────────
+  test-api:
+    name: API Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+
+      - name: Run API tests
+        run: npx playwright test --project="API Tests"
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: api-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Send API test report
+        if: ${{ !cancelled() && github.event_name != 'pull_request' }}
+        uses: ./.github/actions/send-test-report
+        with:
+          suite:       'API'
+          smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
+          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email:       ${{ vars.NOTIFICATION_EMAIL }}
+          password:    ${{ secrets.DUMMY_PASSWORD }}
+          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo:        ${{ github.server_url }}/${{ github.repository }}
+          api_url:     ${{ env.PRACTICE_API_URL }}
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Desktop E2E — Chrome · Firefox · Edge
+  #
+  # Uses directory-level targeting (tests/e2e/) so new spec files are picked
+  # up automatically. mobile-testing.spec.ts self-skips via
+  # test.skip(!isMobile) on desktop projects — no noise, no missed coverage.
+  #
+  # On the nightly schedule only @smoke|@critical tests run to keep the
+  # feedback loop short; push/PR runs the full suite.
+  # ───────────────────────────────────────────────────────────────────────────
+  test-web:
+    name: Desktop E2E (Chrome · Firefox · Edge)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+
       - name: Cache Playwright browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('package-lock.json') }}
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-      - name: Run accessibility tests (failures allowed — source not owned)
-        continue-on-error: true
-        run: npx playwright test tests/accessibility/accessibility-testing.spec.ts --project="Accessibility Tests"
-      - uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: a11y-report
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 30
+          key: playwright-browsers-${{ hashFiles('package-lock.json') }}
+          # Fall back to the most recent browser cache on a package-lock change
+          restore-keys: |
+            playwright-browsers-
 
-      - name: Generate a11y test statistics
-        id: get-a11y-test-stats
-        if: ${{ !cancelled() }}
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox
+
+      - name: Run desktop E2E tests
         run: |
-          if [ -f "playwright-report/test-results.json" ]; then
-            TOTAL_COUNT=$(jq '.stats | .expected + .skipped + .unexpected + .flaky' playwright-report/test-results.json || echo "0")
-            PASSED_COUNT=$(jq '.stats.expected' playwright-report/test-results.json || echo "0")
-            FAILED_COUNT=$(jq '.stats.unexpected' playwright-report/test-results.json || echo "0")
-            SKIPPED_COUNT=$(jq '.stats.skipped' playwright-report/test-results.json || echo "0")
-            FLAKY_COUNT=$(jq '.stats.flaky' playwright-report/test-results.json || echo "0")
-
-            TOTAL_COUNT=${TOTAL_COUNT:-0}
-            PASSED_COUNT=${PASSED_COUNT:-0}
-            FAILED_COUNT=${FAILED_COUNT:-0}
-            SKIPPED_COUNT=${SKIPPED_COUNT:-0}
-            FLAKY_COUNT=${FLAKY_COUNT:-0}
-
-            if [ "$FAILED_COUNT" -eq 0 ]; then
-              echo "status_emoji=✅" >> $GITHUB_OUTPUT
-              echo "subject_prefix=SUCCESS" >> $GITHUB_OUTPUT
-            else
-              echo "status_emoji=⚠️" >> $GITHUB_OUTPUT
-              echo "subject_prefix=VIOLATIONS FOUND" >> $GITHUB_OUTPUT
-            fi
-
-            echo "total=$TOTAL_COUNT" >> $GITHUB_OUTPUT
-            echo "passed=$PASSED_COUNT" >> $GITHUB_OUTPUT
-            echo "failed=$FAILED_COUNT" >> $GITHUB_OUTPUT
-            echo "skipped=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
-            echo "flaky=$FLAKY_COUNT" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npx playwright test tests/e2e/ \
+              --project="Desktop Chrome" \
+              --project="Desktop Firefox" \
+              --project="Desktop Edge" \
+              --grep "@smoke|@critical"
           else
-            echo "subject_prefix=ERROR" >> $GITHUB_OUTPUT
-            echo "total=0" >> $GITHUB_OUTPUT
-            echo "passed=0" >> $GITHUB_OUTPUT
-            echo "failed=0" >> $GITHUB_OUTPUT
-            echo "skipped=0" >> $GITHUB_OUTPUT
-            echo "flaky=0" >> $GITHUB_OUTPUT
-            echo "error_msg=Test Results Summary not found. Please check the GitHub Action run for details." >> $GITHUB_OUTPUT
+            npx playwright test tests/e2e/ \
+              --project="Desktop Chrome" \
+              --project="Desktop Firefox" \
+              --project="Desktop Edge"
           fi
 
-      - name: Send a11y report via email
-        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-a11y-test-stats.outputs.total != 0 }}
-        uses: dawidd6/action-send-mail@v16
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
         with:
-          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          to: ${{ vars.NOTIFICATION_EMAIL }}
-          from: ${{ vars.NOTIFICATION_EMAIL }}
-          subject: '${{ steps.get-a11y-test-stats.outputs.subject_prefix }}: Playwright Accessibility Test Report'
-          body: |
-            ${{ steps.get-a11y-test-stats.outputs.status_emoji || '' }} Accessibility (a11y) Test Results for ${{ github.server_url }}/${{ github.repository }}:
+          name: web-report
+          path: playwright-report/
+          retention-days: 14
 
-            Note: failures are informational — the site source is not owned by this project.
-
-            Total Tests: ${{ steps.get-a11y-test-stats.outputs.total }}
-            Passed: ${{ steps.get-a11y-test-stats.outputs.passed }}
-            Failed: ${{ steps.get-a11y-test-stats.outputs.failed }}
-            Skipped: ${{ steps.get-a11y-test-stats.outputs.skipped }}
-            Flaky: ${{ steps.get-a11y-test-stats.outputs.flaky }}
-
-            PRACTICE_E2E_URL=${{ env.PRACTICE_E2E_URL }}
-
-            View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-            The test artifacts (with violation details) are available directly in the GitHub Actions run.
-
-            ${{ steps.get-a11y-test-stats.outputs.error_msg || '' }}
-      - name: Send a11y error notification
-        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-a11y-test-stats.outputs.total == 0 }}
-        uses: dawidd6/action-send-mail@v16
+      - name: Send desktop E2E report
+        if: ${{ !cancelled() && github.event_name != 'pull_request' }}
+        uses: ./.github/actions/send-test-report
         with:
-          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          to: ${{ vars.NOTIFICATION_EMAIL }}
-          from: ${{ vars.NOTIFICATION_EMAIL }}
-          subject: '${{ steps.get-a11y-test-stats.outputs.subject_prefix }}: Playwright Accessibility Test Report'
-          body: |
-            An error was thrown while generating the accessibility test results summary for ${{ github.server_url }}/${{ github.repository }}.
-            Please check the GitHub Action run for details.
-            View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          suite:       'Desktop E2E'
+          smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
+          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email:       ${{ vars.NOTIFICATION_EMAIL }}
+          password:    ${{ secrets.DUMMY_PASSWORD }}
+          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo:        ${{ github.server_url }}/${{ github.repository }}
+          e2e_url:     ${{ env.PRACTICE_E2E_URL }}
+          api_url:     ${{ env.PRACTICE_API_URL }}
 
+  # ───────────────────────────────────────────────────────────────────────────
+  # Mobile E2E — Mobile Safari (iPhone 15 Pro Max) · Mobile Chrome (Pixel 7)
+  #
+  # Directory targeting also picks up mobile-testing.spec.ts, which was
+  # previously missing from the explicit file list. Tests in that file
+  # use test.skip(!isMobile) so they are correctly skipped on desktop
+  # projects and actually execute here.
+  # ───────────────────────────────────────────────────────────────────────────
+  test-mobile:
+    name: Mobile E2E (Safari · Chrome)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-browsers-
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Run mobile E2E tests
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npx playwright test tests/e2e/ \
+              --project="Mobile Safari" \
+              --project="Mobile Chrome" \
+              --grep "@smoke|@critical"
+          else
+            npx playwright test tests/e2e/ \
+              --project="Mobile Safari" \
+              --project="Mobile Chrome"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: mobile-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Send mobile E2E report
+        if: ${{ !cancelled() && github.event_name != 'pull_request' }}
+        uses: ./.github/actions/send-test-report
+        with:
+          suite:       'Mobile E2E'
+          smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
+          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email:       ${{ vars.NOTIFICATION_EMAIL }}
+          password:    ${{ secrets.DUMMY_PASSWORD }}
+          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo:        ${{ github.server_url }}/${{ github.repository }}
+          e2e_url:     ${{ env.PRACTICE_E2E_URL }}
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Visual Regression
+  # Runs inside the official Playwright Docker image to guarantee
+  # pixel-identical font rendering across machines and CI agents.
+  #
+  # The image ships with every browser pre-installed, so we skip
+  # `npx playwright install --with-deps` (previously it re-downloaded
+  # browsers unnecessarily, adding ~60 s to every run).
+  #
+  # Keep the image tag in sync with the @playwright/test version in
+  # package.json — a mismatch produces baseline drift.
+  # ───────────────────────────────────────────────────────────────────────────
   test-visual:
+    name: Visual Regression
     runs-on: ubuntu-latest
     timeout-minutes: 15
     container:
       image: mcr.microsoft.com/playwright:v1.59.1-noble
     env:
-      HOME: /root
+      HOME:             /root
       PRACTICE_E2E_URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+
+      # The Playwright Docker image already has all browsers — no install needed.
       - name: Run visual regression tests
-        run: npx playwright test tests/visual-regression/visual-regression.spec.ts --project="Visual Regression"
-      - uses: actions/upload-artifact@v7
+        run: npx playwright test tests/visual-regression/ --project="Visual Regression"
+
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: visual-regression-report
@@ -441,94 +293,22 @@ jobs:
             test-results/
           retention-days: 30
 
+      # jq is not pre-installed in the Playwright Docker image
       - name: Install jq
         if: ${{ !cancelled() }}
         run: apt-get update -y && apt-get install -y jq
 
-      # Email reporting directly from JSON output using direct calculations
-      - name: Generate visual test statistics
-        id: get-visual-test-stats
-        if: ${{ !cancelled() }}
-        run: |
-          if [ -f "playwright-report/test-results.json" ]; then
-            TOTAL_COUNT=$(jq '.stats | .expected + .skipped + .unexpected + .flaky' playwright-report/test-results.json || echo "0")
-            PASSED_COUNT=$(jq '.stats.expected' playwright-report/test-results.json || echo "0")
-            FAILED_COUNT=$(jq '.stats.unexpected' playwright-report/test-results.json || echo "0")
-            SKIPPED_COUNT=$(jq '.stats.skipped' playwright-report/test-results.json || echo "0")
-            FLAKY_COUNT=$(jq '.stats.flaky' playwright-report/test-results.json || echo "0")
-
-            # Ensure no null values
-            TOTAL_COUNT=${TOTAL_COUNT:-0}
-            PASSED_COUNT=${PASSED_COUNT:-0}
-            FAILED_COUNT=${FAILED_COUNT:-0}
-            SKIPPED_COUNT=${SKIPPED_COUNT:-0}
-            FLAKY_COUNT=${FLAKY_COUNT:-0}
-
-            # Set subject prefix based on test results
-            if [ "$FAILED_COUNT" -eq 0 ]; then
-              echo "status_emoji=✅" >> $GITHUB_OUTPUT
-              echo "subject_prefix=SUCCESS" >> $GITHUB_OUTPUT
-            else
-              echo "status_emoji=❌" >> $GITHUB_OUTPUT
-              echo "subject_prefix=FAILURE" >> $GITHUB_OUTPUT
-            fi
-
-            # Output test statistics for use in email
-            echo "total=$TOTAL_COUNT" >> $GITHUB_OUTPUT
-            echo "passed=$PASSED_COUNT" >> $GITHUB_OUTPUT
-            echo "failed=$FAILED_COUNT" >> $GITHUB_OUTPUT
-            echo "skipped=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
-            echo "flaky=$FLAKY_COUNT" >> $GITHUB_OUTPUT
-          else
-            # Fallback for missing test results file
-            echo "subject_prefix=ERROR" >> $GITHUB_OUTPUT
-            echo "total=0" >> $GITHUB_OUTPUT
-            echo "passed=0" >> $GITHUB_OUTPUT
-            echo "failed=0" >> $GITHUB_OUTPUT
-            echo "skipped=0" >> $GITHUB_OUTPUT
-            echo "flaky=0" >> $GITHUB_OUTPUT
-            echo "error_msg=Test Results Summary not found. Please check the GitHub Action run for details." >> $GITHUB_OUTPUT
-          fi
-
-      - name: Send visual regression report via email
-        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-visual-test-stats.outputs.total != 0 }}
-        uses: dawidd6/action-send-mail@v16
+      - name: Send visual regression report
+        if: ${{ !cancelled() && github.event_name != 'pull_request' }}
+        uses: ./.github/actions/send-test-report
         with:
-          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          to: ${{ vars.NOTIFICATION_EMAIL }}
-          from: ${{ vars.NOTIFICATION_EMAIL }}
-          subject: '${{ steps.get-visual-test-stats.outputs.subject_prefix }}: Playwright Visual Regression Test Report'
-          body: |
-            ${{ steps.get-visual-test-stats.outputs.status_emoji || '' }} Test Results Summary for ${{ github.server_url }}/${{ github.repository }}:
+          suite:       'Visual Regression'
+          smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
+          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email:       ${{ vars.NOTIFICATION_EMAIL }}
+          password:    ${{ secrets.DUMMY_PASSWORD }}
+          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo:        ${{ github.server_url }}/${{ github.repository }}
+          e2e_url:     ${{ env.PRACTICE_E2E_URL }}
 
-            Total Tests: ${{ steps.get-visual-test-stats.outputs.total }}
-            Passed: ${{ steps.get-visual-test-stats.outputs.passed }}
-            Failed: ${{ steps.get-visual-test-stats.outputs.failed }}
-            Skipped: ${{ steps.get-visual-test-stats.outputs.skipped }}
-            Flaky: ${{ steps.get-visual-test-stats.outputs.flaky }}
 
-            PRACTICE_E2E_URL=${{ env.PRACTICE_E2E_URL }}
-
-            View full report: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-            The test artifacts are available directly in the GitHub Actions run.
-
-            ${{ steps.get-visual-test-stats.outputs.error_msg || '' }}
-      - name: Send visual regression error notification
-        if: ${{ !cancelled() && github.event_name != 'pull_request' && steps.get-visual-test-stats.outputs.total == 0 }}
-        uses: dawidd6/action-send-mail@v16
-        with:
-          server_address: ${{ secrets.SMTP_MAIL_SERVER }}
-          server_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          username: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          to: ${{ vars.NOTIFICATION_EMAIL }}
-          from: ${{ vars.NOTIFICATION_EMAIL }}
-          subject: '${{ steps.get-visual-test-stats.outputs.subject_prefix }}: Playwright Visual Regression Test Report'
-          body: |
-            An error was thrown while generating the test results summary for ${{ github.server_url }}/${{ github.repository }}.
-            Please check the GitHub Action run for details.
-            View full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
