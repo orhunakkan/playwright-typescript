@@ -62,6 +62,9 @@ env:
   # config/env.ts calls requireEnv('SAUCE_DEMO_URL') at import time, so
   # every job that loads a page object needs this to be present.
   SAUCE_DEMO_URL: 'https://www.saucedemo.com'
+  # Opt into Node.js 24 for all actions — suppresses the Node.js 20
+  # deprecation warning across every job without requiring version bumps.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 # Cancel in-flight runs for the same branch/PR when a new commit arrives
 concurrency:
