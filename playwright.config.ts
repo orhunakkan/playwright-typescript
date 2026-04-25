@@ -82,6 +82,24 @@ export default defineConfig({
     },
 
     {
+      name: 'Accessibility Tests',
+      testDir: './tests/accessibility',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
+      name: 'Desktop Chrome',
+      testDir: './tests/pw-documents',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
+      name: 'Visual Regression',
+      testDir: './tests/visual-regression',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
       name: 'sauce-auth-setup',
       testDir: './tests/sauce',
       testMatch: '**/*.setup.ts',
