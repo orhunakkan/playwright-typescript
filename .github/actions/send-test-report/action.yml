@@ -1,7 +1,7 @@
 name: 'Send Playwright Test Report'
 description: >
   Reads playwright-report/test-results.json, computes pass/fail counts,
-  and e-mails a one-line summary via SMTP.
+  and e-mails a formatted summary via SMTP.
   Pass informational: 'true' for suites (e.g. a11y) where the tested
   site is not owned — failures are downgraded to ⚠️ VIOLATIONS FOUND
   instead of ❌ FAILURE so the pipeline stays green.
@@ -24,12 +24,20 @@ inputs:
   repo:
     description: 'Full URL to the repository (github.server_url/github.repository)'
     required: true
+  trigger:
+    description: 'Event that triggered the workflow (github.event_name)'
+    required: false
+    default: ''
+  branch:
+    description: 'Branch or ref name (github.ref_name)'
+    required: false
+    default: ''
   e2e_url:
-    description: 'E2E base URL — shown in the email body when non-empty'
+    description: 'E2E base URL — included in the Environment section when non-empty'
     required: false
     default: ''
   api_url:
-    description: 'API base URL — shown in the email body when non-empty'
+    description: 'API base URL — included in the Environment section when non-empty'
     required: false
     default: ''
   informational:
@@ -40,7 +48,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Parse test-results.json
+    - name: Parse test-results.json and build email sections
       id: stats
       shell: bash
       run: |
@@ -63,9 +71,21 @@ runs:
             EMOJI="❌"; PREFIX="FAILURE"
           fi
         else
-          # JSON file missing entirely — likely a setup failure
+          # JSON file missing entirely — likely a setup failure before tests ran
           TOTAL=0; PASSED=0; FAILED=0; SKIPPED=0; FLAKY=0
           EMOJI="⚠️"; PREFIX="ERROR"
+        fi
+
+        # ── Environment section ───────────────────────────────────────────────
+        # Built in bash with real $'\n' — format('\n...') in GHA expressions
+        # outputs a literal backslash-n, not a newline character.
+        E2E="${{ inputs.e2e_url }}"
+        API="${{ inputs.api_url }}"
+        ENV_BLOCK=""
+        if [ -n "$E2E" ] || [ -n "$API" ]; then
+          ENV_BLOCK="Environment"$'\n'"────────────────────────────────"$'\n'
+          [ -n "$E2E" ] && ENV_BLOCK="${ENV_BLOCK}E2E: ${E2E}"$'\n'
+          [ -n "$API" ] && ENV_BLOCK="${ENV_BLOCK}API: ${API}"$'\n'
         fi
 
         {
@@ -76,27 +96,35 @@ runs:
           echo "flaky=$FLAKY"
           echo "emoji=$EMOJI"
           echo "prefix=$PREFIX"
+          # Multiline output — value contains real newlines, safe to inline in body
+          echo "env_block<<__BLOCK_END__"
+          printf '%s' "$ENV_BLOCK"
+          echo "__BLOCK_END__"
         } >> "$GITHUB_OUTPUT"
 
     - name: Send report email
       uses: dawidd6/action-send-mail@v16
       with:
         server_address: ${{ inputs.smtp_server }}
-        server_port: ${{ inputs.smtp_port }}
-        username: ${{ inputs.email }}
-        password: ${{ inputs.password }}
-        to: ${{ inputs.email }}
-        from: ${{ inputs.email }}
+        server_port:    ${{ inputs.smtp_port }}
+        username:       ${{ inputs.email }}
+        password:       ${{ inputs.password }}
+        to:             ${{ inputs.email }}
+        from:           ${{ inputs.email }}
         subject: '${{ steps.stats.outputs.prefix }}: Playwright ${{ inputs.suite }} Test Report'
         body: |
-          ${{ steps.stats.outputs.emoji }} ${{ inputs.suite }} Results — ${{ inputs.repo }}
+          ${{ steps.stats.outputs.emoji }} ${{ inputs.suite }} — ${{ inputs.repo }}
 
-          Total:   ${{ steps.stats.outputs.total }}
-          Passed:  ${{ steps.stats.outputs.passed }}
-          Failed:  ${{ steps.stats.outputs.failed }}
-          Skipped: ${{ steps.stats.outputs.skipped }}
-          Flaky:   ${{ steps.stats.outputs.flaky }}
-          ${{ inputs.e2e_url != '' && format('\nPRACTICE_E2E_URL={0}', inputs.e2e_url) || '' }}${{ inputs.api_url != '' && format('\nPRACTICE_API_URL={0}', inputs.api_url) || '' }}
+          Trigger: ${{ inputs.trigger }} (${{ inputs.branch }})
 
-          Run: ${{ inputs.run_url }}
-          Artifacts (screenshots, videos, traces) are attached to the run above.
+          Results
+          ────────────────────────────────
+          Total:    ${{ steps.stats.outputs.total }}
+          Passed:   ${{ steps.stats.outputs.passed }}
+          Failed:   ${{ steps.stats.outputs.failed }}
+          Skipped:  ${{ steps.stats.outputs.skipped }}
+          Flaky:    ${{ steps.stats.outputs.flaky }}
+
+          ${{ steps.stats.outputs.env_block }}
+          View run: ${{ inputs.run_url }}
+          Artifacts (screenshots, traces, videos) are in the run above.

@@ -104,14 +104,16 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'pull_request' }}
         uses: ./.github/actions/send-test-report
         with:
-          suite: 'API'
+          suite:       'API'
           smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
-          smtp_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          email: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          run_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          repo: ${{ github.server_url }}/${{ github.repository }}
-          api_url: ${{ env.PRACTICE_API_URL }}
+          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email:       ${{ vars.NOTIFICATION_EMAIL }}
+          password:    ${{ secrets.DUMMY_PASSWORD }}
+          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo:        ${{ github.server_url }}/${{ github.repository }}
+          trigger:     ${{ github.event_name }}
+          branch:      ${{ github.ref_name }}
+          api_url:     ${{ env.PRACTICE_API_URL }}
 
   # ───────────────────────────────────────────────────────────────────────────
   # Desktop E2E — Chrome · Firefox · Edge
@@ -174,15 +176,17 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'pull_request' }}
         uses: ./.github/actions/send-test-report
         with:
-          suite: 'Desktop E2E'
+          suite:       'Desktop E2E'
           smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
-          smtp_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          email: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          run_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          repo: ${{ github.server_url }}/${{ github.repository }}
-          e2e_url: ${{ env.PRACTICE_E2E_URL }}
-          api_url: ${{ env.PRACTICE_API_URL }}
+          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email:       ${{ vars.NOTIFICATION_EMAIL }}
+          password:    ${{ secrets.DUMMY_PASSWORD }}
+          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo:        ${{ github.server_url }}/${{ github.repository }}
+          trigger:     ${{ github.event_name }}
+          branch:      ${{ github.ref_name }}
+          e2e_url:     ${{ env.PRACTICE_E2E_URL }}
+          api_url:     ${{ env.PRACTICE_API_URL }}
 
   # ───────────────────────────────────────────────────────────────────────────
   # Mobile E2E — Mobile Safari (iPhone 15 Pro Max) · Mobile Chrome (Pixel 7)
@@ -240,23 +244,26 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'pull_request' }}
         uses: ./.github/actions/send-test-report
         with:
-          suite: 'Mobile E2E'
+          suite:       'Mobile E2E'
           smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
-          smtp_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          email: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          run_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          repo: ${{ github.server_url }}/${{ github.repository }}
-          e2e_url: ${{ env.PRACTICE_E2E_URL }}
+          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email:       ${{ vars.NOTIFICATION_EMAIL }}
+          password:    ${{ secrets.DUMMY_PASSWORD }}
+          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo:        ${{ github.server_url }}/${{ github.repository }}
+          trigger:     ${{ github.event_name }}
+          branch:      ${{ github.ref_name }}
+          e2e_url:     ${{ env.PRACTICE_E2E_URL }}
 
   # ───────────────────────────────────────────────────────────────────────────
   # Visual Regression
   # Runs inside the official Playwright Docker image to guarantee
   # pixel-identical font rendering across machines and CI agents.
   #
-  # The image ships with every browser pre-installed, so we skip
-  # `npx playwright install --with-deps` (previously it re-downloaded
-  # browsers unnecessarily, adding ~60 s to every run).
+  # --with-deps is omitted because the Docker image already ships all system
+  # libraries. The install command itself must still run so that Playwright's
+  # runtime can register the browser binary location in its internal registry
+  # — it verifies the files are present on disk and exits fast, no download.
   #
   # Keep the image tag in sync with the @playwright/test version in
   # package.json — a mismatch produces baseline drift.
@@ -269,7 +276,6 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.59.1-noble
     env:
       HOME: /root
-      PRACTICE_E2E_URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -279,7 +285,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The Playwright Docker image already has all browsers — no install needed.
+      # Registers the browser binary location — skips download since the
+      # Docker image already has all browsers present on disk.
+      - name: Register Playwright browser
+        run: npx playwright install chromium
+
       - name: Run visual regression tests
         run: npx playwright test tests/visual-regression/ --project="Visual Regression"
 
@@ -301,11 +311,13 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'pull_request' }}
         uses: ./.github/actions/send-test-report
         with:
-          suite: 'Visual Regression'
+          suite:       'Visual Regression'
           smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
-          smtp_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          email: ${{ vars.NOTIFICATION_EMAIL }}
-          password: ${{ secrets.DUMMY_PASSWORD }}
-          run_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          repo: ${{ github.server_url }}/${{ github.repository }}
-          e2e_url: ${{ env.PRACTICE_E2E_URL }}
+          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email:       ${{ vars.NOTIFICATION_EMAIL }}
+          password:    ${{ secrets.DUMMY_PASSWORD }}
+          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo:        ${{ github.server_url }}/${{ github.repository }}
+          trigger:     ${{ github.event_name }}
+          branch:      ${{ github.ref_name }}
+          e2e_url:     ${{ env.PRACTICE_E2E_URL }}
