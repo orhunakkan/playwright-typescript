@@ -73,7 +73,6 @@ concurrency:
 # ─────────────────────────────────────────────────────────────────────────────
 
 jobs:
-
   # ───────────────────────────────────────────────────────────────────────────
   # API Tests
   # No browser required — uses Playwright's request fixture only.
@@ -105,14 +104,14 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'pull_request' }}
         uses: ./.github/actions/send-test-report
         with:
-          suite:       'API'
+          suite: 'API'
           smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
-          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          email:       ${{ vars.NOTIFICATION_EMAIL }}
-          password:    ${{ secrets.DUMMY_PASSWORD }}
-          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          repo:        ${{ github.server_url }}/${{ github.repository }}
-          api_url:     ${{ env.PRACTICE_API_URL }}
+          smtp_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email: ${{ vars.NOTIFICATION_EMAIL }}
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          run_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo: ${{ github.server_url }}/${{ github.repository }}
+          api_url: ${{ env.PRACTICE_API_URL }}
 
   # ───────────────────────────────────────────────────────────────────────────
   # Desktop E2E — Chrome · Firefox · Edge
@@ -175,15 +174,15 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'pull_request' }}
         uses: ./.github/actions/send-test-report
         with:
-          suite:       'Desktop E2E'
+          suite: 'Desktop E2E'
           smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
-          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          email:       ${{ vars.NOTIFICATION_EMAIL }}
-          password:    ${{ secrets.DUMMY_PASSWORD }}
-          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          repo:        ${{ github.server_url }}/${{ github.repository }}
-          e2e_url:     ${{ env.PRACTICE_E2E_URL }}
-          api_url:     ${{ env.PRACTICE_API_URL }}
+          smtp_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email: ${{ vars.NOTIFICATION_EMAIL }}
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          run_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo: ${{ github.server_url }}/${{ github.repository }}
+          e2e_url: ${{ env.PRACTICE_E2E_URL }}
+          api_url: ${{ env.PRACTICE_API_URL }}
 
   # ───────────────────────────────────────────────────────────────────────────
   # Mobile E2E — Mobile Safari (iPhone 15 Pro Max) · Mobile Chrome (Pixel 7)
@@ -241,14 +240,14 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'pull_request' }}
         uses: ./.github/actions/send-test-report
         with:
-          suite:       'Mobile E2E'
+          suite: 'Mobile E2E'
           smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
-          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          email:       ${{ vars.NOTIFICATION_EMAIL }}
-          password:    ${{ secrets.DUMMY_PASSWORD }}
-          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          repo:        ${{ github.server_url }}/${{ github.repository }}
-          e2e_url:     ${{ env.PRACTICE_E2E_URL }}
+          smtp_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email: ${{ vars.NOTIFICATION_EMAIL }}
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          run_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo: ${{ github.server_url }}/${{ github.repository }}
+          e2e_url: ${{ env.PRACTICE_E2E_URL }}
 
   # ───────────────────────────────────────────────────────────────────────────
   # Visual Regression
@@ -269,7 +268,7 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.59.1-noble
     env:
-      HOME:             /root
+      HOME: /root
       PRACTICE_E2E_URL: ${{ inputs.environment || 'https://bonigarcia.dev/selenium-webdriver-java' }}
     steps:
       - uses: actions/checkout@v4
@@ -302,13 +301,11 @@ jobs:
         if: ${{ !cancelled() && github.event_name != 'pull_request' }}
         uses: ./.github/actions/send-test-report
         with:
-          suite:       'Visual Regression'
+          suite: 'Visual Regression'
           smtp_server: ${{ secrets.SMTP_MAIL_SERVER }}
-          smtp_port:   ${{ secrets.SMTP_MAIL_SERVER_PORT }}
-          email:       ${{ vars.NOTIFICATION_EMAIL }}
-          password:    ${{ secrets.DUMMY_PASSWORD }}
-          run_url:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          repo:        ${{ github.server_url }}/${{ github.repository }}
-          e2e_url:     ${{ env.PRACTICE_E2E_URL }}
-
-
+          smtp_port: ${{ secrets.SMTP_MAIL_SERVER_PORT }}
+          email: ${{ vars.NOTIFICATION_EMAIL }}
+          password: ${{ secrets.DUMMY_PASSWORD }}
+          run_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          repo: ${{ github.server_url }}/${{ github.repository }}
+          e2e_url: ${{ env.PRACTICE_E2E_URL }}
