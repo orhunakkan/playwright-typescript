@@ -96,7 +96,7 @@ jobs:
       - name: Run API tests
         run: npx playwright test --project="API Tests"
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: api-report
@@ -168,7 +168,7 @@ jobs:
               --project="Desktop Edge"
           fi
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: web-report
@@ -236,7 +236,7 @@ jobs:
               --project="Mobile Chrome"
           fi
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: mobile-report
@@ -296,7 +296,7 @@ jobs:
       - name: Run visual regression tests
         run: npx playwright test tests/visual-regression/ --project="Visual Regression"
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: visual-regression-report
