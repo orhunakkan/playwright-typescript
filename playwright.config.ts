@@ -38,13 +38,6 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'DB Tests',
-      testDir: './tests/db',
-      testMatch: '**/*.spec.ts',
-      use: {},
-    },
-
-    {
       name: 'API Tests',
       testDir: './tests/api',
       testMatch: '**/*.spec.ts',

@@ -17,7 +17,6 @@
     "report:allure:open": "allure open allure-report",
     "test:accessibility": "npx playwright test --project=\"Accessibility Tests\"",
     "test:api": "npx playwright test --project=\"API Tests\"",
-    "test:db": "npx playwright test --project=\"DB Tests\" --workers=1",
     "test:e2e": "npx playwright test tests/e2e/ --project=\"Desktop Chrome\" --project=\"Desktop Firefox\" --project=\"Desktop Edge\" --project=\"Mobile Safari\" --project=\"Mobile Chrome\"",
     "test:perf": "npx artillery run --dotenv .env tests/performance/performance-testing.ts",
     "test:pw-documents": "npx playwright test tests/pw-documents/ --project=\"Desktop Chrome\"",
@@ -26,15 +25,13 @@
     "test:visual:update": "docker run --rm -v .:/work -w /work -e TEST_ENV=dev mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/visual-regression/visual-regression.spec.ts --update-snapshots"
   },
   "dependencies": {
-    "dotenv": "^17.4.0",
-    "pg": "^8.20.0"
+    "dotenv": "^17.4.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.2",
-    "@types/pg": "^8.20.0",
     "@typescript-eslint/parser": "^8.58.0",
     "allure-commandline": "^2.38.1",
     "allure-playwright": "^3.6.0",
