@@ -10,12 +10,13 @@ Connect to an existing browser instead of launching a new one.
 
 ## Commands
 
-| Command                   | Description                                   |
-| ------------------------- | --------------------------------------------- |
-| `attach --cdp=<channel>`  | Connect to a running browser by channel name  |
-| `attach --cdp=<url>`      | Connect via Chrome DevTools Protocol endpoint |
-| `attach --endpoint=<url>` | Connect to a Playwright server endpoint       |
-| `attach --extension`      | Connect via Playwright MCP Bridge extension   |
+| Command                        | Description                                            |
+| ------------------------------ | ------------------------------------------------------ |
+| `attach --cdp=<channel>`       | Connect to a running browser by channel name           |
+| `attach --cdp=<url>`           | Connect via Chrome DevTools Protocol endpoint          |
+| `attach --endpoint=<url>`      | Connect to a Playwright server endpoint                |
+| `attach --extension`           | Connect via Playwright Extension (defaults to Chrome)  |
+| `attach --extension=<channel>` | Connect via Playwright Extension to a specific channel |
 
 ## Attach by channel name
 
@@ -71,11 +72,19 @@ playwright-cli snapshot
 
 ## Browser extension
 
-Connect to your existing browser tabs using the **Playwright MCP Bridge extension**. This lets you reuse your logged-in sessions, cookies, and installed extensions.
+Connect to your existing browser tabs using the **Playwright Extension**. This lets you reuse your logged-in sessions, cookies, and installed extensions.
 
 ```bash
+# Attach to Chrome (default)
 playwright-cli attach --extension
+
+# Attach to a specific channel
+playwright-cli attach --extension=chrome-canary
+playwright-cli attach --extension=msedge
+playwright-cli attach --extension=msedge-dev
 ```
+
+If no channel is specified, the extension attaches to Chrome by default.
 
 ### When to use extension mode
 
@@ -130,12 +139,13 @@ playwright-cli console error
 
 ## 🗂️ Quick Reference
 
-| What                        | How                                      |
-| --------------------------- | ---------------------------------------- |
-| Attach to Chrome            | `attach --cdp=chrome`                    |
-| Attach to Edge              | `attach --cdp=msedge`                    |
-| Attach via CDP URL          | `attach --cdp=http://localhost:9222`     |
-| Attach via extension        | `attach --extension`                     |
-| Attach to Playwright server | `attach --endpoint=ws://...`             |
-| Named session               | `attach --cdp=chrome -s=name`            |
-| **Best for:**               | SSO/2FA, existing tabs, remote debugging |
+| What                         | How                                      |
+| ---------------------------- | ---------------------------------------- |
+| Attach to Chrome             | `attach --cdp=chrome`                    |
+| Attach to Edge               | `attach --cdp=msedge`                    |
+| Attach via CDP URL           | `attach --cdp=http://localhost:9222`     |
+| Attach via extension         | `attach --extension`                     |
+| Attach via extension channel | `attach --extension=chrome-canary`       |
+| Attach to Playwright server  | `attach --endpoint=ws://...`             |
+| Named session                | `attach --cdp=chrome -s=name`            |
+| **Best for:**                | SSO/2FA, existing tabs, remote debugging |

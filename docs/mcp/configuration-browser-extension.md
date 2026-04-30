@@ -61,7 +61,7 @@ Works with:
 
 ## Connect via browser extension
 
-The **Playwright MCP Bridge extension** connects to your existing browser tabs, reusing your logged-in sessions, cookies, and installed extensions.
+The **Playwright Extension** connects to your existing browser tabs, reusing your logged-in sessions, cookies, and installed extensions.
 
 1. **Install the extension** in Chrome or Edge
 2. **Configure the MCP server:**
