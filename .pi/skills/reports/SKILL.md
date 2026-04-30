@@ -5,7 +5,7 @@ description: How to generate, open, and interpret the four test reporters — Pl
 
 # Skill: Generate and View Reports
 
-This framework has four active reporters configured in `playwright.config.ts`. Each serves a different purpose.
+This framework has four active Playwright reporters configured in `playwright.config.ts`. Each serves a different purpose.
 
 ---
 
@@ -60,7 +60,7 @@ Allure has three steps: **run → generate → view**.
 npx playwright test
 
 # Or use an npm script
-npm run test:db
+npm run test:api
 ```
 
 Raw results in `allure-results/` are JSON + attachment files. They are not human-readable directly.

@@ -15,8 +15,8 @@ Visual regression tests compare live browser screenshots pixel-by-pixel against 
 fixtures/reference-snapshots/
 └── visual-regression.spec.ts/
     └── <test name>/
-        ├── Desktop Chrome-<page-slug>-snap.png
-        ├── Desktop Firefox-<page-slug>-snap.png
+        ├── Visual Regression-full-page.png
+        ├── Desktop-Chrome-full-page.png
         └── ...
 ```
 
@@ -83,7 +83,7 @@ This runs:
 ```bash
 docker run --rm -v .:/work -w /work -e TEST_ENV=dev \
   mcr.microsoft.com/playwright:v1.59.1-noble \
-  npx playwright test tests/e2e/visual-regression.spec.ts --update-snapshots
+  npx playwright test tests/visual-regression/visual-regression.spec.ts --update-snapshots
 ```
 
 Wait for the Docker container to finish. It will overwrite the affected PNG files in `fixtures/reference-snapshots/`.
@@ -130,7 +130,7 @@ git commit -m "chore: update visual baselines for <page name> after <change desc
 
 ## Adding a New Page to Visual Regression
 
-To include a new page in the visual regression sweep, add its URL slug to the `pages` array at the top of `tests/e2e/visual-regression.spec.ts`:
+To include a new page in the visual regression sweep, add its URL slug to the `pages` array at the top of `tests/visual-regression/visual-regression.spec.ts`:
 
 ```ts
 const pages = [

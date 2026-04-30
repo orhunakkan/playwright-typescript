@@ -2,60 +2,50 @@
 
 ## Overview
 
-A multi-layer automated test framework built with **Playwright** and **TypeScript**. It covers four testing layers against a shared backend:
+A multi-layer automated test framework built with **Playwright** and **TypeScript**.
 
-| Layer       | Target                            | Location             |
-| ----------- | --------------------------------- | -------------------- |
-| E2E         | Practice web app (browser UI)     | `tests/e2e/`         |
-| API         | Notes REST API (HTTP)             | `tests/api/`         |
-| DB          | PostgreSQL database (direct SQL)  | `tests/db/`          |
-| Performance | Notes REST API (load)             | `tests/performance/` |
-| Sauce       | SauceDemo UI (storage-state auth) | `tests/sauce/`       |
+| Layer           | Target                          | Location                   |
+| --------------- | ------------------------------- | -------------------------- |
+| E2E             | Practice web app browser UI     | `tests/e2e/`               |
+| API             | Notes REST API                  | `tests/api/`               |
+| Accessibility   | Practice web app WCAG scans     | `tests/accessibility/`     |
+| Visual          | Practice web app screenshots    | `tests/visual-regression/` |
+| Docs monitoring | Playwright documentation site   | `tests/pw-documents/`      |
+| Sauce           | SauceDemo UI storage-state auth | `tests/sauce/`             |
+| Performance     | Notes REST API load             | `tests/performance/`       |
 
-**Core dependencies:** `@playwright/test`, `typescript`, `pg`, `@faker-js/faker`, `allure-playwright`, `allure-js-commons`, `@axe-core/playwright`, `artillery`, `dotenv`.
+**Core dependencies:** `@playwright/test`, `typescript`, `@faker-js/faker`, `allure-playwright`, `@axe-core/playwright`, `artillery`, `dotenv`, `eslint`, and `prettier`.
 
 ---
 
 ## Folder Structure
 
-```
+```text
 .
-├── docs/
-│   ├── api/                          # Playwright class API reference — one file per class (class-locator.md, class-page.md, etc.)
-│   ├── guides/                       # Playwright how-to and concept guides (locators.md, auth.md, network.md, etc.)
-│   ├── mcp/                          # Playwright MCP server documentation
-│   └── agent-cli/                    # Playwright agent CLI documentation
+├── docs/                             # Local Playwright docs: api, guides, mcp, agent-cli
 ├── config/
-│   └── env.ts                        # Typed env config — single source of truth for all env vars
+│   └── env.ts                        # Typed env config for E2E/API/Sauce URLs
 ├── fixtures/
-│   ├── page-fixtures/
-│   │   └── index.ts                  # Custom test fixture — extends base with all page objects
-│   ├── notes-api-payloads/
-│   │   ├── api-types.ts              # TypeScript types for Notes API responses
-│   │   ├── shared-request-payloads.ts# Headers + shared payload generators (register, login)
-│   │   ├── notes-request-payloads.ts # Note-specific payload generators
-│   │   └── users-request-payloads.ts # User-specific payload generators (update profile, forgot pw)
-│   ├── db-payloads/
-│   │   ├── db-types.ts               # TypeScript interfaces: UserRow, NoteRow
-│   │   └── db-payload-generators.ts  # Shared constants: noteCategories, NoteCategory type
-│   ├── playwright-docs-links/
-│   │   └── sidebar-links.json        # Reference snapshot for doc link monitoring test
-│   └── reference-snapshots/          # Visual regression PNG baselines (committed to git)
-├── pages/                            # Page Object Model classes — one file per page
+│   ├── page-fixtures/                # Custom test fixture with all page objects
+│   ├── notes-api-payloads/           # API types and Faker payload generators
+│   ├── playwright-docs-links/        # Sidebar URL baseline for docs monitoring
+│   └── reference-snapshots/          # Visual PNG + docs text baselines
+├── pages/                            # Page Object Model classes (31)
 ├── tests/
-│   ├── e2e/                          # Browser UI tests — use the custom page fixture
-│   ├── api/                          # REST API tests — use @playwright/test request fixture
-│   ├── db/                           # Direct SQL tests — use db-client utilities
+│   ├── e2e/                          # Browser UI tests using the custom page fixture
+│   ├── api/                          # REST API tests using @playwright/test request fixture
+│   ├── accessibility/                # axe-core accessibility sweep
 │   ├── performance/                  # Artillery load test script
-│   └── sauce/                        # SauceDemo auth setup + storage-state spec
+│   ├── pw-documents/                 # Playwright docs link/content monitoring
+│   ├── sauce/                        # SauceDemo setup project + storage-state spec
+│   └── visual-regression/            # Screenshot comparison suite
 ├── utilities/
-│   ├── db-client.ts                  # PostgreSQL helpers: queryOne, queryMany, queryRaw, seed*, truncateAll
-│   ├── api-schema-validator.ts       # Schema assertion helpers + pre-built schemas
-│   ├── a11y.ts                       # Axe-core wrapper: runA11yScan()
-│   ├── calculator.ts                 # Math helpers used by calculator page tests
-│   └── error-listeners.ts            # Page event listeners: console errors, page errors, failed requests
-├── playwright.config.ts              # All project definitions, reporters, global settings
-└── package.json                      # Scripts, dependencies
+│   ├── api-schema-validator.ts       # API schema assertion helpers
+│   ├── a11y.ts                       # axe-core wrapper: runA11yScan()
+│   ├── calculator.ts                 # Calculator helpers used by E2E tests
+│   └── error-listeners.ts            # Console/page/network error listener helpers
+├── playwright.config.ts              # Projects, reporters, artifacts, snapshots
+└── package.json                      # Scripts and dependencies
 ```
 
 ---
@@ -70,17 +60,13 @@ export const config = {
   apiUrl: requireEnv('PRACTICE_API_URL'),
   sauceDemoUrl: requireEnv('SAUCE_DEMO_URL'),
   env: process.env.TEST_ENV ?? 'dev',
-  dbHost: process.env.DB_HOST ?? '',
-  dbPort: parseInt(process.env.DB_PORT ?? '5432', 10),
-  dbName: process.env.DB_NAME ?? '',
-  dbUser: process.env.DB_USER ?? '',
-  dbPassword: process.env.DB_PASSWORD ?? '',
 } as const;
 ```
 
-- **Always import from `config/env.ts`** — never use `process.env.*` directly in tests or pages.
-- Env file is resolved as `.env` by default, or `.env.${TEST_ENV}` if `TEST_ENV` is set (e.g., `TEST_ENV=staging`).
-- DB vars have empty-string fallbacks so API/E2E tests can run without a local database configured.
+- Use `config` everywhere in tests, pages, and utilities; do not read `process.env.*` directly outside configuration files.
+- `.env` is used by default.
+- `.env.${TEST_ENV}` is used when `TEST_ENV` is set, e.g. `TEST_ENV=staging` loads `.env.staging`.
+- Required public practice URLs: `PRACTICE_E2E_URL`, `PRACTICE_API_URL`, and `SAUCE_DEMO_URL`.
 
 ---
 
@@ -88,32 +74,35 @@ export const config = {
 
 Defined in `playwright.config.ts`:
 
-| Project name        | Test directory | Key `use`                                                                                           |
-| ------------------- | -------------- | --------------------------------------------------------------------------------------------------- |
-| `DB Tests`          | `tests/db`     | none (uses `pg` pool directly)                                                                      |
-| `API Tests`         | `tests/api`    | none (uses `request` fixture)                                                                       |
-| `Desktop Chrome`    | `tests/e2e`    | `devices['Desktop Chrome']`                                                                         |
-| `Desktop Firefox`   | `tests/e2e`    | `devices['Desktop Firefox']`                                                                        |
-| `Desktop Edge`      | `tests/e2e`    | `devices['Desktop Edge']`                                                                           |
-| `Mobile Safari`     | `tests/e2e`    | `devices['iPhone 15 Pro Max']`                                                                      |
-| `Mobile Chrome`     | `tests/e2e`    | `devices['Pixel 7']`                                                                                |
-| `sauce-auth-setup`  | `tests/sauce`  | `devices['Desktop Chrome']`, matches `*.setup.ts`                                                   |
-| `Sauce Auth Chrome` | `tests/sauce`  | `devices['Desktop Chrome']`, `storageState: '.auth/sauce-user.json'`, depends on `sauce-auth-setup` |
+| Project name          | Test directory            | Key `use` / notes                                                                  |
+| --------------------- | ------------------------- | ---------------------------------------------------------------------------------- |
+| `API Tests`           | `tests/api`               | Uses Playwright `request` fixture                                                  |
+| `Desktop Chrome`      | `tests/e2e`               | `devices['Desktop Chrome']`                                                        |
+| `Desktop Firefox`     | `tests/e2e`               | `devices['Desktop Firefox']`                                                       |
+| `Desktop Edge`        | `tests/e2e`               | `devices['Desktop Edge']`                                                          |
+| `Mobile Safari`       | `tests/e2e`               | `devices['iPhone 15 Pro Max']`                                                     |
+| `Mobile Chrome`       | `tests/e2e`               | `devices['Pixel 7']`                                                               |
+| `Accessibility Tests` | `tests/accessibility`     | `devices['Desktop Chrome']`                                                        |
+| `Desktop Chrome`      | `tests/pw-documents`      | Dedicated docs-monitoring project currently shares the Desktop Chrome project name |
+| `Visual Regression`   | `tests/visual-regression` | `devices['Desktop Chrome']`; run via Docker scripts                                |
+| `sauce-auth-setup`    | `tests/sauce`             | Matches `*.setup.ts`; creates `.auth/sauce-user.json`                              |
+| `Sauce Auth Chrome`   | `tests/sauce`             | Uses `storageState: '.auth/sauce-user.json'`; depends on `sauce-auth-setup`        |
 
 **Global settings:**
 
-- `timeout: 30000` (30 s per test)
+- `timeout: 30000`
+- `fullyParallel: true`
 - `retries: 1` on CI, `0` locally
-- `workers: 4` on CI, unlimited locally
+- `workers: 4` on CI, default locally
 - `trace: 'on-first-retry'`, `screenshot: 'only-on-failure'`, `video: 'retain-on-failure'`
-- `outputDir: 'test-results'`
 - `snapshotPathTemplate: 'fixtures/reference-snapshots/{testFileName}/{testName}/{projectName}-{arg}{ext}'`
+- Reporters: `list`, `html`, `json`, and `allure-playwright`
 
 ---
 
-## Page Object Model (POM) Convention
+## Page Object Model Convention
 
-Every page lives in `pages/<kebab-case-name>.page.ts` and follows this exact structure:
+Every page lives in `pages/<kebab-case-name>.page.ts` and exposes separate `locators` and `actions` objects:
 
 ```ts
 import { Locator, Page } from '@playwright/test';
@@ -121,12 +110,11 @@ import { config } from '../config/env';
 
 export class MyPage {
   readonly locators: {
-    // typed Locator properties — pure Playwright locators, no logic
     heading: Locator;
     submitButton: Locator;
   };
+
   readonly actions: {
-    // typed async methods — navigation, interactions, multi-step flows
     goto: () => Promise<void>;
     submit: () => Promise<void>;
   };
@@ -151,10 +139,10 @@ export class MyPage {
 
 **Rules:**
 
-- `locators` — only `Locator` values. No logic, no `await`, no conditionals.
-- `actions` — async methods that compose locator interactions and navigation. Actions may call other actions.
-- Constructor receives `private readonly page: Page`.
-- Prefer semantic locators: `getByRole`, `getByLabel`, `getByPlaceholder`, `getByText`, `getByTestId` over CSS selectors.
+- `locators` contain Playwright `Locator` values or typed locator factory methods only.
+- `actions` contain async interaction/navigation methods.
+- Specs should use fixtures and page-object methods rather than raw selectors.
+- Prefer `getByRole`, `getByLabel`, `getByPlaceholder`, `getByText`, then `getByTestId`; use CSS/XPath only as a last resort inside page objects.
 
 ---
 
@@ -162,38 +150,21 @@ export class MyPage {
 
 **File:** `fixtures/page-fixtures/index.ts`
 
-All E2E tests import `{ test, expect }` from this file, **not** from `@playwright/test`.
+E2E, accessibility, visual-regression, and fixture-backed Sauce specs import `{ test, expect }` from this file. API and docs-monitoring specs import from `@playwright/test`.
 
-Every new page class must be registered in three places inside `index.ts`:
+Every new page class must be registered in three places inside `fixtures/page-fixtures/index.ts`:
 
-1. **Import** the class at the top.
-2. **Add a property** to the `PageFixtures` type (key = camelCase page name).
-3. **Add a callback** inside `base.extend<PageFixtures>({...})`.
+1. Import the class.
+2. Add a property to `PageFixtures`.
+3. Add a `base.extend<PageFixtures>()` callback.
 
-```ts
-// 1. Import
-import { MyPage } from '../../pages/my.page';
-
-// 2. Type
-type PageFixtures = {
-  myPage: MyPage;
-  // ...existing entries
-};
-
-// 3. Extend
-const test = base.extend<PageFixtures>({
-  myPage: async ({ page }, use) => {
-    await use(new MyPage(page));
-  },
-  // ...existing entries
-});
-```
+Then add or update the consuming spec.
 
 ---
 
 ## Allure Annotation Convention
 
-Every `test.describe` block's `beforeEach` must set three allure labels:
+Every new `test.describe` block should set Allure labels in `beforeEach`:
 
 ```ts
 import { feature, story, severity } from 'allure-js-commons';
@@ -207,7 +178,7 @@ test.describe('My Feature', () => {
 });
 ```
 
-Individual tests use Playwright's built-in tag syntax for `@smoke` / `@critical`:
+Use Playwright tag syntax for cross-cutting groups:
 
 ```ts
 test('should do something important', { tag: ['@smoke', '@critical'] }, async ({ myPage }) => {
@@ -217,57 +188,23 @@ test('should do something important', { tag: ['@smoke', '@critical'] }, async ({
 
 ---
 
-## Serial Mode for API and DB Tests
-
-API tests share state across tests (auth token, created resource IDs). DB tests share seeded rows.  
-Both must declare serial mode at the top of the `test.describe` block:
-
-```ts
-test.describe.configure({ mode: 'serial' });
-```
-
----
-
 ## API Testing Pattern
 
 ```ts
-import { test, expect } from '@playwright/test'; // NOT from fixtures
+import { test, expect } from '@playwright/test';
+import { feature, story, severity } from 'allure-js-commons';
 import { config } from '../../config/env';
 import { contentTypeHeaders, getAuthHeaders, generateRegisterPayload } from '../../fixtures/notes-api-payloads/shared-request-payloads';
 import type { ApiResponse, UserData } from '../../fixtures/notes-api-payloads/api-types';
 import { expectMatchesSchema, UserDataSchema } from '../../utilities/api-schema-validator';
 ```
 
-- Use the `request` fixture (injected by Playwright — no import needed).
+- Use Playwright's `request` fixture.
 - Build URLs from `config.apiUrl`.
-- Use `getAuthHeaders(token)` for protected endpoints (`x-auth-token` header).
-- Always validate response body structure with `expectMatchesSchema` before asserting individual fields.
-- Available pre-built schemas: `UserDataSchema`, `LoginDataSchema`, `UserProfileDataSchema`, `NoteDataSchema`, `ErrorResponseSchema`, `HealthCheckSchema`.
-
----
-
-## DB Testing Pattern
-
-```ts
-import { test, expect } from '@playwright/test';
-import * as allure from 'allure-js-commons';
-import { truncateAll, seedUser, seedNote, queryOne, queryMany, queryRaw, closePool } from '../../utilities/db-client.js';
-import type { NoteRow, UserRow } from '../../fixtures/db-payloads/db-types.js';
-```
-
-**Key utilities:**
-
-| Function                       | Returns                   | Use case                                                    |
-| ------------------------------ | ------------------------- | ----------------------------------------------------------- |
-| `truncateAll()`                | `Promise<void>`           | Reset all tables + sequences. Always call in `beforeEach`.  |
-| `seedUser(overrides?)`         | `Promise<UserRow>`        | Insert a user row with faker defaults.                      |
-| `seedNote(userId, overrides?)` | `Promise<NoteRow>`        | Insert a note row with faker defaults.                      |
-| `queryOne<T>(sql, params?)`    | `Promise<T \| null>`      | Read a single row.                                          |
-| `queryMany<T>(sql, params?)`   | `Promise<T[]>`            | Read multiple rows.                                         |
-| `queryRaw(sql, params?)`       | `Promise<pg.QueryResult>` | Raw query (COUNT, pg_sleep, DDL, etc.).                     |
-| `closePool()`                  | `Promise<void>`           | Close the pg connection pool. Call in `afterAll` if needed. |
-
-**Note:** Use `.js` extension in imports for DB test files because the project uses `"type": "module"`.
+- Use Faker payload generators from `fixtures/notes-api-payloads/`.
+- Use `getAuthHeaders(token)` for protected endpoints.
+- Validate response structure with `expectMatchesSchema` before detailed assertions.
+- Stateful API suites must use `test.describe.configure({ mode: 'serial' })`.
 
 ---
 
@@ -276,51 +213,60 @@ import type { NoteRow, UserRow } from '../../fixtures/db-payloads/db-types.js';
 ```ts
 import { runA11yScan } from '../../utilities/a11y';
 
-const results = await runA11yScan(page, {
-  tags: ['wcag2a', 'wcag2aa', 'wcag21aa'], // default
-  include: '#main-content', // optional CSS selector
-  exclude: '.third-party-widget', // optional CSS selector
-});
+const results = await runA11yScan(page);
 expect(results.violations).toEqual([]);
 ```
+
+The helper defaults to WCAG 2.1 AA-relevant tags. Attach `results.violations` as JSON when failures occur.
 
 ---
 
 ## Visual Regression Testing
 
-- Tests live in `tests/e2e/visual-regression.spec.ts`.
-- **Must run inside Docker** — never run locally with `npx playwright test visual-regression.spec.ts`.
+- Tests live in `tests/visual-regression/visual-regression.spec.ts`.
 - Baselines are stored in `fixtures/reference-snapshots/visual-regression.spec.ts/`.
-- Use `npm run test:visual` to compare and `npm run test:visual:update` to regenerate baselines.
+- Run only through Docker-backed npm scripts:
 
----
-
-## Naming Conventions
-
-| Thing                | Convention                   | Example                          |
-| -------------------- | ---------------------------- | -------------------------------- |
-| Page class files     | `kebab-case.page.ts`         | `login-form.page.ts`             |
-| Spec files           | `kebab-case.spec.ts`         | `notes-users-errors.spec.ts`     |
-| Page class names     | `PascalCase` + `Page` suffix | `LoginFormPage`                  |
-| Fixture keys         | `camelCase` + `Page` suffix  | `loginFormPage`                  |
-| DB spec imports      | `.js` extension              | `'../../utilities/db-client.js'` |
-| API/E2E spec imports | no extension                 | `'../../utilities/a11y'`         |
+```bash
+npm run test:visual
+npm run test:visual:update
+```
 
 ---
 
 ## npm Scripts Quick Reference
 
-| Script                   | Command                                                                    | What it does                   |
-| ------------------------ | -------------------------------------------------------------------------- | ------------------------------ |
-| `test:db`                | `npx playwright test --project="DB Tests" --workers=1`                     | DB tests, single worker        |
-| `test:visual`            | Docker run with `visual-regression.spec.ts`                                | Visual comparison in Docker    |
-| `test:visual:update`     | Docker run with `--update-snapshots`                                       | Regenerate baselines in Docker |
-| `test:perf`              | `npx artillery run --dotenv .env tests/performance/performance-testing.ts` | Load test                      |
-| `report:allure:serve`    | `allure serve allure-results`                                              | Live Allure report in browser  |
-| `report:allure:generate` | `allure generate allure-results --clean -o allure-report`                  | Build static Allure report     |
-| `report:allure:open`     | `allure open allure-report`                                                | Open pre-built static report   |
-| `format`                 | `prettier --write .`                                                       | Auto-format all files          |
-| `format:check`           | `prettier --check .`                                                       | Check formatting               |
-| `typecheck`              | `tsc --noEmit`                                                             | Type-check without emitting    |
-| `lint:check`             | `eslint .`                                                                 | Lint check                     |
-| `lint:fix`               | `eslint . --fix`                                                           | Auto-fix lint issues           |
+| Script                    | What it does                                 |
+| ------------------------- | -------------------------------------------- |
+| `test:e2e`                | E2E tests across desktop and mobile projects |
+| `test:api`                | Notes API tests                              |
+| `test:accessibility`      | Accessibility project                        |
+| `test:pw-documents`       | Playwright docs monitoring                   |
+| `test:sauce`              | SauceDemo auth setup + storage-state tests   |
+| `test:perf`               | Artillery load test                          |
+| `test:visual`             | Visual comparison in Docker                  |
+| `test:visual:update`      | Regenerate visual baselines in Docker        |
+| `report:allure:serve`     | Serve raw Allure results                     |
+| `report:allure:generate`  | Build static Allure report                   |
+| `report:allure:open`      | Open generated Allure report                 |
+| `format` / `format:check` | Write/check Prettier formatting              |
+| `typecheck`               | `tsc --noEmit`                               |
+| `lint:check` / `lint:fix` | Check/fix ESLint issues                      |
+
+---
+
+## Naming Conventions
+
+| Thing            | Convention                   | Example                      |
+| ---------------- | ---------------------------- | ---------------------------- |
+| Page class files | `kebab-case.page.ts`         | `login-form.page.ts`         |
+| Spec files       | `kebab-case.spec.ts`         | `notes-users-errors.spec.ts` |
+| Page class names | `PascalCase` + `Page` suffix | `LoginFormPage`              |
+| Fixture keys     | `camelCase` + `Page` suffix  | `loginFormPage`              |
+| API/E2E imports  | no `.js` extension           | `'../../utilities/a11y'`     |
+
+---
+
+## Currently Not Present
+
+There is no active `tests/db/` directory, `utilities/db-client.ts`, PostgreSQL dependency, or `test:db` script in the current repository state. Do not create DB specs from old templates unless the DB infrastructure is restored first.

@@ -5,15 +5,29 @@ description: All commands for running tests by project, file, tag, or npm script
 
 # Skill: Run Tests
 
-All commands are run from the repository root. Ensure the correct `.env` file exists before running.
+All commands are run from the repository root. Ensure `.env` or `.env.${TEST_ENV}` contains `PRACTICE_E2E_URL`, `PRACTICE_API_URL`, and `SAUCE_DEMO_URL`.
 
 ---
 
 ## Run Everything
 
 ```bash
-# All projects, all tests (respects playwright.config.ts workers setting)
 npx playwright test
+```
+
+---
+
+## npm Scripts
+
+```bash
+npm run test:e2e
+npm run test:api
+npm run test:accessibility
+npm run test:pw-documents
+npm run test:sauce
+npm run test:perf
+npm run test:visual
+npm run test:visual:update
 ```
 
 ---
@@ -21,28 +35,33 @@ npx playwright test
 ## Run by Project
 
 ```bash
-# --- DB Layer ---
-npx playwright test --project="DB Tests"
-
-# --- API Layer ---
+# API
 npx playwright test --project="API Tests"
 
-# --- E2E: Desktop Browsers ---
+# E2E: Desktop browsers
 npx playwright test --project="Desktop Chrome"
 npx playwright test --project="Desktop Firefox"
 npx playwright test --project="Desktop Edge"
 
-# --- E2E: Mobile Browsers ---
+# E2E: Mobile devices
 npx playwright test --project="Mobile Safari"
 npx playwright test --project="Mobile Chrome"
 
-# --- Sauce Auth Flow ---
+# Accessibility
+npx playwright test --project="Accessibility Tests"
+
+# Visual regression project (prefer Docker npm script for real runs)
+npx playwright test tests/visual-regression/ --project="Visual Regression"
+
+# Sauce auth flow
 npx playwright test --project="sauce-auth-setup"
 npx playwright test --project="Sauce Auth Chrome"
 
-# --- Multiple projects at once ---
+# Multiple projects at once
 npx playwright test --project="Desktop Chrome" --project="Desktop Firefox"
 ```
+
+> Note: `playwright.config.ts` currently has an E2E project and a docs-monitoring project both named `Desktop Chrome`. When targeting one of those areas, include the test path as well as the project flag.
 
 ---
 
@@ -56,26 +75,26 @@ npx playwright test tests/api/notes-notes-all-flow.spec.ts --project="API Tests"
 npx playwright test tests/api/notes-users-errors.spec.ts --project="API Tests"
 npx playwright test tests/api/notes-notes-errors.spec.ts --project="API Tests"
 
-# DB (always use --workers=1)
-npx playwright test tests/db/db-audit-trail.spec.ts --project="DB Tests" --workers=1
-npx playwright test tests/db/db-cascade.spec.ts --project="DB Tests" --workers=1
-npx playwright test tests/db/db-consistency.spec.ts --project="DB Tests" --workers=1
-npx playwright test tests/db/db-constraints.spec.ts --project="DB Tests" --workers=1
-npx playwright test tests/db/db-isolation.spec.ts --project="DB Tests" --workers=1
-npx playwright test tests/db/db-pagination.spec.ts --project="DB Tests" --workers=1
-npx playwright test tests/db/db-sanitization.spec.ts --project="DB Tests" --workers=1
-npx playwright test tests/db/db-soft-delete.spec.ts --project="DB Tests" --workers=1
-
 # E2E
-npx playwright test tests/e2e/accessibility-testing.spec.ts --project="Desktop Chrome"
-npx playwright test tests/e2e/browser-apis.spec.ts --project="Desktop Chrome"
-npx playwright test tests/e2e/browser-features.spec.ts --project="Desktop Chrome"
-npx playwright test tests/e2e/framework-features.spec.ts --project="Desktop Chrome"
-npx playwright test tests/e2e/mobile-testing.spec.ts --project="Mobile Chrome"
-npx playwright test tests/e2e/page-object-model.spec.ts --project="Desktop Chrome"
-npx playwright test tests/e2e/third-party-integrations.spec.ts --project="Desktop Chrome"
 npx playwright test tests/e2e/webdriver-fundamentals.spec.ts --project="Desktop Chrome"
-npx playwright test tests/e2e/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
+npx playwright test tests/e2e/browser-features.spec.ts --project="Desktop Chrome"
+npx playwright test tests/e2e/browser-apis.spec.ts --project="Desktop Chrome"
+npx playwright test tests/e2e/page-object-model.spec.ts --project="Desktop Chrome"
+npx playwright test tests/e2e/framework-features.spec.ts --project="Desktop Chrome"
+npx playwright test tests/e2e/third-party-integrations.spec.ts --project="Desktop Chrome"
+npx playwright test tests/e2e/mobile-testing.spec.ts --project="Mobile Chrome"
+
+# Accessibility
+npx playwright test tests/accessibility/accessibility-testing.spec.ts --project="Accessibility Tests"
+
+# Playwright docs monitoring
+npx playwright test tests/pw-documents/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
+
+# SauceDemo storage-state flow
+npx playwright test tests/sauce/storage-state.spec.ts --project="Sauce Auth Chrome"
+
+# Visual regression (use Docker npm script for real comparisons)
+npx playwright test tests/visual-regression/visual-regression.spec.ts --project="Visual Regression"
 ```
 
 ---
@@ -96,34 +115,23 @@ npx playwright test --grep "@smoke|@critical"
 npx playwright test --grep-invert "@smoke"
 
 # Smoke tests on a specific project
-npx playwright test --project="Desktop Chrome" --grep "@smoke"
+npx playwright test tests/e2e/ --project="Desktop Chrome" --grep "@smoke"
 ```
+
+Common tags in this repo include `@smoke`, `@critical`, `@regression`, `@a11y`, and `@visual`.
 
 ---
 
-## DB Tests (npm Script)
+## Visual Regression Tests (Docker Required)
 
-The npm script enforces `--workers=1` so parallel DB tests don't corrupt each other's seeded data:
-
-```bash
-npm run test:db
-```
-
----
-
-## Visual Regression Tests (Docker — Required)
-
-Visual tests must run inside Docker to match the CI rendering environment:
+Visual tests must run inside Docker to match CI rendering:
 
 ```bash
-# Compare against existing baselines
 npm run test:visual
-
-# Regenerate baselines (only after confirming a UI change is intentional)
 npm run test:visual:update
 ```
 
-> ⚠️ Never run `npx playwright test tests/e2e/visual-regression.spec.ts` directly — pixel comparisons are OS/font-sensitive and will produce incorrect results outside Docker.
+> Never run host-OS visual comparisons for baseline decisions. Raw `npx playwright test tests/visual-regression/visual-regression.spec.ts` is only acceptable for non-baseline debugging.
 
 ---
 
@@ -133,20 +141,18 @@ npm run test:visual:update
 npm run test:perf
 ```
 
-Runs the Artillery load test script at `tests/performance/performance-testing.ts` using the `.env` file for the target URL.
+Runs `tests/performance/performance-testing.ts` with Artillery using `.env` for the target API URL.
 
 ---
 
 ## Environment Selection
-
-Switch to a different env file by setting `TEST_ENV`:
 
 ```bash
 # Uses .env.staging
 TEST_ENV=staging npx playwright test
 
 # Uses .env.prod
-TEST_ENV=prod npx playwright test --project="API Tests"
+TEST_ENV=prod npm run test:api
 ```
 
 Default (no `TEST_ENV`) loads `.env`.
@@ -156,28 +162,13 @@ Default (no `TEST_ENV`) loads `.env`.
 ## Useful Flags
 
 ```bash
-# Headed mode — watch the browser
 npx playwright test --headed
-
-# UI mode — interactive test explorer with time-travel
 npx playwright test --ui
-
-# Debug mode — pauses at each step
 npx playwright test --debug
-
-# Specific test by title (substring match)
 npx playwright test --grep "should display the heading"
-
-# Limit parallelism
 npx playwright test --workers=2
-
-# Repeat a test N times (useful for flakiness investigation)
 npx playwright test --repeat-each=3
-
-# Show full trace on every test (not just retry)
 npx playwright test --trace on
-
-# Update snapshots (for aria / text snapshots — NOT visual regression)
 npx playwright test --update-snapshots
 ```
 
@@ -186,13 +177,19 @@ npx playwright test --update-snapshots
 ## After a Run
 
 ```bash
-# Open the HTML report (auto-generated after every run)
+# Open the Playwright HTML report
 npx playwright show-report
 
 # Generate and open Allure report
 npm run report:allure:generate
 npm run report:allure:open
 
-# Or serve Allure live (no pre-generate needed)
+# Or serve Allure live
 npm run report:allure:serve
 ```
+
+---
+
+## Not Currently Present
+
+There is no active `DB Tests` project or `test:db` script in the current repository state.

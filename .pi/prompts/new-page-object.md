@@ -1,6 +1,6 @@
 # Prompt: Create a New Page Object
 
-Use this template when asked to add a new page to the framework. Two files must always be updated together: the page class itself and the fixture index.
+Use this template when asked to add a new page to the framework. The page class, fixture index, and at least one consuming spec must be updated together.
 
 ---
 
@@ -109,12 +109,22 @@ const test = base.extend<PageFixtures>({
 
 ---
 
-## Verification
+## Step 3 — Add or Update the Consuming Spec
 
-After both files are updated, run:
+Create or update the relevant spec in `tests/e2e/`, `tests/accessibility/`, `tests/visual-regression/`, or `tests/sauce/` so the new page object is exercised.
 
-```bash
-npx tsc --noEmit
+For browser E2E specs, import from the custom fixture:
+
+```ts
+import { test, expect } from '../../fixtures/page-fixtures';
 ```
 
-There must be zero errors. If an import path is wrong or the type is missing, the compiler will catch it here before any test runs.
+## Verification
+
+After all related files are updated, run:
+
+```bash
+npm run typecheck
+```
+
+There must be zero errors. If an import path is wrong or the type is missing, the compiler will catch it before any test runs.
