@@ -1,14 +1,13 @@
 import { test as setup, expect } from '@playwright/test';
 import path from 'path';
-import { config } from '../../config/env';
+import { SauceLoginPage } from '../../pages/sauce-login.page';
 
 const authFile = path.resolve('.auth/sauce-user.json');
 
 setup('authenticate as standard_user', async ({ page }) => {
-  await page.goto(config.sauceDemoUrl);
-  await page.getByPlaceholder('Username').fill('standard_user');
-  await page.getByPlaceholder('Password').fill('secret_sauce');
-  await page.getByRole('button', { name: 'Login' }).click();
+  const sauceLoginPage = new SauceLoginPage(page);
+  await sauceLoginPage.actions.goto();
+  await sauceLoginPage.actions.login('standard_user', 'secret_sauce');
   await expect(page).toHaveURL(/inventory/);
   await page.context().storageState({ path: authFile });
 });

@@ -6,6 +6,7 @@ export class LongPage {
     heading: Locator;
     contentParagraphs: Locator;
     footer: Locator;
+    copyright: Locator;
   };
   readonly actions: {
     goto: () => Promise<void>;
@@ -17,6 +18,7 @@ export class LongPage {
       heading: page.getByRole('heading', { name: 'This is a long page' }),
       contentParagraphs: page.locator('#content p'),
       footer: page.locator('footer'),
+      copyright: page.getByText('Copyright © 2021-2026'),
     };
 
     this.actions = {

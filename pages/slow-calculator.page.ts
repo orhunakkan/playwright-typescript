@@ -10,6 +10,7 @@ export class SlowCalculatorPage {
     delayInput: Locator;
     clearButton: Locator;
     equalsButton: Locator;
+    key: (label: string) => Locator;
   };
   readonly actions: {
     goto: () => Promise<void>;
@@ -26,6 +27,7 @@ export class SlowCalculatorPage {
       delayInput: page.locator('#delay'),
       clearButton: page.locator('#calculator .clear'),
       equalsButton: page.locator('#calculator .keys span').filter({ hasText: '=' }),
+      key: (label: string) => page.locator('#calculator .keys').getByText(label, { exact: true }),
     };
 
     this.actions = {

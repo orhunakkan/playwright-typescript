@@ -68,9 +68,9 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
       await expect(longPage.locators.footer).toBeInViewport();
     });
 
-    test('should verify page title and copyright', async ({ page }) => {
+    test('should verify page title and copyright', async ({ longPage, page }) => {
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(page.getByText('Copyright © 2021-2026')).toBeAttached();
+      await expect(longPage.locators.copyright).toBeAttached();
     });
 
     test('should get scroll position after scrolling', async ({ page }) => {
@@ -875,13 +875,11 @@ test.describe('Chapter 4 - Browser-Agnostic Features', () => {
 
       for (const pageInfo of chapter4Pages) {
         await homePage.actions.goto();
-        const linkOptions: { name: string; exact?: boolean } = { name: pageInfo.name };
-        if (pageInfo.exact) linkOptions.exact = true;
-        await page.getByRole('link', linkOptions).click();
+        await homePage.locators.chapterLink(pageInfo.name, pageInfo.exact ? { exact: true } : undefined).click();
         await expect(page).toHaveURL(new RegExp(pageInfo.url));
 
         if (pageInfo.heading) {
-          await expect(page.getByRole('heading', { name: pageInfo.heading })).toBeVisible();
+          await expect(homePage.locators.destinationHeading(pageInfo.heading)).toBeVisible();
         }
       }
     });

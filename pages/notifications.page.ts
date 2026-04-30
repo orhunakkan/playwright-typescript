@@ -5,6 +5,8 @@ export class NotificationsPage {
   readonly locators: {
     heading: Locator;
     notifyMeButton: Locator;
+    copyright: Locator;
+    authorLink: Locator;
   };
   readonly actions: {
     goto: () => Promise<void>;
@@ -15,6 +17,8 @@ export class NotificationsPage {
     this.locators = {
       heading: page.getByRole('heading', { name: 'Notifications' }),
       notifyMeButton: page.getByRole('button', { name: 'Notify me' }),
+      copyright: page.getByText('Copyright © 2021-2026'),
+      authorLink: page.getByRole('link', { name: 'Boni García' }),
     };
 
     this.actions = {

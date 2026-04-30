@@ -16,6 +16,7 @@ export class DropdownMenuPage {
     openLeftClickDropdown: () => Promise<void>;
     openRightClickDropdown: () => Promise<void>;
     openDoubleClickDropdown: () => Promise<void>;
+    dismiss: () => Promise<void>;
   };
 
   constructor(private readonly page: Page) {
@@ -41,6 +42,9 @@ export class DropdownMenuPage {
       },
       openDoubleClickDropdown: async () => {
         await this.locators.doubleClickButton.dblclick();
+      },
+      dismiss: async () => {
+        await this.page.locator('body').click();
       },
     };
   }

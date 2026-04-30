@@ -6,6 +6,7 @@ export class GeolocationPage {
     heading: Locator;
     getCoordinatesButton: Locator;
     coordinates: Locator;
+    copyright: Locator;
   };
   readonly actions: {
     goto: () => Promise<void>;
@@ -17,6 +18,7 @@ export class GeolocationPage {
       heading: page.getByRole('heading', { name: 'Geolocation' }),
       getCoordinatesButton: page.getByRole('button', { name: 'Get coordinates' }),
       coordinates: page.locator('#coordinates'),
+      copyright: page.getByText('Copyright © 2021-2026'),
     };
 
     this.actions = {

@@ -186,7 +186,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
     });
 
     // --- Form Submission ---
-    test('should submit the form and verify navigation', { tag: ['@smoke', '@critical'] }, async ({ webFormPage, page }) => {
+    test('should submit the form and verify navigation', { tag: ['@smoke', '@critical'] }, async ({ webFormPage, submittedFormPage, page }) => {
       // Fill the form
       await webFormPage.locators.textInput.fill('Playwright Test');
       await webFormPage.locators.passwordInput.fill('mypassword');
@@ -197,11 +197,11 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
 
       // Verify we land on the submitted page
       await expect(page).toHaveURL(/submitted-form\.html/);
-      await expect(page.getByRole('heading', { name: 'Form submitted' })).toBeVisible();
-      await expect(page.getByText('Received!')).toBeVisible();
+      await expect(submittedFormPage.locators.heading).toBeVisible();
+      await expect(submittedFormPage.locators.receivedText).toBeVisible();
     });
 
-    test('should submit the form with all fields filled', async ({ webFormPage, page }) => {
+    test('should submit the form with all fields filled', async ({ webFormPage, submittedFormPage, page }) => {
       // Text input
       await webFormPage.locators.textInput.fill('Full form test');
       // Password
@@ -232,7 +232,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await webFormPage.actions.submitForm();
 
       await expect(page).toHaveURL(/submitted-form\.html/);
-      await expect(page.getByText('Received!')).toBeVisible();
+      await expect(submittedFormPage.locators.receivedText).toBeVisible();
     });
 
     // --- Custom Attribute ---
@@ -267,10 +267,10 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await severity('critical');
     });
 
-    test('should display navigation page 1 content', { tag: ['@smoke'] }, async ({ navigationPage, page }) => {
+    test('should display navigation page 1 content', { tag: ['@smoke'] }, async ({ navigationPage }) => {
       await navigationPage.actions.goto();
       await expect(navigationPage.locators.heading).toBeVisible();
-      await expect(page.getByText('Lorem ipsum dolor sit amet')).toBeVisible();
+      await expect(navigationPage.locators.leadParagraph).toContainText('Lorem ipsum dolor sit amet');
     });
 
     test('should navigate through pages using pagination links', { tag: ['@critical'] }, async ({ navigationPage, page }) => {
@@ -476,14 +476,14 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect.soft(dropdownMenuPage.locators.doubleClickMenu.getByRole('link', { name: 'Separated link' })).toBeVisible();
     });
 
-    test('should verify dropdown divider exists in each dropdown', async ({ dropdownMenuPage, page }) => {
+    test('should verify dropdown divider exists in each dropdown', async ({ dropdownMenuPage }) => {
       // Left-click dropdown
       await dropdownMenuPage.actions.openLeftClickDropdown();
       await expect(dropdownMenuPage.locators.leftClickMenu).toBeVisible();
       await expect(dropdownMenuPage.locators.leftClickMenu.locator('hr.dropdown-divider')).toBeAttached();
 
       // Dismiss by clicking elsewhere
-      await page.locator('body').click();
+      await dropdownMenuPage.actions.dismiss();
 
       // Right-click dropdown
       await dropdownMenuPage.actions.openRightClickDropdown();
@@ -877,22 +877,22 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
       await expect(slowCalculatorPage.locators.delayInput).toHaveValue('5');
     });
 
-    test('should verify all calculator buttons are present', async ({ page }) => {
+    test('should verify all calculator buttons are present', async ({ slowCalculatorPage }) => {
       // Number buttons
       for (let digit = 0; digit <= 9; digit++) {
-        await expect(page.locator(`#calculator .keys >> text="${digit}"`)).toBeVisible();
+        await expect(slowCalculatorPage.locators.key(`${digit}`)).toBeVisible();
       }
 
       // Operator buttons
-      await expect(page.locator('#calculator .keys >> text="+"')).toBeVisible();
-      await expect(page.locator('#calculator .keys >> text="-"')).toBeVisible();
-      await expect(page.locator('#calculator .keys >> text="÷"')).toBeVisible();
-      await expect(page.locator('#calculator .keys >> text="x"')).toBeVisible();
+      await expect(slowCalculatorPage.locators.key('+')).toBeVisible();
+      await expect(slowCalculatorPage.locators.key('-')).toBeVisible();
+      await expect(slowCalculatorPage.locators.key('÷')).toBeVisible();
+      await expect(slowCalculatorPage.locators.key('x')).toBeVisible();
 
       // Other buttons
-      await expect(page.locator('#calculator .keys >> text="="')).toBeVisible();
-      await expect(page.locator('#calculator .keys >> text="."')).toBeVisible();
-      await expect(page.locator('#calculator >> text="C"')).toBeVisible();
+      await expect(slowCalculatorPage.locators.equalsButton).toBeVisible();
+      await expect(slowCalculatorPage.locators.key('.')).toBeVisible();
+      await expect(slowCalculatorPage.locators.clearButton).toBeVisible();
     });
 
     test('should perform addition (1 + 3 = 4) with reduced delay', { tag: ['@smoke', '@critical'] }, async ({ slowCalculatorPage }) => {
@@ -1027,7 +1027,7 @@ test.describe('Chapter 3 - WebDriver Fundamentals', () => {
         await homePage.actions.goto();
         await homePage.actions.navigateToLink(pageInfo.name);
         await expect(page).toHaveURL(new RegExp(pageInfo.url));
-        await expect(page.getByRole('heading', { name: pageInfo.heading })).toBeVisible();
+        await expect(homePage.locators.destinationHeading(pageInfo.heading)).toBeVisible();
       }
     });
   });

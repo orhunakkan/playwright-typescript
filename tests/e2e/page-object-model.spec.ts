@@ -1,9 +1,6 @@
 import { expect, test } from '../../fixtures/page-fixtures';
 import { feature, story, severity } from 'allure-js-commons';
 
-import { config } from '../../config/env';
-const BASE_URL = config.e2eUrl;
-
 test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   // ─────────────────────────────────────────────────
   //  1. Login Form
@@ -130,9 +127,9 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect(loginFormPage.locators.successAlert).toBeVisible();
     });
 
-    test('should verify page title and copyright', async ({ page }) => {
+    test('should verify page title and copyright', async ({ loginFormPage, page }) => {
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(page.getByText('Copyright © 2021-2026')).toBeAttached();
+      await expect(loginFormPage.locators.copyright).toBeAttached();
     });
 
     test('should tab between form fields', async ({ loginFormPage, page }) => {
@@ -253,13 +250,13 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect.soft(slowLoginFormPage.locators.form).toHaveAttribute('method', 'get');
     });
 
-    test('should verify success page shows correct heading after slow login', async ({ slowLoginFormPage, page }) => {
+    test('should verify success page shows correct heading after slow login', async ({ slowLoginFormPage, loginFormPage, page }) => {
       await slowLoginFormPage.actions.login('user', 'user');
 
       await expect(page).toHaveURL(/login-sucess\.html/, { timeout: 10000 });
 
       // Success page should still show "Login form" heading
-      await expect(page.getByRole('heading', { name: 'Login form' })).toBeVisible();
+      await expect(loginFormPage.locators.heading).toBeVisible();
       await expect(slowLoginFormPage.locators.successAlert).toHaveClass(/alert-success/);
     });
 
@@ -270,10 +267,10 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
       await expect(page).toHaveURL(/login-sucess\.html/);
     });
 
-    test('should verify page title and copyright on slow login page', async ({ page }) => {
+    test('should verify page title and copyright on slow login page', async ({ slowLoginFormPage, page }) => {
       await expect.soft(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect.soft(page.getByText('Copyright © 2021-2026')).toBeAttached();
-      await expect.soft(page.getByRole('link', { name: 'Boni García' })).toBeVisible();
+      await expect.soft(slowLoginFormPage.locators.copyright).toBeAttached();
+      await expect.soft(slowLoginFormPage.locators.authorLink).toBeVisible();
     });
   });
 
@@ -281,32 +278,31 @@ test.describe('Chapter 7 - The Page Object Model (POM)', () => {
   //  Index Page - Chapter 7 Links
   // ─────────────────────────────────────────────────
   test.describe('Index Page - Chapter 7 Links', () => {
-    test.beforeEach(async () => {
+    test.beforeEach(async ({ homePage }) => {
       await feature('Page Object Model');
       await story('Chapter 7 Index');
       await severity('normal');
-    });
-    test('should display the Chapter 7 section heading', async ({ page }) => {
-      await page.goto(`${BASE_URL}/index.html`);
-      await expect(page.getByRole('heading', { name: 'Chapter 7. The Page Object Model (POM)' })).toBeVisible();
+      await homePage.actions.goto();
     });
 
-    test('should have all Chapter 7 links', async ({ page }) => {
-      await page.goto(`${BASE_URL}/index.html`);
-
-      await expect(page.getByRole('link', { name: 'Login form' })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Slow login' })).toBeVisible();
+    test('should display the Chapter 7 section heading', async ({ homePage }) => {
+      await expect(homePage.locators.chapter7Heading).toBeVisible();
     });
 
-    test('should navigate to each Chapter 7 page and back', async ({ page }) => {
+    test('should have all Chapter 7 links', async ({ homePage }) => {
+      await expect(homePage.locators.chapterLink('Login form')).toBeVisible();
+      await expect(homePage.locators.chapterLink('Slow login')).toBeVisible();
+    });
+
+    test('should navigate to each Chapter 7 page and back', async ({ homePage, page }) => {
       const links = [
         { name: 'Login form', url: 'login-form.html' },
         { name: 'Slow login', url: 'login-slow.html' },
       ];
 
       for (const link of links) {
-        await page.goto(`${BASE_URL}/index.html`);
-        await page.getByRole('link', { name: link.name }).click();
+        await homePage.actions.goto();
+        await homePage.actions.navigateToLink(link.name);
         await expect(page).toHaveURL(new RegExp(link.url.replace('.', '\\.')));
         await page.goBack();
         await expect(page).toHaveURL(/index\.html/);

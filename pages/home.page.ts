@@ -11,6 +11,7 @@ export class HomePage {
     chapter8Heading: Locator;
     chapter9Heading: Locator;
     chapterLink: (name: string, options?: { exact?: boolean }) => Locator;
+    destinationHeading: (name: string) => Locator;
   };
   readonly actions: {
     goto: () => Promise<void>;
@@ -27,6 +28,7 @@ export class HomePage {
       chapter8Heading: page.getByRole('heading', { name: 'Chapter 8. Testing Framework Specifics' }),
       chapter9Heading: page.getByRole('heading', { name: 'Chapter 9. Third-Party Integrations' }),
       chapterLink: (name: string, options?: { exact?: boolean }) => page.getByRole('link', { name, ...options }),
+      destinationHeading: (name: string) => page.getByRole('heading', { name }),
     };
 
     this.actions = {

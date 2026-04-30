@@ -78,9 +78,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await expect(geolocationPage.locators.coordinates).toContainText('°');
     });
 
-    test('should verify page title and copyright', async ({ page }) => {
+    test('should verify page title and copyright', async ({ geolocationPage, page }) => {
       await expect.soft(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect.soft(page.getByText('Copyright © 2021-2026')).toBeAttached();
+      await expect.soft(geolocationPage.locators.copyright).toBeAttached();
     });
 
     test('should handle geolocation permission denied', async ({ browser }) => {
@@ -178,9 +178,9 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       expect(notificationData.icon).toContain('hands-on-icon.png');
     });
 
-    test('should verify page has copyright footer', async ({ page }) => {
-      await expect(page.getByText('Copyright © 2021-2026')).toBeAttached();
-      await expect(page.getByRole('link', { name: 'Boni García' })).toBeVisible();
+    test('should verify page has copyright footer', async ({ notificationsPage }) => {
+      await expect(notificationsPage.locators.copyright).toBeAttached();
+      await expect(notificationsPage.locators.authorLink).toBeVisible();
     });
 
     test('should handle notification permission denied', async ({ browser }) => {
@@ -366,10 +366,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await multilanguagePage.actions.goto();
 
       await expect.soft(multilanguagePage.locators.heading).toHaveText('Multilanguage page');
-      await expect.soft(page.getByText('Home')).toBeVisible();
-      await expect.soft(page.getByText('Content')).toBeVisible();
-      await expect.soft(page.getByText('About us')).toBeVisible();
-      await expect.soft(page.getByText('Contact us')).toBeVisible();
+      await expect.soft(multilanguagePage.locators.langListItems).toHaveText(['Home', 'Content', 'About us', 'Contact us']);
 
       await context.close();
     });
@@ -382,10 +379,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
       await multilanguagePage.actions.goto();
 
       await expect.soft(multilanguagePage.locators.heading).toHaveText('Página multilenguage');
-      await expect.soft(page.getByText('Inicio')).toBeVisible();
-      await expect.soft(page.getByText('Contenido')).toBeVisible();
-      await expect.soft(page.getByText('Acerca de')).toBeVisible();
-      await expect.soft(page.getByText('Contacto')).toBeVisible();
+      await expect.soft(multilanguagePage.locators.langListItems).toHaveText(['Inicio', 'Contenido', 'Acerca de', 'Contacto']);
 
       await context.close();
     });
@@ -547,7 +541,7 @@ test.describe('Chapter 5 - Browser-Specific Manipulation', () => {
     test('should have correct page structure', async ({ consoleLogsPage, page }) => {
       await consoleLogsPage.actions.goto();
       await expect(page).toHaveTitle('Hands-On Selenium WebDriver with Java');
-      await expect(page.getByText('Copyright © 2021-2026')).toBeAttached();
+      await expect(consoleLogsPage.locators.copyright).toBeAttached();
     });
 
     test('should verify exact console.info message text', async ({ consoleLogsPage, page }) => {

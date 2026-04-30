@@ -10,6 +10,7 @@ export class LoginFormPage {
     invalidAlert: Locator;
     successAlert: Locator;
     form: Locator;
+    copyright: Locator;
   };
   readonly actions: {
     goto: () => Promise<void>;
@@ -25,6 +26,7 @@ export class LoginFormPage {
       invalidAlert: page.locator('#invalid'),
       successAlert: page.locator('#success'),
       form: page.locator('form'),
+      copyright: page.getByText('Copyright © 2021-2026'),
     };
 
     this.actions = {

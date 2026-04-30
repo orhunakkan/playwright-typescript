@@ -75,7 +75,7 @@ playwright-typescript/
 │   │   ├── notes-users-all-flow.spec.ts          # Full user lifecycle flow
 │   │   └── notes-users-errors.spec.ts            # Auth & registration errors
 │   ├── db/                           # DB integration tests (serial mode)
-│   │   ├── db-consistency.spec.ts                # API response ↔ DB row parity
+│   │   ├── db-consistency.spec.ts                # INSERT ↔ SELECT round-trip parity
 │   │   ├── db-constraints.spec.ts                # Unique/NOT NULL constraint enforcement
 │   │   ├── db-cascade.spec.ts                    # Foreign key cascade deletes
 │   │   ├── db-soft-delete.spec.ts                # Soft delete / tombstone flag
@@ -83,17 +83,25 @@ playwright-typescript/
 │   │   ├── db-pagination.spec.ts                 # Pagination row count validation
 │   │   ├── db-sanitization.spec.ts               # Input sanitization verification
 │   │   └── db-audit-trail.spec.ts                # created_at / updated_at accuracy
-│   └── e2e/                          # Browser-based E2E tests (parallel)
-│       ├── visual-regression.spec.ts
-│       ├── webdriver-fundamentals.spec.ts
-│       ├── browser-features.spec.ts
-│       ├── browser-apis.spec.ts
-│       ├── page-object-model.spec.ts
-│       ├── framework-features.spec.ts
-│       ├── third-party-integrations.spec.ts
-│       ├── accessibility-testing.spec.ts
-│       ├── mobile-testing.spec.ts                # Touch interactions, mobile viewport
-│       └── playwright-docs-link-monitoring.spec.ts # Docs link health + content diffing
+│   ├── e2e/                          # Browser-based E2E tests (parallel)
+│   │   ├── webdriver-fundamentals.spec.ts
+│   │   ├── browser-features.spec.ts
+│   │   ├── browser-apis.spec.ts
+│   │   ├── page-object-model.spec.ts
+│   │   ├── framework-features.spec.ts
+│   │   ├── third-party-integrations.spec.ts
+│   │   └── mobile-testing.spec.ts                # Touch interactions, mobile viewport
+│   ├── accessibility/
+│   │   └── accessibility-testing.spec.ts         # WCAG 2.1 AA axe-core scans
+│   ├── performance/
+│   │   └── performance-testing.ts                # Artillery load test script
+│   ├── pw-documents/
+│   │   └── playwright-docs-link-monitoring.spec.ts # Docs link health + content diffing
+│   ├── sauce/
+│   │   ├── sauce-auth.setup.ts                   # Saves SauceDemo storage state
+│   │   └── storage-state.spec.ts                 # Auth-reuse demo tests
+│   └── visual-regression/
+│       └── visual-regression.spec.ts             # Per-browser PNG baseline comparisons
 ├── pages/                            # Page Object Model classes (29 pages)
 │   ├── login-form.page.ts
 │   ├── web-form.page.ts
@@ -193,15 +201,11 @@ npx playwright test tests/api/
 
 ### Database Integration Tests
 
-```bash
-# Start PostgreSQL container
-npm run docker:up
+DB tests require a running PostgreSQL instance configured via environment variables (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`). With a database available:
 
+```bash
 # Run DB integration tests (serial, workers=1)
 npm run test:db
-
-# Stop and remove containers when done
-npm run docker:down
 ```
 
 ### Allure Reports
@@ -292,16 +296,16 @@ All API test suites use `test.describe.configure({ mode: 'serial' })` to chain d
 
 ### DB Tests
 
-| File              | Scope               | Techniques Demonstrated                                                   |
-| ----------------- | ------------------- | ------------------------------------------------------------------------- |
-| `db-consistency`  | API ↔ DB parity     | Assert API response exactly matches the DB row via direct SQL query       |
-| `db-constraints`  | Unique/NOT NULL     | Verify DB-level constraint violations surface correctly through the API   |
-| `db-cascade`      | Foreign key cascade | Confirm cascading deletes propagate from users → notes at the DB level    |
-| `db-soft-delete`  | Soft delete         | Assert deleted records remain in DB with a tombstone flag                 |
-| `db-isolation`    | Data isolation      | Verify one user cannot access another user's data at the DB level         |
-| `db-pagination`   | Pagination          | Confirm API pagination matches DB row counts and ordering                 |
-| `db-sanitization` | Input sanitization  | Ensure stored values in DB are properly sanitized                         |
-| `db-audit-trail`  | Audit fields        | Verify `created_at`/`updated_at` timestamps are set and updated correctly |
+| File              | Scope                  | Techniques Demonstrated                                                   |
+| ----------------- | ---------------------- | ------------------------------------------------------------------------- |
+| `db-consistency`  | INSERT ↔ SELECT parity | Assert every field written by INSERT matches what is read back via SELECT |
+| `db-constraints`  | Unique/NOT NULL        | Verify DB-level constraint violations surface correctly through the API   |
+| `db-cascade`      | Foreign key cascade    | Confirm cascading deletes propagate from users → notes at the DB level    |
+| `db-soft-delete`  | Soft delete            | Assert deleted records remain in DB with a tombstone flag                 |
+| `db-isolation`    | Data isolation         | Verify one user cannot access another user's data at the DB level         |
+| `db-pagination`   | Pagination             | Confirm API pagination matches DB row counts and ordering                 |
+| `db-sanitization` | Input sanitization     | Ensure stored values in DB are properly sanitized                         |
+| `db-audit-trail`  | Audit fields           | Verify `created_at`/`updated_at` timestamps are set and updated correctly |
 
 All DB tests reset state via `truncateAll()` in `beforeEach`, seed data through direct SQL using `seedUser()`/`seedNote()`, trigger behaviour via HTTP, then assert the result against a fresh SQL query.
 
@@ -374,7 +378,7 @@ All API payloads use Faker.js to generate unique data on every run, preventing s
 
 ### DB Integration Test Layer
 
-DB tests apply a three-layer verification pattern: seed state directly via SQL, trigger behaviour through the HTTP API, then assert the outcome via a fresh SQL query. This catches gaps that pure API tests miss — constraint violations, cascade behaviour, and timestamp accuracy that the API may not expose directly.
+DB tests apply a two-layer verification pattern: seed state directly via SQL, then assert the persisted outcome with a fresh SQL query. This catches gaps that pure API tests miss — constraint violations, cascade behaviour, and timestamp accuracy that the API response may not expose directly.
 
 ```typescript
 test.describe.configure({ mode: 'serial' });
@@ -383,15 +387,13 @@ test.beforeEach(async () => {
   await truncateAll(); // wipe all tables between tests
 });
 
-test('API response matches DB row', async ({ request }) => {
+test('every field written by INSERT matches the persisted DB row', async () => {
   const user = await seedUser();
   const note = await seedNote(user.id);
 
-  const res = await request.get(`/notes/${note.id}`, { headers: getAuthHeaders(user.token) });
-  const body = await res.json();
-
   const row = await queryOne<NoteRow>('SELECT * FROM notes WHERE id = $1', [note.id]);
-  expect(body.data.title).toBe(row.title);
+  expect(row!.title).toBe(note.title);
+  expect(row!.user_id).toBe(user.id);
 });
 ```
 
@@ -413,30 +415,44 @@ Runs on every push and pull request to `main`.
 
 Runs on push/PR to `main`, weekdays at 6 AM UTC, and on manual dispatch (with configurable environment URLs).
 
-**Job 1 — E2E & API Tests:**
+**Job 1 — API Tests:**
+
+- No browser required — uses Playwright's `request` fixture only
+- Uploads the HTML report as a 14-day artifact
+- Sends an email summary on completion
+
+**Job 2 — Desktop E2E (Chrome · Firefox · Edge):**
 
 - Caches Playwright browser binaries for faster runs
-- Runs all non-visual tests with 4 parallel workers
-- Uploads the HTML report and JSON results as 30-day artifacts
-- Sends an email summary (passed / failed / skipped / flaky counts) on completion
+- Directory-targeted (`tests/e2e/`) so new spec files are picked up automatically
+- Nightly schedule runs only `@smoke|@critical` tagged tests; push/PR runs the full suite
+- Uploads the HTML report as a 14-day artifact
+- Sends an email summary on completion
 
-**Job 2 — Visual Regression Tests:**
+**Job 3 — Mobile E2E (Mobile Safari · Mobile Chrome):**
+
+- Same directory targeting and nightly-vs-full-run logic as the desktop job
+- Installs `chromium` and `webkit` only
+- Uploads the HTML report as a 14-day artifact
+- Sends an email summary on completion
+
+**Job 4 — Visual Regression Tests:**
 
 - Runs inside the official Playwright Docker image for rendering consistency
-- Uploads visual diff artifacts on failure
+- Uploads visual diff artifacts on failure (30-day retention)
 - Sends a separate email report for visual results
 
 ---
 
 ## Project Stats
 
-| Metric                      | Value                     |
-| --------------------------- | ------------------------- |
-| Total test files            | 13 (8 E2E + 5 API)        |
-| Page Object classes         | 29                        |
-| Visual regression baselines | 80+ PNG files             |
-| Browsers covered            | 3 (Chrome, Firefox, Edge) |
-| Lines of test code          | ~4,500+                   |
+| Metric                      | Value                                                                        |
+| --------------------------- | ---------------------------------------------------------------------------- |
+| Total test files            | 25 (7 E2E + 5 API + 8 DB + 2 Sauce + 1 Accessibility + 1 Visual + 1 PW Docs) |
+| Page Object classes         | 31                                                                           |
+| Visual regression baselines | 168 PNG files                                                                |
+| Browsers covered            | 3 (Chrome, Firefox, Edge)                                                    |
+| Lines of test code          | ~4,500+                                                                      |
 
 ---
 

@@ -11,6 +11,8 @@ export class SlowLoginFormPage {
     invalidAlert: Locator;
     successAlert: Locator;
     form: Locator;
+    copyright: Locator;
+    authorLink: Locator;
   };
   readonly actions: {
     goto: () => Promise<void>;
@@ -27,6 +29,8 @@ export class SlowLoginFormPage {
       invalidAlert: page.locator('#invalid'),
       successAlert: page.locator('#success'),
       form: page.locator('#form'),
+      copyright: page.getByText('Copyright © 2021-2026'),
+      authorLink: page.getByRole('link', { name: 'Boni García' }),
     };
 
     this.actions = {

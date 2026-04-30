@@ -31,8 +31,8 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
     ];
 
     for (const { linkName, href, filename } of downloadLinkCases) {
-      test(`should have ${linkName} download link`, async ({ page }) => {
-        const link = page.getByRole('link', { name: linkName });
+      test(`should have ${linkName} download link`, async ({ downloadPage }) => {
+        const link = downloadPage.locators.downloadLink(linkName);
         await expect.soft(link).toBeVisible();
         await expect.soft(link).toHaveAttribute('href', href);
         await expect.soft(link).toHaveAttribute('download', filename);
@@ -66,9 +66,9 @@ test.describe('Chapter 9 - Third-Party Integrations', () => {
     ];
 
     for (const { linkName, filename } of downloadFilenameCases) {
-      test(`should download the ${filename} file`, async ({ page }) => {
+      test(`should download the ${filename} file`, async ({ downloadPage, page }) => {
         const downloadPromise = page.waitForEvent('download');
-        await page.getByRole('link', { name: linkName }).click();
+        await downloadPage.locators.downloadLink(linkName).click();
         const download = await downloadPromise;
         expect(download.suggestedFilename()).toBe(filename);
       });

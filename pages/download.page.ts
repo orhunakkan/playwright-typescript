@@ -10,6 +10,7 @@ export class DownloadPage {
     seleniumJupiterLogo: Locator;
     seleniumJupiterDoc: Locator;
     copyright: Locator;
+    downloadLink: (name: string) => Locator;
   };
   readonly actions: {
     goto: () => Promise<void>;
@@ -24,6 +25,7 @@ export class DownloadPage {
       seleniumJupiterLogo: page.getByRole('link', { name: 'Selenium-Jupiter logo' }),
       seleniumJupiterDoc: page.getByRole('link', { name: 'Selenium-Jupiter doc' }),
       copyright: page.getByText('Copyright © 2021-2026'),
+      downloadLink: (name: string) => page.getByRole('link', { name }),
     };
 
     this.actions = {
