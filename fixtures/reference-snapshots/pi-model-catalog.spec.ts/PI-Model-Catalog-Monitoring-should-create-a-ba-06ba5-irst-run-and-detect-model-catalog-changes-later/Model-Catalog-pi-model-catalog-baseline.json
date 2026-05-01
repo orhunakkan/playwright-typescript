@@ -1,12 +1,5 @@
 {
-  "columns": [
-    "Model",
-    "Context",
-    "Input $/M",
-    "Output $/M",
-    "Cache read $/M",
-    "Cache write $/M"
-  ],
+  "columns": ["Model", "Context", "Input $/M", "Output $/M", "Cache read $/M", "Cache write $/M"],
   "rows": [
     {
       "model": "AU Anthropic Claude Opus 4.6au.anthropic.claude-opus-4-6-v1",

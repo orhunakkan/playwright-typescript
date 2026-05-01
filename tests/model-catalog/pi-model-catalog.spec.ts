@@ -32,7 +32,10 @@ function computeLineDiff(before: string, after: string): string {
 
 async function waitForCatalogToLoad(page: Page): Promise<void> {
   const table = page.getByRole('table');
-  const progress = page.getByRole('main').getByText(/\d[\d,]*\s*\/\s*\d[\d,]*/).first();
+  const progress = page
+    .getByRole('main')
+    .getByText(/\d[\d,]*\s*\/\s*\d[\d,]*/)
+    .first();
 
   await expect(page.getByRole('heading', { name: 'Model Catalog' })).toBeVisible();
   await expect(table).toBeVisible();
@@ -44,16 +47,11 @@ async function waitForCatalogToLoad(page: Page): Promise<void> {
         const match = progressText.match(/^([\d,]+)\s*\/\s*([\d,]+)$/);
         return match ? match[1] === match[2] : false;
       },
-      { message: 'Expected the model catalog to finish loading' },
+      { message: 'Expected the model catalog to finish loading' }
     )
     .toBe(true);
 
-  await expect
-    .poll(
-      async () => table.locator('tbody tr td:first-child').count(),
-      { message: 'Expected model rows to be visible in the catalog table' },
-    )
-    .toBeGreaterThan(0);
+  await expect.poll(async () => table.locator('tbody tr td:first-child').count(), { message: 'Expected model rows to be visible in the catalog table' }).toBeGreaterThan(0);
 }
 
 async function getColumnHeaders(page: Page): Promise<string[]> {
@@ -78,11 +76,7 @@ async function getModelCatalogRows(page: Page): Promise<
   const rawRows = await page
     .getByRole('table')
     .locator('tbody tr')
-    .evaluateAll((rows) =>
-      rows.map((row) =>
-        Array.from(row.querySelectorAll('td')).map((cell) => cell.textContent?.replace(/\s+/g, ' ').trim() ?? ''),
-      ),
-    );
+    .evaluateAll((rows) => rows.map((row) => Array.from(row.querySelectorAll('td')).map((cell) => cell.textContent?.replace(/\s+/g, ' ').trim() ?? '')));
 
   return rawRows
     .filter((cells) => cells.length === EXPECTED_COLUMNS.length)
@@ -119,7 +113,7 @@ test.describe('PI Model Catalog Monitoring', { tag: ['@regression'] }, () => {
         rows: modelCatalogRows,
       },
       null,
-      2,
+      2
     );
 
     expect(columnHeaders).toEqual([...EXPECTED_COLUMNS]);
