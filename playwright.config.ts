@@ -87,6 +87,12 @@ export default defineConfig({
     },
 
     {
+      name: 'Model Catalog',
+      testDir: './tests/model-catalog',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
       name: 'Visual Regression',
       testDir: './tests/visual-regression',
       use: { ...devices['Desktop Chrome'] },
