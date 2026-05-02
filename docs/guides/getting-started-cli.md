@@ -284,7 +284,7 @@ Connect to your existing browser tabs instead of launching a new browser:
 playwright-cli open --extension
 ```
 
-This requires the Playwright MCP Bridge browser extension to be installed.
+This requires the Playwright Extension to be installed.
 
 ---
 

@@ -17,7 +17,7 @@ This Docker image is published to Microsoft Artifact Registry.
 ### Pull the image
 
 ```bash
-docker pull mcr.microsoft.com/playwright:v1.58.2-noble
+docker pull mcr.microsoft.com/playwright:v1.59.1-noble
 ```
 
 ## Run the image
@@ -29,7 +29,7 @@ By default, the Docker image will use the root user to run the browsers. This wi
 On trusted websites, you can avoid creating a separate user and use root for it since you trust the code which will run on the browsers.
 
 ```bash
-docker run -it --rm --ipc=host mcr.microsoft.com/playwright:v1.58.2-noble /bin/bash
+docker run -it --rm --ipc=host mcr.microsoft.com/playwright:v1.59.1-noble /bin/bash
 ```
 
 ### Crawling and scraping
@@ -37,7 +37,7 @@ docker run -it --rm --ipc=host mcr.microsoft.com/playwright:v1.58.2-noble /bin/b
 On untrusted websites, it's recommended to use a separate user for launching the browsers in combination with the seccomp profile. Inside the container or if you are using the Docker image as a base image you have to use `adduser` for it.
 
 ```bash
-docker run -it --rm --ipc=host --user pwuser --security-opt seccomp=seccomp_profile.json mcr.microsoft.com/playwright:v1.58.2-noble /bin/bash
+docker run -it --rm --ipc=host --user pwuser --security-opt seccomp=seccomp_profile.json mcr.microsoft.com/playwright:v1.59.1-noble /bin/bash
 ```
 
 `seccomp_profile.json` is needed to run Chromium with sandbox. This is a default Docker seccomp profile with extra user namespace cloning permissions:
@@ -74,7 +74,7 @@ You can run Playwright Server in Docker while keeping your tests running on the 
 Start the Playwright Server in Docker:
 
 ```bash
-docker run -p 3000:3000 --rm --init -it --workdir /home/pwuser --user pwuser mcr.microsoft.com/playwright:v1.58.2-noble /bin/sh -c "npx -y playwright@1.58.2 run-server --port 3000 --host 0.0.0.0"
+docker run -p 3000:3000 --rm --init -it --workdir /home/pwuser --user pwuser mcr.microsoft.com/playwright:v1.59.1-noble /bin/sh -c "npx -y playwright@1.59.1 run-server --port 3000 --host 0.0.0.0"
 ```
 
 ### Connecting to the Server
@@ -98,7 +98,7 @@ const browser = await playwright['chromium'].connect('ws://127.0.0.1:3000/');
 If you need to access local servers from within the Docker container:
 
 ```bash
-docker run --add-host=hostmachine:host-gateway -p 3000:3000 --rm --init -it --workdir /home/pwuser --user pwuser mcr.microsoft.com/playwright:v1.58.2-noble /bin/sh -c "npx -y playwright@1.58.2 run-server --port 3000 --host 0.0.0.0"
+docker run --add-host=hostmachine:host-gateway -p 3000:3000 --rm --init -it --workdir /home/pwuser --user pwuser mcr.microsoft.com/playwright:v1.59.1-noble /bin/sh -c "npx -y playwright@1.59.1 run-server --port 3000 --host 0.0.0.0"
 ```
 
 This makes `hostmachine` point to the host's localhost. Your tests should use `hostmachine` instead of `localhost` when accessing local servers.
@@ -127,9 +127,9 @@ Once this is enabled you can open the port specified in a new browser tab and yo
 
 See all available image tags. We currently publish images with the following tags:
 
-- `:v1.58.2` — Playwright v1.58.2 release docker image based on Ubuntu 24.04 LTS (Noble Numbat)
-- `:v1.58.2-noble` — Playwright v1.58.2 release docker image based on Ubuntu 24.04 LTS (Noble Numbat)
-- `:v1.58.2-jammy` — Playwright v1.58.2 release docker image based on Ubuntu 22.04 LTS (Jammy Jellyfish)
+- `:v1.59.1` — Playwright v1.59.1 release docker image based on Ubuntu 24.04 LTS (Noble Numbat)
+- `:v1.59.1-noble` — Playwright v1.59.1 release docker image based on Ubuntu 24.04 LTS (Noble Numbat)
+- `:v1.59.1-jammy` — Playwright v1.59.1 release docker image based on Ubuntu 22.04 LTS (Jammy Jellyfish)
 
 > **Note:** It is recommended to always pin your Docker image to a specific version if possible. If the Playwright version in your Docker image does not match the version in your project/tests, Playwright will be unable to locate browser executables.
 
@@ -150,5 +150,5 @@ To run Playwright inside Docker, you need to have Node.js, Playwright browsers a
 
 ```dockerfile
 FROM node:20-bookworm
-RUN npx -y playwright@1.58.2 install --with-deps
+RUN npx -y playwright@1.59.1 install --with-deps
 ```

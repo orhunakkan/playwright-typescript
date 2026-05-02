@@ -100,7 +100,7 @@ jobs:
     name: 'Playwright Tests'
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
       options: --user 1001
     steps:
       - uses: actions/checkout@v5
@@ -320,7 +320,7 @@ trigger:
   - main
 pool:
   vmImage: ubuntu-latest
-container: mcr.microsoft.com/playwright:v1.58.2-noble
+container: mcr.microsoft.com/playwright:v1.59.1-noble
 steps:
   - task: UseNode@1
     inputs:
@@ -342,7 +342,7 @@ Running Playwright on CircleCI is very similar to running on GitHub Actions. In 
 executors:
   pw-noble-development:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.58.2-noble
+      - image: mcr.microsoft.com/playwright:v1.59.1-noble
 ```
 
 > **Note:** When using the docker agent definition, you are specifying the resource class of where Playwright runs to the 'medium' tier here. The default behavior of Playwright is to set the number of workers to the detected core count (2 in the case of the medium tier). Overriding the number of workers to greater than this number will cause unnecessary timeouts and failures.
@@ -367,7 +367,7 @@ Jenkins supports Docker agents for pipelines. Use the Playwright Docker image to
 pipeline {
   agent {
     docker {
-      image 'mcr.microsoft.com/playwright:v1.58.2-noble'
+      image 'mcr.microsoft.com/playwright:v1.59.1-noble'
     }
   }
   stages {
@@ -386,7 +386,7 @@ pipeline {
 Bitbucket Pipelines can use public Docker images as build environments. To run Playwright tests on Bitbucket, use our public Docker image (see Dockerfile).
 
 ```yaml
-image: mcr.microsoft.com/playwright:v1.58.2-noble
+image: mcr.microsoft.com/playwright:v1.59.1-noble
 ```
 
 ### GitLab CI
@@ -399,7 +399,7 @@ stages:
 
 tests:
   stage: test
-  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  image: mcr.microsoft.com/playwright:v1.59.1-noble
   script: ...
 ```
 
@@ -413,7 +413,7 @@ stages:
 
 tests:
   stage: test
-  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  image: mcr.microsoft.com/playwright:v1.59.1-noble
   parallel: 7
   script:
     - npm ci
@@ -428,7 +428,7 @@ stages:
 
 tests:
   stage: test
-  image: mcr.microsoft.com/playwright:v1.58.2-noble
+  image: mcr.microsoft.com/playwright:v1.59.1-noble
   parallel:
     matrix:
       - PROJECT: ['chromium', 'webkit']
@@ -444,7 +444,7 @@ To run Playwright tests on Google Cloud Build, use our public Docker image (see 
 
 ```yaml
 steps:
-  - name: mcr.microsoft.com/playwright:v1.58.2-noble
+  - name: mcr.microsoft.com/playwright:v1.59.1-noble
     script: ...
     env:
       - 'CI=true'
@@ -460,7 +460,7 @@ name: default
 type: docker
 steps:
   - name: test
-    image: mcr.microsoft.com/playwright:v1.58.2-noble
+    image: mcr.microsoft.com/playwright:v1.59.1-noble
     commands:
       - npx playwright test
 ```
@@ -492,6 +492,6 @@ xvfb-run npx playwright test
 | What                        | How                                          |
 | --------------------------- | -------------------------------------------- |
 | Disable parallel on CI      | `workers: process.env.CI ? 1 : undefined`    |
-| Docker image                | `mcr.microsoft.com/playwright:v1.58.2-noble` |
+| Docker image                | `mcr.microsoft.com/playwright:v1.59.1-noble` |
 | Debug browser launch errors | `DEBUG=pw:browser npx playwright test`       |
 | Run headed on Linux agents  | `xvfb-run npx playwright test`               |
