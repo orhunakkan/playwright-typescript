@@ -32,6 +32,16 @@ function computeTextDiff(before: string, after: string): string {
 const storedLinks = new Map<string, string[]>(Object.entries(sidebarLinks));
 const allStoredUrls = [...new Set(Object.values(sidebarLinks).flat())];
 
+// ─── Failure Report ───────────────────────────────────────────────────────────
+
+interface FailureRecord {
+  testName: string;
+  url: string;
+  expected: string;
+  actual: string;
+}
+const failureRecords: FailureRecord[] = [];
+
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 // Wide viewport so the sidebar is fully visible in headed mode.
@@ -40,6 +50,33 @@ test.use({ viewport: { width: 1920, height: 1080 }, launchOptions: { args: ['--w
 test.describe('Playwright Docs Link Monitoring', () => {
   test.beforeEach(({}, testInfo) => {
     test.skip(testInfo.project.name !== 'Desktop Chrome', 'Only runs on Desktop Chrome');
+  });
+
+  // 15-second gap between tests; skipped tests (non-Chrome) bypass the delay.
+  test.afterEach(async ({}, testInfo) => {
+    if (testInfo.status === 'skipped') return;
+    await new Promise((resolve) => setTimeout(resolve, 15_000));
+  });
+
+  // Write PW-DOCS-CHECK.md at the project root for any failed tests.
+  test.afterAll(async () => {
+    if (failureRecords.length === 0) return;
+
+    const escape = (s: string) => s.replace(/\|/g, '\\|');
+    const rows = failureRecords.map((r, i) => `| ${i + 1} | ${escape(r.testName)} | ${escape(r.url)} | ${escape(r.expected)} | ${escape(r.actual)} |`);
+    const content = [
+      '# PW-DOCS-CHECK',
+      '',
+      `Generated: ${new Date().toISOString()}`,
+      `Failed tests: ${failureRecords.length}`,
+      '',
+      '| # | Test Name | URL | Expected | Actual |',
+      '|---|-----------|-----|----------|--------|',
+      ...rows,
+      '',
+    ].join('\n');
+
+    fs.writeFileSync('PW-DOCS-CHECK.md', content, 'utf-8');
   });
 
   // ────────────────────────────────────────────────────────────────────────────
@@ -81,6 +118,15 @@ test.describe('Playwright Docs Link Monitoring', () => {
         const added = liveSet.filter((u) => !storedSet.includes(u));
         const removed = storedSet.filter((u) => !liveSet.includes(u));
 
+        if (added.length > 0 || removed.length > 0) {
+          failureRecords.push({
+            testName: `sidebar links match baseline — ${sourcePage}`,
+            url: sourcePage,
+            expected: '0 URL changes',
+            actual: [added.length ? `Added (${added.length}): ${added.join(', ')}` : '', removed.length ? `Removed (${removed.length}): ${removed.join(', ')}` : ''].filter(Boolean).join(' | '),
+          });
+        }
+
         expect.soft(added, `URLs added to sidebar — add to sidebar-links.json:\n  ${added.join('\n  ')}`).toHaveLength(0);
 
         expect.soft(removed, `URLs removed from sidebar — remove from sidebar-links.json:\n  ${removed.join('\n  ')}`).toHaveLength(0);
@@ -117,7 +163,15 @@ test.describe('Playwright Docs Link Monitoring', () => {
         if (fs.existsSync(snapshotPath)) {
           const baseline = fs.readFileSync(snapshotPath, 'utf-8').trim();
           if (baseline !== normalized) {
-            await testInfo.attach('content-diff.txt', { body: computeTextDiff(baseline, normalized), contentType: 'text/plain' });
+            const diff = computeTextDiff(baseline, normalized);
+            await testInfo.attach('content-diff.txt', { body: diff, contentType: 'text/plain' });
+            const diffSummary = diff.split('\n').slice(0, 2).join(' | ');
+            failureRecords.push({
+              testName: `content unchanged — ${urlToSlug(url)}`,
+              url,
+              expected: 'Content matches baseline',
+              actual: diffSummary,
+            });
           }
         }
 
