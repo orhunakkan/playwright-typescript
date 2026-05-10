@@ -34,7 +34,7 @@
     "@types/node": "^25.5.2",
     "@typescript-eslint/parser": "^8.58.0",
     "allure-commandline": "^2.38.1",
-    "allure-playwright": "^3.6.0",
+    "allure-playwright": "^3.7.2",
     "artillery": "^2.0.30",
     "eslint": "^9.39.4",
     "eslint-plugin-playwright": "^2.10.1",
