@@ -202,7 +202,7 @@ await expect
       message: 'make sure API eventually succeeds',
       // Poll for 10 seconds; defaults to 5 seconds. Pass 0 to disable timeout.
       timeout: 10000,
-    }
+    },
   )
   .toBe(200);
 ```
@@ -221,7 +221,7 @@ await expect
       // ... Defaults to [100, 250, 500, 1000].
       intervals: [1_000, 2_000, 10_000],
       timeout: 60_000,
-    }
+    },
   )
   .toBe(200);
 ```

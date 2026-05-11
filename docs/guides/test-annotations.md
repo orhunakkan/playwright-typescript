@@ -76,7 +76,7 @@ test(
   },
   async ({ page }) => {
     // ...
-  }
+  },
 );
 
 test('test full report @slow', async ({ page }) => {
@@ -105,9 +105,9 @@ test.describe(
       },
       async ({ page }) => {
         // ...
-      }
+      },
     );
-  }
+  },
 );
 ```
 
@@ -156,7 +156,7 @@ test(
   },
   async ({ page }) => {
     // ...
-  }
+  },
 );
 ```
 
@@ -184,9 +184,9 @@ test.describe(
       },
       async ({ page }) => {
         // ...
-      }
+      },
     );
-  }
+  },
 );
 ```
 

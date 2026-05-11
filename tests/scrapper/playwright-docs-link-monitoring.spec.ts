@@ -22,7 +22,11 @@ function computeTextDiff(before: string, after: string): string {
   const afterSet = new Set(afterParts);
   const removed = beforeParts.filter((s) => !afterSet.has(s));
   const added = afterParts.filter((s) => !beforeSet.has(s));
-  const lines: string[] = [`Baseline sentences: ${beforeParts.length}`, `Live sentences:     ${afterParts.length}`, ''];
+  const lines: string[] = [
+    `Baseline sentences: ${beforeParts.length}`,
+    `Live sentences:     ${afterParts.length}`,
+    '',
+  ];
   if (removed.length) lines.push('━━━ REMOVED ━━━', ...removed.map((s) => `- ${s}`), '');
   if (added.length) lines.push('━━━ ADDED ━━━', ...added.map((s) => `+ ${s}`));
   return lines.join('\n');
@@ -45,7 +49,10 @@ const failureRecords: FailureRecord[] = [];
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 // Wide viewport so the sidebar is fully visible in headed mode.
-test.use({ viewport: { width: 1920, height: 1080 }, launchOptions: { args: ['--window-size=1920,1080'] } });
+test.use({
+  viewport: { width: 1920, height: 1080 },
+  launchOptions: { args: ['--window-size=1920,1080'] },
+});
 
 test.describe('Playwright Docs Link Monitoring', () => {
   test.beforeEach(({}, testInfo) => {
@@ -63,7 +70,10 @@ test.describe('Playwright Docs Link Monitoring', () => {
     if (failureRecords.length === 0) return;
 
     const escape = (s: string) => s.replace(/\|/g, '\\|');
-    const rows = failureRecords.map((r, i) => `| ${i + 1} | ${escape(r.testName)} | ${escape(r.url)} | ${escape(r.expected)} | ${escape(r.actual)} |`);
+    const rows = failureRecords.map(
+      (r, i) =>
+        `| ${i + 1} | ${escape(r.testName)} | ${escape(r.url)} | ${escape(r.expected)} | ${escape(r.actual)} |`,
+    );
     const content = [
       '# PW-DOCS-CHECK',
       '',
@@ -123,13 +133,28 @@ test.describe('Playwright Docs Link Monitoring', () => {
             testName: `sidebar links match baseline — ${sourcePage}`,
             url: sourcePage,
             expected: '0 URL changes',
-            actual: [added.length ? `Added (${added.length}): ${added.join(', ')}` : '', removed.length ? `Removed (${removed.length}): ${removed.join(', ')}` : ''].filter(Boolean).join(' | '),
+            actual: [
+              added.length ? `Added (${added.length}): ${added.join(', ')}` : '',
+              removed.length ? `Removed (${removed.length}): ${removed.join(', ')}` : '',
+            ]
+              .filter(Boolean)
+              .join(' | '),
           });
         }
 
-        expect.soft(added, `URLs added to sidebar — add to sidebar-links.json:\n  ${added.join('\n  ')}`).toHaveLength(0);
+        expect
+          .soft(
+            added,
+            `URLs added to sidebar — add to sidebar-links.json:\n  ${added.join('\n  ')}`,
+          )
+          .toHaveLength(0);
 
-        expect.soft(removed, `URLs removed from sidebar — remove from sidebar-links.json:\n  ${removed.join('\n  ')}`).toHaveLength(0);
+        expect
+          .soft(
+            removed,
+            `URLs removed from sidebar — remove from sidebar-links.json:\n  ${removed.join('\n  ')}`,
+          )
+          .toHaveLength(0);
       });
     }
   });

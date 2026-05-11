@@ -583,7 +583,7 @@ test('some test', async ({ page }) => {
     async () => {
       // This step can time out separately from the test
     },
-    { timeout: 1000 }
+    { timeout: 1000 },
   );
 });
 ```
@@ -690,7 +690,7 @@ test('query params', async ({ request }) => {
   searchParams.set('userId', 1);
   const response = await request.get(
     'https://jsonplaceholder.typicode.com/posts',
-    { params: searchParams } // or as a string: 'userId=1'
+    { params: searchParams }, // or as a string: 'userId=1'
   );
   // ...
 });
@@ -816,7 +816,7 @@ await page.addLocatorHandler(
   async (overlay) => {
     await overlay.locator('#close').click();
   },
-  { times: 3, noWaitAfter: true }
+  { times: 3, noWaitAfter: true },
 );
 // Run your tests that can be interrupted by the overlay.
 // ...
@@ -885,9 +885,12 @@ New method `page.addLocatorHandler()` registers a callback that will be invoked 
 
 ```ts
 // Setup the handler.
-await page.addLocatorHandler(page.getByRole('heading', { name: 'Hej! You are in control of your cookies.' }), async () => {
-  await page.getByRole('button', { name: 'Accept all' }).click();
-});
+await page.addLocatorHandler(
+  page.getByRole('heading', { name: 'Hej! You are in control of your cookies.' }),
+  async () => {
+    await page.getByRole('button', { name: 'Accept all' }).click();
+  },
+);
 // Write the test as usual.
 await page.goto('https://www.ikea.com/');
 await page.getByRole('link', { name: 'Collection of blue and white' }).click();
@@ -904,7 +907,7 @@ test(
   },
   async ({ page }) => {
     // ...
-  }
+  },
 );
 ```
 
@@ -921,7 +924,7 @@ test(
   },
   async ({ page }) => {
     // ...
-  }
+  },
 );
 ```
 
@@ -1035,7 +1038,7 @@ async function login(page) {
     async () => {
       // ...
     },
-    { box: true }
+    { box: true },
   ); // Note the "box" option here.
 }
 ```

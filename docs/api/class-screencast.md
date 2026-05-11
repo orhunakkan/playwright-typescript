@@ -56,7 +56,10 @@ Shows a chapter marker in the screencast.
 
 ```ts
 await screencast.showChapter('Login flow');
-await screencast.showChapter('Checkout', { description: 'User completes purchase', duration: 3000 });
+await screencast.showChapter('Checkout', {
+  description: 'User completes purchase',
+  duration: 3000,
+});
 ```
 
 **Arguments:**

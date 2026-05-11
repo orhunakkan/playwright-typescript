@@ -328,7 +328,9 @@ await page.exposeBinding('pageURL', ({ page }) => page.url());
 Adds a function called `name` on the `window` object of every frame. When called, executes `callback` and returns a Promise. Functions survive navigations.
 
 ```js
-await page.exposeFunction('sha256', (text) => crypto.createHash('sha256').update(text).digest('hex'));
+await page.exposeFunction('sha256', (text) =>
+  crypto.createHash('sha256').update(text).digest('hex'),
+);
 ```
 
 **Arguments:**

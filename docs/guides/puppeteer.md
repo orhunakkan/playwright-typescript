@@ -128,7 +128,7 @@ test.describe('Playwright homepage', () => {
     const titleLocator = page.locator('.hero__title'); // 4
     await expect(titleLocator).toContainText(
       // 5
-      'Playwright enables reliable end-to-end testing'
+      'Playwright enables reliable end-to-end testing',
     );
   });
 });

@@ -1,31 +1,176 @@
-# Pi Public Built-in Slash Commands
+# Pi CLI Reference
 
-This file documents Pi's public built-in slash commands. It intentionally excludes project prompt templates, skills, hidden/easter-egg commands, and non-slash command prefixes.
+This file reflects the local `pi` CLI help observed in this repo, not an interactive slash-command catalog.
 
-| Command                   | What it does                                                                                                                | Use Case                                                                                                                                                 |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/settings`               | Opens the settings menu.                                                                                                    | Change Pi behavior without editing config files, such as auto-compaction, themes, image handling, skill commands, startup verbosity, and UI preferences. |
-| `/model`                  | Opens the model selector UI.                                                                                                | Browse available models and switch interactively when you are unsure of the exact provider/model name.                                                   |
-| `/model <search>`         | Tries to switch directly to a matching model; otherwise opens the model selector with that search.                          | Quickly change to a known model or narrow the selector to a provider/model family, such as Sonnet, Gemini, GPT, or local configured models.              |
-| `/scoped-models`          | Opens UI to enable/disable which models are available for Ctrl+P model cycling.                                             | Limit model cycling to a smaller trusted set for the current workflow, such as only fast models or only high-reasoning models.                           |
-| `/export`                 | Exports the current session. Default is HTML.                                                                               | Save a readable copy of the current conversation for review, handoff, auditing, or archiving.                                                            |
-| `/export <path>`          | Exports to the given path. If path ends in `.jsonl`, exports raw session JSONL; otherwise exports HTML.                     | Save the session in a specific location or format, for example HTML for sharing/review or JSONL for backup/import.                                       |
-| `/import <path.jsonl>`    | Imports and resumes a session from a JSONL file, replacing the current session after confirmation.                          | Restore a previously exported session or move a session between machines/directories.                                                                    |
-| `/share`                  | Exports the session to HTML and creates a secret GitHub gist using `gh`; prints a share URL. Requires GitHub CLI login.     | Share a session transcript with another person using a hosted link.                                                                                      |
-| `/copy`                   | Copies the last assistant message to the clipboard.                                                                         | Quickly paste the latest answer into an issue, document, chat, commit note, or another editor.                                                           |
-| `/name`                   | Shows the current session name, if one exists. If none exists, shows usage help.                                            | Check whether the current session has a human-readable label before switching or resuming sessions.                                                      |
-| `/name <name>`            | Sets the current session display name.                                                                                      | Label a session by task, ticket, bug, or branch so it is easier to find later.                                                                           |
-| `/session`                | Shows session stats: file, ID, message counts, token counts, and cost if available.                                         | Inspect session metadata, token usage, cost, and where the session is stored.                                                                            |
-| `/changelog`              | Shows Pi changelog entries.                                                                                                 | See what changed after an update or discover newly added Pi behavior/features.                                                                           |
-| `/hotkeys`                | Shows all keyboard shortcuts, including extension shortcuts if any are registered.                                          | Learn or confirm keyboard shortcuts without leaving the interactive session.                                                                             |
-| `/fork`                   | Opens a selector of previous user messages and creates a new fork from the selected message.                                | Branch from an earlier point when you want to try a different approach while preserving the original session.                                            |
-| `/clone`                  | Duplicates the current session at the current position.                                                                     | Create a copy of the current state before experimenting with a risky or alternative direction.                                                           |
-| `/tree`                   | Opens the session tree navigator to switch branches/points in history. Can optionally summarize branches during navigation. | Navigate between forks, return to earlier states, or compare alternate paths in a session.                                                               |
-| `/login`                  | Opens authentication setup for providers. Supports subscription/OAuth or API-key login depending on provider.               | Add or refresh credentials for model providers directly from Pi.                                                                                         |
-| `/logout`                 | Removes credentials saved by `/login`. It does not remove environment variables or model config.                            | Remove stored Pi-managed credentials from the local auth store.                                                                                          |
-| `/new`                    | Starts a new session.                                                                                                       | Clear the current conversation context and begin a separate task.                                                                                        |
-| `/compact`                | Manually compacts the session context.                                                                                      | Reduce context size while preserving important information when a session becomes long.                                                                  |
-| `/compact <instructions>` | Compacts the session using custom compaction instructions.                                                                  | Guide compaction toward what matters, such as preserving decisions, file changes, commands run, or unresolved tasks.                                     |
-| `/resume`                 | Opens the session selector to resume another session.                                                                       | Switch back to a previous Pi session from the interactive UI.                                                                                            |
-| `/reload`                 | Reloads keybindings, extensions, skills, prompt templates, and themes.                                                      | Apply changes to Pi configuration/resources without restarting the process.                                                                              |
-| `/quit`                   | Quits Pi.                                                                                                                   | Exit the interactive Pi session cleanly.                                                                                                                 |
+Verified locally on 2026-05-11:
+
+```bash
+pi --version
+# 0.74.0
+```
+
+---
+
+## Basic Usage
+
+```bash
+pi [options] [@files...] [messages...]
+```
+
+Common modes:
+
+```bash
+pi
+pi "List all .ts files in tests/"
+pi @README.md "Summarize this file"
+pi --print "List all .ts files in tests/"
+pi --continue "What did we discuss?"
+pi --resume
+```
+
+---
+
+## Package Commands
+
+```bash
+pi install <source> [-l]
+pi remove <source> [-l]
+pi uninstall <source> [-l]
+pi update [source|self|pi]
+pi list
+pi config
+pi <command> --help
+```
+
+Use these for Pi extensions and package resources, not for Playwright project tests.
+
+---
+
+## Model and Provider Options
+
+```bash
+pi --provider <name>
+pi --model <pattern>
+pi --models <patterns>
+pi --thinking <off|minimal|low|medium|high|xhigh>
+```
+
+Examples:
+
+```bash
+pi --model openai/gpt-4o "Help me refactor this code"
+pi --model sonnet:high "Solve this complex problem"
+pi --models claude-sonnet,claude-haiku,gpt-4o
+pi --models "github-copilot/*"
+```
+
+---
+
+## Tool and Resource Options
+
+```bash
+pi --no-tools
+pi --no-builtin-tools
+pi --tools read,grep,find,ls
+pi --extension <path>
+pi --no-extensions
+pi --skill <path>
+pi --no-skills
+pi --prompt-template <path>
+pi --no-prompt-templates
+pi --theme <path>
+pi --no-themes
+pi --no-context-files
+```
+
+Read-only review example:
+
+```bash
+pi --tools read,grep,find,ls --print "Review the code in tests/"
+```
+
+---
+
+## Session Options
+
+```bash
+pi --continue
+pi --resume
+pi --session <path|id>
+pi --fork <path|id>
+pi --session-dir <dir>
+pi --no-session
+pi --export <file>
+```
+
+Examples:
+
+```bash
+pi --export ~/.pi/agent/sessions/--path--/session.jsonl
+pi --export session.jsonl output.html
+```
+
+---
+
+## Other Useful Options
+
+```bash
+pi --mode text
+pi --mode json
+pi --mode rpc
+pi --api-key <key>
+pi --system-prompt <text>
+pi --append-system-prompt <text-or-file>
+pi --list-models [search]
+pi --verbose
+pi --offline
+pi --help
+pi --version
+```
+
+Extensions can register additional flags, such as plan-mode flags.
+
+---
+
+## Relevant Environment Variables
+
+Provider credentials:
+
+```text
+ANTHROPIC_API_KEY
+ANTHROPIC_OAUTH_TOKEN
+OPENAI_API_KEY
+AZURE_OPENAI_API_KEY
+DEEPSEEK_API_KEY
+GEMINI_API_KEY
+GROQ_API_KEY
+XAI_API_KEY
+OPENROUTER_API_KEY
+```
+
+Pi configuration:
+
+```text
+PI_CODING_AGENT_DIR
+PI_CODING_AGENT_SESSION_DIR
+PI_PACKAGE_DIR
+PI_OFFLINE
+PI_TELEMETRY
+PI_SHARE_VIEWER_URL
+```
+
+Run `pi --help` for the full current list.
+
+---
+
+## Built-in Tool Names
+
+```text
+read   - Read file contents
+bash   - Execute shell commands
+edit   - Edit files with find/replace
+write  - Write files
+grep   - Search file contents
+find   - Find files by glob pattern
+ls     - List directory contents
+```

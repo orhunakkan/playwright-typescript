@@ -7,7 +7,14 @@
 **Reporter** is the interface test runner notifies about various events during test execution. All methods of the reporter are optional. You can create a custom reporter by implementing a class with some of the reporter methods. Make sure to export this class as default.
 
 ```ts
-import type { Reporter, FullConfig, Suite, TestCase, TestResult, FullResult } from '@playwright/test/reporter';
+import type {
+  Reporter,
+  FullConfig,
+  Suite,
+  TestCase,
+  TestResult,
+  FullResult,
+} from '@playwright/test/reporter';
 
 class MyReporter implements Reporter {
   constructor(options: { customOption?: string } = {}) {

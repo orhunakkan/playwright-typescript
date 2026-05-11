@@ -84,7 +84,7 @@ One file per Playwright class. Read only the class you need.
 | Location — source location type                                                           | `docs/api/class-location.md`              |
 | WorkerInfo — worker-level info in fixtures                                                | `docs/api/class-workerinfo.md`            |
 | Debugger — `debugger` object in `test.use`                                                | `docs/api/class-debugger.md`              |
-| Android — `android.devices()`, connecting to Android devices via ADB                      | `docs/api/class-android.md`               |
+| Android — `android.devices()`, connecting to Android devices via Android Debug Bridge     | `docs/api/class-android.md`               |
 | AndroidDevice — `androidDevice.shell()`, `androidDevice.input`, WebView access            | `docs/api/class-androiddevice.md`         |
 | AndroidInput — touch, swipe, and key input on Android devices                             | `docs/api/class-androidinput.md`          |
 | AndroidSocket — socket connections on Android devices                                     | `docs/api/class-androidsocket.md`         |

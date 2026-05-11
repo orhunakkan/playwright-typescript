@@ -42,12 +42,15 @@ test(
   'basic test',
   {
     tag: '@smoke',
-    annotation: { type: 'issue', description: 'https://github.com/microsoft/playwright/issues/23180' },
+    annotation: {
+      type: 'issue',
+      description: 'https://github.com/microsoft/playwright/issues/23180',
+    },
   },
   async ({ page }) => {
     await page.goto('https://playwright.dev/');
     // ...
-  }
+  },
 );
 ```
 
@@ -94,7 +97,8 @@ Declares an `afterEach` hook that is executed after each test. When called in th
 ```ts
 test.afterEach(async ({ page }, testInfo) => {
   console.log(`Finished ${testInfo.title} with status ${testInfo.status}`);
-  if (testInfo.status !== testInfo.expectedStatus) console.log(`Did not run as expected, ended up at ${page.url()}`);
+  if (testInfo.status !== testInfo.expectedStatus)
+    console.log(`Did not run as expected, ended up at ${page.url()}`);
 });
 ```
 
@@ -180,7 +184,7 @@ test.describe(
     test('two', async ({ page }) => {
       /* ... */
     });
-  }
+  },
 );
 ```
 

@@ -148,7 +148,9 @@ Click an element.
 ```ts
 await page.getByRole('button').click();
 // Shift-right-click at specific position:
-await page.locator('canvas').click({ button: 'right', modifiers: ['Shift'], position: { x: 23, y: 32 } });
+await page
+  .locator('canvas')
+  .click({ button: 'right', modifiers: ['Shift'], position: { x: 23, y: 32 } });
 ```
 
 **Arguments:**
@@ -298,7 +300,7 @@ const result = await page.getByTestId('myId').evaluate(
   (element, [x, y]) => {
     return element.textContent + ' ' + x * y;
   },
-  [7, 8]
+  [7, 8],
 );
 ```
 
@@ -977,7 +979,9 @@ await page.getByLabel('Upload file').setInputFiles(path.join(__dirname, 'myfile.
 await page.getByLabel('Upload files').setInputFiles(['file1.txt', 'file2.txt']);
 await page.getByLabel('Upload file').setInputFiles([]);
 // Upload buffer from memory:
-await page.getByLabel('Upload file').setInputFiles({ name: 'file.txt', mimeType: 'text/plain', buffer: Buffer.from('test') });
+await page
+  .getByLabel('Upload file')
+  .setInputFiles({ name: 'file.txt', mimeType: 'text/plain', buffer: Buffer.from('test') });
 ```
 
 **Arguments:**

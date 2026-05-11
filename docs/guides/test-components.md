@@ -20,7 +20,8 @@ test('event should work', async ({ mount }) => {
       title="Submit"
       onClick={() => {
         clicked = true;
-      }}></Button>
+      }}
+    ></Button>,
   );
 
   // As with any Playwright test, assert locator text.
@@ -191,7 +192,7 @@ test('changes the image', async ({ mount }) => {
       onMediaChange={(mediaName) => {
         mediaSelected = mediaName;
       }}
-    />
+    />,
   );
 
   await component.getByTestId('imageInput').setInputFiles('src/assets/logo.png');
@@ -410,7 +411,7 @@ test('update', async ({ mount }) => {
   await component.update(
     <Component msg="greetings" onClick={() => {}}>
       Child
-    </Component>
+    </Component>,
   );
 });
 ```
@@ -463,7 +464,7 @@ test('example test', async ({ mount, router }) => {
   await router.use(
     http.get('/data', async ({ request }) => {
       return HttpResponse.json({ value: 'mocked' });
-    })
+    }),
   );
   // test as usual, your handler is active
   // ...

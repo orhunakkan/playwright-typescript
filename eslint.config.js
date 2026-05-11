@@ -3,18 +3,10 @@ import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    ...playwright.configs['flat/recommended'],
+    files: ['tests/**/*.ts', 'fixtures/**/*.ts', 'utilities/**/*.ts'],
     languageOptions: {
       parser: tsParser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-      },
     },
-  },
-  {
-    files: ['tests/**/*.ts', 'tests/**/*.tsx'],
-    ...playwright.configs['flat/recommended'],
-    rules: {},
   },
 ];

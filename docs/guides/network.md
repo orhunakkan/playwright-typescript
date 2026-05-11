@@ -182,7 +182,7 @@ await page.route('**/api/fetch_data', (route) =>
   route.fulfill({
     status: 200,
     body: testData,
-  })
+  }),
 );
 await page.goto('https://example.com');
 ```
@@ -196,7 +196,7 @@ await browserContext.route('**/api/login', (route) =>
   route.fulfill({
     status: 200,
     body: 'accept',
-  })
+  }),
 );
 await page.goto('https://example.com');
 ```

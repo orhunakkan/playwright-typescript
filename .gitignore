@@ -23,8 +23,3 @@ build/
 # Coverage
 coverage/
 .nyc_output/
-
-# Lock files (optional - comment out if you want to track them)
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml

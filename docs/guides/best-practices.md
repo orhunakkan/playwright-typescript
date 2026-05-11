@@ -53,7 +53,7 @@ await page.route('**/api/fetch_data_third_party_dependency', (route) =>
   route.fulfill({
     status: 200,
     body: testData,
-  })
+  }),
 );
 await page.goto('https://example.com');
 ```
@@ -86,7 +86,11 @@ const product = page.getByRole('listitem').filter({ hasText: 'Product 2' });
 You can also filter locators by text or by another locator:
 
 ```ts
-await page.getByRole('listitem').filter({ hasText: 'Product 2' }).getByRole('button', { name: 'Add to cart' }).click();
+await page
+  .getByRole('listitem')
+  .filter({ hasText: 'Product 2' })
+  .getByRole('button', { name: 'Add to cart' })
+  .click();
 ```
 
 ### Prefer User-Facing Attributes to XPath or CSS Selectors

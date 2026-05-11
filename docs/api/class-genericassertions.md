@@ -106,7 +106,7 @@ expect({
   expect.objectContaining({
     list: expect.arrayContaining([2, 3]),
     obj: expect.objectContaining({ prop: expect.stringContaining('Hello') }),
-  })
+  }),
 );
 ```
 
@@ -357,7 +357,7 @@ expect({
   expect.objectContaining({
     list: expect.arrayContaining([2, 3]),
     obj: expect.objectContaining({ prop: expect.stringContaining('Hello') }),
-  })
+  }),
 );
 ```
 

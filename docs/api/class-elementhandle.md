@@ -159,7 +159,10 @@ Returns the return value of `pageFunction`. The method finds all elements matchi
 
 ```ts
 const feedHandle = await page.$('.feed');
-expect(await feedHandle.$$eval('.tweet', (nodes) => nodes.map((n) => n.innerText))).toEqual(['Hello!', 'Hi!']);
+expect(await feedHandle.$$eval('.tweet', (nodes) => nodes.map((n) => n.innerText))).toEqual([
+  'Hello!',
+  'Hi!',
+]);
 ```
 
 **Arguments:**

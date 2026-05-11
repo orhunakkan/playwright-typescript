@@ -4,41 +4,24 @@
   "description": "Playwright-Typescript Framework",
   "license": "ISC",
   "author": "Orhun Akkan",
-  "main": "index.js",
   "type": "module",
   "scripts": {
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
-    "lint:check": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "report:allure:serve": "allure serve allure-results",
-    "report:allure:generate": "allure generate allure-results --clean -o allure-report",
-    "report:allure:open": "allure open allure-report",
-    "test:accessibility": "npx playwright test --project=\"Accessibility Tests\"",
-    "test:api": "npx playwright test --project=\"API Tests\"",
-    "test:e2e": "npx playwright test tests/e2e/ --project=\"Desktop Chrome\" --project=\"Desktop Firefox\" --project=\"Desktop Edge\" --project=\"Mobile Safari\" --project=\"Mobile Chrome\"",
-    "test:perf": "npx artillery run --dotenv .env tests/performance/performance-testing.ts",
-    "test:pw-documents": "npx playwright test tests/pw-documents/ --project=\"Desktop Chrome\"",
-    "test:sauce": "npx playwright test --project=\"Sauce Auth Chrome\"",
-    "test:visual": "docker run --rm -v .:/work -w /work -e TEST_ENV=dev mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/visual-regression/visual-regression.spec.ts",
-    "test:visual:update": "docker run --rm -v .:/work -w /work -e TEST_ENV=dev mcr.microsoft.com/playwright:v1.59.1-noble npx playwright test tests/visual-regression/visual-regression.spec.ts --update-snapshots"
+    "format": "prettier --write ."
   },
   "dependencies": {
-    "dotenv": "^17.4.0"
+    "dotenv": "^17.4.2"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.1",
+    "@axe-core/playwright": "^4.11.3",
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.59.1",
-    "@types/node": "^25.5.2",
-    "@typescript-eslint/parser": "^8.58.0",
-    "allure-commandline": "^2.38.1",
-    "allure-playwright": "^3.6.0",
-    "artillery": "^2.0.30",
-    "eslint": "^9.39.4",
-    "eslint-plugin-playwright": "^2.10.1",
-    "prettier": "^3.8.1",
-    "typescript": "^6.0.2"
+    "@types/node": "^25.6.2",
+    "@typescript-eslint/parser": "^8.59.2",
+    "allure-commandline": "^2.40.0",
+    "allure-playwright": "^3.8.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-playwright": "^2.10.2",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3"
   }
 }

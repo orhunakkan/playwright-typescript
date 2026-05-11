@@ -57,7 +57,9 @@ For example, you can use `AxeBuilder.include()` to constrain an accessibility sc
 `AxeBuilder.analyze()` will scan the page in its current state when you call it. To scan parts of a page that are revealed based on UI interactions, use Locators to interact with the page before invoking analyze():
 
 ```ts
-test('navigation menu should not have automatically detectable accessibility violations', async ({ page }) => {
+test('navigation menu should not have automatically detectable accessibility violations', async ({
+  page,
+}) => {
   await page.goto('https://your-site.com/');
 
   await page.getByRole('button', { name: 'Navigation Menu' }).click();
@@ -67,7 +69,9 @@ test('navigation menu should not have automatically detectable accessibility vio
   // find all the elements your test expects it to scan.
   await page.locator('#navigation-menu-flyout').waitFor();
 
-  const accessibilityScanResults = await new AxeBuilder({ page }).include('#navigation-menu-flyout').analyze();
+  const accessibilityScanResults = await new AxeBuilder({ page })
+    .include('#navigation-menu-flyout')
+    .analyze();
 
   expect(accessibilityScanResults.violations).toEqual([]);
 });
@@ -87,7 +91,9 @@ For example, Accessibility Insights for Web's Automated Checks only include axe 
 test('should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
   await page.goto('https://your-site.com/');
 
-  const accessibilityScanResults = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+  const accessibilityScanResults = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    .analyze();
 
   expect(accessibilityScanResults.violations).toEqual([]);
 });
@@ -111,10 +117,14 @@ This is usually the simplest option, but it has some important downsides:
 Here is an example of excluding one element from being scanned in one specific test:
 
 ```ts
-test('should not have any accessibility violations outside of elements with known issues', async ({ page }) => {
+test('should not have any accessibility violations outside of elements with known issues', async ({
+  page,
+}) => {
   await page.goto('https://your-site.com/page-with-known-issues');
 
-  const accessibilityScanResults = await new AxeBuilder({ page }).exclude('#element-with-known-issue').analyze();
+  const accessibilityScanResults = await new AxeBuilder({ page })
+    .exclude('#element-with-known-issue')
+    .analyze();
 
   expect(accessibilityScanResults.violations).toEqual([]);
 });
@@ -129,10 +139,14 @@ If your application contains many different preexisting violations of a specific
 You can find the rule IDs to pass to `disableRules()` in the `id` property of the violations you want to suppress. A complete list of axe's rules can be found in axe-core's documentation.
 
 ```ts
-test('should not have any accessibility violations outside of rules with known issues', async ({ page }) => {
+test('should not have any accessibility violations outside of rules with known issues', async ({
+  page,
+}) => {
   await page.goto('https://your-site.com/page-with-known-issues');
 
-  const accessibilityScanResults = await new AxeBuilder({ page }).disableRules(['duplicate-id']).analyze();
+  const accessibilityScanResults = await new AxeBuilder({ page })
+    .disableRules(['duplicate-id'])
+    .analyze();
 
   expect(accessibilityScanResults.violations).toEqual([]);
 });
@@ -224,7 +238,10 @@ type AxeFixture = {
 // a consistently configured AxeBuilder instance.
 export const test = base.extend<AxeFixture>({
   makeAxeBuilder: async ({ page }, use) => {
-    const makeAxeBuilder = () => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).exclude('#commonly-reused-element-with-known-issue');
+    const makeAxeBuilder = () =>
+      new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .exclude('#commonly-reused-element-with-known-issue');
 
     await use(makeAxeBuilder);
   },
