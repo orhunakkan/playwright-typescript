@@ -6,7 +6,8 @@
   "author": "Orhun Akkan",
   "type": "module",
   "scripts": {
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:scrapper": "playwright test tests/scrapper --project=\"Desktop Chrome\" --workers=1"
   },
   "dependencies": {
     "dotenv": "^17.4.2"
