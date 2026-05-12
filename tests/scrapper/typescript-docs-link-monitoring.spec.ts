@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { type Locator, type Page, test, expect } from '@playwright/test';
 import fs from 'fs';
-import sidebarLinks from '../../fixtures/playwright-docs-links/sidebar-links.json' with { type: 'json' };
+import sidebarLinks from '../../fixtures/typescript-docs-links/sidebar-links.json' with { type: 'json' };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -8,6 +8,7 @@ import sidebarLinks from '../../fixtures/playwright-docs-links/sidebar-links.jso
 function urlToSlug(url: string): string {
   return url
     .replace(/https?:\/\//, '')
+    .replace(/\*/g, '-star')
     .replace(/[^a-zA-Z0-9]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
@@ -32,6 +33,36 @@ function computeTextDiff(before: string, after: string): string {
   return lines.join('\n');
 }
 
+async function gotoWithRetry(
+  page: Page,
+  url: string,
+  waitUntil: 'load' | 'domcontentloaded',
+): Promise<void> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      await page.goto(url, { waitUntil, timeout: 45_000 });
+      return;
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) await page.waitForTimeout(attempt * 1_000);
+    }
+  }
+
+  throw lastError;
+}
+
+async function firstVisibleLocator(locators: Locator[]): Promise<Locator> {
+  for (const locator of locators) {
+    if ((await locator.count()) === 0) continue;
+    const first = locator.first();
+    if (await first.isVisible()) return first;
+  }
+
+  throw new Error('No visible TypeScript docs content locator found');
+}
+
 // Parsed once at module level so dynamic test titles are available at collection time.
 const allStoredUrls = [...new Set(Object.values(sidebarLinks).flat())];
 
@@ -47,24 +78,17 @@ const failureRecords: FailureRecord[] = [];
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// Wide viewport so the sidebar is fully visible in headed mode.
+// Wide viewport so the TypeScript site renders the full docs sidebar.
 test.use({
   viewport: { width: 1920, height: 1080 },
   launchOptions: { args: ['--window-size=1920,1080'] },
 });
 
-test.describe('Playwright Docs Link Monitoring', () => {
+test.describe('TypeScript Docs Link Monitoring', () => {
   test.beforeEach(({}, testInfo) => {
     test.skip(testInfo.project.name !== 'Desktop Chrome', 'Only runs on Desktop Chrome');
   });
 
-  // 15-second gap between tests; skipped tests (non-Chrome) bypass the delay.
-  test.afterEach(async ({}, testInfo) => {
-    if (testInfo.status === 'skipped') return;
-    await new Promise((resolve) => setTimeout(resolve, 15_000));
-  });
-
-  // Write PW-DOCS-CHECK.md at the project root for any failed tests.
   test.afterAll(async () => {
     if (failureRecords.length === 0) return;
 
@@ -74,7 +98,7 @@ test.describe('Playwright Docs Link Monitoring', () => {
         `| ${i + 1} | ${escape(r.testName)} | ${escape(r.url)} | ${escape(r.expected)} | ${escape(r.actual)} |`,
     );
     const content = [
-      '# PW-DOCS-CHECK',
+      '# TS-DOCS-CHECK',
       '',
       `Generated: ${new Date().toISOString()}`,
       `Failed tests: ${failureRecords.length}`,
@@ -85,36 +109,36 @@ test.describe('Playwright Docs Link Monitoring', () => {
       '',
     ].join('\n');
 
-    fs.writeFileSync('PW-DOCS-CHECK.md', content, 'utf-8');
+    fs.writeFileSync('TS-DOCS-CHECK.md', content, 'utf-8');
   });
 
   // ────────────────────────────────────────────────────────────────────────────
   //  Page Content Snapshots
   //
   //  Visits every URL in the baseline and snapshots the text content of the
-  //  <article> element (the main documentation body). On the first run,
-  //  baseline .txt files are created automatically. On subsequent runs, any
-  //  text change in the article body triggers a soft-assertion failure.
+  //  documentation body. On the first run, baseline .txt files are created
+  //  automatically. On subsequent runs, any text change in the docs body
+  //  triggers a soft-assertion failure.
   //
   //  To accept intentional changes: npx playwright test --update-snapshots
-  //
-  //  Runs on Chromium only to avoid duplicate baselines per browser
-  //  (content is identical across browsers for this static doc site).
   // ────────────────────────────────────────────────────────────────────────────
   test.describe('Page Content Snapshots', { tag: ['@regression'] }, () => {
     test.setTimeout(60_000);
 
     for (const url of allStoredUrls) {
       test(`content unchanged — ${urlToSlug(url)}`, async ({ page }, testInfo) => {
-        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        await gotoWithRetry(page, url, 'domcontentloaded');
 
-        const mainArticle = page.locator('article:not(.yt-lite)');
-        await mainArticle.waitFor({ state: 'visible' });
-        const raw = (await mainArticle.textContent()) ?? '';
+        const docsContent = await firstVisibleLocator([
+          page.locator('#handbook-content article'),
+          page.locator('main'),
+        ]);
+        await docsContent.waitFor({ state: 'visible' });
+        const raw = (await docsContent.textContent()) ?? '';
         const normalized = raw.replace(/\s+/g, ' ').trim();
 
         const snapshotPath = testInfo.snapshotPath(`${urlToSlug(url)}.txt`);
-        if (fs.existsSync(snapshotPath)) {
+        if (testInfo.config.updateSnapshots === 'none' && fs.existsSync(snapshotPath)) {
           const baseline = fs.readFileSync(snapshotPath, 'utf-8').trim();
           if (baseline !== normalized) {
             const diff = computeTextDiff(baseline, normalized);
