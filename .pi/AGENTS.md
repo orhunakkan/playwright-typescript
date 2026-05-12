@@ -6,8 +6,8 @@ This repository is currently a lean **Playwright + TypeScript** framework focuse
 
 The active suite:
 
-- Reads documentation URL lists from `fixtures/*-docs-links/sidebar-links.json`.
-- Visits live documentation pages for JavaScript, Playwright, and TypeScript.
+- Reads documentation URLs from `fixtures/playwright-docs-links/sidebar-links.json`.
+- Visits live Playwright documentation pages.
 - Compares normalized article text against text snapshots in `fixtures/reference-snapshots/`.
 - Uses local markdown docs under `docs/` as the versioned copy agents should update when live docs changes are accepted.
 
@@ -25,18 +25,12 @@ Do not use old guidance for removed framework layers unless those layers are int
 │   ├── guides/                      # Local Playwright guide docs
 │   └── mcp/                         # Local Playwright MCP docs
 ├── fixtures/
-│   ├── javascript-docs-links/
-│   │   └── sidebar-links.json       # JavaScript docs URL source list
 │   ├── playwright-docs-links/
 │   │   └── sidebar-links.json       # Playwright docs URL source list
-│   ├── typescript-docs-links/
-│   │   └── sidebar-links.json       # TypeScript docs URL source list
 │   └── reference-snapshots/         # Text snapshots for docs monitoring
 ├── tests/
 │   └── scrapper/
-│       ├── javascript-docs.spec.ts
-│       ├── playwright-docs.spec.ts
-│       └── typescript-docs.spec.ts
+│       └── playwright-docs.spec.ts
 ├── playwright.config.ts
 ├── tsconfig.json
 ├── eslint.config.js
@@ -51,14 +45,14 @@ Do not use old guidance for removed framework layers unless those layers are int
 
 Verified locally on 2026-05-11:
 
-| Item               | Current value                            |
-| ------------------ | ---------------------------------------- |
-| `pi`               | `0.74.0`                                 |
-| `@playwright/test` | `1.59.1`                                 |
-| npm scripts        | `format`                                 |
-| test collection    | 1312 collected tests across 3 spec files |
+| Item               | Current value                      |
+| ------------------ | ---------------------------------- |
+| `pi`               | `0.74.0`                           |
+| `@playwright/test` | `1.59.1`                           |
+| npm scripts        | `format`, `test:scrapper`          |
+| test collection    | 374 collected tests in 1 spec file |
 
-Use direct `npx playwright ...` commands. Do not tell agents to run npm scripts unless scripts are added back to `package.json`.
+Use direct `npx playwright ...` commands when a focused command or extra flags are needed. `npm run test:scrapper` is available for the current full Desktop Chrome scraper run with `--workers=1`.
 
 ---
 
@@ -94,9 +88,7 @@ Broad `npx playwright test` also collects Firefox-project copies, but those test
 The active specs are:
 
 ```text
-tests/scrapper/javascript-docs.spec.ts
 tests/scrapper/playwright-docs.spec.ts
-tests/scrapper/typescript-docs.spec.ts
 ```
 
 They run page content snapshot checks:

@@ -7,7 +7,11 @@ description: Commands for running the current Playwright docs snapshot suite, li
 
 All commands run from the repository root.
 
-This repo currently has no npm scripts in `package.json`. Use direct `npx playwright ...` commands unless scripts are added later.
+Use direct `npx playwright ...` commands when a focused command or extra flags are needed. The current package script for the full scraper run is:
+
+```bash
+npm run test:scrapper
+```
 
 ---
 
@@ -36,7 +40,7 @@ npx playwright --version
 npx playwright test --list
 ```
 
-As of 2026-05-12, local discovery reports Playwright `1.59.1` and 1312 collected tests across 3 spec files.
+As of 2026-05-12, local discovery reports Playwright `1.59.1` and 374 collected tests in 1 spec file.
 
 ---
 
@@ -122,4 +126,4 @@ node -e "JSON.parse(require('fs').readFileSync('fixtures/playwright-docs-links/s
 
 ## Current Non-Goals
 
-Do not suggest old npm scripts or commands for removed framework layers. The active suite is the docs snapshot specs under `tests/scrapper/`.
+Do not suggest old npm scripts or commands for removed framework layers. The active suite is `tests/scrapper/playwright-docs.spec.ts`.

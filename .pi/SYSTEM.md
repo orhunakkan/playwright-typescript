@@ -10,16 +10,12 @@ This repo is currently a lean Playwright TypeScript docs-snapshot framework.
 
 Active areas:
 
-- `tests/scrapper/javascript-docs.spec.ts`
 - `tests/scrapper/playwright-docs.spec.ts`
-- `tests/scrapper/typescript-docs.spec.ts`
 - `docs/api/`
 - `docs/guides/`
 - `docs/mcp/`
 - `docs/agent-cli/`
-- `fixtures/javascript-docs-links/sidebar-links.json`
 - `fixtures/playwright-docs-links/sidebar-links.json`
-- `fixtures/typescript-docs-links/sidebar-links.json`
 - `fixtures/reference-snapshots/`
 
 Do not rely on removed framework layers or old templates. If a folder is empty, treat it as a placeholder until real source files are added.
