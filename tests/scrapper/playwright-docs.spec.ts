@@ -32,8 +32,15 @@ function computeTextDiff(before: string, after: string): string {
   return lines.join('\n');
 }
 
+type SidebarLinksFixture = string[] | Record<string, string[]>;
+
+function getStoredUrls(links: SidebarLinksFixture): string[] {
+  const urls = Array.isArray(links) ? links : Object.values(links).flat();
+  return [...new Set(urls)];
+}
+
 // Parsed once at module level so dynamic test titles are available at collection time.
-const allStoredUrls = [...new Set(Object.values(sidebarLinks).flat())];
+const allStoredUrls = getStoredUrls(sidebarLinks);
 
 // ─── Failure Report ───────────────────────────────────────────────────────────
 
@@ -101,9 +108,7 @@ test.describe('Playwright Docs Snapshots', () => {
   //  Runs on Chromium only to avoid duplicate baselines per browser
   //  (content is identical across browsers for this static doc site).
   // ────────────────────────────────────────────────────────────────────────────
-  test.describe('Page Content Snapshots', { tag: ['@regression'] }, () => {
-    test.setTimeout(60_000);
-
+  test.describe('Page Content Snapshots', () => {
     for (const url of allStoredUrls) {
       test(`content unchanged — ${urlToSlug(url)}`, async ({ page }, testInfo) => {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
