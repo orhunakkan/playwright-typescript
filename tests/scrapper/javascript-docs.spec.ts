@@ -1,6 +1,6 @@
-import { type Locator, type Page, test, expect } from '@playwright/test';
+import { type Page, test, expect } from '@playwright/test';
 import fs from 'fs';
-import sidebarLinks from '../../fixtures/typescript-docs-links/sidebar-links.json' with { type: 'json' };
+import sidebarLinks from '../../fixtures/javascript-docs-links/sidebar-links.json' with { type: 'json' };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -53,14 +53,14 @@ async function gotoWithRetry(
   throw lastError;
 }
 
-async function firstVisibleLocator(locators: Locator[]): Promise<Locator> {
-  for (const locator of locators) {
-    if ((await locator.count()) === 0) continue;
-    const first = locator.first();
-    if (await first.isVisible()) return first;
-  }
-
-  throw new Error('No visible TypeScript docs content locator found');
+async function getStableMainText(page: Page): Promise<string> {
+  return page.locator('main#content').evaluate((main) => {
+    const clone = main.cloneNode(true) as HTMLElement;
+    clone
+      .querySelectorAll('script, style, iframe, pre, .code-example, mdn-code-example')
+      .forEach((node) => node.remove());
+    return clone.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+  });
 }
 
 // Parsed once at module level so dynamic test titles are available at collection time.
@@ -78,13 +78,13 @@ const failureRecords: FailureRecord[] = [];
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// Wide viewport so the TypeScript site renders the full docs sidebar.
+// Wide viewport so MDN renders the full left sidebar instead of mobile navigation.
 test.use({
   viewport: { width: 1920, height: 1080 },
   launchOptions: { args: ['--window-size=1920,1080'] },
 });
 
-test.describe('TypeScript Docs Link Monitoring', () => {
+test.describe('JavaScript Docs Snapshots', () => {
   test.beforeEach(({}, testInfo) => {
     test.skip(testInfo.project.name !== 'Desktop Chrome', 'Only runs on Desktop Chrome');
   });
@@ -98,7 +98,7 @@ test.describe('TypeScript Docs Link Monitoring', () => {
         `| ${i + 1} | ${escape(r.testName)} | ${escape(r.url)} | ${escape(r.expected)} | ${escape(r.actual)} |`,
     );
     const content = [
-      '# TS-DOCS-CHECK',
+      '# JS-DOCS-CHECK',
       '',
       `Generated: ${new Date().toISOString()}`,
       `Failed tests: ${failureRecords.length}`,
@@ -109,15 +109,15 @@ test.describe('TypeScript Docs Link Monitoring', () => {
       '',
     ].join('\n');
 
-    fs.writeFileSync('TS-DOCS-CHECK.md', content, 'utf-8');
+    fs.writeFileSync('JS-DOCS-CHECK.md', content, 'utf-8');
   });
 
   // ────────────────────────────────────────────────────────────────────────────
   //  Page Content Snapshots
   //
-  //  Visits every URL in the baseline and snapshots the text content of the
-  //  documentation body. On the first run, baseline .txt files are created
-  //  automatically. On subsequent runs, any text change in the docs body
+  //  Visits every URL in the baseline and snapshots the text content of MDN's
+  //  main documentation body. On the first run, baseline .txt files are created
+  //  automatically. On subsequent runs, any text change in the main body
   //  triggers a soft-assertion failure.
   //
   //  To accept intentional changes: npx playwright test --update-snapshots
@@ -129,13 +129,9 @@ test.describe('TypeScript Docs Link Monitoring', () => {
       test(`content unchanged — ${urlToSlug(url)}`, async ({ page }, testInfo) => {
         await gotoWithRetry(page, url, 'domcontentloaded');
 
-        const docsContent = await firstVisibleLocator([
-          page.locator('#handbook-content article'),
-          page.locator('main'),
-        ]);
-        await docsContent.waitFor({ state: 'visible' });
-        const raw = (await docsContent.textContent()) ?? '';
-        const normalized = raw.replace(/\s+/g, ' ').trim();
+        const mainContent = page.locator('main#content');
+        await mainContent.waitFor({ state: 'visible' });
+        const normalized = await getStableMainText(page);
 
         const snapshotPath = testInfo.snapshotPath(`${urlToSlug(url)}.txt`);
         if (testInfo.config.updateSnapshots === 'none' && fs.existsSync(snapshotPath)) {

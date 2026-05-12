@@ -6,16 +6,20 @@ These rules apply to work in this repository. Read them before changing files.
 
 ## Current Scope
 
-This repo is currently a lean Playwright TypeScript docs-monitoring framework.
+This repo is currently a lean Playwright TypeScript docs-snapshot framework.
 
 Active areas:
 
-- `tests/scrapper/playwright-docs-link-monitoring.spec.ts`
+- `tests/scrapper/javascript-docs.spec.ts`
+- `tests/scrapper/playwright-docs.spec.ts`
+- `tests/scrapper/typescript-docs.spec.ts`
 - `docs/api/`
 - `docs/guides/`
 - `docs/mcp/`
 - `docs/agent-cli/`
+- `fixtures/javascript-docs-links/sidebar-links.json`
 - `fixtures/playwright-docs-links/sidebar-links.json`
+- `fixtures/typescript-docs-links/sidebar-links.json`
 - `fixtures/reference-snapshots/`
 
 Do not rely on removed framework layers or old templates. If a folder is empty, treat it as a placeholder until real source files are added.
@@ -54,7 +58,7 @@ Do not rely on removed framework layers or old templates. If a folder is empty, 
 Normal run command:
 
 ```bash
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
+npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome"
 ```
 
 The configured Firefox project also collects the tests, but the spec skips non-`Desktop Chrome` runs. Target `Desktop Chrome` for normal verification.
@@ -67,11 +71,11 @@ For content drift:
 4. Accept only the focused affected text snapshot with `--update-snapshots`.
 5. Rerun without `--update-snapshots`.
 
-For sidebar drift:
+For URL list changes:
 
-1. Update only the relevant source page entry in `fixtures/playwright-docs-links/sidebar-links.json`.
-2. Keep the order aligned with the live sidebar where practical.
-3. Remove stale snapshots only for URLs no longer present in any stored sidebar list.
+1. Update only the relevant URL source file under `fixtures/*-docs-links/sidebar-links.json`.
+2. Keep the order aligned with the live docs navigation where practical.
+3. Remove stale snapshots only for URLs no longer present in any stored URL list.
 
 Never fix transient navigation, timeout, bot-protection, or partial-load failures by changing docs or snapshots.
 
@@ -122,8 +126,8 @@ npx playwright --version
 npx playwright test --list
 ```
 
-For docs-monitoring behavior changes:
+For docs-snapshot behavior changes:
 
 ```bash
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
+npx playwright test tests/scrapper --project="Desktop Chrome"
 ```

@@ -1,6 +1,6 @@
 ---
 name: playwright-docs-monitoring
-description: Run the current Playwright docs-monitoring spec, diagnose sidebar/content drift, update local docs and text snapshots only when failures are confirmed documentation changes.
+description: Run the current Playwright docs snapshot spec, diagnose content drift, update local docs and text snapshots only when failures are confirmed documentation changes.
 ---
 
 # Skill: Playwright Docs Monitoring
@@ -8,37 +8,20 @@ description: Run the current Playwright docs-monitoring spec, diagnose sidebar/c
 Use this skill when the task is to run, triage, or fix failures from:
 
 ```text
-tests/scrapper/playwright-docs-link-monitoring.spec.ts
+tests/scrapper/playwright-docs.spec.ts
 ```
 
-This spec monitors live `playwright.dev` documentation against local baselines. It is a text and documentation workflow, not an image snapshot workflow.
+This spec monitors live `playwright.dev` documentation text against local baselines. It is a text and documentation workflow, not an image snapshot workflow.
 
 ---
 
 ## What This Spec Checks
-
-### 1. Sidebar URL Drift
 
 Source data:
 
 ```text
 fixtures/playwright-docs-links/sidebar-links.json
 ```
-
-For each stored source page, the test:
-
-1. Opens the live page.
-2. Waits for the `Docs sidebar` region.
-3. Expands collapsed sidebar sections.
-4. Collects every sidebar link.
-5. Compares live links with the JSON baseline.
-
-Failures mean:
-
-- `URLs added`: add confirmed new URLs to the relevant array in `sidebar-links.json`.
-- `URLs removed`: remove confirmed removed URLs from the relevant array in `sidebar-links.json`.
-
-### 2. Page Content Snapshots
 
 Source URLs are all unique URLs from `sidebar-links.json`.
 
@@ -57,7 +40,7 @@ Failures mean the live docs article text changed, or the page did not load into 
 Always run from the repository root.
 
 ```bash
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
+npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome"
 ```
 
 The spec imports `test` and `expect` from `@playwright/test` directly. It does not use custom fixtures.
@@ -96,7 +79,7 @@ Examples:
 net::ERR_CONNECTION_RESET
 page.goto failed
 Timeout waiting for navigation
-Timeout waiting for article/sidebar
+Timeout waiting for article
 ```
 
 Action:
@@ -105,36 +88,13 @@ Action:
 2. Rerun only the failed test:
 
    ```bash
-   npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome" --grep "<failed slug or title>"
+   npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome" --grep "<failed slug or title>"
    ```
 
 3. If the focused rerun passes, report the failure as transient.
 4. If it repeatedly fails, inspect whether the live page moved, was removed, changed structure, or returned a non-docs response.
 
-### B. Sidebar URL Drift Failure
-
-Failure title pattern:
-
-```text
-sidebar links match baseline - <sourcePage>
-```
-
-Action:
-
-1. Read the assertion message for `URLs added` and `URLs removed`.
-2. Confirm the live sidebar really changed.
-3. Update only the relevant source page entry in:
-
-   ```text
-   fixtures/playwright-docs-links/sidebar-links.json
-   ```
-
-4. Keep JSON valid and ordered consistently with the live sidebar where practical.
-5. For added URLs, map each URL to a local docs file and add or update local docs if the page belongs in the local docs set.
-6. For removed URLs, remove stale text snapshots only when the URL is no longer present in any `sidebar-links.json` array.
-7. Rerun the full docs-monitoring command.
-
-### C. Page Content Snapshot Drift Failure
+### B. Page Content Snapshot Drift Failure
 
 Failure title pattern:
 
@@ -156,7 +116,7 @@ Action:
 5. Run Prettier on edited markdown files.
 6. Accept the matching text snapshot with a focused `--update-snapshots` run.
 7. Rerun the focused test without `--update-snapshots`.
-8. Rerun the full docs-monitoring command.
+8. Rerun the full docs-snapshot command.
 
 Do not accept a snapshot if the live change is unexplained or looks like a broken page, bot protection, an error banner, a partial load, or a network issue.
 
@@ -202,19 +162,19 @@ Update local docs first, then update snapshots.
 Focused update:
 
 ```bash
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome" --grep "<failed slug or exact test title>" --update-snapshots
+npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome" --grep "<failed slug or exact test title>" --update-snapshots
 ```
 
 Focused verification:
 
 ```bash
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome" --grep "<failed slug or exact test title>"
+npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome" --grep "<failed slug or exact test title>"
 ```
 
 Full verification:
 
 ```bash
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
+npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome"
 ```
 
 If multiple related content snapshots failed and each live docs change was reviewed, it is acceptable to update them in one focused grep pattern. Do not run a blind full `--update-snapshots` unless the full failure set has already been reviewed and all changes are intentional.
@@ -229,21 +189,21 @@ For edited markdown docs:
 npx prettier --check <edited-doc-files>
 ```
 
-For edited JSON:
+For edited URL source JSON:
 
 ```bash
 node -e "JSON.parse(require('fs').readFileSync('fixtures/playwright-docs-links/sidebar-links.json', 'utf8'))"
 ```
 
-Final checks after docs-monitoring changes:
+Final checks after docs-snapshot changes:
 
 ```bash
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
+npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome"
 git diff --stat
 git diff
 ```
 
-The final full spec should pass. The diff should contain only expected changes to local docs, `sidebar-links.json`, and affected reference snapshots.
+The final full spec should pass. The diff should contain only expected changes to local docs, URL source JSON, and affected reference snapshots.
 
 ---
 
@@ -255,4 +215,4 @@ The final full spec should pass. The diff should contain only expected changes t
 - Do not change unrelated docs.
 - Do not delete local docs files unless the URL was removed and the user agrees the local page should be removed.
 - Do not leave generated outputs staged as source changes.
-- Do not skip the final full docs-monitoring spec run when behavior or baselines changed.
+- Do not skip the final full docs-snapshot spec run when behavior or baselines changed.

@@ -6,9 +6,8 @@ This repository is currently a lean **Playwright + TypeScript** framework focuse
 
 The active suite:
 
-- Reads sidebar URL baselines from `fixtures/playwright-docs-links/sidebar-links.json`.
-- Visits live `playwright.dev` documentation pages.
-- Detects sidebar URL drift.
+- Reads documentation URL lists from `fixtures/*-docs-links/sidebar-links.json`.
+- Visits live documentation pages for JavaScript, Playwright, and TypeScript.
 - Compares normalized article text against text snapshots in `fixtures/reference-snapshots/`.
 - Uses local markdown docs under `docs/` as the versioned copy agents should update when live docs changes are accepted.
 
@@ -26,12 +25,18 @@ Do not use old guidance for removed framework layers unless those layers are int
 │   ├── guides/                      # Local Playwright guide docs
 │   └── mcp/                         # Local Playwright MCP docs
 ├── fixtures/
+│   ├── javascript-docs-links/
+│   │   └── sidebar-links.json       # JavaScript docs URL source list
 │   ├── playwright-docs-links/
-│   │   └── sidebar-links.json       # Sidebar URL baseline
+│   │   └── sidebar-links.json       # Playwright docs URL source list
+│   ├── typescript-docs-links/
+│   │   └── sidebar-links.json       # TypeScript docs URL source list
 │   └── reference-snapshots/         # Text snapshots for docs monitoring
 ├── tests/
 │   └── scrapper/
-│       └── playwright-docs-link-monitoring.spec.ts
+│       ├── javascript-docs.spec.ts
+│       ├── playwright-docs.spec.ts
+│       └── typescript-docs.spec.ts
 ├── playwright.config.ts
 ├── tsconfig.json
 ├── eslint.config.js
@@ -46,12 +51,12 @@ Do not use old guidance for removed framework layers unless those layers are int
 
 Verified locally on 2026-05-11:
 
-| Item               | Current value                                            |
-| ------------------ | -------------------------------------------------------- |
-| `pi`               | `0.74.0`                                                 |
-| `@playwright/test` | `1.59.1`                                                 |
-| npm scripts        | `{}`                                                     |
-| test collection    | 396 collected tests across the configured project matrix |
+| Item               | Current value                            |
+| ------------------ | ---------------------------------------- |
+| `pi`               | `0.74.0`                                 |
+| `@playwright/test` | `1.59.1`                                 |
+| npm scripts        | `format`                                 |
+| test collection    | 1312 collected tests across 3 spec files |
 
 Use direct `npx playwright ...` commands. Do not tell agents to run npm scripts unless scripts are added back to `package.json`.
 
@@ -63,7 +68,7 @@ Defined in `playwright.config.ts`:
 
 - `testDir: './tests'`
 - `snapshotDir: './fixtures/reference-snapshots'`
-- `snapshotPathTemplate: '{snapshotDir}/{testFileName}/{testName}/{projectName}-{arg}{ext}'`
+- `snapshotPathTemplate: '{snapshotDir}/{testFileName}/{arg}{ext}'`
 - `fullyParallel: true`
 - `forbidOnly: !!process.env.CI`
 - `retries: process.env.CI ? 2 : 0`
@@ -74,38 +79,33 @@ Defined in `playwright.config.ts`:
   - `Desktop Chrome` using `devices['Desktop Chrome']`
   - `Desktop Firefox` using `devices['Desktop Firefox']`
 
-The docs-monitoring spec skips every non-`Desktop Chrome` run in `beforeEach`. Normal runs should target:
+The docs-snapshot specs skip every non-`Desktop Chrome` run in `beforeEach`. Normal focused Playwright-docs runs should target:
 
 ```bash
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
+npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome"
 ```
 
-Broad `npx playwright test` also collects Firefox-project copies, but those tests are skipped at runtime by the spec.
+Broad `npx playwright test` also collects Firefox-project copies, but those tests are skipped at runtime by the specs.
 
 ---
 
 ## Active Test Behavior
 
-The active spec is:
+The active specs are:
 
 ```text
-tests/scrapper/playwright-docs-link-monitoring.spec.ts
+tests/scrapper/javascript-docs.spec.ts
+tests/scrapper/playwright-docs.spec.ts
+tests/scrapper/typescript-docs.spec.ts
 ```
 
-It contains two checks:
+They run page content snapshot checks:
 
-1. **Sidebar URL Drift**
-   - Opens each source page in `sidebar-links.json`.
-   - Expands the docs sidebar.
-   - Compares live sidebar links against the stored baseline.
+- Visit each unique URL from the matching `fixtures/*-docs-links/sidebar-links.json` file.
+- Extract and normalize the main documentation text.
+- Compare the result to text snapshots.
 
-2. **Page Content Snapshots**
-   - Visits each unique URL from `sidebar-links.json`.
-   - Extracts text from `article:not(.yt-lite)`.
-   - Normalizes whitespace.
-   - Compares the result to text snapshots.
-
-On failures, the spec can generate `PW-DOCS-CHECK.md` at the repo root with a markdown table summarizing failed checks.
+On failures, the specs can generate `JS-DOCS-CHECK.md`, `PW-DOCS-CHECK.md`, or `TS-DOCS-CHECK.md` at the repo root with a markdown table summarizing failed checks.
 
 ---
 
@@ -132,9 +132,9 @@ Apply accepted live documentation changes in this order:
 
 1. Confirm the live page change is real and not a transient network, bot-protection, or partial-load issue.
 2. Update the relevant local markdown file under `docs/`.
-3. Update `sidebar-links.json` only for confirmed sidebar drift.
+3. Update the relevant `fixtures/*-docs-links/sidebar-links.json` file only for confirmed URL list changes.
 4. Accept only the focused affected text snapshot.
-5. Rerun the focused command and then the full `Desktop Chrome` docs-monitoring command.
+5. Rerun the focused command and then the full `Desktop Chrome` docs-snapshot command.
 
 ---
 
@@ -142,7 +142,7 @@ Apply accepted live documentation changes in this order:
 
 - Keep TypeScript strict.
 - Do not introduce `any`; use Playwright and Node types or define a narrow interface.
-- Keep docs-monitoring specs importing `test` and `expect` from `@playwright/test`.
+- Keep docs-snapshot specs importing `test` and `expect` from `@playwright/test`.
 - Prefer Playwright locators and web-first assertions:
   - `getByRole`
   - `getByLabel`
@@ -162,13 +162,13 @@ Use these from the repository root:
 ```bash
 npx playwright --version
 npx playwright test --list
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome"
+npx playwright test tests/scrapper --project="Desktop Chrome"
 npx playwright show-report
 ```
 
 Useful focused commands:
 
 ```bash
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome" --grep "<failed title or slug>"
-npx playwright test tests/scrapper/playwright-docs-link-monitoring.spec.ts --project="Desktop Chrome" --grep "<failed title or slug>" --update-snapshots
+npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome" --grep "<failed title or slug>"
+npx playwright test tests/scrapper/playwright-docs.spec.ts --project="Desktop Chrome" --grep "<failed title or slug>" --update-snapshots
 ```
