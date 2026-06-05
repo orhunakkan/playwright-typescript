@@ -42,16 +42,6 @@ function getStoredUrls(links: SidebarLinksFixture): string[] {
 // Parsed once at module level so dynamic test titles are available at collection time.
 const allStoredUrls = getStoredUrls(sidebarLinks);
 
-// ─── Failure Report ───────────────────────────────────────────────────────────
-
-interface FailureRecord {
-  testName: string;
-  url: string;
-  expected: string;
-  actual: string;
-}
-const failureRecords: FailureRecord[] = [];
-
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 // Wide viewport so the sidebar is fully visible in headed mode.
@@ -71,43 +61,19 @@ test.describe('Playwright Docs Snapshots', () => {
     await new Promise((resolve) => setTimeout(resolve, 15_000));
   });
 
-  // Write PW-DOCS-CHECK.md at the project root for any failed tests.
-  test.afterAll(async () => {
-    if (failureRecords.length === 0) return;
-
-    const escape = (s: string) => s.replace(/\|/g, '\\|');
-    const rows = failureRecords.map(
-      (r, i) =>
-        `| ${i + 1} | ${escape(r.testName)} | ${escape(r.url)} | ${escape(r.expected)} | ${escape(r.actual)} |`,
-    );
-    const content = [
-      '# PW-DOCS-CHECK',
-      '',
-      `Generated: ${new Date().toISOString()}`,
-      `Failed tests: ${failureRecords.length}`,
-      '',
-      '| # | Test Name | URL | Expected | Actual |',
-      '|---|-----------|-----|----------|--------|',
-      ...rows,
-      '',
-    ].join('\n');
-
-    fs.writeFileSync('PW-DOCS-CHECK.md', content, 'utf-8');
-  });
-
-  // ────────────────────────────────────────────────────────────────────────────
-  //  Page Content Snapshots
-  //
-  //  Visits every URL in the baseline and snapshots the text content of the
-  //  <article> element (the main documentation body). On the first run,
-  //  baseline .txt files are created automatically. On subsequent runs, any
-  //  text change in the article body triggers a soft-assertion failure.
-  //
-  //  To accept intentional changes: npx playwright test --update-snapshots
-  //
-  //  Runs on Chromium only to avoid duplicate baselines per browser
-  //  (content is identical across browsers for this static doc site).
-  // ────────────────────────────────────────────────────────────────────────────
+  /*
+   Page Content Snapshots
+  
+   Visits every URL in the baseline and snapshots the text content of the
+   <article> element (the main documentation body). On the first run,
+   baseline .txt files are created automatically. On subsequent runs, any
+   text change in the article body triggers a soft-assertion failure.
+  
+   To accept intentional changes: npx playwright test --update-snapshots
+  
+   Runs on Chromium only to avoid duplicate baselines per browser
+   (content is identical across browsers for this static doc site).
+  */
   test.describe('Page Content Snapshots', () => {
     for (const url of allStoredUrls) {
       test(`content unchanged — ${urlToSlug(url)}`, async ({ page }, testInfo) => {
@@ -125,12 +91,6 @@ test.describe('Playwright Docs Snapshots', () => {
             const diff = computeTextDiff(baseline, normalized);
             await testInfo.attach('content-diff.txt', { body: diff, contentType: 'text/plain' });
             const diffSummary = diff.split('\n').slice(0, 2).join(' | ');
-            failureRecords.push({
-              testName: `content unchanged — ${urlToSlug(url)}`,
-              url,
-              expected: 'Content matches baseline',
-              actual: diffSummary,
-            });
           }
         }
 
