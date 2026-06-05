@@ -44,17 +44,7 @@ const allStoredUrls = getStoredUrls(sidebarLinks);
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// Wide viewport so the sidebar is fully visible in headed mode.
-test.use({
-  viewport: { width: 1920, height: 1080 },
-  launchOptions: { args: ['--window-size=1920,1080'] },
-});
-
 test.describe('Playwright Docs Snapshots', () => {
-  test.beforeEach(({}, testInfo) => {
-    test.skip(testInfo.project.name !== 'Desktop Chrome', 'Only runs on Desktop Chrome');
-  });
-
   // 15-second gap between tests; skipped tests (non-Chrome) bypass the delay.
   test.afterEach(async ({}, testInfo) => {
     if (testInfo.status === 'skipped') return;
@@ -63,20 +53,26 @@ test.describe('Playwright Docs Snapshots', () => {
 
   /*
    Page Content Snapshots
-  
+
    Visits every URL in the baseline and snapshots the text content of the
    <article> element (the main documentation body). On the first run,
    baseline .txt files are created automatically. On subsequent runs, any
    text change in the article body triggers a soft-assertion failure.
-  
+
    To accept intentional changes: npx playwright test --update-snapshots
-  
+
    Runs on Chromium only to avoid duplicate baselines per browser
    (content is identical across browsers for this static doc site).
   */
   test.describe('Page Content Snapshots', () => {
+    test.beforeEach(({}, testInfo) => {
+      test.skip(testInfo.project.name !== 'Desktop Chrome', 'Only runs on Desktop Chrome');
+    });
+
     for (const url of allStoredUrls) {
       test(`content unchanged — ${urlToSlug(url)}`, async ({ page }, testInfo) => {
+        const slug = urlToSlug(url);
+
         await page.goto(url, { waitUntil: 'domcontentloaded' });
 
         const mainArticle = page.locator('article:not(.yt-lite)');
@@ -84,17 +80,16 @@ test.describe('Playwright Docs Snapshots', () => {
         const raw = (await mainArticle.textContent()) ?? '';
         const normalized = raw.replace(/\s+/g, ' ').trim();
 
-        const snapshotPath = testInfo.snapshotPath(`${urlToSlug(url)}.txt`);
+        const snapshotPath = testInfo.snapshotPath(`${slug}.txt`);
         if (fs.existsSync(snapshotPath)) {
           const baseline = fs.readFileSync(snapshotPath, 'utf-8').trim();
           if (baseline !== normalized) {
             const diff = computeTextDiff(baseline, normalized);
             await testInfo.attach('content-diff.txt', { body: diff, contentType: 'text/plain' });
-            const diffSummary = diff.split('\n').slice(0, 2).join(' | ');
           }
         }
 
-        expect.soft(normalized).toMatchSnapshot(`${urlToSlug(url)}.txt`);
+        expect.soft(normalized).toMatchSnapshot(`${slug}.txt`);
       });
     }
   });
