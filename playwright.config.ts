@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: `.env.${process.env.ENV}`, override: true });
+dotenv.config({ path: '.env' });
 
 export default defineConfig({
   testDir: './tests',
@@ -15,6 +19,7 @@ export default defineConfig({
     ['json', { outputFile: 'playwright-report/results.json' }],
   ],
   use: {
+    baseURL: process.env.BASE_URL,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

@@ -9,8 +9,9 @@ artifacts/
 *.log
 
 # Environment files
-.env.local
-.env.*.local
+.env
+.env.*
+!.env.example
 
 # OS files
 .DS_Store
