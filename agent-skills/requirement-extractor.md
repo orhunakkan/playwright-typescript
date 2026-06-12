@@ -106,13 +106,39 @@ Format each AC bullet as a numbered testable requirement in **Given/When/Then** 
 the original AC maps cleanly, or keep it verbatim when it's already a complete scenario:
 
 ```
-REQ-01: <verbatim AC text>
+REQ-01 [P1]: <verbatim AC text>
   → Given: <precondition inferred from context>
   → When:  <action described in AC>
   → Then:  <assertion described in AC>
 ```
 
 Group by theme (Navigation, Forms, Async, etc.) if natural groupings exist in the ACs.
+
+#### Derive negative & boundary requirements (do not stop at the happy path)
+
+An AC usually states the positive outcome only. Extract the **implied** negative and boundary
+requirements too, as sub-requirements, so the test designer receives them rather than inferring
+them. Mirror the trigger words:
+
+| Phrase in the AC                         | Sub-requirements to add                                         |
+| ---------------------------------------- | --------------------------------------------------------------- |
+| "required" / "must be provided"          | REQ-Na (neg): empty → error                                     |
+| "valid <format>" (email, URL, phone)     | REQ-Na (neg): malformed → error (list ≥3 representative inputs) |
+| "at least N" / "max N" / "between N & M" | REQ-Na (boundary): N-1 fails, N passes, M passes, M+1 fails     |
+| "enabled / disabled when…"               | REQ-Na (neg): each single missing field keeps it disabled       |
+| "shows <success/result>"                 | REQ-Na (neg): result absent before the triggering action        |
+
+```
+REQ-02  [P1]: Email must be a valid address.
+REQ-02a [P1, neg]: Malformed email (no @, no TLD, trailing space) shows the email error.
+```
+
+#### Priority / risk tag
+
+Tag every requirement `[P1]` (core happy path / data integrity / security), `[P2]` (important
+negative & boundary behavior), or `[P3]` (cosmetic, optional fields, edge polish). This drives
+risk-based ordering in the Test Plan. Default to P2 for derived negative/boundary requirements
+unless the failure is user-blocking (then P1).
 
 ### Phase A3 — Output
 
@@ -124,15 +150,20 @@ Source: https://orhunakkan.atlassian.net/browse/<TAB1-XX>
 
 ### Acceptance Criteria (as testable requirements)
 
-REQ-01: <AC text>
-REQ-02: <AC text>
+REQ-01  [P1]:      <AC text>
+REQ-01a [P2, neg]: <derived negative/boundary requirement>
+REQ-02  [P1]:      <AC text>
 ...
-REQ-N:  The page must have no critical axe-core violations. (always append)
+REQ-NF1 [P2]:      The page must meet its performance budget (load + key interaction). (always append)
+REQ-A11Y [P1]:     The page must have no critical axe-core violations, in every rendered state. (always append)
 
 ---
-Total: N requirements
+Total: N requirements (X positive, Y negative/boundary, 2 non-functional)
+Priority mix: P1 a · P2 b · P3 c
 Suggested spec file: tests/<lab-path>/<lab-path>.spec.ts
-Next step: run test-case-generator with JIRA key <TAB1-XX> to generate the spec.
+Next steps:
+  - run test-plan-generator with <TAB1-XX> to produce the Test Plan (scope, entry/exit, risk)
+  - run test-case-generator with <TAB1-XX> to generate the spec
 ```
 
 ---
@@ -194,9 +225,10 @@ JIRA path:
 1. Resolve lab name / TAB1-XX key
 2. Fetch story via Atlassian MCP
 3. Extract description + acceptance criteria
-4. Format as numbered requirements in Given/When/Then
-5. Append axe-core requirement
-6. Print with JIRA link and next-step suggestion
+4. Format as numbered requirements in Given/When/Then, each with a [P1/P2/P3] tag
+5. Derive negative + boundary sub-requirements from AC trigger words
+6. Append non-functional (performance budget) + axe-core (all-states) requirements
+7. Print with JIRA link, priority mix, and next steps (test-plan-generator, then test-case-generator)
 
 Web path:
 1. Navigate to URL via Playwright MCP

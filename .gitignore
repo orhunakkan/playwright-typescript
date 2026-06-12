@@ -2,6 +2,7 @@ node_modules/
 test-results/
 playwright-report/
 artifacts/
+.playwright-mcp/
 .idea/
 .vscode/
 *.log

@@ -116,17 +116,18 @@ Use **Chrome DevTools MCP** (or Playwright `page.evaluate()`) to query:
 
 Run these selectors to enumerate all actionable nodes:
 
-| Class               | Selector                                                                                             |
-| ------------------- | ---------------------------------------------------------------------------------------------------- |
-| Buttons             | `button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"]`           |
-| Links               | `a[href], [role="link"]`                                                                             |
-| Text inputs         | `input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]), textarea` |
-| Selects / dropdowns | `select, [role="listbox"], [role="combobox"]`                                                        |
-| Checkboxes & radios | `input[type="checkbox"], input[type="radio"], [role="checkbox"], [role="radio"]`                     |
-| Toggles / switches  | `[role="switch"]`                                                                                    |
-| Dialogs / modals    | `[role="dialog"], [role="alertdialog"]`                                                              |
-| Tabs                | `[role="tab"], [role="tablist"]`                                                                     |
-| Custom interactive  | `[tabindex]:not([tabindex="-1"]), [onclick], [data-action], [data-testid]`                           |
+| Class               | Selector                                                                                                                |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Buttons             | `button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"]`                              |
+| Links               | `a[href], [role="link"]`                                                                                                |
+| Text inputs         | `input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]):not([type="file"]), textarea` |
+| File inputs         | `input[type="file"]` — easy to miss; always map it (use `getByLabel`)                                                   |
+| Selects / dropdowns | `select, [role="listbox"], [role="combobox"]`                                                                           |
+| Checkboxes & radios | `input[type="checkbox"], input[type="radio"], [role="checkbox"], [role="radio"]`                                        |
+| Toggles / switches  | `[role="switch"]`                                                                                                       |
+| Dialogs / modals    | `[role="dialog"], [role="alertdialog"]`                                                                                 |
+| Tabs                | `[role="tab"], [role="tablist"]`                                                                                        |
+| Custom interactive  | `[tabindex]:not([tabindex="-1"]), [onclick], [data-action], [data-testid]`                                              |
 
 ### 2b. Validation Constraints
 
@@ -173,6 +174,14 @@ For each element discovered, generate locators using Playwright's **recommended 
 - Use camelCase descriptive names: `submitButton`, `emailInput`, `passwordError`
 - Suffix by type: `*Button`, `*Input`, `*Link`, `*Dropdown`, `*Checkbox`, `*Error`, `*Modal`
 - If a test ID exists, prefer it as the variable name source
+
+**`id` selectors are not automatically fragile.** When an element's `id` is the target of another
+element's `aria-describedby` or `aria-labelledby` (common for inline form errors, e.g. an input
+with `aria-describedby="name-error"` pointing at `<p id="name-error" role="alert">`), that `id` is
+the page's **accessibility contract** — a stable semantic anchor. Use `page.locator('#name-error')`
+and do **not** flag it as a CSS fallback. Prefer it over `getByRole('alert').filter({ hasText })`,
+which couples the locator to the very message text a test needs to assert. Only flag `id`/class
+selectors as fragile when they are styling hooks with no role/label/ARIA relationship.
 
 ---
 
@@ -265,6 +274,11 @@ After generating the locator file, produce a short audit summary in the conversa
 
 Flags to always surface:
 
+- **Coverage completeness** — count interactive elements discovered in Phase 2 vs properties
+  written to the POM. They must match. List by name any discovered element **not** in the POM
+  (file inputs, secondary buttons like "Reset", and dynamically-injected error/success regions
+  are the usual misses). Do not finish until every discovered element is mapped or explicitly
+  excluded with a reason.
 - **Duplicate locators** — two elements match the same selector
 - **CSS-only fallbacks** — brittle, suggest adding `data-testid` to the element
 - **Invisible interactives** — `pointer-events: none`, `disabled`, `aria-hidden="true"` but with click listeners

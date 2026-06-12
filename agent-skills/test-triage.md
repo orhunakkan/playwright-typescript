@@ -216,6 +216,55 @@ If Atlassian MCP is not available, skip Phase 4 and note "JIRA write-back skippe
 
 ---
 
+## Phase 4b — Defect Lifecycle (create, link & close Bugs)
+
+A comment on the story is not a defect. STLC requires real defects to be logged, linked, and
+closed. After categorizing (Phase 2), act per category:
+
+| Category         | Defect action                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------------ |
+| 🟡 Logic         | **Create a Bug** — a genuine product/regression failure                                          |
+| 🔵 Accessibility | **Create a Bug** — WCAG violation is a product defect (severity from axe `impact`)               |
+| 🔴 Selector      | Create a Bug **only if** it persists after a POM refresh; otherwise it's a test-maintenance task |
+| 🟠 Environment   | **No product Bug** — raise an infra/config task instead                                          |
+| 🟣 Flaky         | **No Bug** — quarantine (Gap #8) and track the flake, don't pollute the defect log               |
+
+### Creating a Bug (Atlassian MCP)
+
+For each defect-worthy failure that does **not** already have an open Bug:
+
+1. `createJiraIssue` — project `TAB1`, issuetype `Bug`:
+   - **Summary:** `[<Lab>] <test title> — <category>`
+   - **Description:** failing test path + line, expected vs received (or axe rule id + impact +
+     `helpUrl` + node target), browser/project, and the run date.
+   - **Priority/Severity:** map axe `critical/serious` → High, `moderate/minor` → Medium; for
+     Logic failures, ask or default to Medium.
+2. `createIssueLink` — link the new Bug to the story: Bug **blocks** `TAB1-XX` (or `relates to`
+   if the AC is otherwise covered).
+3. `addCommentToJiraIssue` on the **story** noting the Bug key was filed.
+4. Record the Bug in the lab RTM (`docs/rtm/<lab>.rtm.md` Defects table) — id, severity,
+   found-by, status `Open`. If a known-defect filter exists in the spec (e.g. an axe
+   `v.id !== '…'` exclusion), reuse that defect's id instead of filing a duplicate.
+
+### De-duplication
+
+Before filing, search existing Bugs: `searchJiraIssuesUsingJql` with
+`project = TAB1 AND issuetype = Bug AND statusCategory != Done AND text ~ "<test title>"`.
+If an open Bug already matches, comment on it ("still failing on <date>") instead of creating a duplicate.
+
+### Closing on re-pass
+
+When a test that previously had an open linked Bug now **passes**:
+
+1. `getTransitionsForJiraIssue` on the Bug → transition it to `Done`.
+2. `addCommentToJiraIssue`: `✅ Verified fixed — <test title> passing on <date> (<browser>).`
+3. Update the RTM Defects row status → `Closed`.
+
+If Atlassian MCP is unavailable, list the defects that _would_ be filed/closed and write them to
+the RTM only.
+
+---
+
 ## Phase 5 — Test Closure Summary (STLC Phase 6)
 
 ```
@@ -241,6 +290,7 @@ Browsers affected:
 
 JIRA stories affected: TAB1-XX, TAB1-YY, ...
 JIRA comments posted:  X stories updated / skipped (MCP unavailable)
+Defects:               X Bugs filed, Y closed (re-passed)  |  RTM: docs/rtm/<lab>.rtm.md updated
 
 Top priority actions:
   1. <most impactful fix>

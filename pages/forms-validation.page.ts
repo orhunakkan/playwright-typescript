@@ -9,9 +9,11 @@ export class FormsValidationPage {
   readonly weeklyRadio: Locator;
   readonly monthlyRadio: Locator;
   readonly termsCheckbox: Locator;
+  readonly profilePictureInput: Locator;
 
   // ── Buttons ─────────────────────────────────────────────
   readonly subscribeButton: Locator;
+  readonly resetFormButton: Locator;
   readonly markCompleteButton: Locator;
   readonly darkModeToggleButton: Locator;
 
@@ -39,14 +41,17 @@ export class FormsValidationPage {
     this.termsCheckbox = page.getByRole('checkbox', {
       name: 'I agree to the terms and conditions',
     });
+    this.profilePictureInput = page.getByLabel('Profile picture (optional)');
 
     // ── Buttons ───────────────────────────────────────────
     this.subscribeButton = page.getByRole('button', { name: 'Subscribe' });
+    this.resetFormButton = page.getByRole('button', { name: 'Reset form' });
     this.markCompleteButton = page.getByRole('button', { name: 'Mark complete' });
     this.darkModeToggleButton = page.getByRole('button', { name: 'Toggle dark mode' });
 
     // ── Validation errors ──────────────────────────────────
-    // IDs are stable semantic anchors; role="alert" is on each element
+    // Each error is a role="alert" <p> injected on blur; its id is the target of the
+    // field's aria-describedby, so the id IS the accessibility contract (not a style hook).
     this.nameErrorMessage = page.locator('#name-error');
     this.emailErrorMessage = page.locator('#email-error');
     this.categoryErrorMessage = page.locator('#category-error');
