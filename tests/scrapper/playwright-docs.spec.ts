@@ -22,11 +22,7 @@ function computeTextDiff(before: string, after: string): string {
   const afterSet = new Set(afterParts);
   const removed = beforeParts.filter((s) => !afterSet.has(s));
   const added = afterParts.filter((s) => !beforeSet.has(s));
-  const lines: string[] = [
-    `Baseline sentences: ${beforeParts.length}`,
-    `Live sentences:     ${afterParts.length}`,
-    '',
-  ];
+  const lines: string[] = [`Baseline sentences: ${beforeParts.length}`, `Live sentences:     ${afterParts.length}`, ''];
   if (removed.length) lines.push('━━━ REMOVED ━━━', ...removed.map((s) => `- ${s}`), '');
   if (added.length) lines.push('━━━ ADDED ━━━', ...added.map((s) => `+ ${s}`));
   return lines.join('\n');

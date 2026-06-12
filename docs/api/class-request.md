@@ -67,8 +67,7 @@ const frameUrl = request.frame().url();
 
 ```ts
 if (request.serviceWorker()) console.log(`request ${request.url()} from a service worker`);
-else if (request.isNavigationRequest())
-  console.log(`request ${request.url()} is a navigation request`);
+else if (request.isNavigationRequest()) console.log(`request ${request.url()} is a navigation request`);
 else console.log(`request ${request.url()} from a frame ${request.frame().url()}`);
 ```
 

@@ -13,11 +13,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? undefined : undefined,
   outputDir: 'test-results',
-  reporter: [
-    ['list'],
-    ['html', { outputFolder: 'playwright-report' }],
-    ['json', { outputFile: 'playwright-report/results.json' }],
-  ],
+  reporter: [['list'], ['html', { outputFolder: 'playwright-report' }], ['json', { outputFile: 'playwright-report/results.json' }]],
   use: {
     baseURL: process.env.BASE_URL,
     trace: 'retain-on-failure',

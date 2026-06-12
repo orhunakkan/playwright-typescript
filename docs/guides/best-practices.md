@@ -86,11 +86,7 @@ const product = page.getByRole('listitem').filter({ hasText: 'Product 2' });
 You can also filter locators by text or by another locator:
 
 ```ts
-await page
-  .getByRole('listitem')
-  .filter({ hasText: 'Product 2' })
-  .getByRole('button', { name: 'Add to cart' })
-  .click();
+await page.getByRole('listitem').filter({ hasText: 'Product 2' }).getByRole('button', { name: 'Add to cart' }).click();
 ```
 
 ### Prefer User-Facing Attributes to XPath or CSS Selectors

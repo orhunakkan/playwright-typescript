@@ -144,9 +144,7 @@ You can select input files for upload using the `locator.setInputFiles()` method
 // Select one file
 await page.getByLabel('Upload file').setInputFiles(path.join(__dirname, 'myfile.pdf'));
 // Select multiple files
-await page
-  .getByLabel('Upload files')
-  .setInputFiles([path.join(__dirname, 'file1.txt'), path.join(__dirname, 'file2.txt')]);
+await page.getByLabel('Upload files').setInputFiles([path.join(__dirname, 'file1.txt'), path.join(__dirname, 'file2.txt')]);
 // Select a directory
 await page.getByLabel('Upload directory').setInputFiles(path.join(__dirname, 'mydir'));
 // Remove all the selected files

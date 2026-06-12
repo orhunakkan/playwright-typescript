@@ -138,10 +138,7 @@ console.log(await frame.evaluate('1 + 2')); // prints "3"
 
 // ElementHandle instances can be passed as an argument.
 const bodyHandle = await frame.evaluate('document.body');
-const html = await frame.evaluate(
-  ([body, suffix]) => body.innerHTML + suffix,
-  [bodyHandle, 'hello'],
-);
+const html = await frame.evaluate(([body, suffix]) => body.innerHTML + suffix, [bodyHandle, 'hello']);
 await bodyHandle.dispose();
 ```
 
@@ -167,10 +164,7 @@ const aHandle = await frame.evaluateHandle('document');
 
 // JSHandle instances can be passed as an argument.
 const aHandle2 = await frame.evaluateHandle(() => document.body);
-const resultHandle = await frame.evaluateHandle(
-  ([body, suffix]) => body.innerHTML + suffix,
-  [aHandle2, 'hello'],
-);
+const resultHandle = await frame.evaluateHandle(([body, suffix]) => body.innerHTML + suffix, [aHandle2, 'hello']);
 console.log(await resultHandle.jsonValue());
 await resultHandle.dispose();
 ```

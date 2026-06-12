@@ -82,10 +82,7 @@ import { test, expect, devices, type Locator } from '@playwright/test';
 
 test.use({ ...devices['Pixel 7'] });
 
-async function pinch(
-  locator: Locator,
-  arg: { deltaX?: number; deltaY?: number; steps?: number; direction?: 'in' | 'out' },
-) {
+async function pinch(locator: Locator, arg: { deltaX?: number; deltaY?: number; steps?: number; direction?: 'in' | 'out' }) {
   const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
     const bounds = target.getBoundingClientRect();
     const centerX = bounds.left + bounds.width / 2;

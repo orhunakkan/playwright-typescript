@@ -250,9 +250,7 @@ await page.locator('//button').click();
 XPath and CSS selectors can be tied to the DOM structure or implementation. These selectors can break when the DOM structure changes. Long CSS or XPath chains below are an example of a bad practice that leads to unstable tests:
 
 ```ts
-await page
-  .locator('#tsf > div:nth-child(2) > div.A8SBwf > div.RNNXgb > div > div.a4bIc > input')
-  .click();
+await page.locator('#tsf > div:nth-child(2) > div.A8SBwf > div.RNNXgb > div > div.a4bIc > input').click();
 await page.locator('//*[@id="tsf"]/div[2]/div[1]/div[1]/div/div[2]/input').click();
 ```
 
@@ -315,11 +313,7 @@ Consider the following DOM structure where we want to click on the buy button of
 Locators can be filtered by text with the `locator.filter()` method. It will search for a particular string somewhere inside the element, possibly in a descendant element, case-insensitively. You can also pass a regular expression.
 
 ```ts
-await page
-  .getByRole('listitem')
-  .filter({ hasText: 'Product 2' })
-  .getByRole('button', { name: 'Add to cart' })
-  .click();
+await page.getByRole('listitem').filter({ hasText: 'Product 2' }).getByRole('button', { name: 'Add to cart' }).click();
 ```
 
 Use a regular expression:
@@ -356,18 +350,14 @@ await page
 We can also assert the product card to make sure there is only one:
 
 ```ts
-await expect(
-  page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Product 2' }) }),
-).toHaveCount(1);
+await expect(page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Product 2' }) })).toHaveCount(1);
 ```
 
 The filtering locator must be relative to the original locator and is queried starting with the original locator match, not the document root. Therefore, the following will not work, because the filtering locator starts matching from the `<ul>` list element that is outside of the `<li>` list item matched by the original locator:
 
 ```ts
 // ✖ WRONG
-await expect(
-  page.getByRole('listitem').filter({ has: page.getByRole('list').getByText('Product 2') }),
-).toHaveCount(1);
+await expect(page.getByRole('listitem').filter({ has: page.getByRole('list').getByText('Product 2') })).toHaveCount(1);
 ```
 
 ### Filter by not having child/descendant
@@ -375,9 +365,7 @@ await expect(
 We can also filter by not having a matching element inside.
 
 ```ts
-await expect(
-  page.getByRole('listitem').filter({ hasNot: page.getByText('Product 2') }),
-).toHaveCount(1);
+await expect(page.getByRole('listitem').filter({ hasNot: page.getByText('Product 2') })).toHaveCount(1);
 ```
 
 Note that the inner locator is matched starting from the outer one, not from the document root.

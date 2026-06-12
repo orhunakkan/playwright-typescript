@@ -98,11 +98,7 @@ test('log battery calls', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.battery-percentage')).toHaveText('75%');
   // Compare actual calls with golden.
-  expect(log).toEqual([
-    'getBattery',
-    'addEventListener:chargingchange',
-    'addEventListener:levelchange',
-  ]);
+  expect(log).toEqual(['getBattery', 'addEventListener:chargingchange', 'addEventListener:levelchange']);
 });
 ```
 

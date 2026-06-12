@@ -59,10 +59,7 @@ export class AccessibleLocatorsPage {
     this.nextPageButton = page.getByRole('button', { name: 'Next' });
 
     // ── Book Card Buttons ──────────────────────────────────
-    this.cleanCodeAddToWishlistButton = page
-      .getByRole('article')
-      .filter({ hasText: 'Clean Code' })
-      .getByRole('button', { name: 'Add to wishlist' });
+    this.cleanCodeAddToWishlistButton = page.getByRole('article').filter({ hasText: 'Clean Code' }).getByRole('button', { name: 'Add to wishlist' });
     this.pragmaticProgrammerAddToWishlistButton = page
       .getByRole('article')
       .filter({ hasText: 'The Pragmatic Programmer' })
@@ -90,22 +87,13 @@ export class AccessibleLocatorsPage {
     this.playwrightDocsLink = page.getByRole('link', { name: 'Playwright Docs' });
 
     // ── Book Card Links ────────────────────────────────────
-    this.cleanCodeViewDetailsLink = page
-      .getByRole('article')
-      .filter({ hasText: 'Clean Code' })
-      .getByRole('link', { name: 'View details' });
+    this.cleanCodeViewDetailsLink = page.getByRole('article').filter({ hasText: 'Clean Code' }).getByRole('link', { name: 'View details' });
     this.pragmaticProgrammerViewDetailsLink = page
       .getByRole('article')
       .filter({ hasText: 'The Pragmatic Programmer' })
       .getByRole('link', { name: 'View details' });
-    this.designPatternsViewDetailsLink = page
-      .getByRole('article')
-      .filter({ hasText: 'Design Patterns' })
-      .getByRole('link', { name: 'View details' });
-    this.refactoringViewDetailsLink = page
-      .getByRole('article')
-      .filter({ hasText: 'Refactoring' })
-      .getByRole('link', { name: 'View details' });
+    this.designPatternsViewDetailsLink = page.getByRole('article').filter({ hasText: 'Design Patterns' }).getByRole('link', { name: 'View details' });
+    this.refactoringViewDetailsLink = page.getByRole('article').filter({ hasText: 'Refactoring' }).getByRole('link', { name: 'View details' });
     this.designOfEverydayThingsViewDetailsLink = page
       .getByRole('article')
       .filter({ hasText: 'The Design of Everyday Things' })
@@ -120,9 +108,7 @@ export class AccessibleLocatorsPage {
     this.pragmaticProgrammerCoverImage = page.getByAltText('The Pragmatic Programmer book cover');
     this.designPatternsCoverImage = page.getByAltText('Design Patterns book cover');
     this.refactoringCoverImage = page.getByAltText('Refactoring book cover');
-    this.designOfEverydayThingsCoverImage = page.getByAltText(
-      'The Design of Everyday Things book cover',
-    );
+    this.designOfEverydayThingsCoverImage = page.getByAltText('The Design of Everyday Things book cover');
     this.domainDrivenDesignCoverImage = page.getByAltText('Domain-Driven Design book cover');
 
     // ── Status ────────────────────────────────────────────

@@ -208,9 +208,7 @@ export default defineConfig({
 An example test illustrating the initial context options are set:
 
 ```ts
-test('should inherit use options on context when using built-in browser fixture', async ({
-  browser,
-}) => {
+test('should inherit use options on context when using built-in browser fixture', async ({ browser }) => {
   const context = await browser.newContext();
   const page = await context.newPage();
   expect(await page.evaluate(() => navigator.userAgent)).toBe('some custom ua');

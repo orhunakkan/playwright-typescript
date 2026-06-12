@@ -55,10 +55,7 @@ export const test = base.extend<{ context: BrowserContext; extensionId: string }
     const pathToExtension = path.join(__dirname, 'my-extension');
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
-      args: [
-        `--disable-extensions-except=${pathToExtension}`,
-        `--load-extension=${pathToExtension}`,
-      ],
+      args: [`--disable-extensions-except=${pathToExtension}`, `--load-extension=${pathToExtension}`],
     });
     await use(context);
     await context.close();

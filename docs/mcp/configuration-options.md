@@ -49,11 +49,7 @@ To run headless:
 ## Proxy
 
 ```json
-[
-  "@playwright/mcp@latest",
-  "--proxy-server=http://myproxy:3128",
-  "--proxy-bypass=localhost,*.internal.com"
-]
+["@playwright/mcp@latest", "--proxy-server=http://myproxy:3128", "--proxy-bypass=localhost,*.internal.com"]
 ```
 
 ## Standalone HTTP Server

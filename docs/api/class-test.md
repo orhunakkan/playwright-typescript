@@ -97,8 +97,7 @@ Declares an `afterEach` hook that is executed after each test. When called in th
 ```ts
 test.afterEach(async ({ page }, testInfo) => {
   console.log(`Finished ${testInfo.title} with status ${testInfo.status}`);
-  if (testInfo.status !== testInfo.expectedStatus)
-    console.log(`Did not run as expected, ended up at ${page.url()}`);
+  if (testInfo.status !== testInfo.expectedStatus) console.log(`Did not run as expected, ended up at ${page.url()}`);
 });
 ```
 
