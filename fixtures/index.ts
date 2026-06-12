@@ -2,13 +2,13 @@ import { test as base } from '@playwright/test';
 import { FormsValidationPage } from '../pages/forms-validation.page';
 import { AccessibleLocatorsPage } from '../pages/accessible-locators.page';
 import { HomePage } from '../pages/homepage.page';
-// TODO: import additional page objects here as labs are added
+import { ApiRequestContextPage } from '../pages/api-request-context.page';
 
 type Fixtures = {
   formsValidationPage: FormsValidationPage;
   accessibleLocatorsPage: AccessibleLocatorsPage;
   homePage: HomePage;
-  // TODO: add more fixture types here as labs are added
+  apiRequestContextPage: ApiRequestContextPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -20,6 +20,9 @@ export const test = base.extend<Fixtures>({
   },
   homePage: async ({ page }, use) => {
     await use(new HomePage(page));
+  },
+  apiRequestContextPage: async ({ page }, use) => {
+    await use(new ApiRequestContextPage(page));
   },
 });
 
