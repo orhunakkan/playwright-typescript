@@ -254,21 +254,22 @@ Cover at least one non-functional dimension beyond a11y. Emit a **performance-bu
 that reads the Navigation Timing API and asserts generous, stable budgets. Tag it
 `@performance` so it can be split out of the gating run when needed:
 
-```typescript
+// NOTE: do NOT add page.goto(URL) here — beforeEach already navigates once.
+// Adding a second goto measures warm/cached load time, not cold initial load.
 test.describe('performance @performance', () => {
-  test('initial load is within budget', async ({ page }) => {
-    await page.goto(URL);
-    const timing = await page.evaluate(() => {
-      const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      return { domContentLoaded: nav.domContentLoadedEventEnd, load: nav.loadEventEnd };
-    });
-    // Budgets are intentionally generous so they don't flake against a live site;
-    // tighten them when running in a controlled performance environment.
-    expect(timing.domContentLoaded).toBeLessThan(6000);
-    expect(timing.load).toBeLessThan(12000);
-  });
+test('initial load is within budget', async ({ page }) => {
+const timing = await page.evaluate(() => {
+const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+return { domContentLoaded: nav.domContentLoadedEventEnd, load: nav.loadEventEnd };
 });
-```
+// Budgets are intentionally generous so they don't flake against a live site;
+// tighten them when running in a controlled performance environment.
+expect(timing.domContentLoaded).toBeLessThan(6000);
+expect(timing.load).toBeLessThan(12000);
+});
+});
+
+````
 
 **Budget guidance:** absolute wall-clock budgets against a public site are noisy — keep them
 loose in the CI gate, and reserve tight thresholds for a controlled env. For a deeper audit
@@ -324,7 +325,7 @@ test.describe('<Lab Name>', () => {
     });
   });
 });
-```
+````
 
 **Output path:** `tests/<lab-name>/<lab-name>.spec.ts`
 

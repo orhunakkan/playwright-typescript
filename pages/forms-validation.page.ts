@@ -18,6 +18,9 @@ export class FormsValidationPage {
   readonly darkModeToggleButton: Locator;
 
   // ── Validation errors ────────────────────────────────────
+  // frequency (radio group) and terms (checkbox) have NO inline error messages.
+  // Their aria-required/disabled-button gating is the sole validation signal.
+  // Confirmed by DOM inspection on 2026-06-12 — no role="alert" injected on blur.
   readonly nameErrorMessage: Locator;
   readonly emailErrorMessage: Locator;
   readonly categoryErrorMessage: Locator;

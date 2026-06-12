@@ -166,6 +166,36 @@ Print:
 
 ---
 
+### Step 3.5 — Register Fixture (fixtures/index.ts)
+
+**Skip if:** `fixtures/index.ts` already contains an import for `<LabName>Page` from the generated POM.
+→ print `⏭ Step 3.5 skipped — fixture already registered`
+
+**Otherwise:**
+
+1. Read `fixtures/index.ts`
+2. Add the import at the top of the file:
+   ```typescript
+   import { <LabName>Page } from '../pages/<lab-name>.page';
+   ```
+3. Add the fixture type entry inside the `Fixtures` type block:
+   ```typescript
+   <labFixture>: <LabName>Page;
+   ```
+4. Add the fixture implementation inside the `test.extend<Fixtures>({...})` block:
+   ```typescript
+   <labFixture>: async ({ page }, use) => {
+     await use(new <LabName>Page(page));
+   },
+   ```
+5. Write the updated `fixtures/index.ts`
+6. Print: `✅ Step 3.5 done — <labFixture> registered in fixtures/index.ts`
+
+**Name derivation:** camelCase the lab name for the fixture key and PascalCase for the class name.
+Example: `forms-validation` → fixture key `formsValidationPage`, class `FormsValidationPage`.
+
+---
+
 ### Step 4 — Mark In Progress (jira-sync operation 1)
 
 **Skip if:** JIRA story status is already `In Progress`, `In Review`, or `Done`
@@ -302,15 +332,16 @@ Print the final report regardless of pass/fail:
  Finished: <timestamp>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
- Step 1  Fetch Requirements   ✅  X ACs retrieved
- Step 1b Generate Test Plan   ✅ written  /  ⏭ skipped (exists)
- Step 2  State Check          ✅  POM: <exists/missing>  Spec: <exists/missing>
- Step 3  Generate POM         ✅ generated  /  ⏭ skipped
- Step 4  Mark In Progress     ✅ transitioned  /  ⏭ skipped
- Step 5  Generate Spec        ✅ X tests written  /  ⏭ skipped
- Step 6  Run Tests            ✅ X/X passing  /  ❌ X failures
- Step 7  Triage               ✅ all green  /  ⚠️ X failures (Bugs filed, JIRA comment posted)
- Step 8  Transition to Review  ✅ TAB1-XX → In Review (+ RTM)  /  ⏭ skipped (failures pending)
+ Step 1   Fetch Requirements    ✅  X ACs retrieved
+ Step 1b  Generate Test Plan    ✅ written  /  ⏭ skipped (exists)
+ Step 2   State Check           ✅  POM: <exists/missing>  Spec: <exists/missing>
+ Step 3   Generate POM          ✅ generated  /  ⏭ skipped
+ Step 3.5 Register Fixture      ✅ registered  /  ⏭ skipped (already present)
+ Step 4   Mark In Progress      ✅ transitioned  /  ⏭ skipped
+ Step 5   Generate Spec         ✅ X tests written  /  ⏭ skipped
+ Step 6   Run Tests             ✅ X/X passing  /  ❌ X failures
+ Step 7   Triage                ✅ all green  /  ⚠️ X failures (Bugs filed, JIRA comment posted)
+ Step 8   Transition to Review  ✅ TAB1-XX → In Review (+ RTM)  /  ⏭ skipped (failures pending)
 
  Outcome: ✅ IN REVIEW — CI pending for Done  /  ⚠️ FAILURES — re-run after fixes
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -360,6 +391,7 @@ User says: "run stlc-pipeline for TAB1-13"
 4. Step 1b: generate Test Plan (skip if it exists)
 5. Step 2: check POM + spec existence
 6. Step 3: locator-mapper (skip if POM exists)
+6.5. Step 3.5: register fixture in fixtures/index.ts (skip if already present)
 7. Step 4: jira-sync → In Progress (skip if already past To Do)
 8. Step 5: test-case-generator from TAB1-13 ACs (skip if spec exists)
 9. Step 6: npx playwright test tests/forms-validation/forms-validation.spec.ts
