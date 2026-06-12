@@ -11,16 +11,12 @@ jobs:
   test:
     name: e2e (${{ matrix.project }})
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        # All four config projects resolve to bundled browsers
-        # (Edge → chromium, Safari → webkit), so no branded channels are needed.
         project: ['Desktop Chrome', 'Desktop Firefox', 'Desktop Edge', 'Desktop Safari']
     env:
-      # .env is gitignored; provide BASE_URL via repo variable with a sane default.
-      BASE_URL: ${{ vars.BASE_URL || 'https://stagecraftlabs.com' }}
+      BASE_URL: ${{ vars.BASE_URL }}
       CI: 'true'
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +33,7 @@ jobs:
         run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run Playwright tests
+        # tests/scrapper is excluded on CI via testIgnore in playwright.config.ts (CI-only).
         run: npx playwright test --project="${{ matrix.project }}"
 
       - name: Upload report

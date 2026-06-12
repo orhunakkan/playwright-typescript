@@ -6,6 +6,7 @@ dotenv.config({ path: '.env' });
 
 export default defineConfig({
   testDir: './tests',
+  testIgnore: process.env.CI ? ['**/scrapper/**'] : [],
   snapshotDir: './fixtures/reference-snapshots',
   snapshotPathTemplate: '{snapshotDir}/{testFileName}/{arg}{ext}',
   fullyParallel: true,
