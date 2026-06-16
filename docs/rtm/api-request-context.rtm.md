@@ -38,9 +38,9 @@
 
 ## Defects
 
-| ID  | Severity | Summary                                                                                                                       | Found by                                                    | JIRA | Status     |
-| --- | -------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ---- | ---------- |
-| —   | —        | No product defects found. One flaky axe scan during parallel execution (Firefox); passes in isolation — no product bug filed. | accessibility: no violations on initial page load (Firefox) | —    | Monitoring |
+| ID    | Severity | Summary                                                                                                                                                                              | Found by                                                    | JIRA    | Status |
+| ----- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- | ------- | ------ |
+| DEF-1 | Serious  | `<code>` inline elements (`#71717a` on `#f4f4f5`, 12px) had contrast ratio 4.39:1, below WCAG 2 AA 4.5:1. Caught by Firefox axe; Chrome rounded to passing. Fixed by app — CI green. | accessibility: no violations on initial page load (Firefox) | TAB1-24 | Fixed  |
 
 ---
 
@@ -49,4 +49,4 @@
 - ACs covered: 5 / 5
 - Test cases: 18 per browser × 4 browsers = 72 total (P:7 N:7 B:1 D:3 A11y:1 Perf:1) — note: data-driven table emits 3 separate N tests
 - Every POM locator relevant to assertions used: `taskItems` asserted in AC-2 UI test ✅
-- Open defects: 0 product bugs; 1 flaky observation (monitoring only)
+- Open defects: 0 (DEF-1 fixed — `<code>` element contrast resolved by app, CI green)
