@@ -14,7 +14,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: ['Desktop Chrome', 'Desktop Firefox', 'Desktop Edge', 'Desktop Safari']
+        include:
+          - project: 'Desktop Chrome'
+            browser: chromium
+          - project: 'Desktop Firefox'
+            browser: firefox
+          - project: 'Desktop Edge'
+            browser: chromium
+          - project: 'Desktop Safari'
+            browser: webkit
     env:
       BASE_URL: ${{ vars.BASE_URL }}
       CI: 'true'
@@ -30,7 +38,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Run Playwright tests
         # tests/scrapper is excluded on CI via testIgnore in playwright.config.ts (CI-only).

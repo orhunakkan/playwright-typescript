@@ -4,6 +4,7 @@ import { AccessibleLocatorsPage } from '../pages/accessible-locators.page';
 import { HomePage } from '../pages/homepage.page';
 import { ApiRequestContextPage } from '../pages/api-request-context.page';
 import { NetworkApiPage } from '../pages/network-api.page';
+import { AsyncUiPage } from '../pages/async-ui.page';
 
 type Fixtures = {
   formsValidationPage: FormsValidationPage;
@@ -11,6 +12,7 @@ type Fixtures = {
   homePage: HomePage;
   apiRequestContextPage: ApiRequestContextPage;
   networkApiPage: NetworkApiPage;
+  asyncUiPage: AsyncUiPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -28,6 +30,9 @@ export const test = base.extend<Fixtures>({
   },
   networkApiPage: async ({ page }, use) => {
     await use(new NetworkApiPage(page));
+  },
+  asyncUiPage: async ({ page }, use) => {
+    await use(new AsyncUiPage(page));
   },
 });
 
