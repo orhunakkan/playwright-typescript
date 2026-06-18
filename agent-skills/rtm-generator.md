@@ -58,6 +58,24 @@ Read `tests/<lab-name>/<lab-name>.spec.ts` and walk its structure:
 - For any test that intentionally filters a known axe violation (a `v.id !== '…'` filter with a
   defect comment), create a **Defect** row: id, severity (from axe `impact`), summary, found-by
   test, JIRA key, status. Cross-link it from the AXE row with a `*` footnote.
+  Immediately below that defect row, add a Fix Prompt blockquote for the stagecraftlabs.com
+  source code:
+
+  ```markdown
+  > **Fix Prompt — <DEF-ID>**
+  > You are working on the **stagecraftlabs.com source code** (separate repository from this Playwright test project).
+  >
+  > **Page:** `https://stagecraftlabs.com/practice/<page-slug>`
+  > **Element / Component:** <affected element>
+  > **Defect:** <exact symptom with specific values>
+  > **Root cause hypothesis:** <likely source location, or "Unknown — inspect <element> on the page">
+  > **Fix:** <specific change with target values>
+  > **Verification:** Remove `<filter or workaround>` from `<spec-file:line>` and re-run the suite. The formerly-failing assertion must pass with no new violations.
+  ```
+
+  The Fix Prompt must be self-contained — the receiving agent starts cold with no access to
+  this repository. Include the full URL, element name, exact values, and the spec file location.
+  Remove the Fix Prompt block once the defect Status is updated to `Fixed`.
 
 ---
 
