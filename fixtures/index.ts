@@ -5,6 +5,7 @@ import { HomePage } from '../pages/homepage.page';
 import { ApiRequestContextPage } from '../pages/api-request-context.page';
 import { NetworkApiPage } from '../pages/network-api.page';
 import { AsyncUiPage } from '../pages/async-ui.page';
+import { TablesFilteringPage } from '../pages/tables-filtering.page';
 
 type Fixtures = {
   formsValidationPage: FormsValidationPage;
@@ -13,6 +14,7 @@ type Fixtures = {
   apiRequestContextPage: ApiRequestContextPage;
   networkApiPage: NetworkApiPage;
   asyncUiPage: AsyncUiPage;
+  tablesFilteringPage: TablesFilteringPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -33,6 +35,9 @@ export const test = base.extend<Fixtures>({
   },
   asyncUiPage: async ({ page }, use) => {
     await use(new AsyncUiPage(page));
+  },
+  tablesFilteringPage: async ({ page }, use) => {
+    await use(new TablesFilteringPage(page));
   },
 });
 
