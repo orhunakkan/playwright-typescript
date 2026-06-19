@@ -1,4 +1,5 @@
 import { test as base } from '@playwright/test';
+import { EmulationInputPage } from '../pages/emulation-input.page';
 import { FormsValidationPage } from '../pages/forms-validation.page';
 import { AccessibleLocatorsPage } from '../pages/accessible-locators.page';
 import { HomePage } from '../pages/homepage.page';
@@ -9,6 +10,7 @@ import { TablesFilteringPage } from '../pages/tables-filtering.page';
 import { BrowserEventsPage } from '../pages/browser-events.page';
 
 type Fixtures = {
+  emulationInputPage: EmulationInputPage;
   formsValidationPage: FormsValidationPage;
   accessibleLocatorsPage: AccessibleLocatorsPage;
   homePage: HomePage;
@@ -20,6 +22,9 @@ type Fixtures = {
 };
 
 export const test = base.extend<Fixtures>({
+  emulationInputPage: async ({ page }, use) => {
+    await use(new EmulationInputPage(page));
+  },
   formsValidationPage: async ({ page }, use) => {
     await use(new FormsValidationPage(page));
   },
