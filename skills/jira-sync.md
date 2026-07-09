@@ -11,6 +11,9 @@ description: >
 compatibility: >
   Requires Atlassian MCP. cloudId: orhunakkan.atlassian.net. Project: TAB1.
   Read access to project filesystem for test file verification. Output: JIRA updated + summary.
+  Operation 4 (Done) additionally requires GitHub CLI (`gh`, authenticated, `repo` scope) to
+  look up the lab's PR, poll its CI run, and parse per-browser results as real evidence —
+  it no longer accepts a self-reported confirmation.
 ---
 
 # Playwright JIRA Sync
@@ -159,7 +162,9 @@ Story ready for "In Review". Run jira-sync operation 3 to transition.
 
 1. Fetch available transitions via Atlassian MCP (`getTransitionsForJiraIssue`)
 2. Transition to "In Review"
-3. Post comment:
+3. If a PR exists for this lab (`gh pr list --head stlc/<lab-name> --state open --json
+number,url`), include its URL in the comment.
+4. Post comment:
 
 ```
 🔍 In Review — Local Tests Passing (<date>)
@@ -167,22 +172,38 @@ Story ready for "In Review". Run jira-sync operation 3 to transition.
 Spec: tests/<lab-name>/<lab-name>.spec.ts
 Tests: X passing (covers all JIRA ACs)
 Browsers: Desktop Chrome, Firefox, Edge, Safari
+PR: <PR URL, if one exists>
 
 Pending: CI run to confirm cross-environment stability.
 ```
 
 ---
 
-### Operation 4 — Transition to "Done" (CI passing)
+### Operation 4 — Transition to "Done" (CI passing, verified — not self-reported)
 
-**Trigger:** User confirms CI passed for a lab (or provides CI run evidence).
+**Trigger:** User asks to transition a story to Done (or the `stlc-pipeline` skill reaches
+this point automatically). This operation never accepts a plain "yes" as evidence — it looks
+up and verifies the actual CI result itself.
 
 **Pre-condition check:**
 
 1. Current status must be "In Review"
-2. Ask the user to confirm: "CI passed for <lab-name>? (yes/no)"
+2. Resolve the lab's PR: `gh pr list --head stlc/<lab-name> --state all --json
+number,url,state --limit 1`
+   - **If no PR is found**, do not guess or ask "did CI pass? (yes/no)" — instead ask the
+     user for the PR URL or run ID directly (see Edge Cases below).
+3. Resolve the PR's latest workflow run:
+   `gh run list --branch stlc/<lab-name> --workflow=playwright.yml --limit 1 --json
+databaseId,status,conclusion`
+   - If the run is still in progress, poll (`gh run watch <databaseId> --exit-status`) until
+     it finishes rather than assuming.
+4. For each of the 4 browser projects, download the `playwright-report-<project>` artifact and
+   parse `playwright-report/results.json`, filtering to `tests/<lab-name>/<lab-name>.spec.ts`.
+   Confirm every test in that file passed on every project — an unrelated lab's failure
+   elsewhere in the same run must not block this one.
+5. Confirm no non-flaky defect linked to the story is still open.
 
-**If confirmed:**
+**Only if all of the above hold:**
 
 1. Transition to "Done"
 2. Post comment:
@@ -190,9 +211,15 @@ Pending: CI run to confirm cross-environment stability.
 ```
 ✅ Done — CI Verified (<date>)
 
-All tests passing in CI across all configured browsers.
-STLC closure: requirements traced → POM → spec → CI green.
+PR: <PR URL> (open — merging is a separate, manual step)
+CI run: <run URL> — all 4 browsers passing for this lab's spec
+STLC closure: requirements traced → POM → spec → CI green (verified per-browser, not self-reported).
+Open blocking defects: 0
 ```
+
+**If verification fails** (a browser shows this lab's spec failing, or the run hasn't
+completed): do not transition. Report exactly which project/test failed, or that the run is
+still pending, and leave the story at "In Review".
 
 ---
 
@@ -220,12 +247,15 @@ STLC closure: requirements traced → POM → spec → CI green.
 
 ## Edge Cases
 
-| Situation                                 | Handling                                                     |
-| ----------------------------------------- | ------------------------------------------------------------ |
-| Story already "Done"                      | Note it; ask before adding comment or retransitioning        |
-| Transition not available in JIRA workflow | List available transitions; ask which to use                 |
-| Multiple spec files for one story         | Mention all files in the comment                             |
-| User wants to reopen a story              | Transition to "To Do" or "In Progress" with a reason comment |
+| Situation                                 | Handling                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------------ |
+| Story already "Done"                      | Note it; ask before adding comment or retransitioning                    |
+| Transition not available in JIRA workflow | List available transitions; ask which to use                             |
+| Multiple spec files for one story         | Mention all files in the comment                                         |
+| User wants to reopen a story              | Transition to "To Do" or "In Progress" with a reason comment             |
+| Operation 4: no PR found for the lab      | Ask the user for a PR URL or run ID — do not ask "did CI pass? (yes/no)" |
+| Operation 4: `gh` missing/unauthenticated | Stop; report `gh auth status`; cannot verify CI without it               |
+| Operation 4: CI run still in progress     | Poll/wait for it to finish; do not transition on a pending run           |
 
 ---
 
@@ -234,7 +264,7 @@ STLC closure: requirements traced → POM → spec → CI green.
 ```
 1. Identify which operation (1–5) and which story/stories (TAB1-XX)
 2. Verify story exists and fetch current status
-3. Execute the operation with Atlassian MCP
+3. Execute the operation with Atlassian MCP (Operation 4 also uses `gh` to verify CI evidence)
 4. Post the appropriate comment
 5. Print confirmation: "TAB1-XX transitioned <from> → <to> and comment posted"
 ```

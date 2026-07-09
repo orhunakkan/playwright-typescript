@@ -20,6 +20,11 @@ compatibility: >
 Parses test failure output, categorizes each failure by root cause, suggests targeted fixes,
 optionally writes results back to JIRA, and prints a test closure summary.
 
+The `results.json` input can come from a local run **or** from a `playwright-report-<project>`
+artifact downloaded from a GitHub Actions run (via `gh run download`) — categorization applies
+identically either way. `stlc-pipeline` Step 12a uses this skill against CI-sourced reports
+when a lab passes locally but fails in CI.
+
 ---
 
 ## JIRA Story Map (for write-back)

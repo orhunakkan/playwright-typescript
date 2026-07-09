@@ -3,8 +3,9 @@
 This folder holds a set of **Claude Code agent skills** that together automate a full
 **Software Testing Life Cycle (STLC)** for the [Stagecraft Labs](https://stagecraftlabs.com)
 practice site. Each skill owns one phase of the cycle; one orchestrator skill chains them all
-together so a single JIRA story can go from _requirements_ to _passing tests_ to _In Review_
-without manual hand-offs.
+together so a single JIRA story can go from _requirements_ to _passing tests_ to an open PR
+verified green by real GitHub Actions CI to _Done_, without manual hand-offs — except merging
+the PR, which always stays a human decision.
 
 If you are reading this to understand "how the STLC flow works," start with
 [The STLC flow in one picture](#the-stlc-flow-in-one-picture), then read
@@ -48,7 +49,7 @@ POM class `FormsValidationPage`, fixture key `formsValidationPage`, files
 
 ## The tools each skill depends on
 
-Skills call out to four external capabilities. A skill checks for the ones it needs up front
+Skills call out to five external capabilities. A skill checks for the ones it needs up front
 and **stops** if any are missing rather than producing a partial artifact.
 
 | Tool                    | Used for                                                                                                         |
@@ -57,6 +58,7 @@ and **stops** if any are missing rather than producing a partial artifact.
 | **Playwright MCP**      | Browser navigation, screenshots, accessibility-tree snapshots                                                    |
 | **Chrome DevTools MCP** | DOM interrogation, validation constraints, event-listener detection, Lighthouse                                  |
 | **Playwright CLI**      | Actually running the generated spec files                                                                        |
+| **GitHub CLI (`gh`)**   | Branch push, PR creation, polling the real CI run, downloading per-browser report artifacts to verify Done       |
 
 ---
 
@@ -106,8 +108,12 @@ and **stops** if any are missing rather than producing a partial artifact.
   └───────┬───────┘
           ▼
   ┌───────────────┐   STLC: Status lifecycle
-  │ jira-sync     │   To Do → In Progress → In Review → Done (CI-gated)
-  └───────────────┘
+  │ jira-sync     │   To Do → In Progress → In Review → Done
+  └───────┬───────┘   (Done verified per-lab from a real GitHub Actions run — never self-reported)
+          ▼
+       [ branch → PR (gh) → CI run → per-browser report parse ]
+          │
+     PR stays open — merge is a manual, human step
 
   Cross-cutting (run any time, not in the linear path):
    • coverage-analyzer    — which of the 30 labs have POM/spec/tests; what to do next
@@ -120,9 +126,9 @@ and **stops** if any are missing rather than producing a partial artifact.
 
 ### Orchestrator
 
-| Skill                        | File                                 | What it does                                                                                                                                                |
-| ---------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **playwright-stlc-pipeline** | [stlc-pipeline.md](stlc-pipeline.md) | Runs the entire cycle for one lab end-to-end, **no checkpoints**, skipping any step whose output already exists. Stops at **In Review** (Done is CI-gated). |
+| Skill                        | File                                 | What it does                                                                                                                                                                                                                                    |
+| ---------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **playwright-stlc-pipeline** | [stlc-pipeline.md](stlc-pipeline.md) | Runs the entire cycle for one lab end-to-end, **no checkpoints**, skipping any step whose output already exists. Opens a PR, waits for real CI, and reaches **Done** once this lab's tests are verified green per browser. Never merges the PR. |
 
 ### Phase skills (the linear path)
 
@@ -151,34 +157,48 @@ This is what `playwright-stlc-pipeline` does when you say _"run stlc-pipeline fo
 It is a straight run-through — it never pauses for approval — and it **skips any step whose
 artifact already exists**, which is what makes re-runs cheap.
 
-| Step       | Name                                 | Delegates to                     | Skip condition                                         |
-| ---------- | ------------------------------------ | -------------------------------- | ------------------------------------------------------ |
-| Pre-flight | Resolve input + tool check           | —                                | Stops if no lab resolves or a required tool is missing |
-| **1**      | Fetch requirements                   | requirement-extractor            | Never skipped — drives steps 1b & 5                    |
-| **1b**     | Generate test plan                   | test-plan-generator              | Test plan file already exists                          |
-| **2**      | State check (POM? spec?)             | — (filesystem)                   | —                                                      |
-| **3**      | Generate POM                         | locator-mapper                   | POM file already exists                                |
-| **3.5**    | Register POM as a fixture            | edits `fixtures/index.ts`        | Fixture already registered                             |
-| **4**      | Mark JIRA _In Progress_              | jira-sync (op 1)                 | Story already past _To Do_                             |
-| **5**      | Generate spec                        | test-case-generator              | Spec file already exists                               |
-| **6**      | Run tests                            | Playwright CLI                   | —                                                      |
-| **7**      | Triage **or** celebrate              | test-triage (on failure)         | Skipped when all pass                                  |
-| **8**      | Transition _In Review_ + refresh RTM | jira-sync (op 3) + rtm-generator | Skipped if tests failed                                |
-| **8b**     | Transition _Done_                    | jira-sync (op 4)                 | **Never run locally — CI-gated**                       |
-| **9**      | Pipeline report                      | —                                | —                                                      |
+| Step       | Name                                       | Delegates to                   | Skip condition                                         |
+| ---------- | ------------------------------------------ | ------------------------------ | ------------------------------------------------------ |
+| Pre-flight | Resolve input + tool check                 | —                              | Stops if no lab resolves or a required tool is missing |
+| **1**      | Fetch requirements                         | requirement-extractor          | Never skipped — drives steps 1b & 5                    |
+| **1b**     | Generate test plan                         | test-plan-generator            | Test plan file already exists                          |
+| **2**      | State check (POM? spec?)                   | — (filesystem)                 | —                                                      |
+| **3**      | Generate POM                               | locator-mapper                 | POM file already exists                                |
+| **3.5**    | Register POM as a fixture                  | edits `fixtures/index.ts`      | Fixture already registered                             |
+| **4**      | Mark JIRA _In Progress_                    | jira-sync (op 1)               | Story already past _To Do_                             |
+| **5**      | Generate spec                              | test-case-generator            | Spec file already exists                               |
+| **6**      | Run tests                                  | Playwright CLI                 | —                                                      |
+| **7**      | Triage **or** celebrate                    | test-triage (on failure)       | Skipped when all pass                                  |
+| **8**      | Refresh RTM, push branch, open PR          | git + `gh pr create`           | Reuses the open PR if one already exists for this lab  |
+| **9**      | Transition _In Review_                     | jira-sync (op 3)               | Skipped if tests failed                                |
+| **10**     | Wait for CI                                | `gh run watch`                 | —                                                      |
+| **11**     | Parse this lab's CI result                 | `gh run download` + JSON parse | —                                                      |
+| **12**     | Transition _Done_ **or** CI-failure triage | jira-sync (op 4) / test-triage | Done only if this lab passed on every browser          |
+| **13**     | Pipeline report                            | —                              | —                                                      |
 
-### Why it stops at _In Review_
+### How Done is verified
 
-A local green run is **not** CI evidence. The pipeline deliberately moves the story only as
-far as **In Review** and posts a "CI pending" comment. **Done** happens only when CI reports
-green across the full browser matrix _and_ no non-flaky defect is open — handled by
-`jira-sync` operation 4, off the local path.
+A local green run is **not** CI evidence. Step 8 pushes a branch and opens a real PR against
+`main`, which fires the existing `.github/workflows/playwright.yml` matrix. The pipeline blocks
+(Step 10) until that run finishes, then (Step 11) downloads each browser's
+`playwright-report-<project>` artifact and parses `results.json` to confirm **specifically
+this lab's spec file** passed on every browser — not just that the whole run was green, which
+could be blocked by an unrelated flaky lab. Only then does `jira-sync` operation 4 transition
+the story to Done; it never accepts a plain "yes" as evidence.
+
+### Why merging stays manual
+
+The pipeline opens a PR instead of pushing straight to `main` so there's a real review
+checkpoint. It never runs `gh pr merge` — Done reflects "this lab's tests are verified passing
+in CI," not "this code is merged." Merging the PR is left as an explicit next step for a human.
 
 ### Re-run behavior
 
-Re-running the pipeline on the same lab after fixing failures skips steps 1b, 3, and 5
-(those artifacts exist) and jumps straight to **Step 6 → 7 → 8**. To force regeneration,
-delete the POM/spec file or explicitly say "regenerate POM" / "regenerate spec".
+Re-running the pipeline on the same lab after fixing a **local** failure skips steps 1b, 3, and
+5 (those artifacts exist) and jumps straight to **Step 6 → 7 → 8**. Re-running after fixing a
+**CI-only** failure (Step 12 triage) reuses the existing open PR — pushing the fix as a new
+commit — and jumps straight to **Step 10 → 11 → 12**. To force regeneration of the POM or spec,
+delete the file or explicitly say "regenerate POM" / "regenerate spec".
 
 ---
 
@@ -205,6 +225,9 @@ These conventions are what make the suite a _real_ STLC rather than "some Playwr
   defect-worthy failures (Logic, Accessibility, persistent Selector), links them to the story,
   records them in the RTM, and closes them on re-pass. Flaky → quarantine; Environment → infra
   task. Neither files a product Bug.
+- **CI evidence over self-report.** Done is never taken on a human's word. `jira-sync`
+  operation 4 looks up the lab's PR, waits for its GitHub Actions run, and parses the actual
+  `results.json` per browser before transitioning — a "yes" alone was never enough.
 
 ---
 
@@ -233,12 +256,14 @@ exact internal sequence that skill follows once invoked.
 
 ## Where the artifacts land
 
-| Artifact                         | Location                            | Produced by                               |
-| -------------------------------- | ----------------------------------- | ----------------------------------------- |
-| Page Object Models               | `pages/<lab>.page.ts`               | locator-mapper                            |
-| Fixture registration             | `fixtures/index.ts`                 | stlc-pipeline (Step 3.5)                  |
-| Spec files                       | `tests/<lab>/<lab>.spec.ts`         | test-case-generator                       |
-| Test plans                       | `docs/test-plan/<lab>.test-plan.md` | test-plan-generator                       |
-| Traceability matrices            | `docs/rtm/<lab>.rtm.md`             | rtm-generator                             |
-| JIRA Bugs, comments, transitions | JIRA project `TAB1`                 | test-triage, jira-sync                    |
-| JSON test report                 | `playwright-report/results.json`    | Playwright CLI (consumed by triage & RTM) |
+| Artifact                           | Location                                                         | Produced by                                                      |
+| ---------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Page Object Models                 | `pages/<lab>.page.ts`                                            | locator-mapper                                                   |
+| Fixture registration               | `fixtures/index.ts`                                              | stlc-pipeline (Step 3.5)                                         |
+| Spec files                         | `tests/<lab>/<lab>.spec.ts`                                      | test-case-generator                                              |
+| Test plans                         | `docs/test-plan/<lab>.test-plan.md`                              | test-plan-generator                                              |
+| Traceability matrices              | `docs/rtm/<lab>.rtm.md`                                          | rtm-generator                                                    |
+| JIRA Bugs, comments, transitions   | JIRA project `TAB1`                                              | test-triage, jira-sync                                           |
+| JSON test report (local)           | `playwright-report/results.json`                                 | Playwright CLI (consumed by triage & RTM)                        |
+| Feature branch + PR                | `stlc/<lab>` on GitHub, PR against `main`                        | stlc-pipeline (Step 8), left open for manual merge               |
+| JSON test report (CI, per browser) | `playwright-report-<project>` artifact on the GitHub Actions run | CI workflow (consumed by stlc-pipeline Step 11 / jira-sync op 4) |

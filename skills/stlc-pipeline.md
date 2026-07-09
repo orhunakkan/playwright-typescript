@@ -2,12 +2,14 @@
 name: playwright-stlc-pipeline
 description: >
   Runs the full STLC cycle for a single Stagecraft lab end-to-end without stopping for
-  approval — from JIRA story to passing tests, an RTM, and the story moved to In Review.
-  (Done is CI-gated and not performed by the local run.) Use this skill whenever
+  approval — from JIRA story to passing tests, a pushed branch, an open PR, a real GitHub
+  Actions CI run, an RTM, and the story moved to Done once CI verifies this lab's tests pass
+  on every browser. Merging the PR stays a manual, human step. Use this skill whenever
   the user wants to fully automate a lab, or says things like "run pipeline for TAB1-XX",
   "full cycle for Forms lab", "run stlc-pipeline", or "automate TAB1-XX end to end".
   Accepts a JIRA story key (TAB1-XX) or lab name. Skips steps already completed.
-  Does NOT pause between steps — runs straight through to In Review.
+  Does NOT pause between steps — runs straight through to Done (or to a CI-failure triage
+  comment if this lab's tests don't pass in CI).
 
 compatibility: >
   Requires ALL of the following:
@@ -15,6 +17,8 @@ compatibility: >
   - Playwright MCP (browser navigation, screenshots, accessibility snapshot)
   - Chrome DevTools MCP (DOM queries, event listener inspection)
   - Playwright CLI (running the generated spec file)
+  - GitHub CLI (`gh`, authenticated, `repo` scope) — branch push, PR creation, CI run
+    polling, and artifact download
   Other agent skills invoked internally: requirement-extractor, test-plan-generator,
   locator-mapper, test-case-generator, jira-sync, test-triage, rtm-generator.
 ---
@@ -22,7 +26,9 @@ compatibility: >
 # Playwright STLC Pipeline
 
 Orchestrates the full STLC cycle for one lab: requirements → POM → tests → run → triage →
-RTM → JIRA In Review (Done is CI-gated). No checkpoints. Skips any step whose output already exists.
+branch → PR → CI → RTM → JIRA In Review → Done (verified by real CI evidence, per lab).
+No checkpoints. Skips any step whose output already exists. The pipeline never merges the
+PR — that stays a manual, human action.
 
 ---
 
@@ -76,14 +82,18 @@ Resolve to: JIRA key + lab name + URL path + POM path + spec path.
 
 ## ⛔ Pre-flight — Tool Check
 
-Verify ALL four tools are available before executing any step:
+Verify ALL five tools are available before executing any step:
 
-| Tool                | Required For                      |
-| ------------------- | --------------------------------- |
-| Atlassian MCP       | JIRA reads, comments, transitions |
-| Playwright MCP      | Browser navigation, screenshots   |
-| Chrome DevTools MCP | DOM and event listener inspection |
-| Playwright CLI      | Running the spec file             |
+| Tool                | Required For                                                |
+| ------------------- | ----------------------------------------------------------- |
+| Atlassian MCP       | JIRA reads, comments, transitions                           |
+| Playwright MCP      | Browser navigation, screenshots                             |
+| Chrome DevTools MCP | DOM and event listener inspection                           |
+| Playwright CLI      | Running the spec file                                       |
+| GitHub CLI (`gh`)   | Branch push, PR creation, CI run polling, artifact download |
+
+Confirm `gh` is authenticated (`gh auth status`) — an installed-but-unauthenticated CLI counts
+as missing.
 
 **If any tool is missing → STOP and list exactly which tools are absent.**
 Do not attempt to proceed with missing tools — partial execution will produce incomplete artifacts.
@@ -127,8 +137,8 @@ Execute all phases from `requirement-extractor`:
 
 **Otherwise**, execute `test-plan-generator`: derive scope, the browser matrix (from
 `playwright.config.ts`), environments (`.env*`), a risk table (P1→P3), and entry/exit criteria.
-Write `docs/test-plan/<lab-name>.test-plan.md`. The exit criteria defined here govern Step 8
-(In Review) and Step 8b (Done).
+Write `docs/test-plan/<lab-name>.test-plan.md`. The exit criteria defined here govern Step 9
+(In Review) and Step 12b (Done).
 
 ---
 
@@ -277,16 +287,49 @@ Print:
 
 ---
 
-### Step 8 — Transition to In Review (jira-sync operation 3)
+### Step 8 — Push Branch & Open PR (git + GitHub CLI)
 
-**Only reached if `RUN_RESULT = pass` locally.** A local pass is **not** CI evidence, so the
-pipeline stops here — it does **not** move the story to Done. This reconciles with `jira-sync`,
-where Done means "passing in CI". (Done is handled by Step 8b, off the local path.)
+**Skip if:** an open PR already exists for this lab —
+`gh pr list --head stlc/<lab-name> --state open --json number,url,headRefName`.
+
+- If found: reuse it. If any generated file changed since its last commit, stage + commit +
+  `git push` to the same branch (fires a `synchronize` event → a fresh CI run).
+  → print `⏭ Step 8 skipped — reusing open PR #<N> (<url>)` or
+  `✅ Step 8 done — pushed new commit to existing PR #<N>`.
+- If the branch exists locally/remotely but no PR is open (a prior run was aborted before PR
+  creation), checkout the branch and proceed from sub-step 6 below.
+
+**Otherwise:**
+
+1. Refresh the RTM now, so it ships with the PR: run `rtm-generator` for `TAB1-XX` →
+   writes `docs/rtm/<lab-name>.rtm.md`
+2. Create the branch from `main`: `git checkout -b stlc/<lab-name>`
+3. Stage only the generated paths — never `git add -A`:
+   ```
+   git add pages/<lab-name>.page.ts fixtures/index.ts tests/<lab-name>/<lab-name>.spec.ts \
+     docs/test-plan/<lab-name>.test-plan.md docs/rtm/<lab-name>.rtm.md
+   ```
+4. Commit: `feat: add <Lab Name> lab tests and POM (TAB1-XX)`
+5. Push: `git push -u origin stlc/<lab-name>`
+6. Open the PR:
+   ```
+   gh pr create --base main --head stlc/<lab-name> \
+     --title "feat: add <Lab Name> lab tests and POM (TAB1-XX)" \
+     --body "<AC coverage summary, test counts, RTM link, 'Refs TAB1-XX'>"
+   ```
+7. Record the PR number and URL — later steps and JIRA comments reference it.
+
+---
+
+### Step 9 — Transition to In Review (jira-sync operation 3)
+
+**Only reached if `RUN_RESULT = pass` locally.** A local pass is **not** CI evidence, so this
+step moves the story to `In Review`, not `Done` — Done is only reached in Step 12b once real
+CI evidence exists.
 
 1. Fetch available transitions via Atlassian MCP
 2. Transition `TAB1-XX` → `In Review`
-3. Refresh the RTM: run `rtm-generator` for `TAB1-XX` → writes `docs/rtm/<lab-name>.rtm.md`
-4. Post comment:
+3. Post comment (includes the PR link from Step 8):
 
 ```
 🔍 In Review — Local Tests Passing (<timestamp>)
@@ -294,35 +337,95 @@ where Done means "passing in CI". (Done is handled by Step 8b, off the local pat
 Spec: tests/<lab-name>/<lab-name>.spec.ts
 Tests: X / X passing locally (<project run>)
 RTM: docs/rtm/<lab-name>.rtm.md
+PR: <PR URL from Step 8>
 Open defects: <N>  (from triage Phase 4b — must be 0 non-flaky to reach Done)
 All JIRA ACs covered:
   ✅ AC-1: <text>
   ...
-Pending: CI run across all configured browsers to confirm → then Done.
+Pending: GitHub Actions CI run on PR #<N> to confirm → then Done.
 ```
 
 ---
 
-### Step 8b — Transition to Done (CI-gated — NOT performed by the local pipeline)
+### Step 10 — Wait for CI
 
-The local run **stops at In Review**. Done happens only when CI reports green, via
-`jira-sync` operation 4. When CI passes **and** no non-flaky defect from Phase 4b is open:
+1. Resolve the workflow run for the PR's branch:
+   ```
+   gh run list --branch stlc/<lab-name> --workflow=playwright.yml --limit 1 \
+     --json databaseId,status,conclusion,headSha
+   ```
+2. Block until it finishes: `gh run watch <databaseId> --exit-status`. A 4-browser run with
+   fresh browser installs can take several minutes — run this via Bash with
+   `run_in_background` if a single call risks exceeding the tool timeout.
+3. Record the overall run conclusion, but do **not** gate Done on it alone — Step 11 determines
+   the lab-specific result. A flaky failure in an unrelated lab elsewhere in the run must not
+   block this lab's Done.
 
-1. Transition `TAB1-XX` → `Done`
-2. Post comment:
+---
+
+### Step 11 — Parse Lab-Specific CI Result
+
+The workflow already uploads a `playwright-report-<project>` artifact per browser, containing
+`playwright-report/results.json` from the repo's existing JSON reporter — no workflow or
+`playwright.config.ts` changes are needed.
+
+For each of the 4 projects (`Desktop Chrome`, `Desktop Firefox`, `Desktop Edge`, `Desktop Safari`):
+
+1. `gh run download <databaseId> -n "playwright-report-<project>" -D <tmp-dir>/<project>`
+2. Read `<tmp-dir>/<project>/playwright-report/results.json`
+3. Walk `suites` recursively to find specs whose `file` matches
+   `tests/<lab-name>/<lab-name>.spec.ts`
+4. Confirm every test in that spec file has a final `status` of `expected`/`passed`
+
+Set `CI_LAB_RESULT = pass` only if every project confirms all of this lab's tests passed.
+Otherwise `CI_LAB_RESULT = fail` — record exactly which project(s)/test(s) failed.
+
+---
+
+### Step 12a — CI-Failure Triage (only if `CI_LAB_RESULT = fail`)
+
+Reuse `test-triage`'s categorization phases, sourcing failures from the downloaded CI JSON
+report instead of a local run:
+
+1. Categorize each CI-specific failure (Selector / Logic / Environment / Flaky / Accessibility)
+2. Post a JIRA comment on `TAB1-XX` with the CI run URL and per-browser failure summary
+3. File & link defects per the same rules as Step 7 (triage Phase 4b)
+4. **Do NOT transition story status** — leave at `In Review`
+
+Print:
+
+```
+⚠️  Pipeline completed — local tests passed but CI failed for this lab.
+    PR #<N>: <url>
+    Fix the issues above, push to the same branch, and re-run the pipeline —
+    it will reuse PR #<N> (Step 8) and jump straight to Step 10.
+```
+
+---
+
+### Step 12b — Transition to Done (only if `CI_LAB_RESULT = pass`)
+
+jira-sync operation 4, triggered by real evidence — never a self-reported yes/no:
+
+1. Confirm no non-flaky defect from Phase 4b (local or CI) is open
+2. Transition `TAB1-XX` → `Done`
+3. Post comment:
 
 ```
 ✅ Done — CI Verified (<timestamp>)
 
+PR: <PR URL> (open — merge is a manual step, not performed by this pipeline)
+CI run: <run URL> — all 4 browsers passing for this lab
 STLC closure: JIRA ACs → POM → spec → RTM → CI green across all browsers.
 Open blocking defects: 0
 ```
 
-Never transition to Done while a non-flaky defect linked to the story is still open.
+Never transition to Done while a non-flaky defect linked to the story is still open, and never
+merge the PR — that decision belongs to a human reviewer.
 
 ---
 
-### Step 9 — Pipeline Report
+### Step 13 — Pipeline Report
 
 Print the final report regardless of pass/fail:
 
@@ -341,9 +444,16 @@ Print the final report regardless of pass/fail:
  Step 5   Generate Spec         ✅ X tests written  /  ⏭ skipped
  Step 6   Run Tests             ✅ X/X passing  /  ❌ X failures
  Step 7   Triage                ✅ all green  /  ⚠️ X failures (Bugs filed, JIRA comment posted)
- Step 8   Transition to Review  ✅ TAB1-XX → In Review (+ RTM)  /  ⏭ skipped (failures pending)
+ Step 8   Push Branch & Open PR ✅ PR #<N> opened  /  ⏭ reused existing PR #<N>
+ Step 9   Transition to Review  ✅ TAB1-XX → In Review (+ PR link)  /  ⏭ skipped (failures pending)
+ Step 10  Wait for CI           ✅ run <id> concluded <conclusion>
+ Step 11  Parse Lab CI Result   ✅ X/X browsers passing for this lab  /  ❌ failed on <project(s)>
+ Step 12  Done or CI Triage     ✅ TAB1-XX → Done  /  ⚠️ CI-failure triage (Bugs filed, JIRA comment posted)
 
- Outcome: ✅ IN REVIEW — CI pending for Done  /  ⚠️ FAILURES — re-run after fixes
+ PR: <PR URL> — open, unmerged (merge is a manual step)
+ Outcome: ✅ DONE — CI verified per-browser for this lab  /
+          ⚠️ CI FAILURES — fix, push to PR branch, re-run (resumes at Step 10)  /
+          ⚠️ LOCAL FAILURES — re-run after fixes (resumes at Step 6)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -351,12 +461,20 @@ Print the final report regardless of pass/fail:
 
 ## Re-run Behaviour
 
-When the pipeline is re-run on the same lab after fixing failures:
+When the pipeline is re-run on the same lab after fixing **local** failures:
 
 - Step 1b is skipped (test plan exists)
 - Step 3 is skipped (POM exists)
 - Step 5 is skipped (spec exists)
 - Execution jumps straight to Step 6 → 7 → 8
+
+When re-run after fixing a **CI-specific** failure (Step 12a triage, local run already passed):
+
+- Steps 1b/3/5 are skipped as above
+- Step 8 is skipped — reuses the existing open PR, pushing the fix as a new commit
+  (this alone re-triggers CI via the PR's `synchronize` event)
+- Step 9 is skipped if the story is already `In Review`
+- Execution jumps straight to Step 10 → 11 → 12
 
 To force regeneration of the POM or spec, the user must explicitly delete the file
 or say "regenerate POM" / "regenerate spec" before re-running.
@@ -367,13 +485,16 @@ or say "regenerate POM" / "regenerate spec" before re-running.
 
 Stop the pipeline immediately (do not proceed to the next step) if:
 
-| Condition                               | Message                               |
-| --------------------------------------- | ------------------------------------- |
-| Pre-flight tool check fails             | List missing tools; full stop         |
-| JIRA story not found                    | Confirm the key is correct; full stop |
-| Lab URL returns 404 or auth wall        | Report URL issue; full stop           |
-| `npx playwright test` command not found | Check Node/npm setup; full stop       |
-| `pages/` or `tests/` directory missing  | Confirm project root; full stop       |
+| Condition                                      | Message                                                                 |
+| ---------------------------------------------- | ----------------------------------------------------------------------- |
+| Pre-flight tool check fails                    | List missing tools; full stop                                           |
+| `gh` CLI missing or unauthenticated            | Report `gh auth status` output; full stop                               |
+| JIRA story not found                           | Confirm the key is correct; full stop                                   |
+| Lab URL returns 404 or auth wall               | Report URL issue; full stop                                             |
+| `npx playwright test` command not found        | Check Node/npm setup; full stop                                         |
+| `pages/` or `tests/` directory missing         | Confirm project root; full stop                                         |
+| `git push` / `gh pr create` fails              | Report the error (auth, branch protection, conflicts); full stop        |
+| CI run fails to start / GitHub API unreachable | Log the error; leave story at `In Review`; never assume pass; full stop |
 
 For all other errors (a single test failure, a POM audit flag, a flaky failure): log and
 continue — do not abort the pipeline.
@@ -386,7 +507,7 @@ continue — do not abort the pipeline.
 User says: "run stlc-pipeline for TAB1-13"
 
 1. Resolve: TAB1-13 → Forms & Validation → /practice/forms-validation
-2. Pre-flight: verify Atlassian MCP + Playwright MCP + Chrome DevTools MCP + Playwright CLI
+2. Pre-flight: verify Atlassian MCP + Playwright MCP + Chrome DevTools MCP + Playwright CLI + gh CLI
 3. Step 1: fetch ACs from JIRA TAB1-13
 4. Step 1b: generate Test Plan (skip if it exists)
 5. Step 2: check POM + spec existence
@@ -396,6 +517,10 @@ User says: "run stlc-pipeline for TAB1-13"
 8. Step 5: test-case-generator from TAB1-13 ACs (skip if spec exists)
 9. Step 6: npx playwright test tests/forms-validation/forms-validation.spec.ts
 10. Step 7: triage failures + file/link Bugs + JIRA comment (or celebrate if all pass)
-11. Step 8: refresh RTM + jira-sync → In Review (Done is CI-gated, not run locally)
-12. Step 9: print pipeline report
+11. Step 8: refresh RTM, push stlc/forms-validation branch, gh pr create (skip/reuse if PR open)
+12. Step 9: jira-sync → In Review (comment includes PR link)
+13. Step 10: gh run watch — block until the PR's CI run finishes
+14. Step 11: gh run download per browser, parse results.json for this lab's spec file
+15. Step 12: CI_LAB_RESULT pass → jira-sync → Done (with CI evidence) / fail → CI-failure triage, stay In Review
+16. Step 13: print pipeline report (includes PR URL, left open for manual review/merge)
 ```
