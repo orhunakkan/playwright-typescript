@@ -102,9 +102,7 @@ test.describe('Soft Assertions & Test Steps', () => {
     test('negative: expect.poll fails fast (bounded timeout) when the expected value never appears', async ({ softAssertionsPage }) => {
       let rejected = false;
       try {
-        await expect
-          .poll(async () => softAssertionsPage.activityScoreValue.textContent(), { timeout: 1000 })
-          .toBe('unreachable-value');
+        await expect.poll(async () => softAssertionsPage.activityScoreValue.textContent(), { timeout: 1000 }).toBe('unreachable-value');
       } catch {
         rejected = true;
       }

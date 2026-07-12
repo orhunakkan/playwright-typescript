@@ -36,10 +36,10 @@
 
 ## 2. Test Objectives
 
-| #   | Objective                                                                                     |
-| --- | ---------------------------------------------------------------------------------------------- |
-| 1   | `locator.dragTo()` reliably moves a Kanban card between columns and updates both column states |
-| 2   | Column card counts stay accurate after single and multiple sequential drags                    |
+| #   | Objective                                                                                       |
+| --- | ----------------------------------------------------------------------------------------------- |
+| 1   | `locator.dragTo()` reliably moves a Kanban card between columns and updates both column states  |
+| 2   | Column card counts stay accurate after single and multiple sequential drags                     |
 | 3   | A file can be dropped onto a drop zone via a page-context `DataTransfer` and is reflected in UI |
 | 4   | A sortable list can be reordered by drag and the resulting order is asserted deterministically  |
 | 5   | Drag handles isolate the drag gesture from nested interactive elements inside draggable cards   |
@@ -49,11 +49,11 @@
 ## 3. Browser Matrix
 
 | Browser         | Playwright Project | Priority |
-| --------------- | ------------------- | -------- |
-| Chromium        | Desktop Chrome      | P1       |
-| Firefox         | Desktop Firefox     | P1       |
-| WebKit (Safari) | Desktop Safari      | P2       |
-| Edge            | Desktop Edge        | P2       |
+| --------------- | ------------------ | -------- |
+| Chromium        | Desktop Chrome     | P1       |
+| Firefox         | Desktop Firefox    | P1       |
+| WebKit (Safari) | Desktop Safari     | P2       |
+| Edge            | Desktop Edge       | P2       |
 
 Source: `playwright.config.ts` — 4 desktop projects configured.
 
@@ -62,22 +62,22 @@ Source: `playwright.config.ts` — 4 desktop projects configured.
 ## 4. Environments
 
 | Environment | Base URL                   |
-| ----------- | --------------------------- |
-| Default     | https://stagecraftlabs.com  |
-| QA          | `.env.qa` → `BASE_URL`      |
-| UAT         | `.env.uat` → `BASE_URL`     |
+| ----------- | -------------------------- |
+| Default     | https://stagecraftlabs.com |
+| QA          | `.env.qa` → `BASE_URL`     |
+| UAT         | `.env.uat` → `BASE_URL`    |
 
 ---
 
 ## 5. Risk Table
 
-| Risk                                                                                          | Priority | Mitigation                                                                                     |
-| ----------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------- |
-| `dragTo()` fires on the card container instead of the intended handle, activating a nested button | P1       | Locate and drag the dedicated handle element; assert nested button state is unchanged afterward |
-| Native HTML5 file drop requires a real `DataTransfer`, which cannot be constructed off-page       | P1       | Build the `DataTransfer` inside `page.evaluateHandle()` so it's a real page-context object        |
-| Sequential drags leave stale locator handles pointing at reflowed DOM nodes                       | P2       | Re-query locators after each drag rather than caching references across drags                     |
-| Column/list order assertions are flaky if drop coordinates land on a boundary between two slots   | P2       | Use Playwright's element-center auto-targeting and assert via explicit `toHaveText` order checks  |
-| WebKit HTML5 drag-and-drop event sequencing differs from Chromium/Firefox                          | P2       | Prefer Playwright's `dragTo`/`drop` APIs (which simulate the full event sequence) over raw mouse moves |
+| Risk                                                                                              | Priority | Mitigation                                                                                             |
+| ------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------ |
+| `dragTo()` fires on the card container instead of the intended handle, activating a nested button | P1       | Locate and drag the dedicated handle element; assert nested button state is unchanged afterward        |
+| Native HTML5 file drop requires a real `DataTransfer`, which cannot be constructed off-page       | P1       | Build the `DataTransfer` inside `page.evaluateHandle()` so it's a real page-context object             |
+| Sequential drags leave stale locator handles pointing at reflowed DOM nodes                       | P2       | Re-query locators after each drag rather than caching references across drags                          |
+| Column/list order assertions are flaky if drop coordinates land on a boundary between two slots   | P2       | Use Playwright's element-center auto-targeting and assert via explicit `toHaveText` order checks       |
+| WebKit HTML5 drag-and-drop event sequencing differs from Chromium/Firefox                         | P2       | Prefer Playwright's `dragTo`/`drop` APIs (which simulate the full event sequence) over raw mouse moves |
 
 ---
 
@@ -100,20 +100,20 @@ Source: `playwright.config.ts` — 4 desktop projects configured.
 
 ## 8. Test Case Summary
 
-| AC     | Test Cases                                                                                  | Types         |
-| ------ | ---------------------------------------------------------------------------------------------- | ------------- |
-| AC-1   | `dragTo()` moves a card from "To Do" to "In Progress"; present in target, absent from source   | Positive      |
-| AC-1-N | Dragging a card within its own column is a no-op — order/column unchanged                       | Negative      |
-| AC-1-B | Card dropped near a column boundary still lands inside the intended target column               | Boundary      |
-| AC-2   | Card counts update correctly after a drag (source −1, target +1)                                | Positive      |
-| AC-2-B | Draining the last card from a column leaves its count at 0                                      | Boundary      |
-| AC-2-B | Multiple sequential drags accumulate counts correctly                                           | Boundary      |
-| AC-3   | Page-context `DataTransfer` + `locator.drop()` on the file zone surfaces the dropped filename    | Positive      |
-| AC-3-N | Dropping an empty/unsupported file shows no filename or a graceful error state                   | Negative      |
-| AC-4   | Reordering the sortable list by drag produces the expected order via `toHaveText`                | Positive      |
-| AC-4-N | Dragging an item onto its own position preserves the original order                              | Negative      |
-| AC-4-B | Dragging the first item to the last position (and vice versa) reorders correctly                | Boundary      |
-| AC-5   | Drag handle is targeted specifically on cards with nested interactive elements                   | Positive      |
-| AC-5-N | Dragging via the handle does not trigger a nested button's click/nav handler                     | Negative      |
-| A11Y   | Axe WCAG 2.1 AA scan across load, mid-interaction, and post-drop states                          | Accessibility |
-| PERF   | A single drag-and-drop operation completes within budget                                        | Performance   |
+| AC     | Test Cases                                                                                    | Types         |
+| ------ | --------------------------------------------------------------------------------------------- | ------------- |
+| AC-1   | `dragTo()` moves a card from "To Do" to "In Progress"; present in target, absent from source  | Positive      |
+| AC-1-N | Dragging a card within its own column is a no-op — order/column unchanged                     | Negative      |
+| AC-1-B | Card dropped near a column boundary still lands inside the intended target column             | Boundary      |
+| AC-2   | Card counts update correctly after a drag (source −1, target +1)                              | Positive      |
+| AC-2-B | Draining the last card from a column leaves its count at 0                                    | Boundary      |
+| AC-2-B | Multiple sequential drags accumulate counts correctly                                         | Boundary      |
+| AC-3   | Page-context `DataTransfer` + `locator.drop()` on the file zone surfaces the dropped filename | Positive      |
+| AC-3-N | Dropping an empty/unsupported file shows no filename or a graceful error state                | Negative      |
+| AC-4   | Reordering the sortable list by drag produces the expected order via `toHaveText`             | Positive      |
+| AC-4-N | Dragging an item onto its own position preserves the original order                           | Negative      |
+| AC-4-B | Dragging the first item to the last position (and vice versa) reorders correctly              | Boundary      |
+| AC-5   | Drag handle is targeted specifically on cards with nested interactive elements                | Positive      |
+| AC-5-N | Dragging via the handle does not trigger a nested button's click/nav handler                  | Negative      |
+| A11Y   | Axe WCAG 2.1 AA scan across load, mid-interaction, and post-drop states                       | Accessibility |
+| PERF   | A single drag-and-drop operation completes within budget                                      | Performance   |

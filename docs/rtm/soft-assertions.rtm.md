@@ -1,31 +1,31 @@
 # Requirements Traceability Matrix — Soft Assertions & Test Steps
 
-| Field      | Value                                                            |
-| ---------- | ----------------------------------------------------------------- |
-| JIRA Story | [TAB1-39](https://orhunakkan.atlassian.net/browse/TAB1-39)        |
-| Lab URL    | https://stagecraftlabs.com/practice/soft-assertions               |
-| Spec file  | tests/soft-assertions/soft-assertions.spec.ts                     |
-| POM file   | pages/soft-assertions.page.ts                                     |
-| Last run   | 2026-07-11 — 36 / 36 passed (Chrome · Firefox · Edge · Safari)   |
-| Generated  | 2026-07-11                                                         |
+| Field      | Value                                                          |
+| ---------- | -------------------------------------------------------------- |
+| JIRA Story | [TAB1-39](https://orhunakkan.atlassian.net/browse/TAB1-39)     |
+| Lab URL    | https://stagecraftlabs.com/practice/soft-assertions            |
+| Spec file  | tests/soft-assertions/soft-assertions.spec.ts                  |
+| POM file   | pages/soft-assertions.page.ts                                  |
+| Last run   | 2026-07-11 — 36 / 36 passed (Chrome · Firefox · Edge · Safari) |
+| Generated  | 2026-07-11                                                     |
 
 ---
 
 ## Coverage by Acceptance Criterion
 
-| Req    | Acceptance Criterion                                                                                                                | Test Case                                                                              | Type | Result |
-| ------ | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---- | ------ |
-| AC-1   | Tests use `expect.soft` for each of the four profile dashboard widget assertions so a failure in one does not abort the remaining checks | positive: all four widgets pass with zero soft-assertion failures                        | P    | ✅     |
-| AC-1   |                                                                                                                                       | negative/AC-6: an intentional soft failure on one widget does not abort remaining checks | N    | ✅     |
-| AC-2   | Tests use `expect.poll` to keep re-reading the Activity Score widget until it reaches the expected value after its short timer         | positive: expect.poll reaches the expected Activity Score value within a bounded timeout | P    | ✅     |
-| AC-2   |                                                                                                                                       | negative: expect.poll fails fast (bounded timeout) when the expected value never appears | N    | ✅     |
-| AC-3   | Tests use `expect(locator).toPass({ timeout: 3000 })` on the animated Account Status badge to retry until it settles                   | positive/boundary: toPass({ timeout: 3000 }) retries until the badge settles on "active" | B    | ✅     |
-| AC-4   | Tests wrap each widget check in `test.step("Check <widget name>", ...)`; step names visible in HTML report/trace viewer                | (covered structurally in AC-1 positive test — 4 uniquely named steps asserted)           | P    | ✅     |
-| AC-5   | Tests add `test.info().annotations.push({ type: "issue", description: "..." })` inside a step; annotation appears in HTML report       | positive: issue annotation pushed inside a step appears in testInfo.annotations          | P    | ✅     |
-| AC-6   | Tests run with ≥1 intentional soft-assertion failure and confirm all soft failures are reported together after test completion         | negative/AC-6: an intentional soft failure on one widget does not abort remaining checks | N    | ✅     |
-| AXE    | The page must have no critical axe-core violations in every rendered state                                                             | no violations at initial load (widgets mid-settle)                                       | A11y | ✅     |
-| AXE    |                                                                                                                                       | no violations once all widgets have settled                                              | A11y | ✅     |
-| REQ-NF1 | The full widget-check flow (poll + toPass waits) must meet its performance budget                                                     | full widget-check flow (poll + toPass) completes within budget                           | Perf | ✅     |
+| Req     | Acceptance Criterion                                                                                                                     | Test Case                                                                                | Type | Result |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---- | ------ |
+| AC-1    | Tests use `expect.soft` for each of the four profile dashboard widget assertions so a failure in one does not abort the remaining checks | positive: all four widgets pass with zero soft-assertion failures                        | P    | ✅     |
+| AC-1    |                                                                                                                                          | negative/AC-6: an intentional soft failure on one widget does not abort remaining checks | N    | ✅     |
+| AC-2    | Tests use `expect.poll` to keep re-reading the Activity Score widget until it reaches the expected value after its short timer           | positive: expect.poll reaches the expected Activity Score value within a bounded timeout | P    | ✅     |
+| AC-2    |                                                                                                                                          | negative: expect.poll fails fast (bounded timeout) when the expected value never appears | N    | ✅     |
+| AC-3    | Tests use `expect(locator).toPass({ timeout: 3000 })` on the animated Account Status badge to retry until it settles                     | positive/boundary: toPass({ timeout: 3000 }) retries until the badge settles on "active" | B    | ✅     |
+| AC-4    | Tests wrap each widget check in `test.step("Check <widget name>", ...)`; step names visible in HTML report/trace viewer                  | (covered structurally in AC-1 positive test — 4 uniquely named steps asserted)           | P    | ✅     |
+| AC-5    | Tests add `test.info().annotations.push({ type: "issue", description: "..." })` inside a step; annotation appears in HTML report         | positive: issue annotation pushed inside a step appears in testInfo.annotations          | P    | ✅     |
+| AC-6    | Tests run with ≥1 intentional soft-assertion failure and confirm all soft failures are reported together after test completion           | negative/AC-6: an intentional soft failure on one widget does not abort remaining checks | N    | ✅     |
+| AXE     | The page must have no critical axe-core violations in every rendered state                                                               | no violations at initial load (widgets mid-settle)                                       | A11y | ✅     |
+| AXE     |                                                                                                                                          | no violations once all widgets have settled                                              | A11y | ✅     |
+| REQ-NF1 | The full widget-check flow (poll + toPass waits) must meet its performance budget                                                        | full widget-check flow (poll + toPass) completes within budget                           | Perf | ✅     |
 
 ---
 

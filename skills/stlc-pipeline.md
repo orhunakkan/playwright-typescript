@@ -9,7 +9,10 @@ description: >
   "full cycle for Forms lab", "run stlc-pipeline", or "automate TAB1-XX end to end".
   Accepts a JIRA story key (TAB1-XX) or lab name. Skips steps already completed.
   Does NOT pause between steps — runs straight through to Done (or to a CI-failure triage
-  comment if this lab's tests don't pass in CI).
+  comment if this lab's tests don't pass in CI). If the lab was already built (a
+  tests/<lab-name>/<lab-name>.spec.ts file exists), the pipeline stops before Step 1 and
+  reports its JIRA status + PR state instead of re-running it, unless the request says
+  "regenerate" / "force re-run".
 
 compatibility: >
   Requires ALL of the following:
@@ -97,6 +100,36 @@ as missing.
 
 **If any tool is missing → STOP and list exactly which tools are absent.**
 Do not attempt to proceed with missing tools — partial execution will produce incomplete artifacts.
+
+---
+
+## ⛔ Pre-flight — Already-Done Check
+
+A `tests/<lab-name>/` folder containing `<lab-name>.spec.ts` is ground truth that this lab was
+already built — it can't be fooled by a manually-edited JIRA status the way a status-only check
+can, and it needs no JIRA round-trip to evaluate.
+
+1. Check the local filesystem: does `tests/<lab-name>/<lab-name>.spec.ts` exist?
+   - **No → proceed normally to Step 1.** Nothing to guard against.
+2. **Yes** → this lab has already been built. Gather status signals before stopping:
+   - JIRA status via Atlassian MCP (`getJiraIssue`, `status` field)
+   - PR state via `gh pr list --head stlc/<lab-name> --state all --json number,url,state`
+3. **STOP by default** and print:
+
+```
+⛔ TAB1-XX (<Lab Name>) already has a generated spec at tests/<lab-name>/<lab-name>.spec.ts.
+   JIRA status: <status>
+   PR: #<N> <state> (<url>)   — or "no PR found" if none exists
+   Nothing to do — the pipeline will not regenerate or re-run this lab automatically.
+   To proceed anyway, say "regenerate <lab>" or "force re-run <lab>".
+```
+
+**Exception — proceed instead of stopping:** if the user's original request already contains
+override language (`regenerate`, `force re-run`, `redo`, `re-run anyway`, or similar), skip the
+stop and continue into Step 1. The normal per-step skip conditions still apply (Steps 1b/3/3.5/5
+will still skip whatever artifacts already exist unless the user separately says "regenerate POM"
+/ "regenerate spec" per the Re-run Behaviour section) — this exception only bypasses the full-stop,
+it does not force regeneration of already-existing files.
 
 ---
 
@@ -496,16 +529,17 @@ or say "regenerate POM" / "regenerate spec" before re-running.
 
 Stop the pipeline immediately (do not proceed to the next step) if:
 
-| Condition                                      | Message                                                                 |
-| ---------------------------------------------- | ----------------------------------------------------------------------- |
-| Pre-flight tool check fails                    | List missing tools; full stop                                           |
-| `gh` CLI missing or unauthenticated            | Report `gh auth status` output; full stop                               |
-| JIRA story not found                           | Confirm the key is correct; full stop                                   |
-| Lab URL returns 404 or auth wall               | Report URL issue; full stop                                             |
-| `npx playwright test` command not found        | Check Node/npm setup; full stop                                         |
-| `pages/` or `tests/` directory missing         | Confirm project root; full stop                                         |
-| `git push` / `gh pr create` fails              | Report the error (auth, branch protection, conflicts); full stop        |
-| CI run fails to start / GitHub API unreachable | Log the error; leave story at `In Review`; never assume pass; full stop |
+| Condition                                                     | Message                                                                 |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Pre-flight tool check fails                                   | List missing tools; full stop                                           |
+| Lab already built (spec exists) and no override language used | Print JIRA status + PR state; full stop (see Already-Done Check)        |
+| `gh` CLI missing or unauthenticated                           | Report `gh auth status` output; full stop                               |
+| JIRA story not found                                          | Confirm the key is correct; full stop                                   |
+| Lab URL returns 404 or auth wall                              | Report URL issue; full stop                                             |
+| `npx playwright test` command not found                       | Check Node/npm setup; full stop                                         |
+| `pages/` or `tests/` directory missing                        | Confirm project root; full stop                                         |
+| `git push` / `gh pr create` fails                             | Report the error (auth, branch protection, conflicts); full stop        |
+| CI run fails to start / GitHub API unreachable                | Log the error; leave story at `In Review`; never assume pass; full stop |
 
 For all other errors (a single test failure, a POM audit flag, a flaky failure): log and
 continue — do not abort the pipeline.
@@ -519,6 +553,8 @@ User says: "run stlc-pipeline for TAB1-13"
 
 1. Resolve: TAB1-13 → Forms & Validation → /practice/forms-validation
 2. Pre-flight: verify Atlassian MCP + Playwright MCP + Chrome DevTools MCP + Playwright CLI + gh CLI
+2.5. Pre-flight: Already-Done Check — if tests/forms-validation/forms-validation.spec.ts exists
+     and the request has no override language, print JIRA status + PR state and full stop
 3. Step 1: fetch ACs from JIRA TAB1-13
 4. Step 1b: generate Test Plan (skip if it exists)
 5. Step 2: check POM + spec existence

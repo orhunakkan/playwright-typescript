@@ -33,9 +33,7 @@ test.describe('Drag & Drop', () => {
   // AC-1 & AC-2 (TAB1-30): locator.dragTo() moves a Kanban card between columns; both the
   // membership (present in target, absent from source) and the card-count badges must update.
   test.describe('AC-1 & AC-2 — Kanban board drag between columns', () => {
-    test('positive: dragTo() moves a card from To Do to In Progress; present in target, absent from source', async ({
-      dragAndDropPage,
-    }) => {
+    test('positive: dragTo() moves a card from To Do to In Progress; present in target, absent from source', async ({ dragAndDropPage }) => {
       const card = dragAndDropPage.card('Write Playwright tests');
       // Drop onto an existing card rather than the empty column area — dropping on the bare
       // column container is unreliable on Chromium engines for this lab's drop handling.
@@ -59,9 +57,7 @@ test.describe('Drag & Drop', () => {
       await expect(dragAndDropPage.columnCountBadge('in-progress')).toHaveText(String(inProgressBefore + 1));
     });
 
-    test('negative/AC-1a: dragging a card within its own column is a no-op — order and count unchanged', async ({
-      dragAndDropPage,
-    }) => {
+    test('negative/AC-1a: dragging a card within its own column is a no-op — order and count unchanged', async ({ dragAndDropPage }) => {
       const before = await dragAndDropPage.columnCards('todo').allTextContents();
 
       await dragAndDropPage.card('Review pull request').dragTo(dragAndDropPage.todoColumn);
@@ -123,9 +119,7 @@ test.describe('Drag & Drop', () => {
       await expect(dragAndDropPage.card('Fix flaky tests')).toHaveCount(1);
     });
 
-    test('negative/AC-5a: dragging a card does not activate unrelated controls (Mark complete stays untouched)', async ({
-      dragAndDropPage,
-    }) => {
+    test('negative/AC-5a: dragging a card does not activate unrelated controls (Mark complete stays untouched)', async ({ dragAndDropPage }) => {
       await expect(dragAndDropPage.markCompleteButton).toHaveText('Mark complete');
 
       await dragAndDropPage.card('Fix flaky tests').dragTo(dragAndDropPage.doneColumn);
@@ -160,10 +154,7 @@ test.describe('Drag & Drop', () => {
       await expect(dragAndDropPage.sortableListItems).toHaveText(['⠿Beta', '⠿Gamma', '⠿Alpha', '⠿Delta', '⠿Epsilon']);
     });
 
-    test('negative/AC-4a: dragging an item onto its own position preserves the original order', async ({
-      dragAndDropPage,
-      page,
-    }) => {
+    test('negative/AC-4a: dragging an item onto its own position preserves the original order', async ({ dragAndDropPage, page }) => {
       const before = await dragAndDropPage.sortableListItems.allTextContents();
 
       await manualDragReorder(dragAndDropPage.sortableItem('Beta'), dragAndDropPage.sortableItem('Beta'), page);

@@ -30,24 +30,24 @@
 
 ## 2. Test Objectives
 
-| #   | Objective                                                                                                    |
-| --- | ------------------------------------------------------------------------------------------------------------- |
-| 1   | `context.waitForEvent("page")` set up before the triggering click reliably captures the new tab               |
-| 2   | The new tab is interactable and closing it leaves exactly one page in the context                             |
-| 3   | `page.waitForEvent("popup")` captures a popup as a mechanism distinct from the `page` context event            |
-| 4   | A `localStorage` write in a new tab is readable from the main page after switching back                        |
-| 5   | Extra pages are closed after every test so no state leaks into the next test                                  |
+| #   | Objective                                                                                           |
+| --- | --------------------------------------------------------------------------------------------------- |
+| 1   | `context.waitForEvent("page")` set up before the triggering click reliably captures the new tab     |
+| 2   | The new tab is interactable and closing it leaves exactly one page in the context                   |
+| 3   | `page.waitForEvent("popup")` captures a popup as a mechanism distinct from the `page` context event |
+| 4   | A `localStorage` write in a new tab is readable from the main page after switching back             |
+| 5   | Extra pages are closed after every test so no state leaks into the next test                        |
 
 ---
 
 ## 3. Browser Matrix
 
 | Browser         | Playwright Project | Priority |
-| --------------- | ------------------- | -------- |
-| Chromium        | Desktop Chrome      | P1       |
-| Firefox         | Desktop Firefox     | P1       |
-| WebKit (Safari) | Desktop Safari      | P2       |
-| Edge            | Desktop Edge        | P2       |
+| --------------- | ------------------ | -------- |
+| Chromium        | Desktop Chrome     | P1       |
+| Firefox         | Desktop Firefox    | P1       |
+| WebKit (Safari) | Desktop Safari     | P2       |
+| Edge            | Desktop Edge       | P2       |
 
 Source: `playwright.config.ts` — 4 desktop projects configured.
 
@@ -56,22 +56,22 @@ Source: `playwright.config.ts` — 4 desktop projects configured.
 ## 4. Environments
 
 | Environment | Base URL                   |
-| ----------- | --------------------------- |
-| Default     | https://stagecraftlabs.com  |
-| QA          | `.env.qa` → `BASE_URL`      |
-| UAT         | `.env.uat` → `BASE_URL`     |
+| ----------- | -------------------------- |
+| Default     | https://stagecraftlabs.com |
+| QA          | `.env.qa` → `BASE_URL`     |
+| UAT         | `.env.uat` → `BASE_URL`    |
 
 ---
 
 ## 5. Risk Table
 
-| Risk                                                                                       | Priority | Mitigation                                                                                    |
-| --------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `waitForEvent("page")` registered after the click misses the event (race condition)          | P1       | Always call `context.waitForEvent("page")` and the triggering click together via `Promise.all` |
-| A leftover extra page from a prior test leaks into the next test's assertions                | P1       | `afterEach` hook closes every page beyond the original main page                                |
-| Popup and new-tab events are conflated, asserting the wrong page object                       | P1       | Use distinct triggers/locators for popup vs. new-tab flows and assert page counts per flow      |
-| `localStorage` write in a background tab isn't flushed/visible when the main page re-reads it | P2       | Bring the main page to front and re-read post-write; assert with `page.evaluate`                |
-| WebKit popup/tab timing differs from Chromium, causing flaky waits                             | P2       | Use Playwright's built-in `waitForEvent` (auto-waiting) instead of fixed timeouts               |
+| Risk                                                                                          | Priority | Mitigation                                                                                     |
+| --------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `waitForEvent("page")` registered after the click misses the event (race condition)           | P1       | Always call `context.waitForEvent("page")` and the triggering click together via `Promise.all` |
+| A leftover extra page from a prior test leaks into the next test's assertions                 | P1       | `afterEach` hook closes every page beyond the original main page                               |
+| Popup and new-tab events are conflated, asserting the wrong page object                       | P1       | Use distinct triggers/locators for popup vs. new-tab flows and assert page counts per flow     |
+| `localStorage` write in a background tab isn't flushed/visible when the main page re-reads it | P2       | Bring the main page to front and re-read post-write; assert with `page.evaluate`               |
+| WebKit popup/tab timing differs from Chromium, causing flaky waits                            | P2       | Use Playwright's built-in `waitForEvent` (auto-waiting) instead of fixed timeouts              |
 
 ---
 
@@ -94,10 +94,10 @@ Source: `playwright.config.ts` — 4 desktop projects configured.
 
 ## 8. Test Case Summary
 
-| AC     | Test Cases                                                                                          | Types         |
-| ------ | ------------------------------------------------------------------------------------------------------- | ------------- |
-| AC-1   | `context.waitForEvent("page")` set up before click captures the new tab; heading is asserted             | Positive      |
-| AC-1-N | Listener-before-click ordering is required — asserting the pattern avoids the missed-event race          | Negative      |
+| AC     | Test Cases                                                                                                | Types         |
+| ------ | --------------------------------------------------------------------------------------------------------- | ------------- |
+| AC-1   | `context.waitForEvent("page")` set up before click captures the new tab; heading is asserted              | Positive      |
+| AC-1-N | Listener-before-click ordering is required — asserting the pattern avoids the missed-event race           | Negative      |
 | AC-1-B | New tab heading text matches exactly                                                                      | Boundary      |
 | AC-2   | New tab is interacted with, then closed after assertions                                                  | Positive      |
 | AC-2-B | After closing the new tab, `context.pages()` has exactly 1 page                                           | Boundary      |

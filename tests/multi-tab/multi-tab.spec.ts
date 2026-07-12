@@ -27,10 +27,7 @@ test.describe('Multi-Tab', () => {
   // event is never missed, since the new tab can open before an awaited-then-registered listener
   // would attach.
   test.describe('AC-1 & AC-2 — capture, interact with, and close the new tab', () => {
-    test('positive: waitForEvent("page") set up before the click captures the new tab; heading is asserted', async ({
-      multiTabPage,
-      context,
-    }) => {
+    test('positive: waitForEvent("page") set up before the click captures the new tab; heading is asserted', async ({ multiTabPage, context }) => {
       const [newTab] = await Promise.all([context.waitForEvent('page'), multiTabPage.openNewTabButton.click()]);
       await newTab.waitForLoadState();
 
@@ -51,11 +48,7 @@ test.describe('Multi-Tab', () => {
       await newTab.close();
     });
 
-    test('boundary/AC-2: after closing the new tab, context.pages() returns exactly the original page', async ({
-      multiTabPage,
-      page,
-      context,
-    }) => {
+    test('boundary/AC-2: after closing the new tab, context.pages() returns exactly the original page', async ({ multiTabPage, page, context }) => {
       const [newTab] = await Promise.all([context.waitForEvent('page'), multiTabPage.openNewTabButton.click()]);
       await newTab.waitForLoadState();
       await expect(multiTabPage.newTabHeading(newTab)).toBeVisible();
@@ -107,10 +100,7 @@ test.describe('Multi-Tab', () => {
       await expect(multiTabPage.sharedStorageValue).toHaveText('(none)');
     });
 
-    test('positive/boundary: a write in the new tab is readable on the main page after switching back', async ({
-      multiTabPage,
-      context,
-    }) => {
+    test('positive/boundary: a write in the new tab is readable on the main page after switching back', async ({ multiTabPage, context }) => {
       const [newTab] = await Promise.all([context.waitForEvent('page'), multiTabPage.openNewTabButton.click()]);
       await newTab.waitForLoadState();
 
