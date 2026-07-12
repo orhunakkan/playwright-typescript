@@ -10,6 +10,7 @@ import { NetworkApiPage } from '../pages/network-api.page';
 import { AsyncUiPage } from '../pages/async-ui.page';
 import { TablesFilteringPage } from '../pages/tables-filtering.page';
 import { BrowserEventsPage } from '../pages/browser-events.page';
+import { SoftAssertionsPage } from '../pages/soft-assertions.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -23,6 +24,7 @@ type Fixtures = {
   asyncUiPage: AsyncUiPage;
   tablesFilteringPage: TablesFilteringPage;
   browserEventsPage: BrowserEventsPage;
+  softAssertionsPage: SoftAssertionsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -58,6 +60,9 @@ export const test = base.extend<Fixtures>({
   },
   browserEventsPage: async ({ page }, use) => {
     await use(new BrowserEventsPage(page));
+  },
+  softAssertionsPage: async ({ page }, use) => {
+    await use(new SoftAssertionsPage(page));
   },
 });
 
