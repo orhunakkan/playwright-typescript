@@ -1,0 +1,35 @@
+{
+  "cookies": [
+    {
+      "name": "connect.sid",
+      "value": "s%3AePf241ltNvG-nr4j-Z5DVjcp2kK3jf-J.HgvSKSxokbk0MyxKsRGCaa9fswigmX55uEjLUGhPxRI",
+      "domain": "stagecraftlabs.com",
+      "path": "/",
+      "expires": 1783880887,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ARRAffinity",
+      "value": "b77204ecce762e8101a7b9e79b0ea29458e64dee57f66fb452d696686e6a0355",
+      "domain": ".stagecraftlabs.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ARRAffinitySameSite",
+      "value": "b77204ecce762e8101a7b9e79b0ea29458e64dee57f66fb452d696686e6a0355",
+      "domain": ".stagecraftlabs.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    }
+  ],
+  "origins": []
+}

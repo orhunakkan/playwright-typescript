@@ -1,0 +1,25 @@
+{
+  "cookies": [
+    {
+      "name": "ARRAffinity",
+      "value": "b77204ecce762e8101a7b9e79b0ea29458e64dee57f66fb452d696686e6a0355",
+      "domain": ".stagecraftlabs.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ARRAffinitySameSite",
+      "value": "b77204ecce762e8101a7b9e79b0ea29458e64dee57f66fb452d696686e6a0355",
+      "domain": ".stagecraftlabs.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    }
+  ],
+  "origins": []
+}

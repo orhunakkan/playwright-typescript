@@ -16,6 +16,7 @@ import { DragAndDropPage } from '../pages/drag-and-drop.page';
 import { ScrollLazyLoadingPage } from '../pages/scroll-lazy-loading.page';
 import { AriaSnapshotsPage } from '../pages/aria-snapshots.page';
 import { FramesContextsPage } from '../pages/frames-contexts.page';
+import { StorageStatePage } from '../pages/storage-state.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -35,6 +36,7 @@ type Fixtures = {
   scrollLazyLoadingPage: ScrollLazyLoadingPage;
   ariaSnapshotsPage: AriaSnapshotsPage;
   framesContextsPage: FramesContextsPage;
+  storageStatePage: StorageStatePage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -88,6 +90,9 @@ export const test = base.extend<Fixtures>({
   },
   framesContextsPage: async ({ page }, use) => {
     await use(new FramesContextsPage(page));
+  },
+  storageStatePage: async ({ page }, use) => {
+    await use(new StorageStatePage(page));
   },
 });
 
