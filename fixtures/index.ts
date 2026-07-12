@@ -15,6 +15,7 @@ import { MultiTabPage } from '../pages/multi-tab.page';
 import { DragAndDropPage } from '../pages/drag-and-drop.page';
 import { ScrollLazyLoadingPage } from '../pages/scroll-lazy-loading.page';
 import { AriaSnapshotsPage } from '../pages/aria-snapshots.page';
+import { FramesContextsPage } from '../pages/frames-contexts.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -33,6 +34,7 @@ type Fixtures = {
   dragAndDropPage: DragAndDropPage;
   scrollLazyLoadingPage: ScrollLazyLoadingPage;
   ariaSnapshotsPage: AriaSnapshotsPage;
+  framesContextsPage: FramesContextsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -83,6 +85,9 @@ export const test = base.extend<Fixtures>({
   },
   ariaSnapshotsPage: async ({ page }, use) => {
     await use(new AriaSnapshotsPage(page));
+  },
+  framesContextsPage: async ({ page }, use) => {
+    await use(new FramesContextsPage(page));
   },
 });
 
