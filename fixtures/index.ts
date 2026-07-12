@@ -12,6 +12,7 @@ import { TablesFilteringPage } from '../pages/tables-filtering.page';
 import { BrowserEventsPage } from '../pages/browser-events.page';
 import { SoftAssertionsPage } from '../pages/soft-assertions.page';
 import { MultiTabPage } from '../pages/multi-tab.page';
+import { DragAndDropPage } from '../pages/drag-and-drop.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -27,6 +28,7 @@ type Fixtures = {
   browserEventsPage: BrowserEventsPage;
   softAssertionsPage: SoftAssertionsPage;
   multiTabPage: MultiTabPage;
+  dragAndDropPage: DragAndDropPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -68,6 +70,9 @@ export const test = base.extend<Fixtures>({
   },
   multiTabPage: async ({ page }, use) => {
     await use(new MultiTabPage(page));
+  },
+  dragAndDropPage: async ({ page }, use) => {
+    await use(new DragAndDropPage(page));
   },
 });
 
