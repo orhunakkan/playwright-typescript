@@ -18,6 +18,7 @@ import { AriaSnapshotsPage } from '../pages/aria-snapshots.page';
 import { FramesContextsPage } from '../pages/frames-contexts.page';
 import { StorageStatePage } from '../pages/storage-state.page';
 import { ClockTimersPage } from '../pages/clock-timers.page';
+import { WebsocketInterceptionPage } from '../pages/websocket-interception.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -39,6 +40,7 @@ type Fixtures = {
   framesContextsPage: FramesContextsPage;
   storageStatePage: StorageStatePage;
   clockTimersPage: ClockTimersPage;
+  websocketInterceptionPage: WebsocketInterceptionPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -98,6 +100,9 @@ export const test = base.extend<Fixtures>({
   },
   clockTimersPage: async ({ page }, use) => {
     await use(new ClockTimersPage(page));
+  },
+  websocketInterceptionPage: async ({ page }, use) => {
+    await use(new WebsocketInterceptionPage(page));
   },
 });
 
