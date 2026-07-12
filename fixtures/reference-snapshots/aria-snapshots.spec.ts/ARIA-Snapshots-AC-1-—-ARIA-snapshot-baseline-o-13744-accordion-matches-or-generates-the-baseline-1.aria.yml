@@ -1,0 +1,6 @@
+- heading "What is an ARIA snapshot?" [level=3]:
+  - button "What is an ARIA snapshot?"
+- heading "When should I use toMatchAriaSnapshot?" [level=3]:
+  - button "When should I use toMatchAriaSnapshot?"
+- heading "How is this different from getByRole?" [level=3]:
+  - button "How is this different from getByRole?"

@@ -14,6 +14,7 @@ import { SoftAssertionsPage } from '../pages/soft-assertions.page';
 import { MultiTabPage } from '../pages/multi-tab.page';
 import { DragAndDropPage } from '../pages/drag-and-drop.page';
 import { ScrollLazyLoadingPage } from '../pages/scroll-lazy-loading.page';
+import { AriaSnapshotsPage } from '../pages/aria-snapshots.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -31,6 +32,7 @@ type Fixtures = {
   multiTabPage: MultiTabPage;
   dragAndDropPage: DragAndDropPage;
   scrollLazyLoadingPage: ScrollLazyLoadingPage;
+  ariaSnapshotsPage: AriaSnapshotsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -78,6 +80,9 @@ export const test = base.extend<Fixtures>({
   },
   scrollLazyLoadingPage: async ({ page }, use) => {
     await use(new ScrollLazyLoadingPage(page));
+  },
+  ariaSnapshotsPage: async ({ page }, use) => {
+    await use(new AriaSnapshotsPage(page));
   },
 });
 
