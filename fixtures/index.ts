@@ -11,6 +11,7 @@ import { AsyncUiPage } from '../pages/async-ui.page';
 import { TablesFilteringPage } from '../pages/tables-filtering.page';
 import { BrowserEventsPage } from '../pages/browser-events.page';
 import { SoftAssertionsPage } from '../pages/soft-assertions.page';
+import { MultiTabPage } from '../pages/multi-tab.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -25,6 +26,7 @@ type Fixtures = {
   tablesFilteringPage: TablesFilteringPage;
   browserEventsPage: BrowserEventsPage;
   softAssertionsPage: SoftAssertionsPage;
+  multiTabPage: MultiTabPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -63,6 +65,9 @@ export const test = base.extend<Fixtures>({
   },
   softAssertionsPage: async ({ page }, use) => {
     await use(new SoftAssertionsPage(page));
+  },
+  multiTabPage: async ({ page }, use) => {
+    await use(new MultiTabPage(page));
   },
 });
 
