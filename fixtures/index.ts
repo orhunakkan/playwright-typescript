@@ -13,6 +13,7 @@ import { BrowserEventsPage } from '../pages/browser-events.page';
 import { SoftAssertionsPage } from '../pages/soft-assertions.page';
 import { MultiTabPage } from '../pages/multi-tab.page';
 import { DragAndDropPage } from '../pages/drag-and-drop.page';
+import { ScrollLazyLoadingPage } from '../pages/scroll-lazy-loading.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -29,6 +30,7 @@ type Fixtures = {
   softAssertionsPage: SoftAssertionsPage;
   multiTabPage: MultiTabPage;
   dragAndDropPage: DragAndDropPage;
+  scrollLazyLoadingPage: ScrollLazyLoadingPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -73,6 +75,9 @@ export const test = base.extend<Fixtures>({
   },
   dragAndDropPage: async ({ page }, use) => {
     await use(new DragAndDropPage(page));
+  },
+  scrollLazyLoadingPage: async ({ page }, use) => {
+    await use(new ScrollLazyLoadingPage(page));
   },
 });
 
