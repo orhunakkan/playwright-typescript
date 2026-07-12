@@ -349,17 +349,23 @@ Pending: GitHub Actions CI run on PR #<N> to confirm → then Done.
 
 ### Step 10 — Wait for CI
 
+The workflow (`.github/workflows/playwright.yml`) scopes PRs from an `stlc/<lab-name>` branch to
+`npx playwright test --project="<project>" tests/<lab-name>` — only this lab's spec runs, not the
+full suite. Pushes to `main` (post-merge) and non-`stlc/*` branches still run the full suite as a
+regression net. This makes Step 10 fast and immune to unrelated pre-existing failures elsewhere
+in the repo.
+
 1. Resolve the workflow run for the PR's branch:
    ```
    gh run list --branch stlc/<lab-name> --workflow=playwright.yml --limit 1 \
      --json databaseId,status,conclusion,headSha
    ```
-2. Block until it finishes: `gh run watch <databaseId> --exit-status`. A 4-browser run with
-   fresh browser installs can take several minutes — run this via Bash with
-   `run_in_background` if a single call risks exceeding the tool timeout.
+2. Block until it finishes: `gh run watch <databaseId> --exit-status`. Even scoped to one lab, a
+   fresh 4-browser install can take a few minutes — run this via Bash with `run_in_background` if
+   a single call risks exceeding the tool timeout.
 3. Record the overall run conclusion, but do **not** gate Done on it alone — Step 11 determines
-   the lab-specific result. A flaky failure in an unrelated lab elsewhere in the run must not
-   block this lab's Done.
+   the lab-specific result. Even with scoped CI, a job can still fail for infra reasons unrelated
+   to this lab's tests; a failure there must not block this lab's Done.
 
 ---
 
@@ -379,6 +385,11 @@ For each of the 4 projects (`Desktop Chrome`, `Desktop Firefox`, `Desktop Edge`,
 
 Set `CI_LAB_RESULT = pass` only if every project confirms all of this lab's tests passed.
 Otherwise `CI_LAB_RESULT = fail` — record exactly which project(s)/test(s) failed.
+
+This filter-by-spec-file logic stays in place even though CI is now scoped per-lab: it is a cheap
+safety net for the rare case a run isn't scoped (workflow_dispatch, a non-`stlc/*` branch, or a
+future workflow change), and it costs nothing when the report already only contains this lab's
+tests.
 
 ---
 

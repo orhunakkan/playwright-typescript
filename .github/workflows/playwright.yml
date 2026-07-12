@@ -40,9 +40,29 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
+      - name: Determine test scope
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          PATH_ARG=""
+          if [ "$EVENT_NAME" = "pull_request" ] && [[ "$HEAD_REF" == stlc/* ]]; then
+            LAB="${HEAD_REF#stlc/}"
+            if [ -d "tests/$LAB" ]; then
+              PATH_ARG="tests/$LAB"
+            fi
+          fi
+          echo "path=$PATH_ARG" >> "$GITHUB_OUTPUT"
+
       - name: Run Playwright tests
         # tests/scrapper is excluded on CI via testIgnore in playwright.config.ts (CI-only).
-        run: npx playwright test --project="${{ matrix.project }}"
+        # PRs from an stlc/<lab-name> branch scope the run to that lab's spec only, for fast
+        # feedback; pushes to main (post-merge) and other branches run the full suite.
+        env:
+          PROJECT: ${{ matrix.project }}
+          SCOPE_PATH: ${{ steps.scope.outputs.path }}
+        run: npx playwright test --project="$PROJECT" $SCOPE_PATH
 
       - name: Upload report
         if: ${{ !cancelled() }}
