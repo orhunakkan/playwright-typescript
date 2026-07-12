@@ -248,26 +248,41 @@ For each defect-worthy failure that does **not** already have an open Bug:
    if the AC is otherwise covered).
 3. `addCommentToJiraIssue` on the **story** noting the Bug key was filed.
 4. Record the Bug in the lab RTM (`docs/rtm/<lab>.rtm.md` Defects table) — id, severity,
-   found-by, status `Open`. If a known-defect filter exists in the spec (e.g. an axe
+   found-by, status `Open`, JIRA link. If a known-defect filter exists in the spec (e.g. an axe
    `v.id !== '…'` exclusion), reuse that defect's id instead of filing a duplicate.
-   Immediately below the defect row, add a Fix Prompt blockquote for the stagecraftlabs.com
-   source code:
 
-   ```markdown
-   > **Fix Prompt — <DEF-ID>**
-   > You are working on the **stagecraftlabs.com source code** (separate repository from this Playwright test project).
-   >
-   > **Page:** `https://stagecraftlabs.com/practice/<page-slug>`
-   > **Element / Component:** <affected element>
-   > **Defect:** <exact symptom with specific values>
-   > **Root cause hypothesis:** <likely source location, or "Unknown — inspect <element> on the page">
-   > **Fix:** <specific change with target values>
-   > **Verification:** Remove `<filter or workaround>` from `<spec-file:line>` and re-run the suite. The formerly-failing assertion must pass with no new violations.
-   ```
+### ⛔ Fix Prompt goes in the chat reply, never into a repo file
 
-   The Fix Prompt must be self-contained — the receiving agent starts cold with no access to
-   this repository. Include the full URL, element name, exact values, and the spec file location.
-   Remove the Fix Prompt block once the defect Status is updated to `Fixed`.
+This Playwright repo is a different codebase from stagecraftlabs.com (the app under test) — the
+user fixes stagecraftlabs.com defects in a **separate** session/agent that has no access to this
+repository. So the moment a defect is confirmed:
+
+- **Print the Fix Prompt directly in the chat response**, as its own fenced block, so the user can
+  copy it straight into that other agent.
+- **Never write the Fix Prompt into any file in this repo** — not the RTM, not the spec, not a
+  scratch doc. The JIRA Bug description is the one allowed persistent copy (JIRA is an external
+  system, not this repo) — everything else (RTM Defects row, spec comments) stays a short pointer
+  (id, severity, JIRA link), never the full fix narrative.
+- If multiple defects are filed in one run, print one Fix Prompt block per defect, in the same
+  order as the triage table.
+
+Fix Prompt template (fill in every field — the receiving agent starts cold with zero context from
+this conversation):
+
+```markdown
+> **Fix Prompt — <DEF-ID / JIRA key>**
+> You are working on the **stagecraftlabs.com source code** (separate repository from this Playwright test project).
+>
+> **Page:** `https://stagecraftlabs.com/practice/<page-slug>`
+> **Element / Component:** <affected element>
+> **Defect:** <exact symptom with specific values>
+> **Root cause hypothesis:** <likely source location, or "Unknown — inspect <element> on the page">
+> **Fix:** <specific change with target values>
+> **Verification:** Remove `<filter or workaround>` from `<spec-file:line>` and re-run the suite. The formerly-failing assertion must pass with no new violations.
+```
+
+Include the full URL, element name, exact values, and the spec file/line so the block is usable
+with zero additional lookups.
 
 ### De-duplication
 
