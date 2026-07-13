@@ -23,6 +23,7 @@ import { HarRecordingPage } from '../pages/har-recording.page';
 import { ServiceWorkersPage } from '../pages/service-workers.page';
 import { VisualRegressionPage } from '../pages/visual-regression.page';
 import { MediaLocalePage } from '../pages/media-locale.page';
+import { GeolocationPermissionsPage } from '../pages/geolocation-permissions.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -49,6 +50,7 @@ type Fixtures = {
   serviceWorkersPage: ServiceWorkersPage;
   visualRegressionPage: VisualRegressionPage;
   mediaLocalePage: MediaLocalePage;
+  geolocationPermissionsPage: GeolocationPermissionsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -123,6 +125,9 @@ export const test = base.extend<Fixtures>({
   },
   mediaLocalePage: async ({ page }, use) => {
     await use(new MediaLocalePage(page));
+  },
+  geolocationPermissionsPage: async ({ page }, use) => {
+    await use(new GeolocationPermissionsPage(page));
   },
 });
 
