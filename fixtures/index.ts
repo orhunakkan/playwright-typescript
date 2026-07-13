@@ -22,6 +22,7 @@ import { WebsocketInterceptionPage } from '../pages/websocket-interception.page'
 import { HarRecordingPage } from '../pages/har-recording.page';
 import { ServiceWorkersPage } from '../pages/service-workers.page';
 import { VisualRegressionPage } from '../pages/visual-regression.page';
+import { GeolocationPermissionsPage } from '../pages/geolocation-permissions.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -47,6 +48,7 @@ type Fixtures = {
   harRecordingPage: HarRecordingPage;
   serviceWorkersPage: ServiceWorkersPage;
   visualRegressionPage: VisualRegressionPage;
+  geolocationPermissionsPage: GeolocationPermissionsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -118,6 +120,9 @@ export const test = base.extend<Fixtures>({
   },
   visualRegressionPage: async ({ page }, use) => {
     await use(new VisualRegressionPage(page));
+  },
+  geolocationPermissionsPage: async ({ page }, use) => {
+    await use(new GeolocationPermissionsPage(page));
   },
 });
 
