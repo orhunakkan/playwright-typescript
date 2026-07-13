@@ -59,10 +59,24 @@ jobs:
         # tests/scrapper is excluded on CI via testIgnore in playwright.config.ts (CI-only).
         # PRs from an stlc/<lab-name> branch scope the run to that lab's spec only, for fast
         # feedback; pushes to main (post-merge) and other branches run the full suite.
+        # A lab-scoped run can legitimately match zero tests for a project when that lab is
+        # intentionally excluded from a browser via a project-level testIgnore (e.g. TAB1-53 —
+        # Service Workers is excluded from Desktop Safari) — treated as a no-op success, not a
+        # failure, rather than letting Playwright's "No tests found" error fail the job.
         env:
           PROJECT: ${{ matrix.project }}
           SCOPE_PATH: ${{ steps.scope.outputs.path }}
-        run: npx playwright test --project="$PROJECT" $SCOPE_PATH
+        run: |
+          if [ -n "$SCOPE_PATH" ]; then
+            set +e
+            LIST_OUTPUT=$(npx playwright test --project="$PROJECT" "$SCOPE_PATH" --list 2>&1)
+            set -e
+            if echo "$LIST_OUTPUT" | grep -q "^Total: 0 tests"; then
+              echo "No tests for '$SCOPE_PATH' on project '$PROJECT' — intentionally out of scope. Skipping."
+              exit 0
+            fi
+          fi
+          npx playwright test --project="$PROJECT" $SCOPE_PATH
 
       - name: Upload report
         if: ${{ !cancelled() }}
@@ -73,3 +87,6 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 14
+          # A lab intentionally excluded from this project (e.g. Service Workers on Desktop
+          # Safari, TAB1-53) never runs Playwright, so no report exists — expected, not an error.
+          if-no-files-found: ignore
