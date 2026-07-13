@@ -8,7 +8,7 @@
 | POM file   | pages/service-workers.page.ts                                       |
 | Last run   | 2026-07-12 — 42 / 42 passed (Chrome 14/14 · Firefox 14/14 · Edge 14/14), including a real (unfiltered) axe color-contrast assertion. Desktop Safari intentionally out of scope for this lab (TAB1-53). 0 skipped tests. |
 | Generated  | 2026-07-12                                                           |
-| Status     | ✅ 0 open blockers — both TAB1-52 and TAB1-53 resolved. Ready for Done pending CI evidence. |
+| Status     | ✅ Done — CI verified. 0 open blockers (TAB1-52 and TAB1-53 both resolved). |
 
 ---
 
