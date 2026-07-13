@@ -22,6 +22,7 @@ import { WebsocketInterceptionPage } from '../pages/websocket-interception.page'
 import { HarRecordingPage } from '../pages/har-recording.page';
 import { ServiceWorkersPage } from '../pages/service-workers.page';
 import { VisualRegressionPage } from '../pages/visual-regression.page';
+import { MediaLocalePage } from '../pages/media-locale.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -47,6 +48,7 @@ type Fixtures = {
   harRecordingPage: HarRecordingPage;
   serviceWorkersPage: ServiceWorkersPage;
   visualRegressionPage: VisualRegressionPage;
+  mediaLocalePage: MediaLocalePage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -118,6 +120,9 @@ export const test = base.extend<Fixtures>({
   },
   visualRegressionPage: async ({ page }, use) => {
     await use(new VisualRegressionPage(page));
+  },
+  mediaLocalePage: async ({ page }, use) => {
+    await use(new MediaLocalePage(page));
   },
 });
 
