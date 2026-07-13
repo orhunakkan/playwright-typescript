@@ -53,7 +53,7 @@
 | Data-driven             | ❌ (fixed 3-item response shape; no parametrizable input space)          |
 | Accessibility (axe)     | ✅ (initial load + cache-sourced + network-sourced + offline-error)      |
 | Non-functional (perf)   | ✅ (Navigation Timing budget)                                            |
-| Cross-browser           | ✅ (4 browsers)                                                          |
+| Cross-browser           | ✅ (3 browsers — Desktop Safari excluded, TAB1-53)                       |
 | Mobile / responsive     | ❌ (out of scope)                                                        |
 
 ---
@@ -72,14 +72,23 @@
 
 ## 4. Browser / Device Matrix
 
-| Browser         | Project name    |
-| ---------------- | ----------------- |
-| Desktop Chrome  | Desktop Chrome   |
-| Desktop Firefox | Desktop Firefox  |
-| Desktop Edge    | Desktop Edge     |
-| Desktop Safari  | Desktop Safari   |
+| Browser         | Project name    | Included for this lab? |
+| ---------------- | ----------------- | ----------------------- |
+| Desktop Chrome  | Desktop Chrome   | ✅ |
+| Desktop Firefox | Desktop Firefox  | ✅ |
+| Desktop Edge    | Desktop Edge     | ✅ |
+| Desktop Safari  | Desktop Safari   | ❌ excluded — see below |
 
 _(Source: `playwright.config.ts` projects[])_
+
+**Desktop Safari exclusion (TAB1-53):** Playwright's WebKit driver blocks an active service
+worker from ever responding once `context.setOffline(true)` is set — confirmed with a raw
+`fetch()` call, no app or test code involved. Not fixable in this app's source. This is an
+explicit, approved team scope decision (not a silent skip): `playwright.config.ts` sets
+`testIgnore: '**/service-workers/**'` on the `Desktop Safari` project only, so no test in this
+spec ever runs on Safari, and CI does not report it as failed, flaky, or skipped for this lab. All
+other labs in the repo keep full 4-browser coverage. This scope reduction applies to this lab
+only and should be revisited if Playwright resolves the underlying WebKit limitation.
 
 ---
 
@@ -116,7 +125,7 @@ _(Source: `playwright.config.ts` projects[])_
 - [ ] 100% of P1 + P2 requirements have passing automated cases
 - [ ] 0 open non-flaky defects of severity ≥ High linked to TAB1-28
 - [ ] Accessibility: 0 critical/serious violations (or tracked with a defect id) in all states
-- [ ] Green across all 4 configured browsers in CI
+- [ ] Green across all 3 in-scope browsers in CI (Desktop Safari excluded — TAB1-53)
 - [ ] RTM generated and up to date: `docs/rtm/service-workers.rtm.md`
 
 ---

@@ -37,6 +37,11 @@ export default defineConfig({
     {
       name: 'Desktop Safari',
       use: { ...devices['Desktop Safari'] },
+      // TAB1-53: Playwright's WebKit driver blocks an active service worker from ever
+      // responding once context.setOffline(true) is set — confirmed with a raw fetch() call, no
+      // app/test code involved. Not fixable in this app's source. Explicit team scope decision:
+      // this lab is not run on Safari; all other labs keep full 4-browser coverage.
+      testIgnore: '**/service-workers/**',
     },
   ],
 });
