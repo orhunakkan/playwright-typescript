@@ -14,10 +14,6 @@ import { ServiceWorkersPage } from '../../pages/service-workers.page';
 const URL = '/practice/service-workers';
 
 const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-// TAB1-52: the "✓ Service worker registered" status text is #009966 on #fafafa (3.5:1, needs
-// 4.5:1) — a real, reproducible app defect tracked separately. Excluded here so it doesn't block
-// this story, same pattern as TAB1-42 on the Async UI lab.
-const filterKnown = (violations: { id: string }[]) => violations.filter((v) => v.id !== 'color-contrast');
 
 async function registerServiceWorker(page: Page, serviceWorkersPage: ServiceWorkersPage) {
   await serviceWorkersPage.registerButton.click();
@@ -197,7 +193,7 @@ test.describe('Service Workers', () => {
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial page load', async ({ page }) => {
       await page.goto(URL);
-      expect(filterKnown((await scan(page)).violations)).toEqual([]);
+      expect((await scan(page)).violations).toEqual([]);
     });
 
     test('no violations once items are rendered from the service worker cache', async ({ page, serviceWorkersPage }) => {
@@ -205,14 +201,14 @@ test.describe('Service Workers', () => {
       await registerServiceWorker(page, serviceWorkersPage);
       await serviceWorkersPage.fetchItemsButton.click();
       await expect(serviceWorkersPage.fetchedItems).toHaveCount(3);
-      expect(filterKnown((await scan(page)).violations)).toEqual([]);
+      expect((await scan(page)).violations).toEqual([]);
     });
 
     test('no violations once items are rendered from the network', async ({ page, serviceWorkersPage }) => {
       await page.goto(URL);
       await serviceWorkersPage.fetchItemsButton.click();
       await expect(serviceWorkersPage.fetchedItems).toHaveCount(3);
-      expect(filterKnown((await scan(page)).violations)).toEqual([]);
+      expect((await scan(page)).violations).toEqual([]);
     });
 
     test('no violations in the offline network-error state', async ({ browser }) => {
@@ -225,7 +221,7 @@ test.describe('Service Workers', () => {
       await serviceWorkersPage.fetchItemsButton.click();
       await expect(serviceWorkersPage.errorRegion).toBeVisible();
 
-      expect(filterKnown((await scan(page)).violations)).toEqual([]);
+      expect((await scan(page)).violations).toEqual([]);
       await context.close();
     });
   });

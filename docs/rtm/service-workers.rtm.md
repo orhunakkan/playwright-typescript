@@ -6,9 +6,9 @@
 | Lab URL    | https://stagecraftlabs.com/practice/service-workers                 |
 | Spec file  | tests/service-workers/service-workers.spec.ts                       |
 | POM file   | pages/service-workers.page.ts                                       |
-| Last run   | 2026-07-12 — 42 / 42 passed (Chrome 14/14 · Firefox 14/14 · Edge 14/14). Desktop Safari intentionally out of scope for this lab (TAB1-53). 0 skipped tests. |
+| Last run   | 2026-07-12 — 42 / 42 passed (Chrome 14/14 · Firefox 14/14 · Edge 14/14), including a real (unfiltered) axe color-contrast assertion. Desktop Safari intentionally out of scope for this lab (TAB1-53). 0 skipped tests. |
 | Generated  | 2026-07-12                                                           |
-| Status     | ⚠️ NOT Done — 1 open blocker (TAB1-52). Story held at In Review.     |
+| Status     | ✅ 0 open blockers — both TAB1-52 and TAB1-53 resolved. Ready for Done pending CI evidence. |
 
 ---
 
@@ -26,7 +26,7 @@
 | AC-4 | (boundary — cache must be populated before going offline)                                                                          | boundary: going offline before ever registering the service worker leaves no cache to serve, so the fetch fails | B | ✅ (3/3) |
 | AC-5 | `context.setOffline(true)` with the service worker blocked shows a network error state                                            | positive: serviceWorkers: "block" + context.setOffline(true) shows a network error state                 | P     | ✅ (3/3) |
 | AC-6 | Caching-strategy tests leave the SW active and are structurally separated from route()-interception tests                          | Enforced by spec structure: `Caching strategy — service worker left active (AC-1, AC-4)` vs. `page.route() interception — service worker blocked via context option (AC-2, AC-3, AC-5)` describe blocks | — | ✅ |
-| AXE  | The page must have no critical/serious axe-core violations in every rendered state (color-contrast excluded — TAB1-52)             | no violations on initial page load                                                                        | A11y  | ✅ (3/3) |
+| AXE  | The page must have no critical/serious axe-core violations in every rendered state                                                 | no violations on initial page load                                                                        | A11y  | ✅ (3/3) |
 | AXE  |                                                                                                                                      | no violations once items are rendered from the service worker cache                                       | A11y  | ✅ (3/3) |
 | AXE  |                                                                                                                                      | no violations once items are rendered from the network                                                    | A11y  | ✅ (3/3) |
 | AXE  |                                                                                                                                      | no violations in the offline network-error state                                                          | A11y  | ✅ (3/3) |
@@ -36,12 +36,23 @@ _All rows: 3/3 = Desktop Chrome, Desktop Firefox, Desktop Edge. Desktop Safari i
 
 ---
 
-## Blockers
+## Blockers (all resolved)
 
 | ID       | Type            | Summary                                                                                         | Fixable in app source? | JIRA     | Status |
 | -------- | --------------- | ------------------------------------------------------------------------------------------------- | ----------------------- | -------- | ------ |
-| TAB1-52  | App defect (a11y, Serious) | Insufficient color contrast on "Service worker registered" status text — 3.5:1 (needs 4.5:1) | **Yes** — darken the text color | [TAB1-52](https://orhunakkan.atlassian.net/browse/TAB1-52) | **Open — blocks Done** |
+| TAB1-52  | App defect (a11y, Serious) | Insufficient color contrast on "Service worker registered" status text — 3.5:1 (needs 4.5:1) | **Yes** — darkened `text-emerald-600` → `text-emerald-700`/`dark:text-emerald-300` | [TAB1-52](https://orhunakkan.atlassian.net/browse/TAB1-52) | **Resolved — fixed in app source** |
 | TAB1-53  | Test-tooling limitation | Playwright WebKit `context.setOffline()` prevents an active service worker from ever responding, confirmed with a raw `fetch()` call (no app/test code involved) | **No** — Playwright/WebKit driver limitation | [TAB1-53](https://orhunakkan.atlassian.net/browse/TAB1-53) | **Resolved via scope decision** — see below |
+
+---
+
+## TAB1-52 resolution: fixed in app source, re-verified
+
+The Stagecraft app's "✓ Service worker registered" status text was changed from `text-emerald-600`
+(`#009966` on `#fafafa`, 3.5:1) to `text-emerald-700`/`dark:text-emerald-300`. Re-verified directly
+against the live site with a real (unfiltered) axe-core scan (`wcag2a`, `wcag2aa`, `wcag21aa` tags)
+after registering the SW and rendering cached items: **0 violations, including 0 `color-contrast`
+violations**. The spec's `filterKnown()` exclusion has been removed — all 4 axe scans now assert
+`violations` is empty with no rule filtering.
 
 ---
 
@@ -82,5 +93,5 @@ upstream.
 - **Every POM element asserted by ≥1 case:** ✅ (`registerButton`/`registrationStatus` in AC-1/AC-3, `fetchItemsButton`/`fetchedItems`/`itemSourceBadge` in AC-1/AC-2/AC-3/AC-4/AC-5, `errorRegion` in AC-4 boundary/AC-5/a11y)
 - **Notable finding during test design:** the "source" badge text ("cache" / "network" / "route") is rendered directly from the JSON response's `source` field — confirmed by mocking a `page.route()` response with `source: "route"` and observing that exact literal text rendered, which made AC-2/AC-3 assertions straightforward
 - **Notable finding during test design:** exact fetch-failure error text differs per browser (Chromium "Failed to fetch", Firefox "NetworkError when attempting to fetch resource.") — AC-5/boundary assertions check `errorRegion` visibility and non-empty content rather than pinning browser-specific wording
-- **Open blockers:** 1 (TAB1-52 — app defect, source-fixable, still open)
-- **Exit criteria met:** ❌ — NOT yet met. TAB1-52 is still open and blocks Done. Story held at **In Review** until it is fixed in the app source and re-verified.
+- **Open blockers:** 0 (TAB1-52 fixed in app source and re-verified; TAB1-53 resolved via scope decision)
+- **Exit criteria met:** ✅ — all P1+P2 requirements covered, 0 open blockers, a11y clean with no rule exclusions, 3/3 in-scope browsers green locally. Story proceeds to Done once CI confirms this on the PR.
