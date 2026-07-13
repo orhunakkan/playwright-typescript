@@ -6,9 +6,9 @@
 | Lab URL    | https://stagecraftlabs.com/practice/visual-regression                         |
 | Spec file  | tests/visual-regression/visual-regression.spec.ts                             |
 | POM file   | pages/visual-regression.page.ts                                               |
-| Last run   | 2026-07-12 — 36 / 36 passed (Chrome 9/9 · Firefox 9/9 · Edge 9/9 · Safari 9/9), stable across 2 consecutive local runs. 0 skipped tests. |
+| Last run   | 2026-07-13 — CI: 36 / 36 passed (Chrome 9/9 · Firefox 9/9 · Edge 9/9 · Safari 9/9). Local: 36/36 passed, stable across 2 consecutive runs. 0 skipped tests. |
 | Generated  | 2026-07-12                                                                     |
-| Status     | 🔍 In Review — local tests passing. Story proceeds to Done once CI confirms this on the PR. |
+| Status     | ✅ Done — CI verified. 0 open blockers (TAB1-54 resolved via scope decision). |
 
 ---
 
