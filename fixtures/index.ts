@@ -21,6 +21,7 @@ import { ClockTimersPage } from '../pages/clock-timers.page';
 import { WebsocketInterceptionPage } from '../pages/websocket-interception.page';
 import { HarRecordingPage } from '../pages/har-recording.page';
 import { ServiceWorkersPage } from '../pages/service-workers.page';
+import { VisualRegressionPage } from '../pages/visual-regression.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -45,6 +46,7 @@ type Fixtures = {
   websocketInterceptionPage: WebsocketInterceptionPage;
   harRecordingPage: HarRecordingPage;
   serviceWorkersPage: ServiceWorkersPage;
+  visualRegressionPage: VisualRegressionPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -113,6 +115,9 @@ export const test = base.extend<Fixtures>({
   },
   serviceWorkersPage: async ({ page }, use) => {
     await use(new ServiceWorkersPage(page));
+  },
+  visualRegressionPage: async ({ page }, use) => {
+    await use(new VisualRegressionPage(page));
   },
 });
 
