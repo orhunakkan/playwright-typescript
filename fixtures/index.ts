@@ -19,6 +19,7 @@ import { FramesContextsPage } from '../pages/frames-contexts.page';
 import { StorageStatePage } from '../pages/storage-state.page';
 import { ClockTimersPage } from '../pages/clock-timers.page';
 import { WebsocketInterceptionPage } from '../pages/websocket-interception.page';
+import { HarRecordingPage } from '../pages/har-recording.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -41,6 +42,7 @@ type Fixtures = {
   storageStatePage: StorageStatePage;
   clockTimersPage: ClockTimersPage;
   websocketInterceptionPage: WebsocketInterceptionPage;
+  harRecordingPage: HarRecordingPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -103,6 +105,9 @@ export const test = base.extend<Fixtures>({
   },
   websocketInterceptionPage: async ({ page }, use) => {
     await use(new WebsocketInterceptionPage(page));
+  },
+  harRecordingPage: async ({ page }, use) => {
+    await use(new HarRecordingPage(page));
   },
 });
 
