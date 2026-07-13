@@ -4,6 +4,12 @@ import type { Page } from '@playwright/test';
 import { ServiceWorkersPage } from '../../pages/service-workers.page';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-28 — Service Workers
+//
+// TAB1-53: on Desktop Safari, context.setOffline(true) prevents an active service worker from
+// ever responding — confirmed to be a Playwright/WebKit driver limitation (reproduced with a raw
+// fetch() call, no app or test code involved), not fixable in this app's source. The 4 tests that
+// exercise context.setOffline() are intentionally NOT skipped and are expected to be red/flaky on
+// Desktop Safari until TAB1-53 is resolved.
 
 const URL = '/practice/service-workers';
 
@@ -57,14 +63,7 @@ test.describe('Service Workers', () => {
       page,
       context,
       serviceWorkersPage,
-      browserName,
     }) => {
-      // WebKit's setOffline() blocks at a lower network layer than the service worker can
-      // intercept, so the SW's own cache-backed response never reaches the page — confirmed
-      // empirically against the live lab. Not a product defect; a Playwright/WebKit tooling
-      // limitation, the same class of issue already documented in har-recording.spec.ts.
-      test.skip(browserName === 'webkit', 'WebKit setOffline() blocks the active SW before it can serve from cache');
-
       await page.goto(URL);
       await registerServiceWorker(page, serviceWorkersPage);
 
@@ -80,10 +79,7 @@ test.describe('Service Workers', () => {
       page,
       context,
       serviceWorkersPage,
-      browserName,
     }) => {
-      test.skip(browserName === 'webkit', 'WebKit setOffline() delays module/chunk loading unpredictably in this state');
-
       await page.goto(URL);
       await context.setOffline(true);
       await serviceWorkersPage.fetchItemsButton.click();
@@ -162,9 +158,7 @@ test.describe('Service Workers', () => {
 
     // AC-5 (TAB1-28): context.setOffline(true) with the service worker blocked shows a network
     // error state
-    test('positive: serviceWorkers: "block" + context.setOffline(true) shows a network error state', async ({ browser, browserName }) => {
-      test.skip(browserName === 'webkit', 'WebKit setOffline() delays module/chunk loading unpredictably in this state');
-
+    test('positive: serviceWorkers: "block" + context.setOffline(true) shows a network error state', async ({ browser }) => {
       const context = await browser.newContext({ serviceWorkers: 'block' });
       const page = await context.newPage();
       const serviceWorkersPage = new ServiceWorkersPage(page);
@@ -221,9 +215,7 @@ test.describe('Service Workers', () => {
       expect(filterKnown((await scan(page)).violations)).toEqual([]);
     });
 
-    test('no violations in the offline network-error state', async ({ browser, browserName }) => {
-      test.skip(browserName === 'webkit', 'WebKit setOffline() delays module/chunk loading unpredictably in this state');
-
+    test('no violations in the offline network-error state', async ({ browser }) => {
       const context = await browser.newContext({ serviceWorkers: 'block' });
       const page = await context.newPage();
       const serviceWorkersPage = new ServiceWorkersPage(page);
