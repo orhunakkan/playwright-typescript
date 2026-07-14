@@ -6,7 +6,7 @@
 | Lab URL    | https://stagecraftlabs.com/practice/touch-gestures                    |
 | Spec file  | tests/touch-gestures/touch-gestures.spec.ts                            |
 | POM file   | pages/touch-gestures.page.ts                                           |
-| Last run   | 2026-07-14 — 58 / 60 passed, 12 skipped (Chrome · Firefox · Edge · Safari) |
+| Last run   | 2026-07-14 — 60 / 60 passed, 12 skipped (Chrome · Firefox · Edge · Safari) — CI verified after TAB1-59 fix |
 | Generated  | 2026-07-14                                                              |
 
 ---
@@ -30,7 +30,7 @@
 | AC-5a |                                                                                                     | negative: the page's own Inspect Touch Points widget reflects 0 on a default context     | N    | ✅     |
 | AXE  | The page must have no critical/serious axe-core violations in every rendered state                | no violations on initial load                                                           | A11y | ✅     |
 | AXE  |                                                                                                     | no violations after a tap updates the counter                                           | A11y | ✅     |
-| AXE  |                                                                                                     | no violations after a swipe advances the carousel (Chromium-only)                       | A11y | ❌ (Chrome/Edge) ⏭ (Firefox/Safari) — see TAB1-59 |
+| AXE  |                                                                                                     | no violations after a swipe advances the carousel (Chromium-only)                       | A11y | ✅ (Chrome/Edge) ⏭ (Firefox/Safari) |
 | REQ-NF1 | The page must meet its performance budget (load + key interaction)                             | initial touch-gestures page load is within budget                                       | Perf | ✅     |
 | REQ-NF1 |                                                                                                  | a tap-triggered counter update completes within budget                                  | Perf | ✅     |
 
@@ -47,7 +47,7 @@ Desktop Chrome + Desktop Edge via `test.skip(({ browserName }) => browserName !=
 
 | ID | Type | Summary | Severity | Found by | JIRA | Status |
 | -- | ---- | ------- | -------- | -------- | ---- | ------ |
-| TAB1-59 | Accessibility | `color-contrast`: Slide 2 "Swipe" text (`text-white` bold on `bg-emerald-500`, 2.47:1) fails WCAG 2 AA (3:1 required for large/bold text) | Serious | axe-core, Desktop Chrome + Desktop Edge | [TAB1-59](https://orhunakkan.atlassian.net/browse/TAB1-59) | 🔴 Open — blocks TAB1-41 |
+| TAB1-59 | Accessibility | `color-contrast`: Slide 2 "Swipe" text (`text-white` bold on `bg-emerald-500`, 2.47:1) fails WCAG 2 AA (3:1 required for large/bold text) | Serious | axe-core, Desktop Chrome + Desktop Edge | [TAB1-59](https://orhunakkan.atlassian.net/browse/TAB1-59) | ✅ Fixed & closed — verified live, 60/60 passing |
 
 ---
 
@@ -55,8 +55,8 @@ Desktop Chrome + Desktop Edge via `test.skip(({ browserName }) => browserName !=
 
 - **ACs covered:** 5 / 5 + 1 contrast sub-requirement (AC-1 · AC-2 · AC-3 · AC-4 · AC-5 · AC-5a) — AC-3/AC-4/AC-5 verified on Chromium engines (Desktop Chrome, Desktop Edge); Firefox/Safari intentionally skipped per a verified Playwright/browser-engine limitation (see note above)
 - **Non-functional covered:** 4 / 4 (AXE load state · AXE post-tap state · AXE post-swipe state · performance budget)
-- **Test cases:** 17 tests defined; 60 executions across 4 browsers (17×4 minus the 8 tests scoped Chromium-only ×2 skipped browsers = 12 skipped) — 58 passed, 2 failed
+- **Test cases:** 17 tests defined; 60 executions across 4 browsers (17×4 minus the 8 tests scoped Chromium-only ×2 skipped browsers = 12 skipped) — 60 passed, 0 failed
 - **Every POM element asserted by ≥1 case:** ✅ (`tapTargetButton`/`tapCount` in AC-1/AC-2, `carouselRegion`/`activeSlide`/`slideIndicators`/`nextSlideButton` in AC-3/AC-4, `inspectTouchPointsButton`/`touchInfoResult` in AC-5a)
-- **Real defect found during this run:** TAB1-59 — a genuine WCAG AA color-contrast failure in the deployed app's Slide 2 background, same category (and same root-cause pattern) as TAB1-57/TAB1-58 found in earlier labs. Filed, linked to TAB1-41 as blocking, not yet fixed.
-- **Open defects:** 1 (TAB1-59)
-- **Exit criteria met:** ⚠️ Partially — all P1 functional ACs pass; 1 open non-flaky Accessibility defect blocks full exit criteria until TAB1-59 is resolved.
+- **Real defect found and fixed during this run:** TAB1-59 — a genuine WCAG AA color-contrast failure in the deployed app's Slide 2 background (same category and root-cause pattern as TAB1-57/TAB1-58 in earlier labs), found, filed, fixed upstream, deployed, verified live, and confirmed via a clean CI re-run (60/60).
+- **Open defects:** 0
+- **Exit criteria met:** ✅ — all P1+P2 requirements covered, 0 non-flaky failures, a11y clean across all 3 states, green across all 4 browsers in CI.
