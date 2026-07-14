@@ -26,6 +26,7 @@ import { MediaLocalePage } from '../pages/media-locale.page';
 import { GeolocationPermissionsPage } from '../pages/geolocation-permissions.page';
 import { AccessibilityScanningPage } from '../pages/accessibility-scanning.page';
 import { LocatorHandlersPage } from '../pages/locator-handlers.page';
+import { ShadowDomPage } from '../pages/shadow-dom.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -55,6 +56,7 @@ type Fixtures = {
   geolocationPermissionsPage: GeolocationPermissionsPage;
   accessibilityScanningPage: AccessibilityScanningPage;
   locatorHandlersPage: LocatorHandlersPage;
+  shadowDomPage: ShadowDomPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -138,6 +140,9 @@ export const test = base.extend<Fixtures>({
   },
   locatorHandlersPage: async ({ page }, use) => {
     await use(new LocatorHandlersPage(page));
+  },
+  shadowDomPage: async ({ page }, use) => {
+    await use(new ShadowDomPage(page));
   },
 });
 
