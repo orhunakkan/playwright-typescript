@@ -25,6 +25,7 @@ import { VisualRegressionPage } from '../pages/visual-regression.page';
 import { MediaLocalePage } from '../pages/media-locale.page';
 import { GeolocationPermissionsPage } from '../pages/geolocation-permissions.page';
 import { AccessibilityScanningPage } from '../pages/accessibility-scanning.page';
+import { LocatorHandlersPage } from '../pages/locator-handlers.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -53,6 +54,7 @@ type Fixtures = {
   mediaLocalePage: MediaLocalePage;
   geolocationPermissionsPage: GeolocationPermissionsPage;
   accessibilityScanningPage: AccessibilityScanningPage;
+  locatorHandlersPage: LocatorHandlersPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -133,6 +135,9 @@ export const test = base.extend<Fixtures>({
   },
   accessibilityScanningPage: async ({ page }, use) => {
     await use(new AccessibilityScanningPage(page));
+  },
+  locatorHandlersPage: async ({ page }, use) => {
+    await use(new LocatorHandlersPage(page));
   },
 });
 
