@@ -27,6 +27,7 @@ import { GeolocationPermissionsPage } from '../pages/geolocation-permissions.pag
 import { AccessibilityScanningPage } from '../pages/accessibility-scanning.page';
 import { LocatorHandlersPage } from '../pages/locator-handlers.page';
 import { ShadowDomPage } from '../pages/shadow-dom.page';
+import { ServerSentEventsPage } from '../pages/server-sent-events.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -57,6 +58,7 @@ type Fixtures = {
   accessibilityScanningPage: AccessibilityScanningPage;
   locatorHandlersPage: LocatorHandlersPage;
   shadowDomPage: ShadowDomPage;
+  serverSentEventsPage: ServerSentEventsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -143,6 +145,9 @@ export const test = base.extend<Fixtures>({
   },
   shadowDomPage: async ({ page }, use) => {
     await use(new ShadowDomPage(page));
+  },
+  serverSentEventsPage: async ({ page }, use) => {
+    await use(new ServerSentEventsPage(page));
   },
 });
 
