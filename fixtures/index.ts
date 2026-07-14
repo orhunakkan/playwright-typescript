@@ -24,6 +24,7 @@ import { ServiceWorkersPage } from '../pages/service-workers.page';
 import { VisualRegressionPage } from '../pages/visual-regression.page';
 import { MediaLocalePage } from '../pages/media-locale.page';
 import { GeolocationPermissionsPage } from '../pages/geolocation-permissions.page';
+import { AccessibilityScanningPage } from '../pages/accessibility-scanning.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -51,6 +52,7 @@ type Fixtures = {
   visualRegressionPage: VisualRegressionPage;
   mediaLocalePage: MediaLocalePage;
   geolocationPermissionsPage: GeolocationPermissionsPage;
+  accessibilityScanningPage: AccessibilityScanningPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -128,6 +130,9 @@ export const test = base.extend<Fixtures>({
   },
   geolocationPermissionsPage: async ({ page }, use) => {
     await use(new GeolocationPermissionsPage(page));
+  },
+  accessibilityScanningPage: async ({ page }, use) => {
+    await use(new AccessibilityScanningPage(page));
   },
 });
 
