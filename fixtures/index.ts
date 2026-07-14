@@ -28,6 +28,7 @@ import { AccessibilityScanningPage } from '../pages/accessibility-scanning.page'
 import { LocatorHandlersPage } from '../pages/locator-handlers.page';
 import { ShadowDomPage } from '../pages/shadow-dom.page';
 import { ServerSentEventsPage } from '../pages/server-sent-events.page';
+import { InitScriptsPage } from '../pages/init-scripts.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -59,6 +60,7 @@ type Fixtures = {
   locatorHandlersPage: LocatorHandlersPage;
   shadowDomPage: ShadowDomPage;
   serverSentEventsPage: ServerSentEventsPage;
+  initScriptsPage: InitScriptsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -148,6 +150,9 @@ export const test = base.extend<Fixtures>({
   },
   serverSentEventsPage: async ({ page }, use) => {
     await use(new ServerSentEventsPage(page));
+  },
+  initScriptsPage: async ({ page }, use) => {
+    await use(new InitScriptsPage(page));
   },
 });
 
