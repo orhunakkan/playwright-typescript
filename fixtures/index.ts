@@ -29,6 +29,7 @@ import { LocatorHandlersPage } from '../pages/locator-handlers.page';
 import { ShadowDomPage } from '../pages/shadow-dom.page';
 import { ServerSentEventsPage } from '../pages/server-sent-events.page';
 import { InitScriptsPage } from '../pages/init-scripts.page';
+import { TouchGesturesPage } from '../pages/touch-gestures.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -61,6 +62,7 @@ type Fixtures = {
   shadowDomPage: ShadowDomPage;
   serverSentEventsPage: ServerSentEventsPage;
   initScriptsPage: InitScriptsPage;
+  touchGesturesPage: TouchGesturesPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -153,6 +155,9 @@ export const test = base.extend<Fixtures>({
   },
   initScriptsPage: async ({ page }, use) => {
     await use(new InitScriptsPage(page));
+  },
+  touchGesturesPage: async ({ page }, use) => {
+    await use(new TouchGesturesPage(page));
   },
 });
 
