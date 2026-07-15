@@ -2,17 +2,17 @@
   "cookies": [
     {
       "name": "ARRAffinity",
-      "value": "8b26edd5d90f09c1642b5d21b2297c20edf2e9f2efef8e4aec938a3e9a59d04f",
+      "value": "b77204ecce762e8101a7b9e79b0ea29458e64dee57f66fb452d696686e6a0355",
       "domain": ".stagecraftlabs.com",
       "path": "/",
       "expires": -1,
       "httpOnly": true,
       "secure": true,
-      "sameSite": "None"
+      "sameSite": "Lax"
     },
     {
       "name": "ARRAffinitySameSite",
-      "value": "8b26edd5d90f09c1642b5d21b2297c20edf2e9f2efef8e4aec938a3e9a59d04f",
+      "value": "b77204ecce762e8101a7b9e79b0ea29458e64dee57f66fb452d696686e6a0355",
       "domain": ".stagecraftlabs.com",
       "path": "/",
       "expires": -1,
@@ -22,13 +22,13 @@
     },
     {
       "name": "connect.sid",
-      "value": "s%3ApS-TF43aCW53RYahKXfpEZwy6EQRaIml.EAd7VYQyOoXCqa20AH5fNkcqnOXeIyMy1GpHHQUvGJk",
+      "value": "s%3AwWdB8fGKcwFACwNx2m4UO3P5mKJgiW6I.%2B5Ln3VYeSpBT440UCwvSW4Y0gy3khniZsL8miyChRcw",
       "domain": "stagecraftlabs.com",
       "path": "/",
-      "expires": 1781885985,
+      "expires": 1784089709.142023,
       "httpOnly": true,
       "secure": true,
-      "sameSite": "None"
+      "sameSite": "Lax"
     }
   ],
   "origins": [

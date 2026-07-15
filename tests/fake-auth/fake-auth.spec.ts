@@ -115,6 +115,10 @@ test.describe('Fake Auth', () => {
       await fakeAuthPage.signInButton.click();
       await expect(page).toHaveURL(/\/practice\/fake-auth\/dashboard$/);
       await fakeAuthPage.signOutButton.click();
+      // Sign out clears the session via an async POST /api/auth/logout call. Navigating away
+      // immediately can race that request (and cancel it), leaving the server session intact,
+      // so wait for the app's own post-sign-out redirect before checking the dashboard is gated.
+      await expect(page).toHaveURL(/\/practice\/fake-auth$/);
       await page.goto(DASHBOARD_URL);
       await expect(page).toHaveURL(/\/practice\/fake-auth$/);
       await expect(fakeAuthPage.dashboardHeading).not.toBeVisible();
