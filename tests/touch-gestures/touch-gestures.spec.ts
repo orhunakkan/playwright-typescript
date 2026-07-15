@@ -148,7 +148,7 @@ test.describe('AC-5a — default context contrasts as non-touch-capable', () => 
     expect(maxTouchPoints).toBe(0);
   });
 
-  test('negative: the page\'s own Inspect Touch Points widget reflects 0 on a default context', async ({ page, touchGesturesPage }) => {
+  test("negative: the page's own Inspect Touch Points widget reflects 0 on a default context", async ({ page, touchGesturesPage }) => {
     await page.goto(URL);
     await touchGesturesPage.inspectTouchPointsButton.click();
     await expect(touchGesturesPage.touchInfoResult).toHaveText('maxTouchPoints: 0');
@@ -174,10 +174,7 @@ test.describe('accessibility (WCAG 2.x, axe)', () => {
 
   test.describe('post-swipe state', () => {
     test.use({ hasTouch: true });
-    test.skip(
-      ({ browserName }) => browserName !== 'chromium',
-      'Swipe simulation needs a raw CDP touch-event sequence — Chromium-only.',
-    );
+    test.skip(({ browserName }) => browserName !== 'chromium', 'Swipe simulation needs a raw CDP touch-event sequence — Chromium-only.');
 
     test('no violations after a swipe advances the carousel', async ({ page, context }) => {
       await page.goto(URL);
