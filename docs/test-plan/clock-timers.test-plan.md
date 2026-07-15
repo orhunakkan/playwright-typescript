@@ -1,12 +1,12 @@
 # Test Plan — Clock & Timers (TAB1-25)
 
-| Field      | Value                                                       |
-| ---------- | ------------------------------------------------------------ |
-| JIRA Story | [TAB1-25](https://orhunakkan.atlassian.net/browse/TAB1-25)  |
-| Lab URL    | https://stagecraftlabs.com/practice/clock-timers             |
-| Spec file  | tests/clock-timers/clock-timers.spec.ts                      |
-| POM file   | pages/clock-timers.page.ts                                   |
-| Generated  | 2026-07-12                                                    |
+| Field      | Value                                                      |
+| ---------- | ---------------------------------------------------------- |
+| JIRA Story | [TAB1-25](https://orhunakkan.atlassian.net/browse/TAB1-25) |
+| Lab URL    | https://stagecraftlabs.com/practice/clock-timers           |
+| Spec file  | tests/clock-timers/clock-timers.spec.ts                    |
+| POM file   | pages/clock-timers.page.ts                                 |
+| Generated  | 2026-07-12                                                 |
 
 ---
 
@@ -34,13 +34,13 @@
 
 ## 2. Test Types
 
-| Type                  | Applied                                                    |
-| --------------------- | ----------------------------------------------------------- |
-| Functional (positive) | ✅                                                          |
-| Functional (negative) | ✅                                                          |
-| Boundary value        | ✅ (tick just-under vs. exactly-at trigger thresholds)      |
-| Data-driven           | ✅ (small-increment tick table for intermediate countdown)  |
-| Accessibility (axe)   | ✅ (initial + countdown-active + expired + refreshed states)|
+| Type                  | Applied                                                      |
+| --------------------- | ------------------------------------------------------------ |
+| Functional (positive) | ✅                                                           |
+| Functional (negative) | ✅                                                           |
+| Boundary value        | ✅ (tick just-under vs. exactly-at trigger thresholds)       |
+| Data-driven           | ✅ (small-increment tick table for intermediate countdown)   |
+| Accessibility (axe)   | ✅ (initial + countdown-active + expired + refreshed states) |
 | Non-functional (perf) | ✅ (Navigation Timing budget)                                |
 | Cross-browser         | ✅ (4 browsers)                                              |
 | Mobile / responsive   | ❌ (out of scope)                                            |
@@ -49,13 +49,13 @@
 
 ## 3. Environments & Data
 
-| Field         | Value                                                                                    |
-| ------------- | ------------------------------------------------------------------------------------------ |
-| Target env    | Staging (stagecraftlabs.com)                                                              |
-| BASE_URL      | `https://stagecraftlabs.com` (`.env`)                                                      |
+| Field         | Value                                                                                         |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| Target env    | Staging (stagecraftlabs.com)                                                                  |
+| BASE_URL      | `https://stagecraftlabs.com` (`.env`)                                                         |
 | Clock control | `page.clock.install()`, `clock.tick(ms)`, `clock.fastForward(ms)`, `clock.setFixedTime(date)` |
-| Fixed dates   | Fixed ISO date(s) chosen for `setFixedTime` (incl. one at `23:59:59` day boundary)          |
-| Test data     | Fixed tick-increment tables (deterministic; no faker — timing values are prescribed)        |
+| Fixed dates   | Fixed ISO date(s) chosen for `setFixedTime` (incl. one at `23:59:59` day boundary)            |
+| Test data     | Fixed tick-increment tables (deterministic; no faker — timing values are prescribed)          |
 
 ---
 
@@ -74,9 +74,9 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 5. Risk Assessment & Priority
 
-| Area / Requirement                                                | Likelihood | Impact | Risk | Priority |
-| --------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
-| `page.clock.install()` + `clock.tick()` deterministic time control    | H          | H      | H    | P1       |
+| Area / Requirement                                                     | Likelihood | Impact | Risk | Priority |
+| ---------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| `page.clock.install()` + `clock.tick()` deterministic time control     | H          | H      | H    | P1       |
 | 60s countdown → "Time's up!" via `clock.tick(60_000)`                  | H          | H      | H    | P1       |
 | Session expiry toast at `clock.tick(5000)` with correct countdown text | H          | H      | H    | P1       |
 | `clock.fastForward(30_000)` triggers exactly one refresh cycle         | H          | H      | H    | P1       |
@@ -112,13 +112,13 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 8. Deliverables
 
-| Artifact   | Path                                      | Status               |
-| ---------- | ------------------------------------------ | --------------------- |
-| Test Plan  | docs/test-plan/clock-timers.test-plan.md  | ✅ done               |
-| POM        | pages/clock-timers.page.ts                | pending               |
-| Spec file  | tests/clock-timers/clock-timers.spec.ts   | pending               |
-| RTM        | docs/rtm/clock-timers.rtm.md              | pending               |
-| CI run     | GitHub Actions                            | pending               |
+| Artifact  | Path                                     | Status  |
+| --------- | ---------------------------------------- | ------- |
+| Test Plan | docs/test-plan/clock-timers.test-plan.md | ✅ done |
+| POM       | pages/clock-timers.page.ts               | pending |
+| Spec file | tests/clock-timers/clock-timers.spec.ts  | pending |
+| RTM       | docs/rtm/clock-timers.rtm.md             | pending |
+| CI run    | GitHub Actions                           | pending |
 
 ---
 

@@ -23,7 +23,7 @@
 - A partial-match regex pattern in an inline snapshot template for a value that varies (the active
   step's form `aria-label`) while the surrounding structural hierarchy stays a strict match
 - Before/after snapshots of the visible live-announcement region (`aria-label="Live
-  announcements"`), asserting its text content changes when accordion sections are toggled
+announcements"`), asserting its text content changes when accordion sections are toggled
 - Accessibility scan across load, expanded-accordion, and wizard-navigated states
 
 ### Out of Scope
@@ -38,7 +38,7 @@
 
 ## 2. Test Objectives
 
-| #   | Objective                                                                                          |
+| #   | Objective                                                                                           |
 | --- | --------------------------------------------------------------------------------------------------- |
 | 1   | A file-based ARIA snapshot baseline is generated on first run and matched on subsequent runs        |
 | 2   | Expanding/collapsing an accordion section is reflected structurally in its ARIA tree                |
@@ -52,11 +52,11 @@
 ## 3. Browser Matrix
 
 | Browser         | Playwright Project | Priority |
-| --------------- | ------------------- | -------- |
-| Chromium        | Desktop Chrome       | P1       |
-| Firefox         | Desktop Firefox      | P1       |
-| WebKit (Safari) | Desktop Safari        | P2       |
-| Edge            | Desktop Edge          | P2       |
+| --------------- | ------------------ | -------- |
+| Chromium        | Desktop Chrome     | P1       |
+| Firefox         | Desktop Firefox    | P1       |
+| WebKit (Safari) | Desktop Safari     | P2       |
+| Edge            | Desktop Edge       | P2       |
 
 Source: `playwright.config.ts` — 4 desktop projects configured.
 
@@ -65,22 +65,22 @@ Source: `playwright.config.ts` — 4 desktop projects configured.
 ## 4. Environments
 
 | Environment | Base URL                   |
-| ----------- | --------------------------- |
-| Default     | https://stagecraftlabs.com  |
-| QA          | `.env.qa` → `BASE_URL`      |
-| UAT         | `.env.uat` → `BASE_URL`     |
+| ----------- | -------------------------- |
+| Default     | https://stagecraftlabs.com |
+| QA          | `.env.qa` → `BASE_URL`     |
+| UAT         | `.env.uat` → `BASE_URL`    |
 
 ---
 
 ## 5. Risk Table
 
-| Risk                                                                                                           | Priority | Mitigation                                                                                                     |
-| ---------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| Risk                                                                                                                                                                                                       | Priority | Mitigation                                                                                                                                        |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ARIA snapshot baseline is generated against Desktop Chrome locally; other engines (Firefox/WebKit) may compute subtly different implicit roles for the same semantic HTML, causing a first-CI-run mismatch | P1       | Scope templates to well-formed, standards-compliant markup (headings/buttons/forms/lists); triage per-browser CI diffs via Step 12a if they occur |
-| The accordion container has no id/data-testid, so its locator is structural (`section > div`)                  | P2       | Anchor the section via its heading's accessible name, then take the single direct `div` child — resilient to styling-class changes |
-| The active step `<form>` is fully replaced (not just its contents) on every step transition                     | P1       | Always re-query `wizardSection.locator('form')`; never cache a form/field locator across a step change         |
-| `/children: equal` mismatch tests must fail deterministically, not flake, when the template is deliberately wrong | P1       | Use `expect(locator).not.toMatchAriaSnapshot(template)` with an intentionally wrong child set                  |
-| The live announcement region and the sr-only status duplicate the same text — only the visible one is in scope   | P2       | Target `[aria-label="Live announcements"]` explicitly, not the generic `[role="status"]` selector              |
+| The accordion container has no id/data-testid, so its locator is structural (`section > div`)                                                                                                              | P2       | Anchor the section via its heading's accessible name, then take the single direct `div` child — resilient to styling-class changes                |
+| The active step `<form>` is fully replaced (not just its contents) on every step transition                                                                                                                | P1       | Always re-query `wizardSection.locator('form')`; never cache a form/field locator across a step change                                            |
+| `/children: equal` mismatch tests must fail deterministically, not flake, when the template is deliberately wrong                                                                                          | P1       | Use `expect(locator).not.toMatchAriaSnapshot(template)` with an intentionally wrong child set                                                     |
+| The live announcement region and the sr-only status duplicate the same text — only the visible one is in scope                                                                                             | P2       | Target `[aria-label="Live announcements"]` explicitly, not the generic `[role="status"]` selector                                                 |
 
 ---
 
@@ -104,22 +104,22 @@ Source: `playwright.config.ts` — 4 desktop projects configured.
 
 ## 8. Test Case Summary
 
-| AC     | Test Cases                                                                                     | Types         |
-| ------ | ------------------------------------------------------------------------------------------------ | ------------- |
-| AC-1   | ARIA snapshot of the fully-collapsed accordion matches (or generates) the baseline               | Positive      |
-| AC-1-N | An inline template with an extra phantom section does not match the collapsed accordion          | Negative      |
-| AC-2   | Expanding one section adds a region child node for that section's content in the tree             | Positive      |
-| AC-2-N | Re-collapsing the expanded section removes the region child node again                            | Negative      |
-| AC-2-B | Only the target section's subtree gains a child; sibling sections remain childless (collapsed)    | Boundary      |
-| AC-3   | `/children: equal` accepts a template listing exactly the actual child set                        | Positive      |
-| AC-3-N | `/children: equal` rejects a template with an extra node                                          | Negative      |
-| AC-3-N | `/children: equal` rejects a template with a missing node                                         | Negative      |
-| AC-4   | `aria-current="step"` moves to step 2 after clicking Next, and to step 1 after clicking Back      | Positive      |
-| AC-4-N | A non-current step button carries no `aria-current` attribute                                     | Negative      |
-| AC-4-B | Direct step-jump (clicking step 1 from step 4) sets `aria-current="step"` on step 1 only           | Boundary      |
-| AC-5   | A regex partial-match pattern matches the active step's varying form label while structure is strict | Positive   |
-| AC-5-N | The same regex pattern fails to match once the form's structural position/content changes          | Negative      |
-| AC-6   | The visible live-announcement region's content changes after toggling an accordion section         | Positive      |
-| AC-6-N | The live-announcement region's content is unchanged with no toggle action performed                | Negative      |
-| A11Y   | Axe WCAG 2.1 AA scan across load, expanded-accordion, and wizard-navigated states                   | Accessibility |
-| PERF   | Initial page load completes within budget                                                          | Performance   |
+| AC     | Test Cases                                                                                           | Types         |
+| ------ | ---------------------------------------------------------------------------------------------------- | ------------- |
+| AC-1   | ARIA snapshot of the fully-collapsed accordion matches (or generates) the baseline                   | Positive      |
+| AC-1-N | An inline template with an extra phantom section does not match the collapsed accordion              | Negative      |
+| AC-2   | Expanding one section adds a region child node for that section's content in the tree                | Positive      |
+| AC-2-N | Re-collapsing the expanded section removes the region child node again                               | Negative      |
+| AC-2-B | Only the target section's subtree gains a child; sibling sections remain childless (collapsed)       | Boundary      |
+| AC-3   | `/children: equal` accepts a template listing exactly the actual child set                           | Positive      |
+| AC-3-N | `/children: equal` rejects a template with an extra node                                             | Negative      |
+| AC-3-N | `/children: equal` rejects a template with a missing node                                            | Negative      |
+| AC-4   | `aria-current="step"` moves to step 2 after clicking Next, and to step 1 after clicking Back         | Positive      |
+| AC-4-N | A non-current step button carries no `aria-current` attribute                                        | Negative      |
+| AC-4-B | Direct step-jump (clicking step 1 from step 4) sets `aria-current="step"` on step 1 only             | Boundary      |
+| AC-5   | A regex partial-match pattern matches the active step's varying form label while structure is strict | Positive      |
+| AC-5-N | The same regex pattern fails to match once the form's structural position/content changes            | Negative      |
+| AC-6   | The visible live-announcement region's content changes after toggling an accordion section           | Positive      |
+| AC-6-N | The live-announcement region's content is unchanged with no toggle action performed                  | Negative      |
+| A11Y   | Axe WCAG 2.1 AA scan across load, expanded-accordion, and wizard-navigated states                    | Accessibility |
+| PERF   | Initial page load completes within budget                                                            | Performance   |

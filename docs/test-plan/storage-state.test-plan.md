@@ -1,12 +1,12 @@
 # Test Plan — Storage State (TAB1-23)
 
-| Field      | Value                                                       |
-| ---------- | ------------------------------------------------------------ |
-| JIRA Story | [TAB1-23](https://orhunakkan.atlassian.net/browse/TAB1-23)  |
-| Lab URL    | https://stagecraftlabs.com/practice/storage-state            |
-| Spec file  | tests/storage-state/storage-state.spec.ts                    |
-| POM file   | pages/storage-state.page.ts                                  |
-| Generated  | 2026-07-12                                                    |
+| Field      | Value                                                      |
+| ---------- | ---------------------------------------------------------- |
+| JIRA Story | [TAB1-23](https://orhunakkan.atlassian.net/browse/TAB1-23) |
+| Lab URL    | https://stagecraftlabs.com/practice/storage-state          |
+| Spec file  | tests/storage-state/storage-state.spec.ts                  |
+| POM file   | pages/storage-state.page.ts                                |
+| Generated  | 2026-07-12                                                 |
 
 ---
 
@@ -35,30 +35,30 @@
 
 ## 2. Test Types
 
-| Type                  | Applied                                                    |
-| --------------------- | ----------------------------------------------------------- |
-| Functional (positive) | ✅                                                          |
-| Functional (negative) | ✅                                                          |
-| Boundary value        | ✅                                                          |
-| Data-driven           | ❌ (fixed two-role credential set, not a data table)        |
-| Accessibility (axe)   | ✅ (unauthenticated + admin + user states)                  |
-| Non-functional (perf) | ✅ (Navigation Timing budget)                                |
-| Cross-browser         | ✅ (4 browsers)                                              |
-| Mobile / responsive   | ❌ (out of scope)                                            |
+| Type                  | Applied                                              |
+| --------------------- | ---------------------------------------------------- |
+| Functional (positive) | ✅                                                   |
+| Functional (negative) | ✅                                                   |
+| Boundary value        | ✅                                                   |
+| Data-driven           | ❌ (fixed two-role credential set, not a data table) |
+| Accessibility (axe)   | ✅ (unauthenticated + admin + user states)           |
+| Non-functional (perf) | ✅ (Navigation Timing budget)                        |
+| Cross-browser         | ✅ (4 browsers)                                      |
+| Mobile / responsive   | ❌ (out of scope)                                    |
 
 ---
 
 ## 3. Environments & Data
 
-| Field         | Value                                                                                    |
-| ------------- | ------------------------------------------------------------------------------------------ |
-| Target env    | Staging (stagecraftlabs.com)                                                              |
-| BASE_URL      | `https://stagecraftlabs.com` (`.env`)                                                      |
-| Valid creds   | alice / password123 (admin) · bob / letmein (user)                                        |
-| Login API     | `POST /api/auth/login` `{ username, password }` → 200 `{ id, username, displayName, role }` + session cookie, or 401 `{ error }` |
-| Session check | `GET /api/auth/me` → 200 authenticated user, or 401 `{ error: "Not authenticated" }`       |
+| Field         | Value                                                                                                                                                                                                             |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Target env    | Staging (stagecraftlabs.com)                                                                                                                                                                                      |
+| BASE_URL      | `https://stagecraftlabs.com` (`.env`)                                                                                                                                                                             |
+| Valid creds   | alice / password123 (admin) · bob / letmein (user)                                                                                                                                                                |
+| Login API     | `POST /api/auth/login` `{ username, password }` → 200 `{ id, username, displayName, role }` + session cookie, or 401 `{ error }`                                                                                  |
+| Session check | `GET /api/auth/me` → 200 authenticated user, or 401 `{ error: "Not authenticated" }`                                                                                                                              |
 | Auth state    | Serialized via `context.storageState()` / `request.storageState()` to per-AC files under `fixtures/auth/` (kept isolated per describe block since `fullyParallel: true` can schedule blocks on different workers) |
-| Test data     | Fixed credential pairs (no faker — credentials are prescribed by the lab)                  |
+| Test data     | Fixed credential pairs (no faker — credentials are prescribed by the lab)                                                                                                                                         |
 
 ---
 
@@ -77,10 +77,10 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 5. Risk Assessment & Priority
 
-| Area / Requirement                                             | Likelihood | Impact | Risk | Priority |
-| ---------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
-| UI login + `context.storageState()` writes a valid session file | H          | H      | H    | P1       |
-| `browser.newContext({ storageState })` restores session, no login| H          | H      | H    | P1       |
+| Area / Requirement                                                | Likelihood | Impact | Risk | Priority |
+| ----------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| UI login + `context.storageState()` writes a valid session file   | H          | H      | H    | P1       |
+| `browser.newContext({ storageState })` restores session, no login | H          | H      | H    | P1       |
 | Two-role contexts show role-specific UI in isolation              | M          | H      | H    | P1       |
 | Fresh/no-state context shows unauthenticated view                 | H          | H      | H    | P1       |
 | Session persists across reload in the same context                | M          | M      | M    | P1       |
@@ -115,14 +115,14 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 8. Deliverables
 
-| Artifact        | Path                                        | Status               |
-| ---------------- | -------------------------------------------- | -------------------- |
-| Test Plan        | docs/test-plan/storage-state.test-plan.md    | ✅ done              |
-| POM              | pages/storage-state.page.ts                  | pending              |
-| Spec file        | tests/storage-state/storage-state.spec.ts    | pending              |
-| Auth state files | fixtures/auth/ss-*.json                      | generated at runtime |
-| RTM              | docs/rtm/storage-state.rtm.md                | pending              |
-| CI run           | GitHub Actions                               | pending              |
+| Artifact         | Path                                      | Status               |
+| ---------------- | ----------------------------------------- | -------------------- |
+| Test Plan        | docs/test-plan/storage-state.test-plan.md | ✅ done              |
+| POM              | pages/storage-state.page.ts               | pending              |
+| Spec file        | tests/storage-state/storage-state.spec.ts | pending              |
+| Auth state files | fixtures/auth/ss-\*.json                  | generated at runtime |
+| RTM              | docs/rtm/storage-state.rtm.md             | pending              |
+| CI run           | GitHub Actions                            | pending              |
 
 ---
 

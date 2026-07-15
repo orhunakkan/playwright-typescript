@@ -1,12 +1,12 @@
 # Test Plan — Shadow DOM & Web Components (TAB1-37)
 
-| Field      | Value                                                        |
-| ---------- | ------------------------------------------------------------- |
-| JIRA Story | [TAB1-37](https://orhunakkan.atlassian.net/browse/TAB1-37)   |
-| Lab URL    | https://stagecraftlabs.com/practice/shadow-dom                |
-| Spec file  | tests/shadow-dom/shadow-dom.spec.ts                            |
-| POM file   | pages/shadow-dom.page.ts                                       |
-| Generated  | 2026-07-14                                                     |
+| Field      | Value                                                      |
+| ---------- | ---------------------------------------------------------- |
+| JIRA Story | [TAB1-37](https://orhunakkan.atlassian.net/browse/TAB1-37) |
+| Lab URL    | https://stagecraftlabs.com/practice/shadow-dom             |
+| Spec file  | tests/shadow-dom/shadow-dom.spec.ts                        |
+| POM file   | pages/shadow-dom.page.ts                                   |
+| Generated  | 2026-07-14                                                 |
 
 ---
 
@@ -44,32 +44,32 @@
   `getByLabel`, `getByText` all rely on Playwright's open-shadow piercing)
 - Any custom element beyond the star-rating widget and the labelled-input/submit widget named in
   the ACs
-- Manual shadow-piercing techniques (`page.$eval` with `>>>`  or similar) — the ACs explicitly
-  call out that *no* explicit shadow-piercing is required, so tests must not use it either
+- Manual shadow-piercing techniques (`page.$eval` with `>>>` or similar) — the ACs explicitly
+  call out that _no_ explicit shadow-piercing is required, so tests must not use it either
 
 ---
 
 ## 2. Test Types
 
-| Type                   | Applied                                                                         |
-| ----------------------- | ---------------------------------------------------------------------------------- |
-| Functional (positive)  | ✅                                                                                |
-| Functional (negative)  | ✅ (unfilled name, no confirmation before submit, non-existent text)             |
-| Boundary value         | ✅ (star 1 / star 5 edges, single-checked-radio invariant, value not accumulating) |
-| Data-driven            | ✅ (per-star click → aria-checked + host value table, stars 1–5)                 |
-| Accessibility (axe)    | ✅ (load / star-selected / post-submit states)                                   |
-| Non-functional (perf)  | ✅ (Navigation Timing budget)                                                    |
-| Cross-browser          | ✅ (4 browsers)                                                                  |
-| Mobile / responsive    | ❌ (out of scope — no AC coverage)                                               |
+| Type                  | Applied                                                                            |
+| --------------------- | ---------------------------------------------------------------------------------- |
+| Functional (positive) | ✅                                                                                 |
+| Functional (negative) | ✅ (unfilled name, no confirmation before submit, non-existent text)               |
+| Boundary value        | ✅ (star 1 / star 5 edges, single-checked-radio invariant, value not accumulating) |
+| Data-driven           | ✅ (per-star click → aria-checked + host value table, stars 1–5)                   |
+| Accessibility (axe)   | ✅ (load / star-selected / post-submit states)                                     |
+| Non-functional (perf) | ✅ (Navigation Timing budget)                                                      |
+| Cross-browser         | ✅ (4 browsers)                                                                    |
+| Mobile / responsive   | ❌ (out of scope — no AC coverage)                                                 |
 
 ---
 
 ## 3. Environments & Data
 
-| Field      | Value                                                                 |
-| ---------- | ---------------------------------------------------------------------- |
-| Target env | Staging (stagecraftlabs.com)                                          |
-| BASE_URL   | `https://stagecraftlabs.com` (`.env`)                                 |
+| Field      | Value                                                                                                                                                                                              |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Target env | Staging (stagecraftlabs.com)                                                                                                                                                                       |
+| BASE_URL   | `https://stagecraftlabs.com` (`.env`)                                                                                                                                                              |
 | Test data  | Faker-generated name string for the labelled-input submission; fixed star-index table (1–5) for rating selection — no invalid/boundary format data needed since the widget is a fixed 5-star scale |
 
 ---
@@ -77,11 +77,11 @@
 ## 4. Browser / Device Matrix
 
 | Browser         | Project name    | Included for this lab? |
-| ---------------- | ----------------- | ----------------------- |
-| Desktop Chrome  | Desktop Chrome   | ✅ |
-| Desktop Firefox | Desktop Firefox  | ✅ |
-| Desktop Edge    | Desktop Edge     | ✅ |
-| Desktop Safari  | Desktop Safari   | ✅ |
+| --------------- | --------------- | ---------------------- |
+| Desktop Chrome  | Desktop Chrome  | ✅                     |
+| Desktop Firefox | Desktop Firefox | ✅                     |
+| Desktop Edge    | Desktop Edge    | ✅                     |
+| Desktop Safari  | Desktop Safari  | ✅                     |
 
 _(Source: `playwright.config.ts` projects[])_
 
@@ -89,22 +89,22 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 5. Risk Assessment & Priority
 
-| Area / Requirement                                                                   | Likelihood | Impact | Risk | Priority |
-| --------------------------------------------------------------------------------------| ---------- | ------ | ---- | -------- |
-| REQ-01: `getByRole("radio")` locates the 5 stars in the open shadow root             | H          | H      | H    | P1       |
-| REQ-01a: exactly one radio checked at a time, switches correctly                     | M          | H      | H    | P1       |
-| REQ-02: `getByLabel("Your name")` finds the input across the shadow boundary         | H          | H      | H    | P1       |
-| REQ-02a: name input starts empty                                                     | L          | L      | L    | P3       |
-| REQ-03: clicking a star sets `aria-checked="true"` on the correct radio              | H          | H      | H    | P1       |
-| REQ-03a: boundary — star 1 and star 5 both report correctly                          | M          | M      | M    | P2       |
-| REQ-04: `locator.evaluate()` reads host `value` attribute matching the clicked star  | H          | H      | H    | P1       |
-| REQ-04a: boundary — value reflects star 1/5, updates rather than accumulates         | M          | M      | M    | P2       |
-| REQ-05: `getByText` behaves identically inside a shadow root vs. regular DOM         | H          | M      | M    | P1       |
-| REQ-05a: `getByText` does not match non-existent text                                | L          | L      | L    | P3       |
-| REQ-06: fill name, click Submit, confirmation status becomes visible                 | H          | H      | H    | P1       |
-| REQ-06a: confirmation not visible before Submit                                      | M          | M      | M    | P2       |
-| Accessibility — load / star-selected / post-submit states                            | L          | M      | L    | P2       |
-| Performance budget                                                                    | L          | L      | L    | P2       |
+| Area / Requirement                                                                  | Likelihood | Impact | Risk | Priority |
+| ----------------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| REQ-01: `getByRole("radio")` locates the 5 stars in the open shadow root            | H          | H      | H    | P1       |
+| REQ-01a: exactly one radio checked at a time, switches correctly                    | M          | H      | H    | P1       |
+| REQ-02: `getByLabel("Your name")` finds the input across the shadow boundary        | H          | H      | H    | P1       |
+| REQ-02a: name input starts empty                                                    | L          | L      | L    | P3       |
+| REQ-03: clicking a star sets `aria-checked="true"` on the correct radio             | H          | H      | H    | P1       |
+| REQ-03a: boundary — star 1 and star 5 both report correctly                         | M          | M      | M    | P2       |
+| REQ-04: `locator.evaluate()` reads host `value` attribute matching the clicked star | H          | H      | H    | P1       |
+| REQ-04a: boundary — value reflects star 1/5, updates rather than accumulates        | M          | M      | M    | P2       |
+| REQ-05: `getByText` behaves identically inside a shadow root vs. regular DOM        | H          | M      | M    | P1       |
+| REQ-05a: `getByText` does not match non-existent text                               | L          | L      | L    | P3       |
+| REQ-06: fill name, click Submit, confirmation status becomes visible                | H          | H      | H    | P1       |
+| REQ-06a: confirmation not visible before Submit                                     | M          | M      | M    | P2       |
+| Accessibility — load / star-selected / post-submit states                           | L          | M      | L    | P2       |
+| Performance budget                                                                  | L          | L      | L    | P2       |
 
 ---
 
@@ -129,13 +129,13 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 8. Deliverables
 
-| Artifact  | Path                                                | Status  |
-| --------- | ------------------------------------------------------ | ------- |
-| Test Plan | docs/test-plan/shadow-dom.test-plan.md                  | ✅ done |
-| POM       | pages/shadow-dom.page.ts                                | pending |
-| Spec file | tests/shadow-dom/shadow-dom.spec.ts                     | pending |
-| RTM       | docs/rtm/shadow-dom.rtm.md                              | pending |
-| CI run    | GitHub Actions                                           | pending |
+| Artifact  | Path                                   | Status  |
+| --------- | -------------------------------------- | ------- |
+| Test Plan | docs/test-plan/shadow-dom.test-plan.md | ✅ done |
+| POM       | pages/shadow-dom.page.ts               | pending |
+| Spec file | tests/shadow-dom/shadow-dom.spec.ts    | pending |
+| RTM       | docs/rtm/shadow-dom.rtm.md             | pending |
+| CI run    | GitHub Actions                         | pending |
 
 ---
 

@@ -101,10 +101,7 @@ test.describe('Geolocation & Permissions', () => {
       await context.clearPermissions();
     });
 
-    test('positive: clicking Find Cafés Near Me without a grant shows a visible, non-empty alert', async ({
-      page,
-      geolocationPermissionsPage,
-    }) => {
+    test('positive: clicking Find Cafés Near Me without a grant shows a visible, non-empty alert', async ({ page, geolocationPermissionsPage }) => {
       await page.goto(GEO_URL);
       await geolocationPermissionsPage.findCafesButton.click();
 
@@ -120,10 +117,7 @@ test.describe('Geolocation & Permissions', () => {
       await expect(geolocationPermissionsPage.cafeList).not.toBeVisible();
     });
 
-    test('boundary: Find Cafés Near Me stays visible and enabled after the error, allowing a retry', async ({
-      page,
-      geolocationPermissionsPage,
-    }) => {
+    test('boundary: Find Cafés Near Me stays visible and enabled after the error, allowing a retry', async ({ page, geolocationPermissionsPage }) => {
       await page.goto(GEO_URL);
       await geolocationPermissionsPage.findCafesButton.click();
 
@@ -226,11 +220,7 @@ test.describe('Geolocation & Permissions', () => {
       await expect(geolocationPermissionsPage.pastedUrlInput).toHaveValue(page.url());
     });
 
-    test('negative: the pasted URL input is not present before Paste is clicked', async ({
-      page,
-      context,
-      geolocationPermissionsPage,
-    }) => {
+    test('negative: the pasted URL input is not present before Paste is clicked', async ({ page, context, geolocationPermissionsPage }) => {
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);
       await page.goto(GEO_URL);
 
@@ -239,11 +229,7 @@ test.describe('Geolocation & Permissions', () => {
       await expect(geolocationPermissionsPage.pastedUrlInput).not.toBeVisible();
     });
 
-    test('boundary: the pasted URL input is read-only and cannot be edited by the user', async ({
-      page,
-      context,
-      geolocationPermissionsPage,
-    }) => {
+    test('boundary: the pasted URL input is read-only and cannot be edited by the user', async ({ page, context, geolocationPermissionsPage }) => {
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);
       await page.goto(GEO_URL);
 
@@ -319,12 +305,7 @@ test.describe('Geolocation & Permissions', () => {
       expect((await scan(page)).violations).toEqual([]);
     });
 
-    test('no violations on the clipboard copy+paste success state', async ({
-      page,
-      context,
-      geolocationPermissionsPage,
-      browserName,
-    }) => {
+    test('no violations on the clipboard copy+paste success state', async ({ page, context, geolocationPermissionsPage, browserName }) => {
       test.skip(browserName !== 'chromium', 'clipboard-read/clipboard-write grants are Chromium-only in Playwright');
 
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);

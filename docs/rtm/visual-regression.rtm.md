@@ -1,30 +1,30 @@
 # Requirements Traceability Matrix — Visual Regression
 
-| Field      | Value                                                                       |
-| ---------- | ------------------------------------------------------------------------------ |
-| JIRA Story | [TAB1-29](https://orhunakkan.atlassian.net/browse/TAB1-29)                    |
-| Lab URL    | https://stagecraftlabs.com/practice/visual-regression                         |
-| Spec file  | tests/visual-regression/visual-regression.spec.ts                             |
-| POM file   | pages/visual-regression.page.ts                                               |
+| Field      | Value                                                                                                                                                       |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| JIRA Story | [TAB1-29](https://orhunakkan.atlassian.net/browse/TAB1-29)                                                                                                  |
+| Lab URL    | https://stagecraftlabs.com/practice/visual-regression                                                                                                       |
+| Spec file  | tests/visual-regression/visual-regression.spec.ts                                                                                                           |
+| POM file   | pages/visual-regression.page.ts                                                                                                                             |
 | Last run   | 2026-07-13 — CI: 36 / 36 passed (Chrome 9/9 · Firefox 9/9 · Edge 9/9 · Safari 9/9). Local: 36/36 passed, stable across 2 consecutive runs. 0 skipped tests. |
-| Generated  | 2026-07-12                                                                     |
-| Status     | ✅ Done — CI verified. 0 open blockers (TAB1-54 resolved via scope decision). |
+| Generated  | 2026-07-12                                                                                                                                                  |
+| Status     | ✅ Done — CI verified. 0 open blockers (TAB1-54 resolved via scope decision).                                                                               |
 
 ---
 
 ## Coverage by Acceptance Criterion
 
-| Req  | Acceptance Criterion                                                                              | Test Case                                                                                                    | Type  | Result |
-| ---- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- | ----- | ------ |
-| AC-1 | Full-page screenshot baseline via `expect(page).toHaveScreenshot()`; baseline created on first run     | positive: full-page screenshot creates and matches a baseline                                                      | P     | ✅ (4/4 — bounded structural check on all browsers per TAB1-54, CI-confirmed cross-platform dimension divergence) |
-| AC-2 | Locator-scoped screenshot of Button Variants (Primary/Secondary/Danger/Ghost/Disabled)                  | positive: button showcase section matches baseline across Primary/Secondary/Danger/Ghost/Disabled                 | P     | ✅ (4/4) |
-| AC-2 | (boundary — disabled state must be visually distinct)                                                   | boundary: the disabled button renders a visually distinct background from the primary button in the same scoped shot | B  | ✅ (4/4) |
-| AC-3 | Locator-scoped screenshot of Color Palette; all 6 swatches match baseline                               | positive: color palette section matches baseline across all 6 swatches                                             | P     | ✅ (4/4) |
-| AC-4 | `mask` option on `[data-testid="dynamic-timestamp"]` excludes the live timestamp from Metric Cards      | positive: masked metric-cards screenshot stays stable across two loads despite the live timestamp changing         | P     | ✅ (4/4 — Chrome/Edge pixel diff, Firefox/Safari structural fallback per TAB1-54) |
-| AC-5 | Intentional button color mutation produces a failing pixel diff                                         | negative: mutating a button background color makes the screenshot diverge under a tight threshold                  | N     | ✅ (4/4) |
-| AC-6 | `maxDiffPixels`/`maxDiffPixelRatio` threshold governs pass/fail                                         | boundary: raising maxDiffPixelRatio high enough absorbs the same intentional color change and the comparison passes | B    | ✅ (4/4) |
-| AXE  | The page must have no critical/serious axe-core violations on initial load                              | no violations on initial page load                                                                                 | A11y  | ✅ (4/4) |
-| REQ-NF1 | The page must meet its performance budget (load)                                                     | initial visual-regression page load is within budget                                                              | Perf  | ✅ (4/4) |
+| Req     | Acceptance Criterion                                                                               | Test Case                                                                                                            | Type | Result                                                                                                            |
+| ------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---- | ----------------------------------------------------------------------------------------------------------------- |
+| AC-1    | Full-page screenshot baseline via `expect(page).toHaveScreenshot()`; baseline created on first run | positive: full-page screenshot creates and matches a baseline                                                        | P    | ✅ (4/4 — bounded structural check on all browsers per TAB1-54, CI-confirmed cross-platform dimension divergence) |
+| AC-2    | Locator-scoped screenshot of Button Variants (Primary/Secondary/Danger/Ghost/Disabled)             | positive: button showcase section matches baseline across Primary/Secondary/Danger/Ghost/Disabled                    | P    | ✅ (4/4)                                                                                                          |
+| AC-2    | (boundary — disabled state must be visually distinct)                                              | boundary: the disabled button renders a visually distinct background from the primary button in the same scoped shot | B    | ✅ (4/4)                                                                                                          |
+| AC-3    | Locator-scoped screenshot of Color Palette; all 6 swatches match baseline                          | positive: color palette section matches baseline across all 6 swatches                                               | P    | ✅ (4/4)                                                                                                          |
+| AC-4    | `mask` option on `[data-testid="dynamic-timestamp"]` excludes the live timestamp from Metric Cards | positive: masked metric-cards screenshot stays stable across two loads despite the live timestamp changing           | P    | ✅ (4/4 — Chrome/Edge pixel diff, Firefox/Safari structural fallback per TAB1-54)                                 |
+| AC-5    | Intentional button color mutation produces a failing pixel diff                                    | negative: mutating a button background color makes the screenshot diverge under a tight threshold                    | N    | ✅ (4/4)                                                                                                          |
+| AC-6    | `maxDiffPixels`/`maxDiffPixelRatio` threshold governs pass/fail                                    | boundary: raising maxDiffPixelRatio high enough absorbs the same intentional color change and the comparison passes  | B    | ✅ (4/4)                                                                                                          |
+| AXE     | The page must have no critical/serious axe-core violations on initial load                         | no violations on initial page load                                                                                   | A11y | ✅ (4/4)                                                                                                          |
+| REQ-NF1 | The page must meet its performance budget (load)                                                   | initial visual-regression page load is within budget                                                                 | Perf | ✅ (4/4)                                                                                                          |
 
 _All rows: 4/4 = Desktop Chrome, Desktop Firefox, Desktop Edge, Desktop Safari._
 
@@ -32,9 +32,9 @@ _All rows: 4/4 = Desktop Chrome, Desktop Firefox, Desktop Edge, Desktop Safari._
 
 ## Blockers (all resolved)
 
-| ID       | Type                     | Summary                                                                                                    | Fixable in app source? | JIRA     | Status |
-| -------- | ------------------------ | ------------------------------------------------------------------------------------------------------------- | ----------------------- | -------- | ------ |
-| TAB1-54  | Test-tooling limitation  | Full-page screenshot diverges ~11% cross-platform (Windows dev vs Linux CI); metric-cards jitters ±1px on Firefox/WebKit across process launches | **No** — font-metrics/rendering characteristics, confirmed via CI evidence | [TAB1-54](https://orhunakkan.atlassian.net/browse/TAB1-54) | **Resolved via scope decision** — see below |
+| ID      | Type                    | Summary                                                                                                                                          | Fixable in app source?                                                     | JIRA                                                       | Status                                      |
+| ------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------- |
+| TAB1-54 | Test-tooling limitation | Full-page screenshot diverges ~11% cross-platform (Windows dev vs Linux CI); metric-cards jitters ±1px on Firefox/WebKit across process launches | **No** — font-metrics/rendering characteristics, confirmed via CI evidence | [TAB1-54](https://orhunakkan.atlassian.net/browse/TAB1-54) | **Resolved via scope decision** — see below |
 
 ---
 

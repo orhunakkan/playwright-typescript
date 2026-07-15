@@ -33,9 +33,7 @@ test.describe('Shadow DOM & Web Components', () => {
       // evaluateAll queries immediately with no auto-wait, so the star radios must already be
       // rendered — wait for the custom element's shadow root to attach before reading from it.
       await expect(shadowDomPage.starRadios).toHaveCount(5);
-      const checkedStates = await shadowDomPage.starRadios.evaluateAll((radios) =>
-        radios.map((r) => r.getAttribute('aria-checked')),
-      );
+      const checkedStates = await shadowDomPage.starRadios.evaluateAll((radios) => radios.map((r) => r.getAttribute('aria-checked')));
       expect(checkedStates).toEqual(['false', 'false', 'false', 'false', 'false']);
     });
   });
@@ -100,9 +98,7 @@ test.describe('Shadow DOM & Web Components', () => {
       });
     }
 
-    test('boundary: the value attribute updates rather than accumulates when a different star is clicked afterward', async ({
-      shadowDomPage,
-    }) => {
+    test('boundary: the value attribute updates rather than accumulates when a different star is clicked afterward', async ({ shadowDomPage }) => {
       await shadowDomPage.star5Radio.click();
       let value = await shadowDomPage.ratingWidgetHost.evaluate((el) => el.getAttribute('value'));
       expect(value).toBe('5');
@@ -129,9 +125,7 @@ test.describe('Shadow DOM & Web Components', () => {
   // AC-6 (TAB1-37): Tests fill the name input inside the shadow root, click Submit, and
   // assert the confirmation status becomes visible.
   test.describe('AC-6 — filling the name and submitting shows the confirmation status', () => {
-    test('positive: filling the name, selecting a star, and submitting shows the confirmation message', async ({
-      shadowDomPage,
-    }) => {
+    test('positive: filling the name, selecting a star, and submitting shows the confirmation message', async ({ shadowDomPage }) => {
       const name = faker.person.firstName();
       await shadowDomPage.nameInput.fill(name);
       await shadowDomPage.star4Radio.click();
@@ -145,9 +139,7 @@ test.describe('Shadow DOM & Web Components', () => {
       await expect(shadowDomPage.confirmationStatus).toBeEmpty();
     });
 
-    test('negative: submitting without a name or rating shows a validation prompt, not a confirmation', async ({
-      shadowDomPage,
-    }) => {
+    test('negative: submitting without a name or rating shows a validation prompt, not a confirmation', async ({ shadowDomPage }) => {
       await shadowDomPage.submitButton.click();
       await expect(shadowDomPage.confirmationStatus).toBeVisible();
       await expect(shadowDomPage.confirmationStatus).toHaveText('Please choose a rating and enter a name.');
@@ -156,8 +148,7 @@ test.describe('Shadow DOM & Web Components', () => {
 
   // Accessibility — scan load + star-selected + post-submit-confirmation states (Phase 5).
   test.describe('accessibility (WCAG 2.x, axe)', () => {
-    const scan = (page: import('@playwright/test').Page) =>
-      new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
     test('no violations on initial page load', async ({ page }) => {
       expect((await scan(page)).violations).toEqual([]);

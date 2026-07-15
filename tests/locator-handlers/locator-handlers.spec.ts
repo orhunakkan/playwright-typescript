@@ -120,10 +120,7 @@ test.describe('Locator Handlers', () => {
   // AC-3 (TAB1-36): Tests call page.removeLocatorHandler(locator) after step 2 and assert
   // the overlay blocks step 3 without a registered handler.
   test.describe('AC-3 — removeLocatorHandler() re-exposes blocking once a handler is removed', () => {
-    test('positive: handler active through step 2, then removed, leaves step 3 blocked by the overlay', async ({
-      page,
-      locatorHandlersPage,
-    }) => {
+    test('positive: handler active through step 2, then removed, leaves step 3 blocked by the overlay', async ({ page, locatorHandlersPage }) => {
       const dismiss = async (locator: typeof locatorHandlersPage.anyDialog) => {
         await locator.getByRole('button').click();
       };
@@ -201,10 +198,7 @@ test.describe('Locator Handlers', () => {
   // AC-5 (TAB1-36): Tests distinguish the role="dialog" cookie banner locator from the
   // role="alertdialog" session survey when writing handler targets.
   test.describe('AC-5 — role="dialog" vs role="alertdialog" targeting precision', () => {
-    test('positive: a handler scoped to role="dialog" only ever receives dialog-role overlays', async ({
-      page,
-      locatorHandlersPage,
-    }) => {
+    test('positive: a handler scoped to role="dialog" only ever receives dialog-role overlays', async ({ page, locatorHandlersPage }) => {
       const seenRoles = new Set<string>();
       await page.addLocatorHandler(locatorHandlersPage.anyDialog, async (locator) => {
         seenRoles.add((await locator.getAttribute('role')) ?? '');
@@ -252,8 +246,7 @@ test.describe('Locator Handlers', () => {
 
   // Accessibility — scan load + overlay-visible + post-dismiss states (Phase 5).
   test.describe('accessibility (WCAG 2.x, axe)', () => {
-    const scan = (page: import('@playwright/test').Page) =>
-      new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
     test('no violations on initial page load', async ({ page }) => {
       expect((await scan(page)).violations).toEqual([]);
@@ -267,10 +260,7 @@ test.describe('Locator Handlers', () => {
       expect((await scan(page)).violations).toEqual([]);
     });
 
-    test('no violations after dismissing an overlay and advancing to the next step', async ({
-      page,
-      locatorHandlersPage,
-    }) => {
+    test('no violations after dismissing an overlay and advancing to the next step', async ({ page, locatorHandlersPage }) => {
       await locatorHandlersPage.forceOverlaysCheckbox.check();
       await locatorHandlersPage.nextButton.click();
       await locatorHandlersPage.newsletterDismissButton.click();

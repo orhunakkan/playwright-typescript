@@ -33,16 +33,12 @@ export class ClockTimersPage {
     this.countdownPauseButton = page
       .getByRole('region', { name: 'Challenge 1 — Countdown timer' })
       .getByRole('button', { name: 'Pause', exact: true });
-    this.countdownResetButton = page
-      .getByRole('region', { name: 'Challenge 1 — Countdown timer' })
-      .getByRole('button', { name: 'Reset' });
+    this.countdownResetButton = page.getByRole('region', { name: 'Challenge 1 — Countdown timer' }).getByRole('button', { name: 'Reset' });
     // Dynamically injected on countdown completion — no data-testid on the lab page. The
     // <p role="alert"> has no accessible name (ARIA "alert" role is name-from-author-only,
     // not name-from-content), and the Challenge 1 guidance paragraph contains this phrase as
     // plain text too, so scope to the region and match the alert role directly.
-    this.timesUpMessage = page
-      .getByRole('region', { name: 'Challenge 1 — Countdown timer' })
-      .getByRole('alert');
+    this.timesUpMessage = page.getByRole('region', { name: 'Challenge 1 — Countdown timer' }).getByRole('alert');
 
     // ── Challenge 2 — Session expiry toast ─────────────────
     this.startSessionButton = page.getByTestId('start-session');

@@ -144,10 +144,7 @@ test.describe('HAR Recording', () => {
       await expect(harRecordingPage.statusRegion).toHaveText('10 products loaded');
     });
 
-    test('positive: clicking "Reload products" re-fetches and still shows "10 products loaded" from the HAR', async ({
-      page,
-      harRecordingPage,
-    }) => {
+    test('positive: clicking "Reload products" re-fetches and still shows "10 products loaded" from the HAR', async ({ page, harRecordingPage }) => {
       await replayFromHar(page);
       await page.goto(URL);
       await expect(harRecordingPage.statusRegion).toHaveText('10 products loaded');

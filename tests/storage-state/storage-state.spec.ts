@@ -165,9 +165,7 @@ test.describe('Storage State', () => {
   // AC-4 (TAB1-23): Tests authenticate as each user using the request fixture (no browser)
   // and capture their storage state file to avoid a full browser startup in setup
   test.describe.serial('AC-4 — request fixture authenticates without a browser and captures storage state', () => {
-    test('positive: request.post to the login API authenticates alice and request.storageState() captures the session', async ({
-      request,
-    }) => {
+    test('positive: request.post to the login API authenticates alice and request.storageState() captures the session', async ({ request }) => {
       const res = await request.post(LOGIN_API, { data: { username: ADMIN.username, password: ADMIN.password } });
       expect(res.status()).toBe(200);
       const body = await res.json();

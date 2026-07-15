@@ -1,12 +1,12 @@
 # Test Plan — Accessibility Scanning (TAB1-35)
 
-| Field      | Value                                                                |
-| ---------- | --------------------------------------------------------------------- |
-| JIRA Story | [TAB1-35](https://orhunakkan.atlassian.net/browse/TAB1-35)          |
-| Lab URL    | https://stagecraftlabs.com/practice/accessibility-scanning           |
-| Spec file  | tests/accessibility-scanning/accessibility-scanning.spec.ts          |
-| POM file   | pages/accessibility-scanning.page.ts                                  |
-| Generated  | 2026-07-14                                                             |
+| Field      | Value                                                       |
+| ---------- | ----------------------------------------------------------- |
+| JIRA Story | [TAB1-35](https://orhunakkan.atlassian.net/browse/TAB1-35)  |
+| Lab URL    | https://stagecraftlabs.com/practice/accessibility-scanning  |
+| Spec file  | tests/accessibility-scanning/accessibility-scanning.spec.ts |
+| POM file   | pages/accessibility-scanning.page.ts                        |
+| Generated  | 2026-07-14                                                  |
 
 ---
 
@@ -27,7 +27,7 @@
 - The two concrete violations the broken state injects — a decorative `<img>` with no `alt`
   (rule: `image-alt`), and a low-contrast Submit button (`rgb(170,170,170)` on white, rule:
   `color-contrast`) — used as boundary/negative evidence that the scan actually detects real issues
-  rather than trivially passing. (The name input's placeholder-only "label" is *not* one of these —
+  rather than trivially passing. (The name input's placeholder-only "label" is _not_ one of these —
   axe's `label` rule accepts a placeholder as a valid accessible name, confirmed empirically.)
 - Toggling back from accessible → broken is used as a boundary case to confirm the state (and thus
   the violation set) is reversible, not a one-way reset
@@ -47,25 +47,25 @@
 
 ## 2. Test Types
 
-| Type                  | Applied                                                                    |
-| ---------------------- | --------------------------------------------------------------------------- |
-| Functional (positive) | ✅                                                                          |
-| Functional (negative) | ✅ (accessible-state scan returns zero violations; tag filter excludes non-WCAG2 rules) |
-| Boundary value        | ✅ (broken → accessible → broken reversibility; scoped vs. full-page scan)  |
-| Data-driven           | ✅ (violation-id/impact table for the two known broken-state violations)    |
-| Accessibility (axe)   | ✅ (this lab's ACs *are* the axe-core scan itself, across load/broken/accessible states) |
-| Non-functional (perf) | ✅ (Navigation Timing budget)                                               |
-| Cross-browser         | ✅ (4 browsers)                                                             |
-| Mobile / responsive   | ❌ (out of scope — no AC coverage)                                          |
+| Type                  | Applied                                                                                  |
+| --------------------- | ---------------------------------------------------------------------------------------- |
+| Functional (positive) | ✅                                                                                       |
+| Functional (negative) | ✅ (accessible-state scan returns zero violations; tag filter excludes non-WCAG2 rules)  |
+| Boundary value        | ✅ (broken → accessible → broken reversibility; scoped vs. full-page scan)               |
+| Data-driven           | ✅ (violation-id/impact table for the two known broken-state violations)                 |
+| Accessibility (axe)   | ✅ (this lab's ACs _are_ the axe-core scan itself, across load/broken/accessible states) |
+| Non-functional (perf) | ✅ (Navigation Timing budget)                                                            |
+| Cross-browser         | ✅ (4 browsers)                                                                          |
+| Mobile / responsive   | ❌ (out of scope — no AC coverage)                                                       |
 
 ---
 
 ## 3. Environments & Data
 
-| Field      | Value                                                    |
-| ---------- | ----------------------------------------------------------- |
-| Target env | Staging (stagecraftlabs.com)                                |
-| BASE_URL   | `https://stagecraftlabs.com` (`.env`)                        |
+| Field      | Value                                                                                                                                                                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Target env | Staging (stagecraftlabs.com)                                                                                                                                                                                                    |
+| BASE_URL   | `https://stagecraftlabs.com` (`.env`)                                                                                                                                                                                           |
 | Test data  | Known broken-state violation ids: `image-alt`, `color-contrast` (informational — assertions target `results.violations` shape/count/tags, not solely a hardcoded id allowlist, so the scan still catches regressions/additions) |
 
 ---
@@ -73,11 +73,11 @@
 ## 4. Browser / Device Matrix
 
 | Browser         | Project name    | Included for this lab? |
-| ---------------- | ----------------- | ----------------------- |
-| Desktop Chrome  | Desktop Chrome   | ✅ |
-| Desktop Firefox | Desktop Firefox  | ✅ |
-| Desktop Edge    | Desktop Edge     | ✅ |
-| Desktop Safari  | Desktop Safari   | ✅ |
+| --------------- | --------------- | ---------------------- |
+| Desktop Chrome  | Desktop Chrome  | ✅                     |
+| Desktop Firefox | Desktop Firefox | ✅                     |
+| Desktop Edge    | Desktop Edge    | ✅                     |
+| Desktop Safari  | Desktop Safari  | ✅                     |
 
 _(Source: `playwright.config.ts` projects[])_
 
@@ -85,15 +85,15 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 5. Risk Assessment & Priority
 
-| Area / Requirement                                                                  | Likelihood | Impact | Risk | Priority |
+| Area / Requirement                                                                   | Likelihood | Impact | Risk | Priority |
 | ------------------------------------------------------------------------------------ | ---------- | ------ | ---- | -------- |
 | AC-1: broken-state scan reports `results.violations.length > 0`                      | H          | H      | H    | P1       |
 | AC-2: violation `id`/`impact`/`nodes` are logged for diagnosis                       | M          | M      | M    | P2       |
 | AC-3: accessible-state scan reports `results.violations` as empty                    | H          | H      | H    | P1       |
 | AC-4: `.include("#form-region")` correctly scopes the scan                           | M          | H      | H    | P1       |
-| AC-5: `.withTags(["wcag2a","wcag2aa"])` filters to WCAG 2.x rules only                | M          | M      | M    | P2       |
+| AC-5: `.withTags(["wcag2a","wcag2aa"])` filters to WCAG 2.x rules only               | M          | M      | M    | P2       |
 | Accessibility — load / broken / accessible states (meta a11y scan of the lab itself) | L          | M      | L    | P2       |
-| Performance budget                                                                    | L          | L      | L    | P2       |
+| Performance budget                                                                   | L          | L      | L    | P2       |
 
 ---
 
@@ -119,13 +119,13 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 8. Deliverables
 
-| Artifact  | Path                                                          | Status  |
-| --------- | ---------------------------------------------------------------- | ------- |
-| Test Plan | docs/test-plan/accessibility-scanning.test-plan.md                | ✅ done |
-| POM       | pages/accessibility-scanning.page.ts                              | ✅ done |
-| Spec file | tests/accessibility-scanning/accessibility-scanning.spec.ts       | pending |
-| RTM       | docs/rtm/accessibility-scanning.rtm.md                             | pending |
-| CI run    | GitHub Actions                                                     | pending |
+| Artifact  | Path                                                        | Status  |
+| --------- | ----------------------------------------------------------- | ------- |
+| Test Plan | docs/test-plan/accessibility-scanning.test-plan.md          | ✅ done |
+| POM       | pages/accessibility-scanning.page.ts                        | ✅ done |
+| Spec file | tests/accessibility-scanning/accessibility-scanning.spec.ts | pending |
+| RTM       | docs/rtm/accessibility-scanning.rtm.md                      | pending |
+| CI run    | GitHub Actions                                              | pending |
 
 ---
 

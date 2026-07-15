@@ -1,12 +1,12 @@
 # Test Plan — Init Scripts & Seeding (TAB1-40)
 
-| Field      | Value                                                       |
-| ---------- | ------------------------------------------------------------ |
-| JIRA Story | [TAB1-40](https://orhunakkan.atlassian.net/browse/TAB1-40)  |
-| Lab URL    | https://stagecraftlabs.com/practice/init-scripts             |
-| Spec file  | tests/init-scripts/init-scripts.spec.ts                      |
-| POM file   | pages/init-scripts.page.ts                                   |
-| Generated  | 2026-07-14                                                    |
+| Field      | Value                                                      |
+| ---------- | ---------------------------------------------------------- |
+| JIRA Story | [TAB1-40](https://orhunakkan.atlassian.net/browse/TAB1-40) |
+| Lab URL    | https://stagecraftlabs.com/practice/init-scripts           |
+| Spec file  | tests/init-scripts/init-scripts.spec.ts                    |
+| POM file   | pages/init-scripts.page.ts                                 |
+| Generated  | 2026-07-14                                                 |
 
 ---
 
@@ -18,8 +18,8 @@
 - `page.addInitScript` stubbing `Math.random` to a fixed value, driving the deterministic Lucky Number widget
 - `page.addInitScript` seeding `localStorage.setItem("onboarded", "true")` before navigation to suppress the onboarding modal
 - `context.addInitScript` seeding localStorage once per context and confirming persistence to a second page opened from the same context
-- Contrast case: a fresh page from a *different* context does not inherit another context's seed
-- Ordering proof: seeding localStorage *after* `page.goto` does not retroactively suppress an already-rendered modal
+- Contrast case: a fresh page from a _different_ context does not inherit another context's seed
+- Ordering proof: seeding localStorage _after_ `page.goto` does not retroactively suppress an already-rendered modal
 - Accessibility scanning across load, seeded/suppressed, and control/modal-present states
 - Performance budget on initial page load with init scripts attached
 
@@ -34,11 +34,11 @@
 
 ## 2. Test Types
 
-| Type                  | Applied                                                    |
-| --------------------- | ----------------------------------------------------------- |
-| Functional (positive) | ✅                                                          |
-| Functional (negative) | ✅                                                          |
-| Boundary value        | ✅                                                          |
+| Type                  | Applied                                                      |
+| --------------------- | ------------------------------------------------------------ |
+| Functional (positive) | ✅                                                           |
+| Functional (negative) | ✅                                                           |
+| Boundary value        | ✅                                                           |
 | Data-driven           | ❌ (fixed init-script payloads, not a data table)            |
 | Accessibility (axe)   | ✅ (load + seeded/suppressed + control/modal-present states) |
 | Non-functional (perf) | ✅ (Navigation Timing budget)                                |
@@ -49,13 +49,13 @@
 
 ## 3. Environments & Data
 
-| Field         | Value                                                                                    |
-| ------------- | ------------------------------------------------------------------------------------------ |
-| Target env    | Staging (stagecraftlabs.com)                                                              |
-| BASE_URL      | `https://stagecraftlabs.com` (`.env`)                                                      |
-| Lab path      | `/practice/init-scripts`                                                                   |
+| Field         | Value                                                                                                      |
+| ------------- | ---------------------------------------------------------------------------------------------------------- |
+| Target env    | Staging (stagecraftlabs.com)                                                                               |
+| BASE_URL      | `https://stagecraftlabs.com` (`.env`)                                                                      |
+| Lab path      | `/practice/init-scripts`                                                                                   |
 | Init payloads | `window.__FLAGS__ = { betaFeature: true }`, `Math.random` stub → `0.42`, `localStorage.onboarded = "true"` |
-| Test data     | Fixed literals prescribed by the lab (no faker — deterministic values are the point of the lab) |
+| Test data     | Fixed literals prescribed by the lab (no faker — deterministic values are the point of the lab)            |
 
 ---
 
@@ -74,21 +74,21 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 5. Risk Assessment & Priority
 
-| Area / Requirement                                                         | Likelihood | Impact | Risk | Priority |
-| ---------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
-| `page.addInitScript` flag injection shows the beta banner                    | H          | H      | H    | P1       |
-| Without the flag script, banner is absent (control)                          | M          | M      | M    | P2       |
-| `Math.random` stub drives the Lucky Number widget to `42`                    | H          | H      | H    | P1       |
-| Stub value stable across repeated reads in the same page                     | L          | M      | L    | P3       |
-| `page.addInitScript` localStorage seed suppresses onboarding modal           | H          | H      | H    | P1       |
-| Without the seed, onboarding modal is present (control)                      | H          | H      | H    | P1       |
-| `onboarded="false"` does not suppress the modal (exact-match boundary)       | L          | M      | L    | P3       |
-| `context.addInitScript` seed persists to a fresh page in the same context    | M          | H      | H    | P1       |
-| A fresh page from a *different* context does not see the seed                | M          | H      | H    | P2       |
-| Multiple pages from the same context all share the seeded state              | L          | M      | L    | P3       |
-| Late localStorage seed (post-`goto`) does not suppress an already-rendered modal | H       | H      | H    | P1       |
-| Accessibility — load / seeded / control states                               | L          | M      | L    | P2       |
-| Performance budget                                                           | L          | L      | L    | P2       |
+| Area / Requirement                                                               | Likelihood | Impact | Risk | Priority |
+| -------------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| `page.addInitScript` flag injection shows the beta banner                        | H          | H      | H    | P1       |
+| Without the flag script, banner is absent (control)                              | M          | M      | M    | P2       |
+| `Math.random` stub drives the Lucky Number widget to `42`                        | H          | H      | H    | P1       |
+| Stub value stable across repeated reads in the same page                         | L          | M      | L    | P3       |
+| `page.addInitScript` localStorage seed suppresses onboarding modal               | H          | H      | H    | P1       |
+| Without the seed, onboarding modal is present (control)                          | H          | H      | H    | P1       |
+| `onboarded="false"` does not suppress the modal (exact-match boundary)           | L          | M      | L    | P3       |
+| `context.addInitScript` seed persists to a fresh page in the same context        | M          | H      | H    | P1       |
+| A fresh page from a _different_ context does not see the seed                    | M          | H      | H    | P2       |
+| Multiple pages from the same context all share the seeded state                  | L          | M      | L    | P3       |
+| Late localStorage seed (post-`goto`) does not suppress an already-rendered modal | H          | H      | H    | P1       |
+| Accessibility — load / seeded / control states                                   | L          | M      | L    | P2       |
+| Performance budget                                                               | L          | L      | L    | P2       |
 
 ---
 
@@ -113,13 +113,13 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 8. Deliverables
 
-| Artifact   | Path                                     | Status               |
-| ---------- | ------------------------------------------ | --------------------- |
-| Test Plan  | docs/test-plan/init-scripts.test-plan.md  | ✅ done               |
-| POM        | pages/init-scripts.page.ts                | pending               |
-| Spec file  | tests/init-scripts/init-scripts.spec.ts   | pending               |
-| RTM        | docs/rtm/init-scripts.rtm.md              | pending               |
-| CI run     | GitHub Actions                             | pending               |
+| Artifact  | Path                                     | Status  |
+| --------- | ---------------------------------------- | ------- |
+| Test Plan | docs/test-plan/init-scripts.test-plan.md | ✅ done |
+| POM       | pages/init-scripts.page.ts               | pending |
+| Spec file | tests/init-scripts/init-scripts.spec.ts  | pending |
+| RTM       | docs/rtm/init-scripts.rtm.md             | pending |
+| CI run    | GitHub Actions                           | pending |
 
 ---
 

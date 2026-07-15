@@ -1,12 +1,12 @@
 # Test Plan — Service Workers (TAB1-28)
 
-| Field      | Value                                                  |
-| ---------- | ------------------------------------------------------- |
+| Field      | Value                                                      |
+| ---------- | ---------------------------------------------------------- |
 | JIRA Story | [TAB1-28](https://orhunakkan.atlassian.net/browse/TAB1-28) |
-| Lab URL    | https://stagecraftlabs.com/practice/service-workers    |
-| Spec file  | tests/service-workers/service-workers.spec.ts          |
-| POM file   | pages/service-workers.page.ts                          |
-| Generated  | 2026-07-12                                               |
+| Lab URL    | https://stagecraftlabs.com/practice/service-workers        |
+| Spec file  | tests/service-workers/service-workers.spec.ts              |
+| POM file   | pages/service-workers.page.ts                              |
+| Generated  | 2026-07-12                                                 |
 
 ---
 
@@ -45,39 +45,39 @@
 
 ## 2. Test Types
 
-| Type                   | Applied                                                                |
-| ----------------------- | ------------------------------------------------------------------------ |
-| Functional (positive)   | ✅                                                                       |
-| Functional (negative)   | ✅ (unregistered-SW control, non-offline control, no-route control)      |
-| Boundary value          | ✅ (SW-registration-before-offline sequencing)                           |
-| Data-driven             | ❌ (fixed 3-item response shape; no parametrizable input space)          |
-| Accessibility (axe)     | ✅ (initial load + cache-sourced + network-sourced + offline-error)      |
-| Non-functional (perf)   | ✅ (Navigation Timing budget)                                            |
-| Cross-browser           | ✅ (3 browsers — Desktop Safari excluded, TAB1-53)                       |
-| Mobile / responsive     | ❌ (out of scope)                                                        |
+| Type                  | Applied                                                             |
+| --------------------- | ------------------------------------------------------------------- |
+| Functional (positive) | ✅                                                                  |
+| Functional (negative) | ✅ (unregistered-SW control, non-offline control, no-route control) |
+| Boundary value        | ✅ (SW-registration-before-offline sequencing)                      |
+| Data-driven           | ❌ (fixed 3-item response shape; no parametrizable input space)     |
+| Accessibility (axe)   | ✅ (initial load + cache-sourced + network-sourced + offline-error) |
+| Non-functional (perf) | ✅ (Navigation Timing budget)                                       |
+| Cross-browser         | ✅ (3 browsers — Desktop Safari excluded, TAB1-53)                  |
+| Mobile / responsive   | ❌ (out of scope)                                                   |
 
 ---
 
 ## 3. Environments & Data
 
-| Field        | Value                                                                             |
-| ------------- | ------------------------------------------------------------------------------------ |
-| Target env   | Staging (stagecraftlabs.com)                                                       |
-| BASE_URL     | `https://stagecraftlabs.com` (`.env`)                                              |
-| SW control   | `navigator.serviceWorker` (via UI button), `browser.newContext({ serviceWorkers })` |
-| Real backend | Lab requires a live backend for `/api/sw-items` (per JIRA: "Requires backend")     |
+| Field        | Value                                                                                                                            |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Target env   | Staging (stagecraftlabs.com)                                                                                                     |
+| BASE_URL     | `https://stagecraftlabs.com` (`.env`)                                                                                            |
+| SW control   | `navigator.serviceWorker` (via UI button), `browser.newContext({ serviceWorkers })`                                              |
+| Real backend | Lab requires a live backend for `/api/sw-items` (per JIRA: "Requires backend")                                                   |
 | Test data    | Fixed response shapes observed live: cache → `Cached Widget/Gadget/Doohickey (stale)`; network → `Fresh Widget/Gadget/Doohickey` |
 
 ---
 
 ## 4. Browser / Device Matrix
 
-| Browser         | Project name    | Included for this lab? |
-| ---------------- | ----------------- | ----------------------- |
-| Desktop Chrome  | Desktop Chrome   | ✅ |
-| Desktop Firefox | Desktop Firefox  | ✅ |
-| Desktop Edge    | Desktop Edge     | ✅ |
-| Desktop Safari  | Desktop Safari   | ❌ excluded — see below |
+| Browser         | Project name    | Included for this lab?  |
+| --------------- | --------------- | ----------------------- |
+| Desktop Chrome  | Desktop Chrome  | ✅                      |
+| Desktop Firefox | Desktop Firefox | ✅                      |
+| Desktop Edge    | Desktop Edge    | ✅                      |
+| Desktop Safari  | Desktop Safari  | ❌ excluded — see below |
 
 _(Source: `playwright.config.ts` projects[])_
 
@@ -94,20 +94,20 @@ only and should be revisited if Playwright resolves the underlying WebKit limita
 
 ## 5. Risk Assessment & Priority
 
-| Area / Requirement                                                             | Likelihood | Impact | Risk | Priority |
-| ---------------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
-| AC-1: registering SW + fetch shows `cache`-sourced stale data                      | H          | H      | H    | P1       |
-| AC-2: `serviceWorkers: 'block'` + `page.route()` intercepts `/api/sw-items`        | H          | H      | H    | P1       |
-| AC-3: active (unblocked) SW pre-empts `page.route()`                               | H          | H      | H    | P1       |
-| AC-3 control: no SW registered, `page.route()` does intercept                      | H          | H      | H    | P1       |
-| AC-4: `setOffline(true)` + active SW shows cached/stale data                       | H          | H      | H    | P1       |
-| AC-5: `setOffline(true)` + blocked SW shows network error state                    | H          | H      | H    | P1       |
-| AC-1 control: no SW registered, fetch shows `network`-sourced fresh data           | M          | M      | M    | P2       |
+| Area / Requirement                                                                  | Likelihood | Impact | Risk | Priority |
+| ----------------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| AC-1: registering SW + fetch shows `cache`-sourced stale data                       | H          | H      | H    | P1       |
+| AC-2: `serviceWorkers: 'block'` + `page.route()` intercepts `/api/sw-items`         | H          | H      | H    | P1       |
+| AC-3: active (unblocked) SW pre-empts `page.route()`                                | H          | H      | H    | P1       |
+| AC-3 control: no SW registered, `page.route()` does intercept                       | H          | H      | H    | P1       |
+| AC-4: `setOffline(true)` + active SW shows cached/stale data                        | H          | H      | H    | P1       |
+| AC-5: `setOffline(true)` + blocked SW shows network error state                     | H          | H      | H    | P1       |
+| AC-1 control: no SW registered, fetch shows `network`-sourced fresh data            | M          | M      | M    | P2       |
 | AC-4 boundary: SW must be registered before going offline for cache to be populated | M          | M      | M    | P2       |
-| AC-5 control: blocked SW while online still fetches normally                       | M          | M      | M    | P2       |
-| AC-6: caching-strategy tests structurally separated from route-interception tests  | M          | L      | L    | P2       |
-| Accessibility — all 4 UI states                                                    | L          | M      | L    | P2       |
-| Performance budget                                                                 | L          | L      | L    | P2       |
+| AC-5 control: blocked SW while online still fetches normally                        | M          | M      | M    | P2       |
+| AC-6: caching-strategy tests structurally separated from route-interception tests   | M          | L      | L    | P2       |
+| Accessibility — all 4 UI states                                                     | L          | M      | L    | P2       |
+| Performance budget                                                                  | L          | L      | L    | P2       |
 
 ---
 
@@ -132,13 +132,13 @@ only and should be revisited if Playwright resolves the underlying WebKit limita
 
 ## 8. Deliverables
 
-| Artifact   | Path                                              | Status  |
-| ---------- | ---------------------------------------------------- | ------- |
-| Test Plan  | docs/test-plan/service-workers.test-plan.md          | ✅ done |
-| POM        | pages/service-workers.page.ts                        | pending |
-| Spec file  | tests/service-workers/service-workers.spec.ts        | pending |
-| RTM        | docs/rtm/service-workers.rtm.md                      | pending |
-| CI run     | GitHub Actions                                        | pending |
+| Artifact  | Path                                          | Status  |
+| --------- | --------------------------------------------- | ------- |
+| Test Plan | docs/test-plan/service-workers.test-plan.md   | ✅ done |
+| POM       | pages/service-workers.page.ts                 | pending |
+| Spec file | tests/service-workers/service-workers.spec.ts | pending |
+| RTM       | docs/rtm/service-workers.rtm.md               | pending |
+| CI run    | GitHub Actions                                | pending |
 
 ---
 

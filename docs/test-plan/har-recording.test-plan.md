@@ -1,12 +1,12 @@
 # Test Plan — HAR Recording (TAB1-27)
 
-| Field      | Value                                                       |
-| ---------- | ------------------------------------------------------------ |
-| JIRA Story | [TAB1-27](https://orhunakkan.atlassian.net/browse/TAB1-27)  |
-| Lab URL    | https://stagecraftlabs.com/practice/har-recording           |
-| Spec file  | tests/har-recording/har-recording.spec.ts                    |
-| POM file   | pages/har-recording.page.ts                                  |
-| Generated  | 2026-07-12                                                    |
+| Field      | Value                                                      |
+| ---------- | ---------------------------------------------------------- |
+| JIRA Story | [TAB1-27](https://orhunakkan.atlassian.net/browse/TAB1-27) |
+| Lab URL    | https://stagecraftlabs.com/practice/har-recording          |
+| Spec file  | tests/har-recording/har-recording.spec.ts                  |
+| POM file   | pages/har-recording.page.ts                                |
+| Generated  | 2026-07-12                                                 |
 
 ---
 
@@ -40,29 +40,29 @@
 
 ## 2. Test Types
 
-| Type                  | Applied                                                              |
-| ---------------------- | --------------------------------------------------------------------- |
-| Functional (positive)  | ✅                                                                    |
-| Functional (negative)  | ✅ (no live network call during replay; unmodified endpoints stay on HAR) |
-| Boundary value         | ✅ (exactly 10 product cards, not more/fewer)                        |
-| Data-driven            | ✅ (all 10 products × expected stock badge text)                     |
-| Accessibility (axe)    | ✅ (replayed page load state)                                        |
-| Non-functional (perf)  | ✅ (Navigation Timing budget)                                        |
-| Cross-browser          | ✅ (4 browsers)                                                      |
-| Mobile / responsive    | ❌ (out of scope)                                                    |
+| Type                  | Applied                                                                   |
+| --------------------- | ------------------------------------------------------------------------- |
+| Functional (positive) | ✅                                                                        |
+| Functional (negative) | ✅ (no live network call during replay; unmodified endpoints stay on HAR) |
+| Boundary value        | ✅ (exactly 10 product cards, not more/fewer)                             |
+| Data-driven           | ✅ (all 10 products × expected stock badge text)                          |
+| Accessibility (axe)   | ✅ (replayed page load state)                                             |
+| Non-functional (perf) | ✅ (Navigation Timing budget)                                             |
+| Cross-browser         | ✅ (4 browsers)                                                           |
+| Mobile / responsive   | ❌ (out of scope)                                                         |
 
 ---
 
 ## 3. Environments & Data
 
-| Field           | Value                                                                                  |
-| ---------------- | --------------------------------------------------------------------------------------- |
-| Target env      | Staging (stagecraftlabs.com)                                                            |
-| BASE_URL        | `https://stagecraftlabs.com` (`.env`)                                                   |
-| HAR control     | `page.routeFromHAR()`, `context.routeFromHAR()`, `page.route()`                         |
-| Real backend    | Lab requires a live backend for the one-time recording (per JIRA: "Requires backend")   |
-| HAR fixture     | `fixtures/har/har-recording/products.har` — recorded once against the live `/api/products` endpoint (10 products: 7 in stock, 3 out of stock — 4K Monitor, Webcam 1080p, LED Desk Lamp) and committed to source control per the lab's own guidance |
-| Test data       | Fixed product table (id, name, expected stock text) sourced from the recorded HAR — no faker |
+| Field        | Value                                                                                                                                                                                                                                              |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Target env   | Staging (stagecraftlabs.com)                                                                                                                                                                                                                       |
+| BASE_URL     | `https://stagecraftlabs.com` (`.env`)                                                                                                                                                                                                              |
+| HAR control  | `page.routeFromHAR()`, `context.routeFromHAR()`, `page.route()`                                                                                                                                                                                    |
+| Real backend | Lab requires a live backend for the one-time recording (per JIRA: "Requires backend")                                                                                                                                                              |
+| HAR fixture  | `fixtures/har/har-recording/products.har` — recorded once against the live `/api/products` endpoint (10 products: 7 in stock, 3 out of stock — 4K Monitor, Webcam 1080p, LED Desk Lamp) and committed to source control per the lab's own guidance |
+| Test data    | Fixed product table (id, name, expected stock text) sourced from the recorded HAR — no faker                                                                                                                                                       |
 
 ---
 
@@ -82,17 +82,17 @@ _(Source: `playwright.config.ts` projects[])_
 ## 5. Risk Assessment & Priority
 
 | Area / Requirement                                                             | Likelihood | Impact | Risk | Priority |
-| -------------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
-| HAR recording via `routeFromHAR({ update: true })` creates a file on disk        | H          | H      | H    | P1       |
-| HAR replay renders all 10 recorded products with no live server                  | H          | H      | H    | P1       |
-| `page.route()` override wins for the overridden endpoint over the HAR            | H          | H      | H    | P1       |
-| Badge text ("In stock"/"Out of stock") matches recorded data, all 10 products    | H          | H      | H    | P1       |
-| Replay serves `GET /api/products`, confirmed by "10 products loaded"             | H          | H      | H    | P1       |
-| Unmodified requests still served from HAR when only one endpoint is overridden   | M          | H      | H    | P1       |
-| Replay truly offline — default `notFound: 'abort'` never reaches live origin     | M          | H      | H    | P1       |
-| Re-fetch ("Reload products") within a replayed test still reads from HAR         | M          | M      | M    | P2       |
-| Accessibility — replayed page load state                                        | L          | M      | L    | P2       |
-| Performance budget                                                              | L          | L      | L    | P2       |
+| ------------------------------------------------------------------------------ | ---------- | ------ | ---- | -------- |
+| HAR recording via `routeFromHAR({ update: true })` creates a file on disk      | H          | H      | H    | P1       |
+| HAR replay renders all 10 recorded products with no live server                | H          | H      | H    | P1       |
+| `page.route()` override wins for the overridden endpoint over the HAR          | H          | H      | H    | P1       |
+| Badge text ("In stock"/"Out of stock") matches recorded data, all 10 products  | H          | H      | H    | P1       |
+| Replay serves `GET /api/products`, confirmed by "10 products loaded"           | H          | H      | H    | P1       |
+| Unmodified requests still served from HAR when only one endpoint is overridden | M          | H      | H    | P1       |
+| Replay truly offline — default `notFound: 'abort'` never reaches live origin   | M          | H      | H    | P1       |
+| Re-fetch ("Reload products") within a replayed test still reads from HAR       | M          | M      | M    | P2       |
+| Accessibility — replayed page load state                                       | L          | M      | L    | P2       |
+| Performance budget                                                             | L          | L      | L    | P2       |
 
 ---
 
@@ -118,14 +118,14 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 8. Deliverables
 
-| Artifact   | Path                                                    | Status  |
-| ---------- | -------------------------------------------------------- | ------- |
-| Test Plan  | docs/test-plan/har-recording.test-plan.md                | ✅ done |
-| HAR fixture| fixtures/har/har-recording/products.har                  | ✅ done |
-| POM        | pages/har-recording.page.ts                               | pending |
-| Spec file  | tests/har-recording/har-recording.spec.ts                 | pending |
-| RTM        | docs/rtm/har-recording.rtm.md                              | pending |
-| CI run     | GitHub Actions                                             | pending |
+| Artifact    | Path                                      | Status  |
+| ----------- | ----------------------------------------- | ------- |
+| Test Plan   | docs/test-plan/har-recording.test-plan.md | ✅ done |
+| HAR fixture | fixtures/har/har-recording/products.har   | ✅ done |
+| POM         | pages/har-recording.page.ts               | pending |
+| Spec file   | tests/har-recording/har-recording.spec.ts | pending |
+| RTM         | docs/rtm/har-recording.rtm.md             | pending |
+| CI run      | GitHub Actions                            | pending |
 
 ---
 

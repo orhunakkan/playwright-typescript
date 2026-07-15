@@ -65,7 +65,10 @@ test.describe('Visual Regression', () => {
   // AC-2 (TAB1-29): a locator-scoped screenshot of the Button Variants section covers all 5
   // button states (Primary, Secondary, Danger, Ghost, Disabled) in one composed comparison.
   test.describe('Button variants — scoped screenshot (AC-2)', () => {
-    test('positive: button showcase section matches baseline across Primary/Secondary/Danger/Ghost/Disabled', async ({ page, visualRegressionPage }) => {
+    test('positive: button showcase section matches baseline across Primary/Secondary/Danger/Ghost/Disabled', async ({
+      page,
+      visualRegressionPage,
+    }) => {
       await gotoAndStabilize(page, URL);
       await expect(visualRegressionPage.primaryButton).toBeVisible();
       await expect(visualRegressionPage.secondaryButton).toBeVisible();
@@ -143,7 +146,10 @@ test.describe('Visual Regression', () => {
   // call) before mutating a button's background color and re-comparing (second call), so neither
   // test depends on execution order relative to the AC-2/AC-3 tests above under fullyParallel.
   test.describe('Diff detection & threshold behavior (AC-5, AC-6)', () => {
-    test('negative: mutating a button background color makes the screenshot diverge under a tight threshold', async ({ page, visualRegressionPage }) => {
+    test('negative: mutating a button background color makes the screenshot diverge under a tight threshold', async ({
+      page,
+      visualRegressionPage,
+    }) => {
       await gotoAndStabilize(page, URL);
       await expect(visualRegressionPage.buttonShowcase).toHaveScreenshot('button-showcase-diff-check.png', { maxDiffPixelRatio: BASELINE_RATIO });
 
@@ -162,7 +168,9 @@ test.describe('Visual Regression', () => {
       visualRegressionPage,
     }) => {
       await gotoAndStabilize(page, URL);
-      await expect(visualRegressionPage.buttonShowcase).toHaveScreenshot('button-showcase-threshold-check.png', { maxDiffPixelRatio: BASELINE_RATIO });
+      await expect(visualRegressionPage.buttonShowcase).toHaveScreenshot('button-showcase-threshold-check.png', {
+        maxDiffPixelRatio: BASELINE_RATIO,
+      });
 
       await visualRegressionPage.primaryButton.evaluate((el) => {
         (el as HTMLElement).style.backgroundColor = 'rgb(22, 101, 52)';

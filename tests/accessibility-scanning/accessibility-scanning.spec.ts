@@ -9,8 +9,7 @@ const URL = '/practice/accessibility-scanning';
 const scan = (page: Page) => new AxeBuilder({ page }).analyze();
 const scanFormRegion = (page: Page) => new AxeBuilder({ page }).include('#form-region').analyze();
 const scanWcag2Tags = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-const scanChrome = (page: Page) =>
-  new AxeBuilder({ page }).exclude('#form-region').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+const scanChrome = (page: Page) => new AxeBuilder({ page }).exclude('#form-region').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 // The broken (default) state injects two known, real axe violations, both inside #form-region:
 // a decorative <img> with no alt attribute (rule: image-alt), and a Submit button whose text
@@ -73,10 +72,7 @@ test.describe('Accessibility Scanning', () => {
 
   // AC-3: toggling to the accessible state and re-scanning reports zero violations.
   test.describe('Accessible-state scan reports zero violations (AC-3)', () => {
-    test('positive: results.violations is an empty array after toggling "Show accessible controls"', async ({
-      page,
-      accessibilityScanningPage,
-    }) => {
+    test('positive: results.violations is an empty array after toggling "Show accessible controls"', async ({ page, accessibilityScanningPage }) => {
       await page.goto(URL);
       // axe's color-contrast/image-alt checks are flaky against a pre-hydration DOM snapshot —
       // waiting for network idle before scanning is what makes the violation set deterministic.
@@ -110,9 +106,7 @@ test.describe('Accessibility Scanning', () => {
 
   // AC-4: .include("#form-region") scopes the scan to only the Settings Form section.
   test.describe('Scan scoped to #form-region via .include() (AC-4)', () => {
-    test('positive: scoped scan on the broken state reports exactly the violations that live inside #form-region', async ({
-      page,
-    }) => {
+    test('positive: scoped scan on the broken state reports exactly the violations that live inside #form-region', async ({ page }) => {
       await page.goto(URL);
       // axe's color-contrast/image-alt checks are flaky against a pre-hydration DOM snapshot —
       // waiting for network idle before scanning is what makes the violation set deterministic.
@@ -178,10 +172,7 @@ test.describe('Accessibility Scanning', () => {
       expect((await scanChrome(page)).violations).toEqual([]);
     });
 
-    test('no violations with accessible controls toggled on, outside #form-region', async ({
-      page,
-      accessibilityScanningPage,
-    }) => {
+    test('no violations with accessible controls toggled on, outside #form-region', async ({ page, accessibilityScanningPage }) => {
       await page.goto(URL);
       // axe's color-contrast/image-alt checks are flaky against a pre-hydration DOM snapshot —
       // waiting for network idle before scanning is what makes the violation set deterministic.

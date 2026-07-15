@@ -1,36 +1,36 @@
 # Requirements Traceability Matrix — Service Workers
 
-| Field      | Value                                                             |
-| ---------- | -------------------------------------------------------------------- |
-| JIRA Story | [TAB1-28](https://orhunakkan.atlassian.net/browse/TAB1-28)          |
-| Lab URL    | https://stagecraftlabs.com/practice/service-workers                 |
-| Spec file  | tests/service-workers/service-workers.spec.ts                       |
-| POM file   | pages/service-workers.page.ts                                       |
+| Field      | Value                                                                                                                                                                                                                   |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| JIRA Story | [TAB1-28](https://orhunakkan.atlassian.net/browse/TAB1-28)                                                                                                                                                              |
+| Lab URL    | https://stagecraftlabs.com/practice/service-workers                                                                                                                                                                     |
+| Spec file  | tests/service-workers/service-workers.spec.ts                                                                                                                                                                           |
+| POM file   | pages/service-workers.page.ts                                                                                                                                                                                           |
 | Last run   | 2026-07-12 — 42 / 42 passed (Chrome 14/14 · Firefox 14/14 · Edge 14/14), including a real (unfiltered) axe color-contrast assertion. Desktop Safari intentionally out of scope for this lab (TAB1-53). 0 skipped tests. |
-| Generated  | 2026-07-12                                                           |
-| Status     | ✅ Done — CI verified. 0 open blockers (TAB1-52 and TAB1-53 both resolved). |
+| Generated  | 2026-07-12                                                                                                                                                                                                              |
+| Status     | ✅ Done — CI verified. 0 open blockers (TAB1-52 and TAB1-53 both resolved).                                                                                                                                             |
 
 ---
 
 ## Coverage by Acceptance Criterion
 
-| Req  | Acceptance Criterion                                                                                                         | Test Case                                                                                             | Type  | Result |
-| ---- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ----- | ------ |
-| AC-1 | Register the service worker via the button, fetch items, assert the response source is from the SW cache (stale)                  | positive: after registering the service worker, fetched items are served from its cache (stale)         | P     | ✅ (3/3 in-scope browsers) |
-| AC-1 |                                                                                                                                      | negative (control): without registering the service worker, fetched items are served fresh from the network | N | ✅ (3/3) |
-| AC-2 | Create a browser context with `serviceWorkers: "block"` and verify `page.route()` can intercept `/api/sw-items`                    | positive: serviceWorkers: "block" lets page.route() intercept /api/sw-items                              | P     | ✅ (3/3) |
-| AC-2 | (negative control, doubles with AC-5)                                                                                               | negative (control): serviceWorkers: "block" while online still fetches normally from the network         | N     | ✅ (3/3) |
-| AC-3 | Without SW blocking, confirm `page.route()` does not intercept a request the active SW handles first                               | positive: with the service worker active (not blocked), page.route() does not intercept — the SW claims the request first | P | ✅ (3/3) |
-| AC-3 |                                                                                                                                      | negative (control): with no service worker registered, page.route() does intercept the same request      | N     | ✅ (3/3) |
-| AC-4 | `context.setOffline(true)` with an active service worker shows cached/stale data                                                   | positive: context.setOffline(true) with an active service worker still shows cached/stale data           | P     | ✅ (3/3) |
-| AC-4 | (boundary — cache must be populated before going offline)                                                                          | boundary: going offline before ever registering the service worker leaves no cache to serve, so the fetch fails | B | ✅ (3/3) |
-| AC-5 | `context.setOffline(true)` with the service worker blocked shows a network error state                                            | positive: serviceWorkers: "block" + context.setOffline(true) shows a network error state                 | P     | ✅ (3/3) |
-| AC-6 | Caching-strategy tests leave the SW active and are structurally separated from route()-interception tests                          | Enforced by spec structure: `Caching strategy — service worker left active (AC-1, AC-4)` vs. `page.route() interception — service worker blocked via context option (AC-2, AC-3, AC-5)` describe blocks | — | ✅ |
-| AXE  | The page must have no critical/serious axe-core violations in every rendered state                                                 | no violations on initial page load                                                                        | A11y  | ✅ (3/3) |
-| AXE  |                                                                                                                                      | no violations once items are rendered from the service worker cache                                       | A11y  | ✅ (3/3) |
-| AXE  |                                                                                                                                      | no violations once items are rendered from the network                                                    | A11y  | ✅ (3/3) |
-| AXE  |                                                                                                                                      | no violations in the offline network-error state                                                          | A11y  | ✅ (3/3) |
-| REQ-NF1 | The page must meet its performance budget (load + key interaction)                                                              | initial service-workers page load is within budget                                                        | Perf  | ✅ (3/3) |
+| Req     | Acceptance Criterion                                                                                             | Test Case                                                                                                                                                                                               | Type | Result                     |
+| ------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------------------------- |
+| AC-1    | Register the service worker via the button, fetch items, assert the response source is from the SW cache (stale) | positive: after registering the service worker, fetched items are served from its cache (stale)                                                                                                         | P    | ✅ (3/3 in-scope browsers) |
+| AC-1    |                                                                                                                  | negative (control): without registering the service worker, fetched items are served fresh from the network                                                                                             | N    | ✅ (3/3)                   |
+| AC-2    | Create a browser context with `serviceWorkers: "block"` and verify `page.route()` can intercept `/api/sw-items`  | positive: serviceWorkers: "block" lets page.route() intercept /api/sw-items                                                                                                                             | P    | ✅ (3/3)                   |
+| AC-2    | (negative control, doubles with AC-5)                                                                            | negative (control): serviceWorkers: "block" while online still fetches normally from the network                                                                                                        | N    | ✅ (3/3)                   |
+| AC-3    | Without SW blocking, confirm `page.route()` does not intercept a request the active SW handles first             | positive: with the service worker active (not blocked), page.route() does not intercept — the SW claims the request first                                                                               | P    | ✅ (3/3)                   |
+| AC-3    |                                                                                                                  | negative (control): with no service worker registered, page.route() does intercept the same request                                                                                                     | N    | ✅ (3/3)                   |
+| AC-4    | `context.setOffline(true)` with an active service worker shows cached/stale data                                 | positive: context.setOffline(true) with an active service worker still shows cached/stale data                                                                                                          | P    | ✅ (3/3)                   |
+| AC-4    | (boundary — cache must be populated before going offline)                                                        | boundary: going offline before ever registering the service worker leaves no cache to serve, so the fetch fails                                                                                         | B    | ✅ (3/3)                   |
+| AC-5    | `context.setOffline(true)` with the service worker blocked shows a network error state                           | positive: serviceWorkers: "block" + context.setOffline(true) shows a network error state                                                                                                                | P    | ✅ (3/3)                   |
+| AC-6    | Caching-strategy tests leave the SW active and are structurally separated from route()-interception tests        | Enforced by spec structure: `Caching strategy — service worker left active (AC-1, AC-4)` vs. `page.route() interception — service worker blocked via context option (AC-2, AC-3, AC-5)` describe blocks | —    | ✅                         |
+| AXE     | The page must have no critical/serious axe-core violations in every rendered state                               | no violations on initial page load                                                                                                                                                                      | A11y | ✅ (3/3)                   |
+| AXE     |                                                                                                                  | no violations once items are rendered from the service worker cache                                                                                                                                     | A11y | ✅ (3/3)                   |
+| AXE     |                                                                                                                  | no violations once items are rendered from the network                                                                                                                                                  | A11y | ✅ (3/3)                   |
+| AXE     |                                                                                                                  | no violations in the offline network-error state                                                                                                                                                        | A11y | ✅ (3/3)                   |
+| REQ-NF1 | The page must meet its performance budget (load + key interaction)                                               | initial service-workers page load is within budget                                                                                                                                                      | Perf | ✅ (3/3)                   |
 
 _All rows: 3/3 = Desktop Chrome, Desktop Firefox, Desktop Edge. Desktop Safari is excluded from this lab only — see below._
 
@@ -38,10 +38,10 @@ _All rows: 3/3 = Desktop Chrome, Desktop Firefox, Desktop Edge. Desktop Safari i
 
 ## Blockers (all resolved)
 
-| ID       | Type            | Summary                                                                                         | Fixable in app source? | JIRA     | Status |
-| -------- | --------------- | ------------------------------------------------------------------------------------------------- | ----------------------- | -------- | ------ |
-| TAB1-52  | App defect (a11y, Serious) | Insufficient color contrast on "Service worker registered" status text — 3.5:1 (needs 4.5:1) | **Yes** — darkened `text-emerald-600` → `text-emerald-700`/`dark:text-emerald-300` | [TAB1-52](https://orhunakkan.atlassian.net/browse/TAB1-52) | **Resolved — fixed in app source** |
-| TAB1-53  | Test-tooling limitation | Playwright WebKit `context.setOffline()` prevents an active service worker from ever responding, confirmed with a raw `fetch()` call (no app/test code involved) | **No** — Playwright/WebKit driver limitation | [TAB1-53](https://orhunakkan.atlassian.net/browse/TAB1-53) | **Resolved via scope decision** — see below |
+| ID      | Type                       | Summary                                                                                                                                                          | Fixable in app source?                                                             | JIRA                                                       | Status                                      |
+| ------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------- |
+| TAB1-52 | App defect (a11y, Serious) | Insufficient color contrast on "Service worker registered" status text — 3.5:1 (needs 4.5:1)                                                                     | **Yes** — darkened `text-emerald-600` → `text-emerald-700`/`dark:text-emerald-300` | [TAB1-52](https://orhunakkan.atlassian.net/browse/TAB1-52) | **Resolved — fixed in app source**          |
+| TAB1-53 | Test-tooling limitation    | Playwright WebKit `context.setOffline()` prevents an active service worker from ever responding, confirmed with a raw `fetch()` call (no app/test code involved) | **No** — Playwright/WebKit driver limitation                                       | [TAB1-53](https://orhunakkan.atlassian.net/browse/TAB1-53) | **Resolved via scope decision** — see below |
 
 ---
 
@@ -58,7 +58,7 @@ violations**. The spec's `filterKnown()` exclusion has been removed — all 4 ax
 
 ## TAB1-53 resolution: Desktop Safari excluded from this lab only
 
-`context.setOffline(true)` in Playwright's WebKit browser prevents *any* request — including ones
+`context.setOffline(true)` in Playwright's WebKit browser prevents _any_ request — including ones
 an already-registered, active service worker would normally intercept and answer from its own
 cache — from ever completing. Confirmed directly with a raw `fetch()` call from the page (bypassing
 all app and test code):
@@ -66,7 +66,11 @@ all app and test code):
 ```js
 // navigator.serviceWorker.controller is truthy at this point — the SW does control the page
 await context.setOffline(true);
-await page.evaluate(() => fetch('/api/sw-items').then(r => r.json()).catch(e => e.message));
+await page.evaluate(() =>
+  fetch('/api/sw-items')
+    .then((r) => r.json())
+    .catch((e) => e.message),
+);
 // -> "Load failed" (immediate failure; the SW never gets a chance to respond)
 ```
 

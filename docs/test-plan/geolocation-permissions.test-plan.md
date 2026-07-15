@@ -1,12 +1,12 @@
 # Test Plan — Geolocation & Permissions (TAB1-32)
 
-| Field      | Value                                                               |
-| ---------- | -------------------------------------------------------------------- |
-| JIRA Story | [TAB1-32](https://orhunakkan.atlassian.net/browse/TAB1-32)          |
-| Lab URL    | https://stagecraftlabs.com/practice/geolocation-permissions          |
-| Spec file  | tests/geolocation-permissions/geolocation-permissions.spec.ts        |
-| POM file   | pages/geolocation-permissions.page.ts                                |
-| Generated  | 2026-07-13                                                            |
+| Field      | Value                                                         |
+| ---------- | ------------------------------------------------------------- |
+| JIRA Story | [TAB1-32](https://orhunakkan.atlassian.net/browse/TAB1-32)    |
+| Lab URL    | https://stagecraftlabs.com/practice/geolocation-permissions   |
+| Spec file  | tests/geolocation-permissions/geolocation-permissions.spec.ts |
+| POM file   | pages/geolocation-permissions.page.ts                         |
+| Generated  | 2026-07-13                                                    |
 
 ---
 
@@ -33,28 +33,28 @@
 
 ## 2. Test Types
 
-| Type                  | Applied                                                |
-| ---------------------- | ------------------------------------------------------- |
-| Functional (positive)  | ✅                                                      |
-| Functional (negative)  | ✅                                                      |
-| Boundary value         | ✅ (coordinate extremes, permission scope combinations)  |
-| Data-driven            | ✅ (coordinate sets for boundary cases)                  |
-| Accessibility (axe)    | ✅ (load + error + success states)                       |
-| Non-functional (perf)  | ✅ (Navigation Timing budget)                            |
-| Cross-browser          | ✅ (4 browsers)                                          |
-| Mobile / responsive    | ❌ (out of scope)                                        |
+| Type                  | Applied                                                 |
+| --------------------- | ------------------------------------------------------- |
+| Functional (positive) | ✅                                                      |
+| Functional (negative) | ✅                                                      |
+| Boundary value        | ✅ (coordinate extremes, permission scope combinations) |
+| Data-driven           | ✅ (coordinate sets for boundary cases)                 |
+| Accessibility (axe)   | ✅ (load + error + success states)                      |
+| Non-functional (perf) | ✅ (Navigation Timing budget)                           |
+| Cross-browser         | ✅ (4 browsers)                                         |
+| Mobile / responsive   | ❌ (out of scope)                                       |
 
 ---
 
 ## 3. Environments & Data
 
-| Field         | Value                                                                                   |
-| ------------- | ------------------------------------------------------------------------------------------ |
-| Target env    | Staging (stagecraftlabs.com)                                                              |
-| BASE_URL      | `https://stagecraftlabs.com` (`.env`)                                                     |
-| Permissions   | `geolocation`, `clipboard-read`, `clipboard-write` — granted/cleared per-context via CDP  |
-| Geolocation   | Mocked coordinates via `context.setGeolocation({ latitude, longitude })`                  |
-| Test data     | Fixed representative coordinates + boundary coordinate pairs (no faker — lat/long need to resolve to plausible café results) |
+| Field       | Value                                                                                                                        |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Target env  | Staging (stagecraftlabs.com)                                                                                                 |
+| BASE_URL    | `https://stagecraftlabs.com` (`.env`)                                                                                        |
+| Permissions | `geolocation`, `clipboard-read`, `clipboard-write` — granted/cleared per-context via CDP                                     |
+| Geolocation | Mocked coordinates via `context.setGeolocation({ latitude, longitude })`                                                     |
+| Test data   | Fixed representative coordinates + boundary coordinate pairs (no faker — lat/long need to resolve to plausible café results) |
 
 ---
 
@@ -74,16 +74,16 @@ _(Source: `playwright.config.ts` projects[])_
 ## 5. Risk Assessment & Priority
 
 | Area / Requirement                                                          | Likelihood | Impact | Risk | Priority |
-| ------------------------------------------------------------------------------ | ---------- | ------ | ---- | -------- |
-| Granted geolocation + coordinates → café list renders asynchronously            | H          | H      | H    | P1       |
-| Blocked geolocation (default) → `role="alert"` error appears                    | H          | H      | H    | P1       |
-| Combined clipboard-read + clipboard-write grant → clipboard panel usable        | H          | H      | H    | P1       |
-| Copy Share Link → success message → Paste → pasted URL visible                  | H          | H      | H    | P1       |
-| `clearPermissions()` prevents grant leakage across tests                        | M          | H      | H    | P1       |
-| Boundary coordinates (poles, antimeridian, 0,0) don't crash the café search      | L          | M      | L    | P2       |
-| Partial clipboard grant (read only) does not silently succeed on paste          | M          | M      | M    | P2       |
-| Accessibility — load / error / success states                                   | L          | M      | L    | P2       |
-| Performance budget                                                              | L          | L      | L    | P2       |
+| --------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| Granted geolocation + coordinates → café list renders asynchronously        | H          | H      | H    | P1       |
+| Blocked geolocation (default) → `role="alert"` error appears                | H          | H      | H    | P1       |
+| Combined clipboard-read + clipboard-write grant → clipboard panel usable    | H          | H      | H    | P1       |
+| Copy Share Link → success message → Paste → pasted URL visible              | H          | H      | H    | P1       |
+| `clearPermissions()` prevents grant leakage across tests                    | M          | H      | H    | P1       |
+| Boundary coordinates (poles, antimeridian, 0,0) don't crash the café search | L          | M      | L    | P2       |
+| Partial clipboard grant (read only) does not silently succeed on paste      | M          | M      | M    | P2       |
+| Accessibility — load / error / success states                               | L          | M      | L    | P2       |
+| Performance budget                                                          | L          | L      | L    | P2       |
 
 ---
 
@@ -108,13 +108,13 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 8. Deliverables
 
-| Artifact  | Path                                                            | Status               |
-| ---------- | ----------------------------------------------------------------- | --------------------- |
-| Test Plan | docs/test-plan/geolocation-permissions.test-plan.md                | ✅ done              |
-| POM       | pages/geolocation-permissions.page.ts                               | pending               |
-| Spec file | tests/geolocation-permissions/geolocation-permissions.spec.ts       | pending               |
-| RTM       | docs/rtm/geolocation-permissions.rtm.md                             | pending               |
-| CI run    | GitHub Actions                                                     | pending               |
+| Artifact  | Path                                                          | Status  |
+| --------- | ------------------------------------------------------------- | ------- |
+| Test Plan | docs/test-plan/geolocation-permissions.test-plan.md           | ✅ done |
+| POM       | pages/geolocation-permissions.page.ts                         | pending |
+| Spec file | tests/geolocation-permissions/geolocation-permissions.spec.ts | pending |
+| RTM       | docs/rtm/geolocation-permissions.rtm.md                       | pending |
+| CI run    | GitHub Actions                                                | pending |
 
 ---
 

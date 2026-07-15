@@ -94,7 +94,11 @@ test.describe('Frames & Contexts', () => {
       await secondContext.close();
     });
 
-    test('boundary/AC-4a: a cookie set in the first context is confirmed present there and absent in the second', async ({ page, browser, context }) => {
+    test('boundary/AC-4a: a cookie set in the first context is confirmed present there and absent in the second', async ({
+      page,
+      browser,
+      context,
+    }) => {
       const url = page.url();
       await context.addCookies([{ name: 'frames-contexts-marker', value: 'context-A-cookie', url }]);
 

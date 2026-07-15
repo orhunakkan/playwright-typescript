@@ -61,7 +61,10 @@ test.describe('WebSocket Interception', () => {
       await expect(websocketInterceptionPage.messageLog).toContainText(fabricated);
     });
 
-    test('negative: the real server\'s welcome text never appears when the connection is fully mocked', async ({ page, websocketInterceptionPage }) => {
+    test("negative: the real server's welcome text never appears when the connection is fully mocked", async ({
+      page,
+      websocketInterceptionPage,
+    }) => {
       await page.routeWebSocket(WS_URL, (ws) => ws.onMessage(() => {}));
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
@@ -206,7 +209,7 @@ test.describe('WebSocket Interception', () => {
   test.describe('AC-6 — WebSocket stubs prevent message bleed between tests', () => {
     const bleedMarker = `isolation-check-${faker.string.alphanumeric(10)}`;
 
-    test('positive (test A): a fabricated message is sent under this test\'s isolated stub', async ({ page, websocketInterceptionPage }) => {
+    test("positive (test A): a fabricated message is sent under this test's isolated stub", async ({ page, websocketInterceptionPage }) => {
       await page.routeWebSocket(WS_URL, (ws) => {
         ws.onMessage(() => {});
         ws.send(bleedMarker);
@@ -216,7 +219,7 @@ test.describe('WebSocket Interception', () => {
       await expect(websocketInterceptionPage.messageLog).toContainText(bleedMarker);
     });
 
-    test('positive (test B): a fresh test never sees the previous test\'s fabricated message', async ({ page, websocketInterceptionPage }) => {
+    test("positive (test B): a fresh test never sees the previous test's fabricated message", async ({ page, websocketInterceptionPage }) => {
       await page.routeWebSocket(WS_URL, (ws) => ws.onMessage(() => {}));
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();

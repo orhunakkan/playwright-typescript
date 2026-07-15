@@ -1,12 +1,12 @@
 # Test Plan — Locator Handlers (TAB1-36)
 
-| Field      | Value                                                        |
-| ---------- | ------------------------------------------------------------- |
-| JIRA Story | [TAB1-36](https://orhunakkan.atlassian.net/browse/TAB1-36)   |
-| Lab URL    | https://stagecraftlabs.com/practice/locator-handlers          |
-| Spec file  | tests/locator-handlers/locator-handlers.spec.ts               |
-| POM file   | pages/locator-handlers.page.ts                                 |
-| Generated  | 2026-07-14                                                     |
+| Field      | Value                                                      |
+| ---------- | ---------------------------------------------------------- |
+| JIRA Story | [TAB1-36](https://orhunakkan.atlassian.net/browse/TAB1-36) |
+| Lab URL    | https://stagecraftlabs.com/practice/locator-handlers       |
+| Spec file  | tests/locator-handlers/locator-handlers.spec.ts            |
+| POM file   | pages/locator-handlers.page.ts                             |
+| Generated  | 2026-07-14                                                 |
 
 ---
 
@@ -46,25 +46,25 @@
 
 ## 2. Test Types
 
-| Type                   | Applied                                                                         |
-| ----------------------- | ---------------------------------------------------------------------------------- |
-| Functional (positive)  | ✅                                                                                |
-| Functional (negative)  | ✅ (no-handler blocked cases; cross-role non-firing; post-removal blocking)      |
-| Boundary value         | ✅ (`{ times: 1 }` fires exactly once — not 0, not >1)                          |
-| Data-driven            | ✅ (per-step advancement table across Cart → Shipping → Payment → Confirmation) |
-| Accessibility (axe)    | ✅ (load / overlay-visible / post-dismiss states)                               |
-| Non-functional (perf)  | ✅ (Navigation Timing budget)                                                    |
-| Cross-browser          | ✅ (4 browsers)                                                                  |
-| Mobile / responsive    | ❌ (out of scope — no AC coverage)                                               |
+| Type                  | Applied                                                                         |
+| --------------------- | ------------------------------------------------------------------------------- |
+| Functional (positive) | ✅                                                                              |
+| Functional (negative) | ✅ (no-handler blocked cases; cross-role non-firing; post-removal blocking)     |
+| Boundary value        | ✅ (`{ times: 1 }` fires exactly once — not 0, not >1)                          |
+| Data-driven           | ✅ (per-step advancement table across Cart → Shipping → Payment → Confirmation) |
+| Accessibility (axe)   | ✅ (load / overlay-visible / post-dismiss states)                               |
+| Non-functional (perf) | ✅ (Navigation Timing budget)                                                   |
+| Cross-browser         | ✅ (4 browsers)                                                                 |
+| Mobile / responsive   | ❌ (out of scope — no AC coverage)                                              |
 
 ---
 
 ## 3. Environments & Data
 
-| Field      | Value                                                                 |
-| ---------- | ---------------------------------------------------------------------- |
-| Target env | Staging (stagecraftlabs.com)                                          |
-| BASE_URL   | `https://stagecraftlabs.com` (`.env`)                                 |
+| Field      | Value                                                                                                                                          |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Target env | Staging (stagecraftlabs.com)                                                                                                                   |
+| BASE_URL   | `https://stagecraftlabs.com` (`.env`)                                                                                                          |
 | Test data  | No form/faker data required — overlay role selectors (`dialog`,`alertdialog`) and the "Force overlays every step" toggle state drive scenarios |
 
 ---
@@ -72,11 +72,11 @@
 ## 4. Browser / Device Matrix
 
 | Browser         | Project name    | Included for this lab? |
-| ---------------- | ----------------- | ----------------------- |
-| Desktop Chrome  | Desktop Chrome   | ✅ |
-| Desktop Firefox | Desktop Firefox  | ✅ |
-| Desktop Edge    | Desktop Edge     | ✅ |
-| Desktop Safari  | Desktop Safari   | ✅ |
+| --------------- | --------------- | ---------------------- |
+| Desktop Chrome  | Desktop Chrome  | ✅                     |
+| Desktop Firefox | Desktop Firefox | ✅                     |
+| Desktop Edge    | Desktop Edge    | ✅                     |
+| Desktop Safari  | Desktop Safari  | ✅                     |
 
 _(Source: `playwright.config.ts` projects[])_
 
@@ -84,18 +84,18 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 5. Risk Assessment & Priority
 
-| Area / Requirement                                                                   | Likelihood | Impact | Risk | Priority |
-| --------------------------------------------------------------------------------------| ---------- | ------ | ---- | -------- |
-| REQ-01: cookie-consent handler auto-dismisses before interaction                     | H          | H      | H    | P1       |
-| REQ-01a: no handler → banner remains and blocks interaction                          | M          | M      | M    | P2       |
-| REQ-02: forced overlays on every step, all 3 steps advance with handler registered   | H          | H      | H    | P1       |
-| REQ-02a: forced overlays, no handler → a step fails to advance                       | M          | H      | H    | P2       |
-| REQ-03: handler removed after step 2 → step 3 blocked                                | H          | H      | H    | P1       |
-| REQ-04: `{ times: 1 }` fires exactly once                                            | H          | H      | H    | P1       |
-| REQ-04a: dismissal count boundary (exactly 1)                                        | M          | M      | M    | P2       |
-| REQ-05 / REQ-05a: `dialog` vs `alertdialog` targeting precision                      | M          | H      | H    | P1       |
-| Accessibility — load / overlay / post-dismiss states                                 | L          | M      | L    | P2       |
-| Performance budget                                                                    | L          | L      | L    | P2       |
+| Area / Requirement                                                                 | Likelihood | Impact | Risk | Priority |
+| ---------------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| REQ-01: cookie-consent handler auto-dismisses before interaction                   | H          | H      | H    | P1       |
+| REQ-01a: no handler → banner remains and blocks interaction                        | M          | M      | M    | P2       |
+| REQ-02: forced overlays on every step, all 3 steps advance with handler registered | H          | H      | H    | P1       |
+| REQ-02a: forced overlays, no handler → a step fails to advance                     | M          | H      | H    | P2       |
+| REQ-03: handler removed after step 2 → step 3 blocked                              | H          | H      | H    | P1       |
+| REQ-04: `{ times: 1 }` fires exactly once                                          | H          | H      | H    | P1       |
+| REQ-04a: dismissal count boundary (exactly 1)                                      | M          | M      | M    | P2       |
+| REQ-05 / REQ-05a: `dialog` vs `alertdialog` targeting precision                    | M          | H      | H    | P1       |
+| Accessibility — load / overlay / post-dismiss states                               | L          | M      | L    | P2       |
+| Performance budget                                                                 | L          | L      | L    | P2       |
 
 ---
 
@@ -120,13 +120,13 @@ _(Source: `playwright.config.ts` projects[])_
 
 ## 8. Deliverables
 
-| Artifact  | Path                                                | Status  |
-| --------- | ------------------------------------------------------ | ------- |
-| Test Plan | docs/test-plan/locator-handlers.test-plan.md            | ✅ done |
-| POM       | pages/locator-handlers.page.ts                          | pending |
-| Spec file | tests/locator-handlers/locator-handlers.spec.ts         | pending |
-| RTM       | docs/rtm/locator-handlers.rtm.md                         | pending |
-| CI run    | GitHub Actions                                           | pending |
+| Artifact  | Path                                            | Status  |
+| --------- | ----------------------------------------------- | ------- |
+| Test Plan | docs/test-plan/locator-handlers.test-plan.md    | ✅ done |
+| POM       | pages/locator-handlers.page.ts                  | pending |
+| Spec file | tests/locator-handlers/locator-handlers.spec.ts | pending |
+| RTM       | docs/rtm/locator-handlers.rtm.md                | pending |
+| CI run    | GitHub Actions                                  | pending |
 
 ---
 
