@@ -38,17 +38,17 @@ Desktop Chrome · Desktop Firefox · Desktop Edge · Desktop Safari (from `playw
 
 ## 5. Risk assessment & priority
 
-| Area / Requirement                                          | Likelihood | Impact | Risk | Priority |
-| ------------------------------------------------------------ | ---------- | ------ | ---- | -------- |
+| Area / Requirement                                            | Likelihood | Impact | Risk | Priority |
+| ------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
 | `toBeAValidPrice` passes for valid positive currency text     | M          | H      | H    | P1       |
 | `toBeAValidPrice` fails for invalid/negative/zero/non-numeric | M          | H      | H    | P1       |
-| Custom failure message differs from default `toHaveText`     | L          | M      | M    | P2       |
+| Custom failure message differs from default `toHaveText`      | L          | M      | M    | P2       |
 | `toHaveOrderStatus` asserts `data-status`, not badge text     | M          | H      | H    | P1       |
 | `toHaveOrderStatus` negative/case/whitespace handling         | M          | M      | M    | P2       |
 | `mergeExpects()` combines two matcher modules correctly       | M          | H      | H    | P1       |
 | `mergeTests()` fixture composition mirrors `mergeExpects()`   | L          | M      | M    | P2       |
 | Accessibility — all rendered states                           | L          | H      | M    | P1       |
-| Performance budget                                             | L          | M      | L    | P2       |
+| Performance budget                                            | L          | M      | L    | P2       |
 
 ## 6. Entry criteria
 

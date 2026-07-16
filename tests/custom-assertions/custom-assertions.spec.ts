@@ -76,10 +76,7 @@ test.describe('Custom Assertions & Matcher Composition', () => {
   // AC-2 (TAB1-64): Tests deliberately fail the custom matcher once and assert the returned
   // { pass, message } failure message differs from the default toHaveText output
   test.describe('AC-2 — custom matcher failure message differs from the default toHaveText output', () => {
-    test('negative: toBeAValidPrice failure message is matcher-specific, not the generic toHaveText diff', async ({
-      page,
-      customAssertionsPage,
-    }) => {
+    test('negative: toBeAValidPrice failure message is matcher-specific, not the generic toHaveText diff', async ({ page, customAssertionsPage }) => {
       await page.evaluate(() => {
         const el = document.querySelector('[data-testid="order-price"]');
         if (el) el.textContent = 'not-a-price';
@@ -120,9 +117,7 @@ test.describe('Custom Assertions & Matcher Composition', () => {
       });
     }
 
-    test('boundary: advancing the status updates data-status through pending → shipped → delivered', async ({
-      customAssertionsPage,
-    }) => {
+    test('boundary: advancing the status updates data-status through pending → shipped → delivered', async ({ customAssertionsPage }) => {
       await expect(customAssertionsPage.orderStatus).toHaveOrderStatus('pending');
       await customAssertionsPage.advanceStatusButton.click();
       await expect(customAssertionsPage.orderStatus).toHaveOrderStatus('shipped');
@@ -131,10 +126,7 @@ test.describe('Custom Assertions & Matcher Composition', () => {
       await expect(customAssertionsPage.advanceStatusButton).toBeDisabled();
     });
 
-    test('negative: the matcher reads data-status even when the visible text is changed independently', async ({
-      page,
-      customAssertionsPage,
-    }) => {
+    test('negative: the matcher reads data-status even when the visible text is changed independently', async ({ page, customAssertionsPage }) => {
       // Proves the matcher is attribute-driven: mutate only the visible text node, leave
       // data-status untouched, and confirm the matcher still passes against the attribute.
       await page.evaluate(() => {

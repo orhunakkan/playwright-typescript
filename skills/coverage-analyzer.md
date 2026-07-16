@@ -80,7 +80,7 @@ This table is embedded in the skill. Do not derive it from the POM — use it di
 
 ## Phase 1 — Collect Local Artifacts
 
-1. Glob `tests/**/*.spec.ts` — collect all spec paths (exclude `tests/scrapper/`)
+1. Glob `tests/**/*.spec.ts` — collect all spec paths
 2. Glob `pages/**/*.page.ts` — collect all POM paths
 3. For each path, normalize the file stem to kebab-case lab name:
    - `accessible-locators.page.ts` → `accessible-locators`

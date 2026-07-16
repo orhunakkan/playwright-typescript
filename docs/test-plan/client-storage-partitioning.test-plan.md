@@ -41,23 +41,23 @@ are standard Playwright/Web APIs supported uniformly across all four projects.
 
 ## 5. Risk assessment & priority
 
-| Area / Requirement                                                          | Likelihood | Impact | Risk | Priority |
-| ---------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
-| REQ-01 Theme toggle persists via `localStorage` across `page.reload()`       | M          | H      | H    | P1       |
-| REQ-02 Draft note in `sessionStorage` absent on a `context.newPage()` tab    | M          | H      | H    | P1       |
-| REQ-03 `context.addCookies` w/ `partitionKey` pre-nav unlocks widget         | M          | H      | H    | P1       |
-| REQ-04 No cookie → locked; mid-test `addCookies` + "Re-check cookie" unlocks | M          | H      | H    | P1       |
-| REQ-01a New context does not see another context's `localStorage` value     | L          | M      | L    | P2       |
-| REQ-01b Default/unset theme before any toggle                                | L          | L      | L    | P3       |
-| REQ-02a Draft note DOES survive a reload of the same tab (per-tab, not per-reload) | M     | M      | M    | P2       |
-| REQ-03a Missing/incorrect `partitionKey` keeps widget locked                 | M          | H      | H    | P2       |
-| REQ-04a Locked state is stable across repeated "Re-check cookie" clicks with no cookie | L | M      | L    | P2       |
-| REQ-05 `context.cookies()` read-back includes `widget_partitioned` w/ expected value | M  | M      | M    | P2       |
-| REQ-05a `context.cookies()` in an unrelated fresh context excludes the cookie | L         | M      | L    | P3       |
-| REQ-06 `context.clearCookies()` removes cookie, leaves Web Storage intact    | M          | H      | H    | P2       |
-| REQ-06a Post-`clearCookies()` widget re-locks / re-check fails               | L          | M      | L    | P3       |
-| REQ-NF1 Performance budget                                                   | L          | M      | L    | P2       |
-| REQ-A11Y Accessibility, all states                                           | M          | H      | H    | P1       |
+| Area / Requirement                                                                     | Likelihood | Impact | Risk | Priority |
+| -------------------------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| REQ-01 Theme toggle persists via `localStorage` across `page.reload()`                 | M          | H      | H    | P1       |
+| REQ-02 Draft note in `sessionStorage` absent on a `context.newPage()` tab              | M          | H      | H    | P1       |
+| REQ-03 `context.addCookies` w/ `partitionKey` pre-nav unlocks widget                   | M          | H      | H    | P1       |
+| REQ-04 No cookie → locked; mid-test `addCookies` + "Re-check cookie" unlocks           | M          | H      | H    | P1       |
+| REQ-01a New context does not see another context's `localStorage` value                | L          | M      | L    | P2       |
+| REQ-01b Default/unset theme before any toggle                                          | L          | L      | L    | P3       |
+| REQ-02a Draft note DOES survive a reload of the same tab (per-tab, not per-reload)     | M          | M      | M    | P2       |
+| REQ-03a Missing/incorrect `partitionKey` keeps widget locked                           | M          | H      | H    | P2       |
+| REQ-04a Locked state is stable across repeated "Re-check cookie" clicks with no cookie | L          | M      | L    | P2       |
+| REQ-05 `context.cookies()` read-back includes `widget_partitioned` w/ expected value   | M          | M      | M    | P2       |
+| REQ-05a `context.cookies()` in an unrelated fresh context excludes the cookie          | L          | M      | L    | P3       |
+| REQ-06 `context.clearCookies()` removes cookie, leaves Web Storage intact              | M          | H      | H    | P2       |
+| REQ-06a Post-`clearCookies()` widget re-locks / re-check fails                         | L          | M      | L    | P3       |
+| REQ-NF1 Performance budget                                                             | L          | M      | L    | P2       |
+| REQ-A11Y Accessibility, all states                                                     | M          | H      | H    | P1       |
 
 ## 6. Entry criteria
 

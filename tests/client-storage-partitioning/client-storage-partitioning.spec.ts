@@ -153,10 +153,7 @@ test.describe('Web Storage & Partitioned Cookies', () => {
       expect(page.url()).toBe(urlBeforeRecheck);
     });
 
-    test('boundary/AC-4a: repeated Re-check clicks stay locked until the cookie actually exists', async ({
-      page,
-      clientStoragePartitioningPage,
-    }) => {
+    test('boundary/AC-4a: repeated Re-check clicks stay locked until the cookie actually exists', async ({ page, clientStoragePartitioningPage }) => {
       await page.goto(LAB_URL);
       await clientStoragePartitioningPage.recheckCookieButton.click();
       await clientStoragePartitioningPage.recheckCookieButton.click();

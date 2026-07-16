@@ -36,10 +36,7 @@ test.describe('Memory & DOM Leak Diagnostics', () => {
   // AC-1 (TAB1-63): Tests click "Spawn 50 toasts", wait for auto-dismiss (~1.5s each), and assert
   // the graveyard count reaches 50 using expect.poll / locator.count
   test.describe('AC-1 — spawning 50 toasts fills the graveyard after auto-dismiss', () => {
-    test('positive: graveyard count and item count both reach 50 once all toasts auto-dismiss', async ({
-      page,
-      domMemoryDiagnosticsPage,
-    }) => {
+    test('positive: graveyard count and item count both reach 50 once all toasts auto-dismiss', async ({ page, domMemoryDiagnosticsPage }) => {
       await spawnAndWaitForGraveyard(page, domMemoryDiagnosticsPage);
       await expect(domMemoryDiagnosticsPage.graveyardCount).toHaveText('50 retained nodes');
       await expect(domMemoryDiagnosticsPage.graveyardItems).toHaveCount(SPAWN_COUNT);
@@ -50,9 +47,7 @@ test.describe('Memory & DOM Leak Diagnostics', () => {
       await expect(domMemoryDiagnosticsPage.graveyardItems).toHaveCount(0);
     });
 
-    test('boundary: the graveyard is still empty immediately after spawn, before the dismiss timer elapses', async ({
-      domMemoryDiagnosticsPage,
-    }) => {
+    test('boundary: the graveyard is still empty immediately after spawn, before the dismiss timer elapses', async ({ domMemoryDiagnosticsPage }) => {
       await domMemoryDiagnosticsPage.spawnToastsButton.click();
       await expect(domMemoryDiagnosticsPage.graveyardCount).toHaveText('0 retained nodes');
     });
@@ -81,10 +76,7 @@ test.describe('Memory & DOM Leak Diagnostics', () => {
   // AC-3 (TAB1-63): Tests click "Clear leaked nodes" and assert the graveyard count returns to 0,
   // confirming that removing the last reference — not requestGC() — is the actual fix
   test.describe('AC-3 — "Clear leaked nodes" is the actual fix for the retained nodes', () => {
-    test('positive: clicking "Clear leaked nodes" returns the graveyard count and item count to 0', async ({
-      page,
-      domMemoryDiagnosticsPage,
-    }) => {
+    test('positive: clicking "Clear leaked nodes" returns the graveyard count and item count to 0', async ({ page, domMemoryDiagnosticsPage }) => {
       await spawnAndWaitForGraveyard(page, domMemoryDiagnosticsPage);
       await page.requestGC(); // proves the earlier GC call had no effect before the real fix runs
       await domMemoryDiagnosticsPage.clearLeakedNodesButton.click();
@@ -93,10 +85,7 @@ test.describe('Memory & DOM Leak Diagnostics', () => {
     });
 
     for (const { label, act } of idleNoOpActions) {
-      test(`negative: ${label} before any spawn leaves both counters at their idle 0 value`, async ({
-        page,
-        domMemoryDiagnosticsPage,
-      }) => {
+      test(`negative: ${label} before any spawn leaves both counters at their idle 0 value`, async ({ page, domMemoryDiagnosticsPage }) => {
         await act(page, domMemoryDiagnosticsPage);
         await expect(domMemoryDiagnosticsPage.graveyardCount).toHaveText('0 retained nodes');
         await expect(domMemoryDiagnosticsPage.activeToastCount).toHaveText('0 active');
@@ -194,10 +183,7 @@ test.describe('Memory & DOM Leak Diagnostics', () => {
       expect((await scan(page)).violations).toEqual([]);
     });
 
-    test('no violations while the graveyard list is fully populated with 50 retained nodes', async ({
-      page,
-      domMemoryDiagnosticsPage,
-    }) => {
+    test('no violations while the graveyard list is fully populated with 50 retained nodes', async ({ page, domMemoryDiagnosticsPage }) => {
       await spawnAndWaitForGraveyard(page, domMemoryDiagnosticsPage);
       expect((await scan(page)).violations).toEqual([]);
     });

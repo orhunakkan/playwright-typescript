@@ -35,14 +35,14 @@ Desktop Chrome · Desktop Firefox · Desktop Edge · Desktop Safari (from `playw
 
 ## 5. Risk assessment & priority
 
-| Area / Requirement                                    | Likelihood | Impact | Risk | Priority |
-| ------------------------------------------------------- | ---------- | ------ | ---- | -------- |
-| Console listener captures info/warning/error correctly   | M          | H      | H    | P1       |
-| pageerror captures synchronous uncaught throw             | M          | H      | H    | P1       |
-| pageerror parity (or documented gap) for promise rejection| H          | M      | H    | P1       |
-| Request listener captures missing-resource fetch          | M          | H      | H    | P1       |
-| Page-level historical accessor vs manual collection check | L          | L      | L    | P2       |
-| Accessibility — all rendered states                       | L          | H      | M    | P1       |
+| Area / Requirement                                         | Likelihood | Impact | Risk | Priority |
+| ---------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| Console listener captures info/warning/error correctly     | M          | H      | H    | P1       |
+| pageerror captures synchronous uncaught throw              | M          | H      | H    | P1       |
+| pageerror parity (or documented gap) for promise rejection | H          | M      | H    | P1       |
+| Request listener captures missing-resource fetch           | M          | H      | H    | P1       |
+| Page-level historical accessor vs manual collection check  | L          | L      | L    | P2       |
+| Accessibility — all rendered states                        | L          | H      | M    | P1       |
 | Performance budget                                         | L          | M      | L    | P2       |
 
 ## 6. Entry criteria

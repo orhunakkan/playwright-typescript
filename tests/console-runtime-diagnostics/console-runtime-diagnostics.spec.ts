@@ -51,10 +51,7 @@ test.describe('Console & Runtime Diagnostics', () => {
     });
 
     for (const { button, text, type, label } of logActions) {
-      test(`data-driven: ${label} log action is captured independently with the correct type`, async ({
-        page,
-        consoleRuntimeDiagnosticsPage,
-      }) => {
+      test(`data-driven: ${label} log action is captured independently with the correct type`, async ({ page, consoleRuntimeDiagnosticsPage }) => {
         const messages: { text: string; type: string }[] = [];
         page.on('console', (msg) => messages.push({ text: msg.text(), type: msg.type() }));
 
@@ -93,10 +90,7 @@ test.describe('Console & Runtime Diagnostics', () => {
     // Verified live against the app (not assumed): Playwright surfaces both a synchronous throw
     // (AC-2) and an unhandled promise rejection through the identical `pageerror` event — the
     // message text is the only thing that differs.
-    test('positive: an unhandled promise rejection is also captured via pageerror', async ({
-      page,
-      consoleRuntimeDiagnosticsPage,
-    }) => {
+    test('positive: an unhandled promise rejection is also captured via pageerror', async ({ page, consoleRuntimeDiagnosticsPage }) => {
       const errorPromise = new Promise<Error>((resolve) => page.once('pageerror', resolve));
       await consoleRuntimeDiagnosticsPage.rejectPromiseButton.click();
       const error = await errorPromise;
@@ -143,10 +137,7 @@ test.describe('Console & Runtime Diagnostics', () => {
       await expect(consoleRuntimeDiagnosticsPage.actionLogEntries.filter({ hasText: 'Requested a missing resource' })).toBeVisible();
     });
 
-    test('boundary: the action log records the fetch action alongside the captured request', async ({
-      page,
-      consoleRuntimeDiagnosticsPage,
-    }) => {
+    test('boundary: the action log records the fetch action alongside the captured request', async ({ page, consoleRuntimeDiagnosticsPage }) => {
       const requestPromise = page.waitForRequest((req) => req.url().includes(MISSING_RESOURCE_PATH));
       await consoleRuntimeDiagnosticsPage.fetchMissingResourceButton.click();
       await requestPromise;
@@ -215,10 +206,7 @@ test.describe('Console & Runtime Diagnostics', () => {
       expect((await scan(page)).violations).toEqual([]);
     });
 
-    test('no violations after the info/warning/error log actions populate the action log', async ({
-      page,
-      consoleRuntimeDiagnosticsPage,
-    }) => {
+    test('no violations after the info/warning/error log actions populate the action log', async ({ page, consoleRuntimeDiagnosticsPage }) => {
       await consoleRuntimeDiagnosticsPage.logInfoButton.click();
       await consoleRuntimeDiagnosticsPage.logWarningButton.click();
       await consoleRuntimeDiagnosticsPage.logErrorButton.click();

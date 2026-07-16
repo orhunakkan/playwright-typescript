@@ -7,9 +7,7 @@
   "type": "module",
   "scripts": {
     "format": "prettier --write .",
-    "test": "playwright test",
-    "test:forms": "playwright test tests/forms-validation",
-    "test:scrapper": "playwright test tests/scrapper --project=\"Desktop Chrome\" --workers=1"
+    "test": "playwright test"
   },
   "dependencies": {
     "dotenv": "^17.4.2"

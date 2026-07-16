@@ -40,18 +40,18 @@ Desktop Chrome · Desktop Firefox · Desktop Edge · Desktop Safari (from `playw
 
 ## 5. Risk assessment & priority
 
-| Area / Requirement                                              | Likelihood | Impact | Risk | Priority |
-| ----------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
-| Spawn 50 toasts → graveyard count reaches 50 after auto-dismiss    | M          | H      | H    | P1       |
-| Graveyard count is 0 before any dismissal has occurred              | L          | M      | M    | P2       |
-| `requestGC()` does not reduce graveyard count (reachable nodes)     | M          | H      | H    | P1       |
+| Area / Requirement                                                   | Likelihood | Impact | Risk | Priority |
+| -------------------------------------------------------------------- | ---------- | ------ | ---- | -------- |
+| Spawn 50 toasts → graveyard count reaches 50 after auto-dismiss      | M          | H      | H    | P1       |
+| Graveyard count is 0 before any dismissal has occurred               | L          | M      | M    | P2       |
+| `requestGC()` does not reduce graveyard count (reachable nodes)      | M          | H      | H    | P1       |
 | "Clear leaked nodes" returns graveyard count to 0                    | M          | H      | H    | P1       |
 | "Clear leaked nodes" is a safe no-op when graveyard is already empty | L          | L      | L    | P2       |
 | Active-toast count matches spawned count pre-dismissal, 0 post       | M          | H      | H    | P1       |
 | Active/graveyard counts scale correctly for a smaller batch size     | L          | M      | M    | P2       |
 | No unbounded DOM node growth across repeated mount/unmount cycles    | M          | H      | H    | P1       |
 | Accessibility — all rendered states                                  | L          | H      | M    | P1       |
-| Performance budget                                                    | L          | M      | L    | P2       |
+| Performance budget                                                   | L          | M      | L    | P2       |
 
 ## 6. Entry criteria
 
