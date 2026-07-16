@@ -32,6 +32,7 @@ import { InitScriptsPage } from '../pages/init-scripts.page';
 import { TouchGesturesPage } from '../pages/touch-gestures.page';
 import { PasskeyAuthenticationPage } from '../pages/passkey-authentication.page';
 import { ClientStoragePartitioningPage } from '../pages/client-storage-partitioning.page';
+import { ConsoleRuntimeDiagnosticsPage } from '../pages/console-runtime-diagnostics.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -67,6 +68,7 @@ type Fixtures = {
   touchGesturesPage: TouchGesturesPage;
   passkeyAuthenticationPage: PasskeyAuthenticationPage;
   clientStoragePartitioningPage: ClientStoragePartitioningPage;
+  consoleRuntimeDiagnosticsPage: ConsoleRuntimeDiagnosticsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -168,6 +170,9 @@ export const test = base.extend<Fixtures>({
   },
   clientStoragePartitioningPage: async ({ page }, use) => {
     await use(new ClientStoragePartitioningPage(page));
+  },
+  consoleRuntimeDiagnosticsPage: async ({ page }, use) => {
+    await use(new ConsoleRuntimeDiagnosticsPage(page));
   },
 });
 
