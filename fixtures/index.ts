@@ -30,6 +30,7 @@ import { ShadowDomPage } from '../pages/shadow-dom.page';
 import { ServerSentEventsPage } from '../pages/server-sent-events.page';
 import { InitScriptsPage } from '../pages/init-scripts.page';
 import { TouchGesturesPage } from '../pages/touch-gestures.page';
+import { PasskeyAuthenticationPage } from '../pages/passkey-authentication.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -63,6 +64,7 @@ type Fixtures = {
   serverSentEventsPage: ServerSentEventsPage;
   initScriptsPage: InitScriptsPage;
   touchGesturesPage: TouchGesturesPage;
+  passkeyAuthenticationPage: PasskeyAuthenticationPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -158,6 +160,9 @@ export const test = base.extend<Fixtures>({
   },
   touchGesturesPage: async ({ page }, use) => {
     await use(new TouchGesturesPage(page));
+  },
+  passkeyAuthenticationPage: async ({ page }, use) => {
+    await use(new PasskeyAuthenticationPage(page));
   },
 });
 
