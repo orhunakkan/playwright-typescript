@@ -38,38 +38,43 @@ Verify the following are accessible from the current working directory:
 
 This table is embedded in the skill. Do not derive it from the POM — use it directly.
 
-| JIRA Key | Lab Name                     | URL Path                          | Priority Group  |
-| -------- | ---------------------------- | --------------------------------- | --------------- |
-| TAB1-13  | Forms & Validation           | /practice/forms-validation        | 1 — Core        |
-| TAB1-21  | Fake Auth                    | /practice/fake-auth               | 1 — Core        |
-| TAB1-23  | Storage State                | /practice/storage-state           | 1 — Core        |
-| TAB1-15  | Accessible Locators          | /practice/accessible-locators     | 1 — Core        |
-| TAB1-14  | Async UI                     | /practice/async-ui                | 2 — Advanced    |
-| TAB1-12  | Network & API                | /practice/network-api             | 2 — Advanced    |
-| TAB1-24  | API Request Context          | /practice/api-request-context     | 2 — Advanced    |
-| TAB1-16  | Tables & Filtering           | /practice/tables-filtering        | 2 — Advanced    |
-| TAB1-17  | Browser Events               | /practice/browser-events          | 2 — Advanced    |
-| TAB1-22  | ARIA Snapshots               | /practice/aria-snapshots          | 2 — Advanced    |
-| TAB1-35  | Accessibility Scanning       | /practice/accessibility-scanning  | 2 — Advanced    |
-| TAB1-18  | Emulation & Input            | /practice/emulation-input         | 3 — Specialized |
-| TAB1-19  | Debugging & Reporting        | /practice/debugging-reporting     | 3 — Specialized |
-| TAB1-20  | Frames & Contexts            | /practice/frames-contexts         | 3 — Specialized |
-| TAB1-25  | Clock & Timers               | /practice/clock-timers            | 3 — Specialized |
-| TAB1-26  | WebSocket Interception       | /practice/websocket-interception  | 3 — Specialized |
-| TAB1-27  | HAR Recording                | /practice/har-recording           | 3 — Specialized |
-| TAB1-28  | Service Workers              | /practice/service-workers         | 3 — Specialized |
-| TAB1-29  | Visual Regression            | /practice/visual-regression       | 3 — Specialized |
-| TAB1-30  | Drag & Drop                  | /practice/drag-and-drop           | 3 — Specialized |
-| TAB1-31  | Multi-Tab                    | /practice/multi-tab               | 3 — Specialized |
-| TAB1-32  | Geolocation & Permissions    | /practice/geolocation-permissions | 3 — Specialized |
-| TAB1-33  | Scroll & Lazy Loading        | /practice/scroll-lazy-loading     | 3 — Specialized |
-| TAB1-34  | Media & Locale Emulation     | /practice/media-locale            | 3 — Specialized |
-| TAB1-36  | Locator Handlers             | /practice/locator-handlers        | 3 — Specialized |
-| TAB1-37  | Shadow DOM & Web Components  | /practice/shadow-dom              | 3 — Specialized |
-| TAB1-38  | Server-Sent Events           | /practice/server-sent-events      | 3 — Specialized |
-| TAB1-39  | Soft Assertions & Test Steps | /practice/soft-assertions         | 3 — Specialized |
-| TAB1-40  | Init Scripts & Seeding       | /practice/init-scripts            | 3 — Specialized |
-| TAB1-41  | Touch & Mobile Gestures      | /practice/touch-gestures          | 3 — Specialized |
+| JIRA Key | Lab Name                                | URL Path                              | Priority Group  |
+| -------- | --------------------------------------- | ------------------------------------- | --------------- |
+| TAB1-13  | Forms & Validation                      | /practice/forms-validation            | 1 — Core        |
+| TAB1-21  | Fake Auth                               | /practice/fake-auth                   | 1 — Core        |
+| TAB1-23  | Storage State                           | /practice/storage-state               | 1 — Core        |
+| TAB1-15  | Accessible Locators                     | /practice/accessible-locators         | 1 — Core        |
+| TAB1-14  | Async UI                                | /practice/async-ui                    | 2 — Advanced    |
+| TAB1-12  | Network & API                           | /practice/network-api                 | 2 — Advanced    |
+| TAB1-24  | API Request Context                     | /practice/api-request-context         | 2 — Advanced    |
+| TAB1-16  | Tables & Filtering                      | /practice/tables-filtering            | 2 — Advanced    |
+| TAB1-17  | Browser Events                          | /practice/browser-events              | 2 — Advanced    |
+| TAB1-22  | ARIA Snapshots                          | /practice/aria-snapshots              | 2 — Advanced    |
+| TAB1-35  | Accessibility Scanning                  | /practice/accessibility-scanning      | 2 — Advanced    |
+| TAB1-18  | Emulation & Input                       | /practice/emulation-input             | 3 — Specialized |
+| TAB1-19  | Debugging & Reporting                   | /practice/debugging-reporting         | 3 — Specialized |
+| TAB1-20  | Frames & Contexts                       | /practice/frames-contexts             | 3 — Specialized |
+| TAB1-25  | Clock & Timers                          | /practice/clock-timers                | 3 — Specialized |
+| TAB1-26  | WebSocket Interception                  | /practice/websocket-interception      | 3 — Specialized |
+| TAB1-27  | HAR Recording                           | /practice/har-recording               | 3 — Specialized |
+| TAB1-28  | Service Workers                         | /practice/service-workers             | 3 — Specialized |
+| TAB1-29  | Visual Regression                       | /practice/visual-regression           | 3 — Specialized |
+| TAB1-30  | Drag & Drop                             | /practice/drag-and-drop               | 3 — Specialized |
+| TAB1-31  | Multi-Tab                               | /practice/multi-tab                   | 3 — Specialized |
+| TAB1-32  | Geolocation & Permissions               | /practice/geolocation-permissions     | 3 — Specialized |
+| TAB1-33  | Scroll & Lazy Loading                   | /practice/scroll-lazy-loading         | 3 — Specialized |
+| TAB1-34  | Media & Locale Emulation                | /practice/media-locale                | 3 — Specialized |
+| TAB1-36  | Locator Handlers                        | /practice/locator-handlers            | 3 — Specialized |
+| TAB1-37  | Shadow DOM & Web Components             | /practice/shadow-dom                  | 3 — Specialized |
+| TAB1-38  | Server-Sent Events                      | /practice/server-sent-events          | 3 — Specialized |
+| TAB1-39  | Soft Assertions & Test Steps            | /practice/soft-assertions             | 3 — Specialized |
+| TAB1-40  | Init Scripts & Seeding                  | /practice/init-scripts                | 3 — Specialized |
+| TAB1-41  | Touch & Mobile Gestures                 | /practice/touch-gestures              | 3 — Specialized |
+| TAB1-60  | Passkey Authentication                  | /practice/passkey-authentication      | 3 — Specialized |
+| TAB1-61  | Web Storage & Partitioned Cookies       | /practice/client-storage-partitioning | 3 — Specialized |
+| TAB1-62  | Console & Runtime Diagnostics           | /practice/console-runtime-diagnostics | 3 — Specialized |
+| TAB1-63  | Memory & DOM Leak Diagnostics           | /practice/dom-memory-diagnostics      | 3 — Specialized |
+| TAB1-64  | Custom Assertions & Matcher Composition | /practice/custom-assertions           | 3 — Specialized |
 
 ---
 
@@ -141,9 +146,9 @@ Project: playwright-typescript  |  Analyzed: <date>
 
 ---
 Summary:
-  ✅ Fully covered:  X / 30 labs
-  ⚠️ Partial:        X / 30 labs
-  ❌ Not started:    X / 30 labs
+  ✅ Fully covered:  X / 35 labs
+  ⚠️ Partial:        X / 35 labs
+  ❌ Not started:    X / 35 labs
 
 Top 3 recommended next labs (Priority Group 1 first, then ❌ before ⚠️):
   1. TAB1-13 Forms & Validation — ❌ missing POM + spec

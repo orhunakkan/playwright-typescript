@@ -24,38 +24,43 @@ stays 1:1 traceable to code while the coverage reflects real test design, not ha
 
 ## JIRA Story Map
 
-| JIRA Key | Lab                          | URL Path                          | Framework Gaps            |
-| -------- | ---------------------------- | --------------------------------- | ------------------------- |
-| TAB1-12  | Network & API                | /practice/network-api             | Gap #2 (page.route)       |
-| TAB1-13  | Forms & Validation           | /practice/forms-validation        | Gap #3 (fixtures)         |
-| TAB1-14  | Async UI                     | /practice/async-ui                | Gap #8 (flake/quarantine) |
-| TAB1-15  | Accessible Locators          | /practice/accessible-locators     | —                         |
-| TAB1-16  | Tables & Filtering           | /practice/tables-filtering        | —                         |
-| TAB1-17  | Browser Events               | /practice/browser-events          | —                         |
-| TAB1-18  | Emulation & Input            | /practice/emulation-input         | Gap #10 (mobile)          |
-| TAB1-19  | Debugging & Reporting        | /practice/debugging-reporting     | Gap #8 (retries/tracing)  |
-| TAB1-20  | Frames & Contexts            | /practice/frames-contexts         | —                         |
-| TAB1-21  | Fake Auth                    | /practice/fake-auth               | Gap #1 (storageState)     |
-| TAB1-22  | ARIA Snapshots               | /practice/aria-snapshots          | —                         |
-| TAB1-23  | Storage State                | /practice/storage-state           | Gap #1 (storageState)     |
-| TAB1-24  | API Request Context          | /practice/api-request-context     | Gap #7 (seeding)          |
-| TAB1-25  | Clock & Timers               | /practice/clock-timers            | —                         |
-| TAB1-26  | WebSocket Interception       | /practice/websocket-interception  | Gap #2 (route)            |
-| TAB1-27  | HAR Recording                | /practice/har-recording           | Gap #2 (route)            |
-| TAB1-28  | Service Workers              | /practice/service-workers         | Gap #2 (route)            |
-| TAB1-29  | Visual Regression            | /practice/visual-regression       | —                         |
-| TAB1-30  | Drag & Drop                  | /practice/drag-and-drop           | —                         |
-| TAB1-31  | Multi-Tab                    | /practice/multi-tab               | —                         |
-| TAB1-32  | Geolocation & Permissions    | /practice/geolocation-permissions | —                         |
-| TAB1-33  | Scroll & Lazy Loading        | /practice/scroll-lazy-loading     | Gap #2 (route)            |
-| TAB1-34  | Media & Locale Emulation     | /practice/media-locale            | —                         |
-| TAB1-35  | Accessibility Scanning       | /practice/accessibility-scanning  | —                         |
-| TAB1-36  | Locator Handlers             | /practice/locator-handlers        | —                         |
-| TAB1-37  | Shadow DOM & Web Components  | /practice/shadow-dom              | —                         |
-| TAB1-38  | Server-Sent Events           | /practice/server-sent-events      | Gap #2 (route)            |
-| TAB1-39  | Soft Assertions & Test Steps | /practice/soft-assertions         | —                         |
-| TAB1-40  | Init Scripts & Seeding       | /practice/init-scripts            | —                         |
-| TAB1-41  | Touch & Mobile Gestures      | /practice/touch-gestures          | Gap #10 (mobile)          |
+| JIRA Key | Lab                                     | URL Path                              | Framework Gaps            |
+| -------- | --------------------------------------- | ------------------------------------- | ------------------------- |
+| TAB1-12  | Network & API                           | /practice/network-api                 | Gap #2 (page.route)       |
+| TAB1-13  | Forms & Validation                      | /practice/forms-validation            | Gap #3 (fixtures)         |
+| TAB1-14  | Async UI                                | /practice/async-ui                    | Gap #8 (flake/quarantine) |
+| TAB1-15  | Accessible Locators                     | /practice/accessible-locators         | —                         |
+| TAB1-16  | Tables & Filtering                      | /practice/tables-filtering            | —                         |
+| TAB1-17  | Browser Events                          | /practice/browser-events              | —                         |
+| TAB1-18  | Emulation & Input                       | /practice/emulation-input             | Gap #10 (mobile)          |
+| TAB1-19  | Debugging & Reporting                   | /practice/debugging-reporting         | Gap #8 (retries/tracing)  |
+| TAB1-20  | Frames & Contexts                       | /practice/frames-contexts             | —                         |
+| TAB1-21  | Fake Auth                               | /practice/fake-auth                   | Gap #1 (storageState)     |
+| TAB1-22  | ARIA Snapshots                          | /practice/aria-snapshots              | —                         |
+| TAB1-23  | Storage State                           | /practice/storage-state               | Gap #1 (storageState)     |
+| TAB1-24  | API Request Context                     | /practice/api-request-context         | Gap #7 (seeding)          |
+| TAB1-25  | Clock & Timers                          | /practice/clock-timers                | —                         |
+| TAB1-26  | WebSocket Interception                  | /practice/websocket-interception      | Gap #2 (route)            |
+| TAB1-27  | HAR Recording                           | /practice/har-recording               | Gap #2 (route)            |
+| TAB1-28  | Service Workers                         | /practice/service-workers             | Gap #2 (route)            |
+| TAB1-29  | Visual Regression                       | /practice/visual-regression           | —                         |
+| TAB1-30  | Drag & Drop                             | /practice/drag-and-drop               | —                         |
+| TAB1-31  | Multi-Tab                               | /practice/multi-tab                   | —                         |
+| TAB1-32  | Geolocation & Permissions               | /practice/geolocation-permissions     | —                         |
+| TAB1-33  | Scroll & Lazy Loading                   | /practice/scroll-lazy-loading         | Gap #2 (route)            |
+| TAB1-34  | Media & Locale Emulation                | /practice/media-locale                | —                         |
+| TAB1-35  | Accessibility Scanning                  | /practice/accessibility-scanning      | —                         |
+| TAB1-36  | Locator Handlers                        | /practice/locator-handlers            | —                         |
+| TAB1-37  | Shadow DOM & Web Components             | /practice/shadow-dom                  | —                         |
+| TAB1-38  | Server-Sent Events                      | /practice/server-sent-events          | Gap #2 (route)            |
+| TAB1-39  | Soft Assertions & Test Steps            | /practice/soft-assertions             | —                         |
+| TAB1-40  | Init Scripts & Seeding                  | /practice/init-scripts                | —                         |
+| TAB1-41  | Touch & Mobile Gestures                 | /practice/touch-gestures              | Gap #10 (mobile)          |
+| TAB1-60  | Passkey Authentication                  | /practice/passkey-authentication      | —                         |
+| TAB1-61  | Web Storage & Partitioned Cookies       | /practice/client-storage-partitioning | —                         |
+| TAB1-62  | Console & Runtime Diagnostics           | /practice/console-runtime-diagnostics | —                         |
+| TAB1-63  | Memory & DOM Leak Diagnostics           | /practice/dom-memory-diagnostics      | —                         |
+| TAB1-64  | Custom Assertions & Matcher Composition | /practice/custom-assertions           | Gap #3 (fixtures)         |
 
 ---
 

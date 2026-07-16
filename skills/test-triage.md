@@ -29,38 +29,43 @@ when a lab passes locally but fails in CI.
 
 ## JIRA Story Map (for write-back)
 
-| Lab Name (from spec file) | JIRA Key |
-| ------------------------- | -------- |
-| network-api               | TAB1-12  |
-| forms-validation          | TAB1-13  |
-| async-ui                  | TAB1-14  |
-| accessible-locators       | TAB1-15  |
-| tables-filtering          | TAB1-16  |
-| browser-events            | TAB1-17  |
-| emulation-input           | TAB1-18  |
-| debugging-reporting       | TAB1-19  |
-| frames-contexts           | TAB1-20  |
-| fake-auth                 | TAB1-21  |
-| aria-snapshots            | TAB1-22  |
-| storage-state             | TAB1-23  |
-| api-request-context       | TAB1-24  |
-| clock-timers              | TAB1-25  |
-| websocket-interception    | TAB1-26  |
-| har-recording             | TAB1-27  |
-| service-workers           | TAB1-28  |
-| visual-regression         | TAB1-29  |
-| drag-and-drop             | TAB1-30  |
-| multi-tab                 | TAB1-31  |
-| geolocation-permissions   | TAB1-32  |
-| scroll-lazy-loading       | TAB1-33  |
-| media-locale              | TAB1-34  |
-| accessibility-scanning    | TAB1-35  |
-| locator-handlers          | TAB1-36  |
-| shadow-dom                | TAB1-37  |
-| server-sent-events        | TAB1-38  |
-| soft-assertions           | TAB1-39  |
-| init-scripts              | TAB1-40  |
-| touch-gestures            | TAB1-41  |
+| Lab Name (from spec file)   | JIRA Key |
+| --------------------------- | -------- |
+| network-api                 | TAB1-12  |
+| forms-validation            | TAB1-13  |
+| async-ui                    | TAB1-14  |
+| accessible-locators         | TAB1-15  |
+| tables-filtering            | TAB1-16  |
+| browser-events              | TAB1-17  |
+| emulation-input             | TAB1-18  |
+| debugging-reporting         | TAB1-19  |
+| frames-contexts             | TAB1-20  |
+| fake-auth                   | TAB1-21  |
+| aria-snapshots              | TAB1-22  |
+| storage-state               | TAB1-23  |
+| api-request-context         | TAB1-24  |
+| clock-timers                | TAB1-25  |
+| websocket-interception      | TAB1-26  |
+| har-recording               | TAB1-27  |
+| service-workers             | TAB1-28  |
+| visual-regression           | TAB1-29  |
+| drag-and-drop               | TAB1-30  |
+| multi-tab                   | TAB1-31  |
+| geolocation-permissions     | TAB1-32  |
+| scroll-lazy-loading         | TAB1-33  |
+| media-locale                | TAB1-34  |
+| accessibility-scanning      | TAB1-35  |
+| locator-handlers            | TAB1-36  |
+| shadow-dom                  | TAB1-37  |
+| server-sent-events          | TAB1-38  |
+| soft-assertions             | TAB1-39  |
+| init-scripts                | TAB1-40  |
+| touch-gestures              | TAB1-41  |
+| passkey-authentication      | TAB1-60  |
+| client-storage-partitioning | TAB1-61  |
+| console-runtime-diagnostics | TAB1-62  |
+| dom-memory-diagnostics      | TAB1-63  |
+| custom-assertions           | TAB1-64  |
 
 ---
 
