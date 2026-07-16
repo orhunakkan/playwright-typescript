@@ -33,6 +33,7 @@ import { TouchGesturesPage } from '../pages/touch-gestures.page';
 import { PasskeyAuthenticationPage } from '../pages/passkey-authentication.page';
 import { ClientStoragePartitioningPage } from '../pages/client-storage-partitioning.page';
 import { ConsoleRuntimeDiagnosticsPage } from '../pages/console-runtime-diagnostics.page';
+import { CustomAssertionsPage } from '../pages/custom-assertions.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -69,6 +70,7 @@ type Fixtures = {
   passkeyAuthenticationPage: PasskeyAuthenticationPage;
   clientStoragePartitioningPage: ClientStoragePartitioningPage;
   consoleRuntimeDiagnosticsPage: ConsoleRuntimeDiagnosticsPage;
+  customAssertionsPage: CustomAssertionsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -173,6 +175,9 @@ export const test = base.extend<Fixtures>({
   },
   consoleRuntimeDiagnosticsPage: async ({ page }, use) => {
     await use(new ConsoleRuntimeDiagnosticsPage(page));
+  },
+  customAssertionsPage: async ({ page }, use) => {
+    await use(new CustomAssertionsPage(page));
   },
 });
 
