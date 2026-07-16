@@ -34,6 +34,7 @@ import { PasskeyAuthenticationPage } from '../pages/passkey-authentication.page'
 import { ClientStoragePartitioningPage } from '../pages/client-storage-partitioning.page';
 import { ConsoleRuntimeDiagnosticsPage } from '../pages/console-runtime-diagnostics.page';
 import { CustomAssertionsPage } from '../pages/custom-assertions.page';
+import { DomMemoryDiagnosticsPage } from '../pages/dom-memory-diagnostics.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -71,6 +72,7 @@ type Fixtures = {
   clientStoragePartitioningPage: ClientStoragePartitioningPage;
   consoleRuntimeDiagnosticsPage: ConsoleRuntimeDiagnosticsPage;
   customAssertionsPage: CustomAssertionsPage;
+  domMemoryDiagnosticsPage: DomMemoryDiagnosticsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -178,6 +180,9 @@ export const test = base.extend<Fixtures>({
   },
   customAssertionsPage: async ({ page }, use) => {
     await use(new CustomAssertionsPage(page));
+  },
+  domMemoryDiagnosticsPage: async ({ page }, use) => {
+    await use(new DomMemoryDiagnosticsPage(page));
   },
 });
 
