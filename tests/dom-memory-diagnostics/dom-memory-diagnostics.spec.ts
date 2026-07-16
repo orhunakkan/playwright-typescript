@@ -199,13 +199,7 @@ test.describe('Memory & DOM Leak Diagnostics', () => {
       domMemoryDiagnosticsPage,
     }) => {
       await spawnAndWaitForGraveyard(page, domMemoryDiagnosticsPage);
-      // Known defect (TAB1-66): once populated, the graveyard <ul> becomes a scrollable region
-      // (max-h-40 overflow-y-auto, scrollHeight 996px vs clientHeight 160px) but is not
-      // keyboard-focusable (tabindex="-1"), tripping axe's scrollable-region-focusable rule
-      // (WCAG 2.1.1 / 2.1.3). Tracked as a filed Bug, not silenced — every other violation still
-      // fails this scan.
-      const violations = (await scan(page)).violations.filter((v) => v.id !== 'scrollable-region-focusable');
-      expect(violations).toEqual([]);
+      expect((await scan(page)).violations).toEqual([]);
     });
 
     test('no violations after "Clear leaked nodes" empties the graveyard', async ({ page, domMemoryDiagnosticsPage }) => {
