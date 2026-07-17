@@ -3,9 +3,14 @@
 // URL: https://stagecraftlabs.com/practice/har-recording  |  Generated: 2026-07-12
 
 import { Page, Locator } from '@playwright/test';
+import path from 'path';
 
 export class HarRecordingPage {
   readonly page: Page;
+
+  // The committed HAR fixture recorded from the live GET /api/products endpoint —
+  // see docs/test-plan/har-recording.test-plan.md §3.
+  private readonly fixtureHar = path.join(process.cwd(), 'fixtures', 'har', 'har-recording', 'products.har');
 
   // ── Product catalog ─────────────────────────────────────────
   readonly reloadProductsButton: Locator;
@@ -45,5 +50,14 @@ export class HarRecordingPage {
   /** Returns the "In stock" / "Out of stock" badge within a given product's card. */
   stockBadge(name: string): Locator {
     return this.productCard(name).locator('span');
+  }
+
+  // Applies the committed HAR fixture. Default `notFound: 'abort'` means any request not present
+  // in the HAR is aborted rather than falling back to the network — proven directly by the AC-2
+  // negative test. (An earlier version also set `context.setOffline(true)` to force the point, but
+  // that blocks navigation at a lower network layer than route interception in Firefox/WebKit —
+  // NS_ERROR_OFFLINE — so it isn't cross-browser safe; abort-on-notFound alone is sufficient.)
+  async replayFromHar() {
+    await this.page.context().routeFromHAR(this.fixtureHar);
   }
 }

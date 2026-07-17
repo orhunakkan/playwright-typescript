@@ -8,7 +8,7 @@
       "expires": -1,
       "httpOnly": true,
       "secure": true,
-      "sameSite": "Lax"
+      "sameSite": "None"
     },
     {
       "name": "ARRAffinitySameSite",
@@ -22,13 +22,13 @@
     },
     {
       "name": "connect.sid",
-      "value": "s%3AwWdB8fGKcwFACwNx2m4UO3P5mKJgiW6I.%2B5Ln3VYeSpBT440UCwvSW4Y0gy3khniZsL8miyChRcw",
+      "value": "s%3Adi0NQ60CFSKETs-hjX22D0bbX9WkV-Zi.KRAtQ77t1iOmjGtkB1gp2m1mskaVpcJxR3HH0vllr6s",
       "domain": "stagecraftlabs.com",
       "path": "/",
-      "expires": 1784089709.142023,
+      "expires": 1784278245,
       "httpOnly": true,
       "secure": true,
-      "sameSite": "Lax"
+      "sameSite": "None"
     }
   ],
   "origins": [

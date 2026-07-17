@@ -77,4 +77,9 @@ export class LocatorHandlersPage {
     this.sessionSurveyDialog = page.getByRole('alertdialog', { name: 'Quick Session Survey' });
     this.sessionSurveyDismissButton = this.sessionSurveyDialog.getByRole('button', { name: 'Skip Survey' });
   }
+
+  // Dismisses an overlay by clicking its (only) button — used as an addLocatorHandler callback.
+  async dismissOverlay(locator: Locator) {
+    await locator.getByRole('button').click();
+  }
 }

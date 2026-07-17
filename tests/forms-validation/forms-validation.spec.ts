@@ -1,7 +1,6 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import { faker } from '@faker-js/faker';
-import type { FormsValidationPage } from '../../pages/forms-validation.page';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-13 — Forms & Validation
 
@@ -15,7 +14,6 @@ const validEmail = faker.internet.email();
 // Fields that gate the Subscribe button — verified against the live form: name,
 // email, topic, a frequency choice, and the terms checkbox are all required.
 const gatingFields = ['name', 'email', 'topic', 'frequency', 'terms'] as const;
-type GatingField = (typeof gatingFields)[number];
 
 // Invalid emails that the form's validator rejects (verified against the live page).
 const invalidEmails = [
@@ -27,23 +25,6 @@ const invalidEmails = [
 ];
 
 const topicOptions = ['technology', 'design', 'business', 'science'];
-
-// ─── Shared helpers (no copy-pasted fill sequences) ─────────────────────────
-
-/** Fills every required (gating) field with valid data, optionally skipping one. */
-async function fillGatingFields(form: FormsValidationPage, skip?: GatingField): Promise<void> {
-  if (skip !== 'name') await form.fullNameInput.fill(validName);
-  if (skip !== 'email') await form.emailAddressInput.fill(validEmail);
-  if (skip !== 'topic') await form.topicCategorySelect.selectOption('technology');
-  if (skip !== 'frequency') await form.weeklyRadio.check();
-  if (skip !== 'terms') await form.termsCheckbox.check();
-}
-
-/** Fills every required field with valid data and submits the form. */
-async function submitValidForm(form: FormsValidationPage): Promise<void> {
-  await fillGatingFields(form);
-  await form.subscribeButton.click();
-}
 
 test.describe('Forms & Validation', () => {
   test.beforeEach(async ({ page }) => {
@@ -153,19 +134,19 @@ test.describe('Forms & Validation', () => {
   test.describe('AC-5 — Subscribe enables only when all required fields are valid', () => {
     test('positive: enabled after every required field is filled with valid data', async ({ formsValidationPage }) => {
       await expect(formsValidationPage.subscribeButton).toBeDisabled();
-      await fillGatingFields(formsValidationPage);
+      await formsValidationPage.fillGatingFields(validName, validEmail);
       await expect(formsValidationPage.subscribeButton).toBeEnabled();
     });
 
     for (const field of gatingFields) {
       test(`negative: stays disabled when "${field}" is missing`, async ({ formsValidationPage }) => {
-        await fillGatingFields(formsValidationPage, field);
+        await formsValidationPage.fillGatingFields(validName, validEmail, field);
         await expect(formsValidationPage.subscribeButton).toBeDisabled();
       });
     }
 
     test('negative: re-disables after a required field is cleared', async ({ formsValidationPage }) => {
-      await fillGatingFields(formsValidationPage);
+      await formsValidationPage.fillGatingFields(validName, validEmail);
       await expect(formsValidationPage.subscribeButton).toBeEnabled();
 
       await formsValidationPage.fullNameInput.fill('');
@@ -176,19 +157,19 @@ test.describe('Forms & Validation', () => {
   // AC-6: Submit the form and assert the success confirmation region is visible using a semantic role locator
   test.describe('AC-6 — successful submission confirmation', () => {
     test('negative: success region is not present before submitting', async ({ formsValidationPage }) => {
-      await fillGatingFields(formsValidationPage);
+      await formsValidationPage.fillGatingFields(validName, validEmail);
       await expect(formsValidationPage.successRegion).toBeHidden();
     });
 
     test('positive: submitting valid data shows a personalized success region', async ({ formsValidationPage }) => {
-      await submitValidForm(formsValidationPage);
+      await formsValidationPage.submitValidForm(validName, validEmail);
 
       await expect(formsValidationPage.successRegion).toBeVisible();
       await expect(formsValidationPage.successRegion).toContainText(validName);
     });
 
     test('positive: Reset form returns the form to its initial empty state', async ({ formsValidationPage }) => {
-      await submitValidForm(formsValidationPage);
+      await formsValidationPage.submitValidForm(validName, validEmail);
       await expect(formsValidationPage.successRegion).toBeVisible();
 
       await formsValidationPage.resetFormButton.click();
@@ -240,10 +221,8 @@ test.describe('Forms & Validation', () => {
 
   // Accessibility — scan the page on load AND in each rendered state (Phase 4.1).
   test.describe('accessibility (WCAG 2.x, axe)', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     test('no violations on initial page load', async ({ page }) => {
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
@@ -254,15 +233,15 @@ test.describe('Forms & Validation', () => {
       await formsValidationPage.emailAddressInput.blur();
       await expect(formsValidationPage.nameErrorMessage).toBeVisible();
 
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
     test('no NEW violations on the success state (one contrast defect is tracked)', async ({ page, formsValidationPage }) => {
-      await submitValidForm(formsValidationPage);
+      await formsValidationPage.submitValidForm(validName, validEmail);
       await expect(formsValidationPage.successRegion).toBeVisible();
 
-      const results = await scan(page);
+      const results = await scanWcag(page);
       // KNOWN DEFECT (found by this multi-state scan, missed by the load-only scan):
       // the success banner text (#009966 on #ecfdf5, 14px) is 3.46:1 — below WCAG 2 AA 4.5:1.
       // Tracked as a real accessibility bug; excluded so it doesn't mask regressions elsewhere.

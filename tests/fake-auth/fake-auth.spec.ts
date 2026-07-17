@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import type { Page } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -16,8 +16,6 @@ const INVALID_CREDENTIALS = [
   { username: 'alice', password: 'wrongpass', label: 'valid username, wrong password' },
   { username: 'wronguser', password: 'password123', label: 'wrong username, valid password' },
 ];
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 test.describe('Fake Auth', () => {
   test.beforeEach(async ({ page }) => {
@@ -156,7 +154,7 @@ test.describe('Fake Auth', () => {
   // Accessibility — scan load state + error state + dashboard state (Gap #3: axe multi-state)
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on login page load', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations while login error message is displayed', async ({ fakeAuthPage, page }) => {
@@ -164,7 +162,7 @@ test.describe('Fake Auth', () => {
       await fakeAuthPage.passwordInput.fill('creds');
       await fakeAuthPage.signInButton.click();
       await expect(fakeAuthPage.loginErrorMessage).toBeVisible();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations on dashboard (authenticated state)', async ({ fakeAuthPage, page }) => {
@@ -172,7 +170,7 @@ test.describe('Fake Auth', () => {
       await fakeAuthPage.passwordInput.fill('password123');
       await fakeAuthPage.signInButton.click();
       await expect(page).toHaveURL(/\/practice\/fake-auth\/dashboard$/);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

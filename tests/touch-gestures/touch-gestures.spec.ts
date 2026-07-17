@@ -1,42 +1,10 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import { devices } from '@playwright/test';
-import type { Page, BrowserContext } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-41 — Touch & Mobile Gestures
 
 const URL = '/practice/touch-gestures';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
-// Playwright's public API exposes only `touchscreen.tap()` (single point) — there is no
-// swipe/drag primitive. A real swipe needs a raw CDP `Input.dispatchTouchEvent` sequence, and
-// `newCDPSession` is Chromium-only (throws on Firefox/WebKit). Every test that calls this helper
-// is scoped to Chromium-engine projects via a `test.skip(({ browserName }) => ...)` guard.
-async function swipeCarousel(page: Page, context: BrowserContext, distancePx: number) {
-  const region = page.getByRole('region', { name: 'Carousel', exact: true });
-  await region.scrollIntoViewIfNeeded();
-  const box = (await region.boundingBox())!;
-  const y = box.y + box.height / 2;
-  const startX = box.x + box.width - 20;
-  const endX = startX - distancePx;
-
-  const client = await context.newCDPSession(page);
-  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x: number, tY: number) =>
-    client.send('Input.dispatchTouchEvent', {
-      type,
-      touchPoints: type === 'touchEnd' ? [] : [{ x, y: tY, radiusX: 5, radiusY: 5, id: 1 }],
-    });
-
-  const steps = 5;
-  await touch('touchStart', startX, y);
-  for (let i = 1; i <= steps; i++) {
-    await touch('touchMove', startX + (endX - startX) * (i / steps), y);
-    await page.waitForTimeout(30);
-  }
-  await touch('touchEnd', endX, y);
-  await page.waitForTimeout(250);
-}
 
 test.describe('AC-1 — locator.tap() increments the tap counter', () => {
   test.use({ hasTouch: true });
@@ -96,31 +64,31 @@ test.describe('AC-3/AC-4 — horizontal touch swipe advances the carousel', () =
   test('positive: a swipe advances from Slide 1 to Slide 2 and updates the indicator', async ({ page, context, touchGesturesPage }) => {
     await page.goto(URL);
     await expect(touchGesturesPage.activeSlide).toHaveAttribute('aria-label', 'Slide 1 — Tap');
-    await swipeCarousel(page, context, 350);
+    await touchGesturesPage.swipeCarousel(context, 350);
     await expect(touchGesturesPage.activeSlide).toHaveAttribute('aria-label', 'Slide 2 — Swipe');
     await expect(touchGesturesPage.slideIndicatorSwipe).toHaveAttribute('aria-current', 'true');
   });
 
   test('positive: the correct slide content is visible after the swipe (semantic locator)', async ({ page, context, touchGesturesPage }) => {
     await page.goto(URL);
-    await swipeCarousel(page, context, 350);
+    await touchGesturesPage.swipeCarousel(context, 350);
     await expect(touchGesturesPage.carouselRegion.getByText('Slide 2 — Swipe')).toBeVisible();
   });
 
   test('negative: an insufficient/short swipe does not advance the slide', async ({ page, context, touchGesturesPage }) => {
     await page.goto(URL);
-    await swipeCarousel(page, context, 10);
+    await touchGesturesPage.swipeCarousel(context, 10);
     await expect(touchGesturesPage.activeSlide).toHaveAttribute('aria-label', 'Slide 1 — Tap');
   });
 
   test('boundary: swiping forward from the last slide is clamped, not wrapped', async ({ page, context, touchGesturesPage }) => {
     await page.goto(URL);
-    await swipeCarousel(page, context, 350); // -> Slide 2
-    await swipeCarousel(page, context, 350); // -> Slide 3 (last)
+    await touchGesturesPage.swipeCarousel(context, 350); // -> Slide 2
+    await touchGesturesPage.swipeCarousel(context, 350); // -> Slide 3 (last)
     await expect(touchGesturesPage.activeSlide).toHaveAttribute('aria-label', 'Slide 3 — Pinch');
     await expect(touchGesturesPage.nextSlideButton).toBeDisabled();
 
-    await swipeCarousel(page, context, 350); // attempt to overswipe past the last slide
+    await touchGesturesPage.swipeCarousel(context, 350); // attempt to overswipe past the last slide
     await expect(touchGesturesPage.activeSlide).toHaveAttribute('aria-label', 'Slide 3 — Pinch');
   });
 });
@@ -158,7 +126,7 @@ test.describe('AC-5a — default context contrasts as non-touch-capable', () => 
 test.describe('accessibility (WCAG 2.x, axe)', () => {
   test('no violations on initial load', async ({ page }) => {
     await page.goto(URL);
-    expect((await scan(page)).violations).toEqual([]);
+    expect((await scanWcag(page)).violations).toEqual([]);
   });
 
   test.describe('post-tap state', () => {
@@ -168,7 +136,7 @@ test.describe('accessibility (WCAG 2.x, axe)', () => {
       await page.goto(URL);
       await touchGesturesPage.tapTargetButton.tap();
       await expect(touchGesturesPage.tapCount).toHaveText('1');
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 
@@ -176,10 +144,10 @@ test.describe('accessibility (WCAG 2.x, axe)', () => {
     test.use({ hasTouch: true });
     test.skip(({ browserName }) => browserName !== 'chromium', 'Swipe simulation needs a raw CDP touch-event sequence — Chromium-only.');
 
-    test('no violations after a swipe advances the carousel', async ({ page, context }) => {
+    test('no violations after a swipe advances the carousel', async ({ page, context, touchGesturesPage }) => {
       await page.goto(URL);
-      await swipeCarousel(page, context, 350);
-      expect((await scan(page)).violations).toEqual([]);
+      await touchGesturesPage.swipeCarousel(context, 350);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

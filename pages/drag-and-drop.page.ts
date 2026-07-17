@@ -74,4 +74,16 @@ export class DragAndDropPage {
   sortableItem(name: string): Locator {
     return this.page.getByTestId(`sort-item-${name.toLowerCase()}`);
   }
+
+  // Challenge 3 (sortable list) is implemented with raw event dispatch rather than native HTML5
+  // drag, per the page's own guidance ("raw dispatchEvent for sortable lists"). Inserts the source
+  // item immediately after the target item — verified empirically against the live lab.
+  async manualDragReorder(source: Locator, target: Locator) {
+    const dataTransfer = await this.page.evaluateHandle(() => new DataTransfer());
+    await source.dispatchEvent('dragstart', { dataTransfer });
+    await target.dispatchEvent('dragenter', { dataTransfer });
+    await target.dispatchEvent('dragover', { dataTransfer });
+    await target.dispatchEvent('drop', { dataTransfer });
+    await source.dispatchEvent('dragend', { dataTransfer });
+  }
 }

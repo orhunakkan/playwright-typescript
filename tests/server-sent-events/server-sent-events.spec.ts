@@ -1,25 +1,10 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
+import type { StubEvent } from '../../pages/server-sent-events.page';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-38 — Server-Sent Events
 
 const URL = '/practice/server-sent-events';
-
-type SseEventType = 'info' | 'warn' | 'error';
-interface StubEvent {
-  type: SseEventType;
-  message: string;
-}
-
-// Matches the real backend's wire format exactly (captured via a raw fetch() against /api/sse):
-// `event: log` + JSON data per entry, terminated by `event: done`. The "Connecting to stream…"
-// and "Stream complete." system entries are synthesized client-side on EventSource open/`done`,
-// not part of the SSE payload itself — confirmed by inspecting the raw stream, which never
-// contains them.
-function buildSsePayload(events: StubEvent[]): string {
-  const body = events.map(({ type, message }) => `event: log\ndata: ${JSON.stringify({ type, message })}\n\n`).join('');
-  return `${body}event: done\ndata: {}\n\n`;
-}
 
 test.describe('Server-Sent Events', () => {
   test.beforeEach(async ({ page }) => {
@@ -52,7 +37,7 @@ test.describe('Server-Sent Events', () => {
     for (const { type, message } of badgeCases) {
       test(`data-driven: a "${type}" event renders the "${type}" badge in the log`, async ({ page, serverSentEventsPage }) => {
         await page.route('**/api/sse', (route) =>
-          route.fulfill({ status: 200, contentType: 'text/event-stream', body: buildSsePayload([{ type, message }]) }),
+          route.fulfill({ status: 200, contentType: 'text/event-stream', body: serverSentEventsPage.buildSsePayload([{ type, message }]) }),
         );
         await serverSentEventsPage.startStreamButton.click();
 
@@ -66,7 +51,11 @@ test.describe('Server-Sent Events', () => {
       serverSentEventsPage,
     }) => {
       await page.route('**/api/sse', (route) =>
-        route.fulfill({ status: 200, contentType: 'text/event-stream', body: buildSsePayload([{ type: 'info', message: 'Build started' }]) }),
+        route.fulfill({
+          status: 200,
+          contentType: 'text/event-stream',
+          body: serverSentEventsPage.buildSsePayload([{ type: 'info', message: 'Build started' }]),
+        }),
       );
       await serverSentEventsPage.startStreamButton.click();
 
@@ -88,7 +77,9 @@ test.describe('Server-Sent Events', () => {
         { type: 'info', message: 'Custom deploy step one' },
         { type: 'warn', message: 'Custom deploy step two' },
       ];
-      await page.route('**/api/sse', (route) => route.fulfill({ status: 200, contentType: 'text/event-stream', body: buildSsePayload(stub) }));
+      await page.route('**/api/sse', (route) =>
+        route.fulfill({ status: 200, contentType: 'text/event-stream', body: serverSentEventsPage.buildSsePayload(stub) }),
+      );
       await serverSentEventsPage.startStreamButton.click();
 
       await expect(serverSentEventsPage.eventLogEntries).toHaveCount(4);
@@ -107,7 +98,9 @@ test.describe('Server-Sent Events', () => {
         { type: 'warn', message: 'Custom step B' },
         { type: 'error', message: 'Custom step C' },
       ];
-      await page.route('**/api/sse', (route) => route.fulfill({ status: 200, contentType: 'text/event-stream', body: buildSsePayload(stub) }));
+      await page.route('**/api/sse', (route) =>
+        route.fulfill({ status: 200, contentType: 'text/event-stream', body: serverSentEventsPage.buildSsePayload(stub) }),
+      );
       await serverSentEventsPage.startStreamButton.click();
 
       await expect(serverSentEventsPage.eventLogEntries).toHaveCount(5);
@@ -118,7 +111,11 @@ test.describe('Server-Sent Events', () => {
 
     test('negative: entries from a previous stub do not bleed into a differently-stubbed run', async ({ page, serverSentEventsPage }) => {
       await page.route('**/api/sse', (route) =>
-        route.fulfill({ status: 200, contentType: 'text/event-stream', body: buildSsePayload([{ type: 'error', message: 'Stub-only entry' }]) }),
+        route.fulfill({
+          status: 200,
+          contentType: 'text/event-stream',
+          body: serverSentEventsPage.buildSsePayload([{ type: 'error', message: 'Stub-only entry' }]),
+        }),
       );
       await serverSentEventsPage.startStreamButton.click();
       await expect(serverSentEventsPage.eventLogEntries).toHaveCount(3);
@@ -160,10 +157,8 @@ test.describe('Server-Sent Events', () => {
   // and stopped states use a stub so the scan runs against a stable, fully-rendered log rather
   // than racing a live stream.
   test.describe('accessibility (WCAG 2.x, axe)', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     test('no violations on initial page load (idle, pre-stream)', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations with a populated event log (streaming/complete state)', async ({ page, serverSentEventsPage }) => {
@@ -171,7 +166,7 @@ test.describe('Server-Sent Events', () => {
         route.fulfill({
           status: 200,
           contentType: 'text/event-stream',
-          body: buildSsePayload([
+          body: serverSentEventsPage.buildSsePayload([
             { type: 'info', message: 'Build started' },
             { type: 'warn', message: 'Deprecated API usage detected' },
             { type: 'error', message: 'Health-check failed — retrying…' },
@@ -181,14 +176,14 @@ test.describe('Server-Sent Events', () => {
       await serverSentEventsPage.startStreamButton.click();
       await expect(serverSentEventsPage.eventLogEntries).toHaveCount(5);
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after Stop Stream is clicked', async ({ page, serverSentEventsPage }) => {
       await serverSentEventsPage.startStreamButton.click();
       await serverSentEventsPage.stopStreamButton.click();
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

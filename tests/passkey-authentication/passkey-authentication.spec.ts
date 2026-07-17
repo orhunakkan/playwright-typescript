@@ -1,6 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
-import type { CDPSession, Page } from '@playwright/test';
+import { scanWcag } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-60 — Passkey Authentication
 
@@ -10,31 +9,6 @@ const DASHBOARD_URL = '/practice/passkey-authentication/dashboard';
 const CHROMIUM_ONLY_REASON =
   'WebAuthn ceremony setup needs a CDP virtual authenticator — newCDPSession/WebAuthn domain are Chromium-only ' +
   '(verified: throws on Firefox/WebKit, same limitation documented in tests/touch-gestures/touch-gestures.spec.ts).';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
-// Attaches a CDP-backed virtual WebAuthn authenticator to the test's page/context (AC-1). Each
-// Playwright test runs in its own browser context, so one authenticator per test is safe even
-// though Chrome only allows one "internal" authenticator per environment. Defaults to a fully
-// spec-compliant authenticator (hasResidentKey + hasUserVerification, per AC-1's guidance);
-// pass overrides to reproduce the app's ceremony-failure state for negative cases.
-async function addVirtualAuthenticator(
-  page: Page,
-  options: { hasResidentKey?: boolean; hasUserVerification?: boolean } = {},
-): Promise<{ client: CDPSession; authenticatorId: string }> {
-  const client = await page.context().newCDPSession(page);
-  await client.send('WebAuthn.enable');
-  const { authenticatorId } = await client.send('WebAuthn.addVirtualAuthenticator', {
-    options: {
-      protocol: 'ctap2',
-      transport: 'internal',
-      hasResidentKey: options.hasResidentKey ?? true,
-      hasUserVerification: options.hasUserVerification ?? true,
-      isUserVerified: true,
-    },
-  });
-  return { client, authenticatorId };
-}
 
 test.describe('Passkey Authentication', () => {
   test.beforeEach(async ({ page }) => {
@@ -48,7 +22,7 @@ test.describe('Passkey Authentication', () => {
     test.skip(({ browserName }) => browserName !== 'chromium', CHROMIUM_ONLY_REASON);
 
     test('positive: registration succeeds once a fully-configured virtual authenticator is attached', async ({ page, passkeyAuthenticationPage }) => {
-      await addVirtualAuthenticator(page);
+      await passkeyAuthenticationPage.addVirtualAuthenticator();
       await passkeyAuthenticationPage.registerButton.click();
       await expect(passkeyAuthenticationPage.ceremonyErrorAlert).not.toBeVisible();
       await expect(passkeyAuthenticationPage.noPasskeyMessage).not.toBeVisible();
@@ -58,7 +32,7 @@ test.describe('Passkey Authentication', () => {
     // missing hasResidentKey/hasUserVerification (rather than "no authenticator at all", which
     // hangs indefinitely waiting on a native prompt that never resolves headlessly).
     test('negative: an authenticator missing hasResidentKey/hasUserVerification fails the ceremony', async ({ page, passkeyAuthenticationPage }) => {
-      await addVirtualAuthenticator(page, { hasResidentKey: false, hasUserVerification: false });
+      await passkeyAuthenticationPage.addVirtualAuthenticator({ hasResidentKey: false, hasUserVerification: false });
       await passkeyAuthenticationPage.registerButton.click();
       await expect(passkeyAuthenticationPage.ceremonyErrorAlert).toBeVisible();
       await expect(passkeyAuthenticationPage.ceremonyErrorAlert).toHaveText(
@@ -72,7 +46,7 @@ test.describe('Passkey Authentication', () => {
   test.describe('AC-2 — registration and sign-in reach the dashboard with the registered user', () => {
     test('positive: register then sign in navigates to dashboard showing Alice Chen', async ({ page, passkeyAuthenticationPage, browserName }) => {
       test.skip(browserName !== 'chromium', CHROMIUM_ONLY_REASON);
-      await addVirtualAuthenticator(page);
+      await passkeyAuthenticationPage.addVirtualAuthenticator();
       await passkeyAuthenticationPage.registerButton.click();
       await expect(passkeyAuthenticationPage.ceremonyErrorAlert).not.toBeVisible();
       await passkeyAuthenticationPage.signInButton.click();
@@ -93,7 +67,7 @@ test.describe('Passkey Authentication', () => {
     test.skip(({ browserName }) => browserName !== 'chromium', CHROMIUM_ONLY_REASON);
 
     test('positive: signing out from the dashboard returns to the registration screen', async ({ page, passkeyAuthenticationPage }) => {
-      await addVirtualAuthenticator(page);
+      await passkeyAuthenticationPage.addVirtualAuthenticator();
       await passkeyAuthenticationPage.registerButton.click();
       await passkeyAuthenticationPage.signInButton.click();
       await expect(page).toHaveURL(/\/practice\/passkey-authentication\/dashboard$/);
@@ -103,7 +77,7 @@ test.describe('Passkey Authentication', () => {
     });
 
     test('negative: reloading after sign out does not restore the dashboard', async ({ page, passkeyAuthenticationPage }) => {
-      await addVirtualAuthenticator(page);
+      await passkeyAuthenticationPage.addVirtualAuthenticator();
       await passkeyAuthenticationPage.registerButton.click();
       await passkeyAuthenticationPage.signInButton.click();
       await expect(page).toHaveURL(/\/practice\/passkey-authentication\/dashboard$/);
@@ -141,7 +115,7 @@ test.describe('Passkey Authentication', () => {
     test.skip(({ browserName }) => browserName !== 'chromium', CHROMIUM_ONLY_REASON);
 
     test('positive: credentialAdded fires with the registered credential after registration', async ({ page, passkeyAuthenticationPage }) => {
-      const { client } = await addVirtualAuthenticator(page);
+      const { client } = await passkeyAuthenticationPage.addVirtualAuthenticator();
       const credentialAdded = new Promise<{ credential: { rpId?: string; userName?: string } }>((resolve) => {
         client.on('WebAuthn.credentialAdded', resolve);
       });
@@ -152,7 +126,7 @@ test.describe('Passkey Authentication', () => {
     });
 
     test('negative: credentialAdded does not fire when the ceremony fails', async ({ page, passkeyAuthenticationPage }) => {
-      const { client } = await addVirtualAuthenticator(page, { hasResidentKey: false, hasUserVerification: false });
+      const { client } = await passkeyAuthenticationPage.addVirtualAuthenticator({ hasResidentKey: false, hasUserVerification: false });
       const events: unknown[] = [];
       client.on('WebAuthn.credentialAdded', (event) => events.push(event));
       await passkeyAuthenticationPage.registerButton.click();
@@ -178,24 +152,24 @@ test.describe('Passkey Authentication', () => {
   // Accessibility — scan load + error + dashboard states (Phase 5)
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on registration screen load', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations while the ceremony error alert is displayed', async ({ page, passkeyAuthenticationPage, browserName }) => {
       test.skip(browserName !== 'chromium', CHROMIUM_ONLY_REASON);
-      await addVirtualAuthenticator(page, { hasResidentKey: false, hasUserVerification: false });
+      await passkeyAuthenticationPage.addVirtualAuthenticator({ hasResidentKey: false, hasUserVerification: false });
       await passkeyAuthenticationPage.registerButton.click();
       await expect(passkeyAuthenticationPage.ceremonyErrorAlert).toBeVisible();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations on the dashboard (authenticated state)', async ({ page, passkeyAuthenticationPage, browserName }) => {
       test.skip(browserName !== 'chromium', CHROMIUM_ONLY_REASON);
-      await addVirtualAuthenticator(page);
+      await passkeyAuthenticationPage.addVirtualAuthenticator();
       await passkeyAuthenticationPage.registerButton.click();
       await passkeyAuthenticationPage.signInButton.click();
       await expect(page).toHaveURL(/\/practice\/passkey-authentication\/dashboard$/);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

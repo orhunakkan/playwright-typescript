@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-24 — API Request Context
 // Gap #7 (database/external state setup): request fixture for seed/cleanup without UI
@@ -200,7 +200,7 @@ test.describe('API Request Context', () => {
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial page load', async ({ page }) => {
       await page.goto(PAGE_URL);
-      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
   });

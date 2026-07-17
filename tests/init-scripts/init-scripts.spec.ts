@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import type { Page } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-40 — Init Scripts & Seeding
@@ -11,8 +11,6 @@ declare global {
     __FLAGS__?: { betaFeature: boolean };
   }
 }
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 test.describe('Init Scripts & Seeding', () => {
   // AC-1 (TAB1-40): Tests use page.addInitScript to inject window.__FLAGS__ = { betaFeature: true }
@@ -161,7 +159,7 @@ test.describe('Init Scripts & Seeding', () => {
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial load with the onboarding modal open', async ({ page }) => {
       await page.goto(URL);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations on the fully seeded success state (flags + stub + suppressed modal)', async ({ page, initScriptsPage }) => {
@@ -173,14 +171,14 @@ test.describe('Init Scripts & Seeding', () => {
       await page.goto(URL);
       await expect(initScriptsPage.betaFeatureBanner).toBeVisible();
       await expect(initScriptsPage.onboardingModal).not.toBeVisible();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after dismissing the modal via user interaction', async ({ page, initScriptsPage }) => {
       await page.goto(URL);
       await initScriptsPage.onboardingDismissButton.click();
       await expect(initScriptsPage.onboardingModal).not.toBeVisible();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

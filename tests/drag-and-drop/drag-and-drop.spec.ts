@@ -1,24 +1,9 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
-import type { Page, Locator } from '@playwright/test';
+import { scanWcag } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-30 — Drag & Drop
 
 const LAB_URL = '/practice/drag-and-drop';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
-// Challenge 3 (sortable list) is implemented with raw event dispatch rather than native HTML5
-// drag, per the page's own guidance ("raw dispatchEvent for sortable lists"). Inserts the source
-// item immediately after the target item — verified empirically against the live lab.
-async function manualDragReorder(source: Locator, target: Locator, page: Page) {
-  const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
-  await source.dispatchEvent('dragstart', { dataTransfer });
-  await target.dispatchEvent('dragenter', { dataTransfer });
-  await target.dispatchEvent('dragover', { dataTransfer });
-  await target.dispatchEvent('drop', { dataTransfer });
-  await source.dispatchEvent('dragend', { dataTransfer });
-}
 
 test.describe('Drag & Drop', () => {
   test.beforeEach(async ({ page, dragAndDropPage }) => {
@@ -149,7 +134,7 @@ test.describe('Drag & Drop', () => {
   // the resulting order is asserted with toHaveText against the full expected list.
   test.describe('AC-4 — sortable list reorder', () => {
     test('positive: reordering by drag produces the expected new order', async ({ dragAndDropPage, page }) => {
-      await manualDragReorder(dragAndDropPage.sortableItem('Alpha'), dragAndDropPage.sortableItem('Gamma'), page);
+      await dragAndDropPage.manualDragReorder(dragAndDropPage.sortableItem('Alpha'), dragAndDropPage.sortableItem('Gamma'));
 
       await expect(dragAndDropPage.sortableListItems).toHaveText(['⠿Beta', '⠿Gamma', '⠿Alpha', '⠿Delta', '⠿Epsilon']);
     });
@@ -157,13 +142,13 @@ test.describe('Drag & Drop', () => {
     test('negative/AC-4a: dragging an item onto its own position preserves the original order', async ({ dragAndDropPage, page }) => {
       const before = await dragAndDropPage.sortableListItems.allTextContents();
 
-      await manualDragReorder(dragAndDropPage.sortableItem('Beta'), dragAndDropPage.sortableItem('Beta'), page);
+      await dragAndDropPage.manualDragReorder(dragAndDropPage.sortableItem('Beta'), dragAndDropPage.sortableItem('Beta'));
 
       await expect(dragAndDropPage.sortableListItems).toHaveText(before);
     });
 
     test('boundary/AC-4b: dragging the first item to the last position reorders correctly', async ({ dragAndDropPage, page }) => {
-      await manualDragReorder(dragAndDropPage.sortableItem('Alpha'), dragAndDropPage.sortableItem('Epsilon'), page);
+      await dragAndDropPage.manualDragReorder(dragAndDropPage.sortableItem('Alpha'), dragAndDropPage.sortableItem('Epsilon'));
 
       await expect(dragAndDropPage.sortableListItems).toHaveText(['⠿Beta', '⠿Gamma', '⠿Delta', '⠿Epsilon', '⠿Alpha']);
     });
@@ -171,12 +156,12 @@ test.describe('Drag & Drop', () => {
 
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations at initial load', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations mid-interaction (after a Kanban drag)', async ({ dragAndDropPage, page }) => {
       await dragAndDropPage.card('Write Playwright tests').dragTo(dragAndDropPage.inProgressColumn);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations in the post-drop success state (file dropped)', async ({ dragAndDropPage, page }) => {
@@ -184,7 +169,7 @@ test.describe('Drag & Drop', () => {
         files: { name: 'a11y-check.txt', mimeType: 'text/plain', buffer: Buffer.from('a11y') },
       });
       await expect(dragAndDropPage.droppedFileText).toBeVisible();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

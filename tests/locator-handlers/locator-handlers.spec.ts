@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-36 — Locator Handlers
 
@@ -121,12 +121,8 @@ test.describe('Locator Handlers', () => {
   // the overlay blocks step 3 without a registered handler.
   test.describe('AC-3 — removeLocatorHandler() re-exposes blocking once a handler is removed', () => {
     test('positive: handler active through step 2, then removed, leaves step 3 blocked by the overlay', async ({ page, locatorHandlersPage }) => {
-      const dismiss = async (locator: typeof locatorHandlersPage.anyDialog) => {
-        await locator.getByRole('button').click();
-      };
-
-      await page.addLocatorHandler(locatorHandlersPage.anyDialog, dismiss);
-      await page.addLocatorHandler(locatorHandlersPage.anyAlertDialog, dismiss);
+      await page.addLocatorHandler(locatorHandlersPage.anyDialog, (locator) => locatorHandlersPage.dismissOverlay(locator));
+      await page.addLocatorHandler(locatorHandlersPage.anyAlertDialog, (locator) => locatorHandlersPage.dismissOverlay(locator));
 
       await page.goto(URL);
       await locatorHandlersPage.forceOverlaysCheckbox.check();
@@ -246,10 +242,8 @@ test.describe('Locator Handlers', () => {
 
   // Accessibility — scan load + overlay-visible + post-dismiss states (Phase 5).
   test.describe('accessibility (WCAG 2.x, axe)', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     test('no violations on initial page load', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations while an overlay dialog is visible', async ({ page, locatorHandlersPage }) => {
@@ -257,7 +251,7 @@ test.describe('Locator Handlers', () => {
       await locatorHandlersPage.nextButton.click();
       await expect(locatorHandlersPage.newsletterDialog).toBeVisible();
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after dismissing an overlay and advancing to the next step', async ({ page, locatorHandlersPage }) => {
@@ -266,7 +260,7 @@ test.describe('Locator Handlers', () => {
       await locatorHandlersPage.newsletterDismissButton.click();
       await expect(locatorHandlersPage.stepIndicator).toHaveText(/Step 2 of 3:\s*Shipping/);
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

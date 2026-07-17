@@ -22,10 +22,10 @@
     },
     {
       "name": "connect.sid",
-      "value": "s%3Ab2BqsgX_fuLTkhyPbkTi4NzlwghAT57k.5LWP6wsg3JEa6bPXdw2QKsgDy8x32pxiWgKpM4WEBqY",
+      "value": "s%3AtA0EQGpbI0tGvKIDVY7zX11oMGD14epr.XVDRejWXfizgLkIiXK84WgQ%2B7J%2BXdgCr82BpJm5YHBM",
       "domain": "stagecraftlabs.com",
       "path": "/",
-      "expires": 1783880890,
+      "expires": 1784278280,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"

@@ -1,12 +1,10 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import type { Page } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-20 — Frames & Contexts
 
 const LAB_URL = '/practice/frames-contexts';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 test.describe('Frames & Contexts', () => {
   test.beforeEach(async ({ page }) => {
@@ -143,13 +141,13 @@ test.describe('Frames & Contexts', () => {
 
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations at initial load', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations with Challenge 2 selected', async ({ page, framesContextsPage }) => {
       await framesContextsPage.challenge2Tab.click();
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

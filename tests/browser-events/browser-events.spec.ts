@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-17 — Browser Events
 
@@ -146,10 +146,8 @@ test.describe('Browser Events', () => {
 
   // Accessibility — WCAG 2.1 AA axe scans across all UI states
   test.describe('accessibility (WCAG 2.1 AA, axe) — all UI states', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     test('no violations on initial page load', async ({ page }) => {
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
@@ -157,7 +155,7 @@ test.describe('Browser Events', () => {
       page.once('dialog', (dialog) => dialog.accept());
       await browserEventsPage.triggerConfirmButton.click();
       await expect(browserEventsPage.dialogResult).toBeVisible();
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
@@ -168,13 +166,13 @@ test.describe('Browser Events', () => {
         buffer: Buffer.from('accessibility test'),
       });
       await expect(browserEventsPage.uploadStatus).toContainText('a11y-test.txt');
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
     test('no violations after download triggered', async ({ page, browserEventsPage }) => {
       await Promise.all([page.waitForEvent('download'), browserEventsPage.downloadLink.click()]);
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
   });

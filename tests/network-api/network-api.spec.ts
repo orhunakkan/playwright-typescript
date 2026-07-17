@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-12 — Network & API
 
@@ -233,11 +233,9 @@ test.describe('Network & API', () => {
 
   // Accessibility — axe-core scan on load and error state
   test.describe('accessibility (WCAG 2.x, axe)', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     test('no violations on initial page load', async ({ page }) => {
       await page.goto(URL);
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
@@ -248,7 +246,7 @@ test.describe('Network & API', () => {
       await page.goto(URL);
       await expect(networkApiPage.errorRegion).toBeVisible();
 
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
   });

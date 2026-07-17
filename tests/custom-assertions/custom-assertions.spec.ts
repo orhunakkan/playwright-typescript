@@ -1,6 +1,6 @@
 import { test } from '../../fixtures/index';
 import { mergeExpects, mergeTests } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import type { Page } from '@playwright/test';
 
 import { priceExpect } from '../../matchers/price.matcher';
@@ -14,8 +14,6 @@ const URL = '/practice/custom-assertions';
 
 // AC-4 (TAB1-64): combine matchers defined in two separate files into a single `expect`
 const expect = mergeExpects(priceExpect, orderStatusExpect);
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 // Data-driven table for AC-1 (Phase 4b) — valid/invalid/boundary price strings, applied by
 // mutating the live order-price element's textContent so the matcher is exercised across a
@@ -207,18 +205,18 @@ test.describe('Custom Assertions & Matcher Composition', () => {
   // Accessibility — scan load + mid-interaction (status advanced) + rated states (Phase 5)
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial page load', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after advancing the order status', async ({ page, customAssertionsPage }) => {
       await customAssertionsPage.advanceStatusButton.click();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after selecting a star rating', async ({ page, customAssertionsPage }) => {
       await customAssertionsPage.star4.click();
       await expect(customAssertionsPage.ratingValue).toHaveText('Rating: 4 / 5');
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

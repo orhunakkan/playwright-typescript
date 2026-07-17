@@ -1,13 +1,11 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import type { Page } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-62 — Console & Runtime Diagnostics
 
 const URL = '/practice/console-runtime-diagnostics';
 const MISSING_RESOURCE_PATH = '/diagnostics-lab/missing-resource';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 // Data-driven table for AC-1 (Phase 4b) — verified live against the app: console.log() maps to
 // ConsoleMessage.type() 'log' (not 'info'), console.warn() to 'warning', console.error() to 'error'.
@@ -203,7 +201,7 @@ test.describe('Console & Runtime Diagnostics', () => {
   // Accessibility — scan load + mid-interaction + fully-populated action-log states (Phase 5)
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial page load', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after the info/warning/error log actions populate the action log', async ({ page, consoleRuntimeDiagnosticsPage }) => {
@@ -211,7 +209,7 @@ test.describe('Console & Runtime Diagnostics', () => {
       await consoleRuntimeDiagnosticsPage.logWarningButton.click();
       await consoleRuntimeDiagnosticsPage.logErrorButton.click();
       await expect(consoleRuntimeDiagnosticsPage.actionLogEntries).toHaveCount(3);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after every action (throw, reject, fetch) has fired', async ({ page, consoleRuntimeDiagnosticsPage }) => {
@@ -225,7 +223,7 @@ test.describe('Console & Runtime Diagnostics', () => {
       await consoleRuntimeDiagnosticsPage.fetchMissingResourceButton.click();
       await requestPromise;
       await expect(consoleRuntimeDiagnosticsPage.actionLogEntries).toHaveCount(3);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

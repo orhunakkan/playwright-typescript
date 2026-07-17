@@ -1,6 +1,8 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, CDPSession } from '@playwright/test';
 
 export class PasskeyAuthenticationPage {
+  private readonly page: Page;
+
   // ── Registration — Headings & Status ────────────────────────────────────
   readonly registrationHeading: Locator;
   readonly noPasskeyMessage: Locator;
@@ -33,6 +35,8 @@ export class PasskeyAuthenticationPage {
   readonly signOutButton: Locator;
 
   constructor(page: Page) {
+    this.page = page;
+
     // ── Registration — Headings & Status ─────────────────────────────────
     this.registrationHeading = page.getByRole('heading', { name: /^Passkey for/ });
     this.noPasskeyMessage = page.getByText('No passkey registered yet.');
@@ -55,5 +59,27 @@ export class PasskeyAuthenticationPage {
 
     // ── Dashboard — Buttons ────────────────────────────────────────────────
     this.signOutButton = page.getByRole('button', { name: 'Sign out' });
+  }
+
+  // Attaches a CDP-backed virtual WebAuthn authenticator to the test's page/context (AC-1). Each
+  // Playwright test runs in its own browser context, so one authenticator per test is safe even
+  // though Chrome only allows one "internal" authenticator per environment. Defaults to a fully
+  // spec-compliant authenticator (hasResidentKey + hasUserVerification); pass overrides to
+  // reproduce the app's ceremony-failure state for negative cases. Chromium-only (CDP).
+  async addVirtualAuthenticator(
+    options: { hasResidentKey?: boolean; hasUserVerification?: boolean } = {},
+  ): Promise<{ client: CDPSession; authenticatorId: string }> {
+    const client = await this.page.context().newCDPSession(this.page);
+    await client.send('WebAuthn.enable');
+    const { authenticatorId } = await client.send('WebAuthn.addVirtualAuthenticator', {
+      options: {
+        protocol: 'ctap2',
+        transport: 'internal',
+        hasResidentKey: options.hasResidentKey ?? true,
+        hasUserVerification: options.hasUserVerification ?? true,
+        isUserVerified: true,
+      },
+    });
+    return { client, authenticatorId };
   }
 }

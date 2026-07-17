@@ -21,5 +21,15 @@
       "sameSite": "None"
     }
   ],
-  "origins": []
+  "origins": [
+    {
+      "origin": "https://stagecraftlabs.com",
+      "localStorage": [
+        {
+          "name": "stagecraft:theme",
+          "value": "light"
+        }
+      ]
+    }
+  ]
 }

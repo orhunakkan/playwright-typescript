@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import * as fs from 'fs';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-19 — Debugging & Reporting
@@ -203,11 +203,9 @@ test.describe('Debugging & Reporting', () => {
   // ── Accessibility — WCAG 2.1 AA axe scans ────────────────────────────────────────────
 
   test.describe('accessibility (WCAG 2.1 AA, axe) — all UI states', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     test('no violations on initial page load', async ({ page, debuggingReportingPage }) => {
       await debuggingReportingPage.goto();
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
@@ -217,7 +215,7 @@ test.describe('Debugging & Reporting', () => {
         await debuggingReportingPage.clickFlakyButton();
       }
       await expect(debuggingReportingPage.flakyError).toBeVisible();
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
   });

@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
@@ -7,8 +7,6 @@ import type { Page } from '@playwright/test';
 
 const LAB_URL = '/practice/client-storage-partitioning';
 const COOKIE_NAME = 'widget_partitioned';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 test.describe('Web Storage & Partitioned Cookies', () => {
   // AC-1 (TAB1-61): toggle the theme preference, reload with page.reload(), assert the value
@@ -251,7 +249,7 @@ test.describe('Web Storage & Partitioned Cookies', () => {
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial load (widget locked)', async ({ page }) => {
       await page.goto(LAB_URL);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations with the widget unlocked', async ({ page, context, baseURL, clientStoragePartitioningPage }) => {
@@ -259,7 +257,7 @@ test.describe('Web Storage & Partitioned Cookies', () => {
       await page.goto(LAB_URL);
       await expect(clientStoragePartitioningPage.widgetStatus).toHaveText('Widget content unlocked.');
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-15 — Accessible Locators
 
@@ -316,10 +316,8 @@ test.describe('Accessible Locators', () => {
 
   // Accessibility — WCAG 2.1 AA axe scan across all UI states
   test.describe('accessibility (WCAG 2.1 AA, axe) — all UI states', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     test('no violations on initial page load', async ({ page }) => {
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
@@ -330,14 +328,14 @@ test.describe('Accessible Locators', () => {
         await dropdown.selectOption(firstGenreOption);
         await expect(page.getByRole('article')).not.toHaveCount(0);
       }
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
     test('no violations in search-results state', async ({ page, accessibleLocatorsPage }) => {
       await accessibleLocatorsPage.searchBooksInput.fill('Design');
       await expect(page.getByRole('article')).not.toHaveCount(0);
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
   });

@@ -1,7 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
-import type { Page } from '@playwright/test';
-import { VisualRegressionPage } from '../../pages/visual-regression.page';
+import { scanWcag } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-29 — Visual Regression
 //
@@ -12,22 +10,6 @@ import { VisualRegressionPage } from '../../pages/visual-regression.page';
 
 const URL = '/practice/visual-regression';
 const BASELINE_RATIO = 0.05;
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
-// Screenshot captures on this lab were flaky on a bare page.goto(): Playwright's own internal
-// stability check (two captures ~100ms apart) intermittently saw a 1-2px layout shift, most
-// likely a late web-font metrics swap. Waiting on document.fonts.ready plus a settle buffer
-// before every toHaveScreenshot call eliminates it.
-async function gotoAndStabilize(page: Page, url: string) {
-  await page.goto(url, { waitUntil: 'networkidle' });
-  // Force the vertical scrollbar's space to always be reserved, so its otherwise-intermittent
-  // appear/disappear toggle (right at the content-height/viewport-height boundary) can't nudge
-  // flex layouts by a rounding pixel between two back-to-back screenshot captures.
-  await page.addStyleTag({ content: 'html { overflow-y: scroll !important; }' });
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(800);
-}
 
 // TAB1-54: on Desktop Firefox and Desktop Safari (WebKit), the metric-cards capture renders with
 // a ±1px height jitter between separate `npx playwright test` process launches — confirmed not
@@ -53,7 +35,7 @@ test.describe('Visual Regression', () => {
   // cross-platform in CI and keep full pixel-diff comparison.
   test.describe('Full-page baseline (AC-1)', () => {
     test('positive: full-page screenshot creates and matches a baseline', async ({ page, visualRegressionPage }) => {
-      await gotoAndStabilize(page, URL);
+      await visualRegressionPage.gotoAndStabilize(URL);
       await expect(visualRegressionPage.dynamicTimestamps).toHaveCount(3);
       await expect(visualRegressionPage.barChart).toBeVisible();
 
@@ -69,7 +51,7 @@ test.describe('Visual Regression', () => {
       page,
       visualRegressionPage,
     }) => {
-      await gotoAndStabilize(page, URL);
+      await visualRegressionPage.gotoAndStabilize(URL);
       await expect(visualRegressionPage.primaryButton).toBeVisible();
       await expect(visualRegressionPage.secondaryButton).toBeVisible();
       await expect(visualRegressionPage.dangerButton).toBeVisible();
@@ -94,7 +76,7 @@ test.describe('Visual Regression', () => {
   // AC-3 (TAB1-29): a locator-scoped screenshot of the Color Palette section covers all 6 swatches.
   test.describe('Color palette — scoped screenshot (AC-3)', () => {
     test('positive: color palette section matches baseline across all 6 swatches', async ({ page, visualRegressionPage }) => {
-      await gotoAndStabilize(page, URL);
+      await visualRegressionPage.gotoAndStabilize(URL);
       await expect(visualRegressionPage.colorSwatches).toHaveCount(6);
       await expect(visualRegressionPage.colorPalette).toHaveScreenshot('color-palette.png', { maxDiffPixelRatio: BASELINE_RATIO });
     });
@@ -109,7 +91,7 @@ test.describe('Visual Regression', () => {
       visualRegressionPage,
       browserName,
     }) => {
-      await gotoAndStabilize(page, URL);
+      await visualRegressionPage.gotoAndStabilize(URL);
       await expect(visualRegressionPage.dynamicTimestamps).toHaveCount(3);
 
       if (PIXEL_JITTER_ENGINES.has(browserName)) {
@@ -150,7 +132,7 @@ test.describe('Visual Regression', () => {
       page,
       visualRegressionPage,
     }) => {
-      await gotoAndStabilize(page, URL);
+      await visualRegressionPage.gotoAndStabilize(URL);
       await expect(visualRegressionPage.buttonShowcase).toHaveScreenshot('button-showcase-diff-check.png', { maxDiffPixelRatio: BASELINE_RATIO });
 
       await visualRegressionPage.primaryButton.evaluate((el) => {
@@ -167,7 +149,7 @@ test.describe('Visual Regression', () => {
       page,
       visualRegressionPage,
     }) => {
-      await gotoAndStabilize(page, URL);
+      await visualRegressionPage.gotoAndStabilize(URL);
       await expect(visualRegressionPage.buttonShowcase).toHaveScreenshot('button-showcase-threshold-check.png', {
         maxDiffPixelRatio: BASELINE_RATIO,
       });
@@ -183,7 +165,7 @@ test.describe('Visual Regression', () => {
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial page load', async ({ page }) => {
       await page.goto(URL);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

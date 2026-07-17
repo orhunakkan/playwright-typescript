@@ -46,4 +46,18 @@ export class VisualRegressionPage {
 
     this.barChart = page.getByTestId('bar-chart');
   }
+
+  // Screenshot captures on this lab were flaky on a bare page.goto(): Playwright's own internal
+  // stability check (two captures ~100ms apart) intermittently saw a 1-2px layout shift, most
+  // likely a late web-font metrics swap. Waiting on document.fonts.ready plus a settle buffer
+  // before every toHaveScreenshot call eliminates it.
+  async gotoAndStabilize(url: string) {
+    await this.page.goto(url, { waitUntil: 'networkidle' });
+    // Force the vertical scrollbar's space to always be reserved, so its otherwise-intermittent
+    // appear/disappear toggle (right at the content-height/viewport-height boundary) can't nudge
+    // flex layouts by a rounding pixel between two back-to-back screenshot captures.
+    await this.page.addStyleTag({ content: 'html { overflow-y: scroll !important; }' });
+    await this.page.evaluate(() => document.fonts.ready);
+    await this.page.waitForTimeout(800);
+  }
 }

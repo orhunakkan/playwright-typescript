@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import { devices } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-18 — Emulation & Input
@@ -172,30 +172,28 @@ test.describe('Emulation & Input', () => {
 
   // Accessibility — axe-core, all rendered states (load + palette open + tooltip + mobile)
   test.describe('accessibility (WCAG 2.x, axe)', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     test('no violations on initial page load', async ({ page }) => {
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
     test('no violations while command palette is open', async ({ page }) => {
       await page.keyboard.press('Control+K');
       await page.getByRole('dialog', { name: 'Command palette' }).waitFor({ state: 'visible' });
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
     test('no violations while hover tooltip is visible', async ({ page }) => {
       await page.getByRole('button', { name: 'Hover over me' }).hover();
       await page.locator('#hover-tooltip').waitFor({ state: 'visible' });
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
 
     test('no violations in mobile layout (375px viewport)', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
-      const results = await scan(page);
+      const results = await scanWcag(page);
       expect(results.violations).toEqual([]);
     });
   });

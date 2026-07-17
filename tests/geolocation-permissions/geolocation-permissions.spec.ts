@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import type { Page } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-32 — Geolocation & Permissions
@@ -9,8 +9,6 @@ const GEO_URL = '/practice/geolocation-permissions';
 const NYC_COORDS = { latitude: 40.7128, longitude: -74.006 };
 const NORTH_POLE_ANTIMERIDIAN = { latitude: 90, longitude: 180 };
 const EQUATOR_PRIME_MERIDIAN = { latitude: 0, longitude: 0 };
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 test.describe('Geolocation & Permissions', () => {
   // AC-1 (TAB1-32): Tests call context.grantPermissions(["geolocation"]) and
@@ -284,7 +282,7 @@ test.describe('Geolocation & Permissions', () => {
 
     test('no violations on initial page load', async ({ page }) => {
       await page.goto(GEO_URL);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations on the geolocation-blocked error state', async ({ page, geolocationPermissionsPage, browserName }) => {
@@ -293,7 +291,7 @@ test.describe('Geolocation & Permissions', () => {
       await page.goto(GEO_URL);
       await geolocationPermissionsPage.findCafesButton.click();
       await expect(geolocationPermissionsPage.geoErrorAlert).toBeVisible();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations on the geolocation-success café list state', async ({ page, context, geolocationPermissionsPage }) => {
@@ -302,7 +300,7 @@ test.describe('Geolocation & Permissions', () => {
       await page.goto(GEO_URL);
       await geolocationPermissionsPage.findCafesButton.click();
       await expect(geolocationPermissionsPage.cafeListItems).toHaveCount(4);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations on the clipboard copy+paste success state', async ({ page, context, geolocationPermissionsPage, browserName }) => {
@@ -314,7 +312,7 @@ test.describe('Geolocation & Permissions', () => {
       await expect(geolocationPermissionsPage.copySuccessStatus).toBeVisible();
       await geolocationPermissionsPage.pasteButton.click();
       await expect(geolocationPermissionsPage.pastedUrlInput).toBeVisible();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

@@ -5,6 +5,8 @@
 import { Page, Locator } from '@playwright/test';
 
 export class ClockTimersPage {
+  private readonly page: Page;
+
   // ── Challenge 1 — Countdown timer ────────────────────────
   readonly countdownDisplay: Locator;
   readonly countdownStartButton: Locator;
@@ -25,6 +27,8 @@ export class ClockTimersPage {
   readonly currentDate: Locator;
 
   constructor(page: Page) {
+    this.page = page;
+
     // ── Challenge 1 — Countdown timer ──────────────────────
     this.countdownDisplay = page.getByTestId('countdown');
     this.countdownStartButton = page
@@ -52,5 +56,17 @@ export class ClockTimersPage {
 
     // ── Challenge 4 — Date display ──────────────────────────
     this.currentDate = page.getByTestId('current-date');
+  }
+
+  // Installs the fake clock, then navigates — the clock must be installed before navigation so
+  // the app picks it up on load.
+  async installAndGoto() {
+    await this.page.clock.install();
+    await this.page.goto('/practice/clock-timers');
+  }
+
+  // Formats a date exactly the way the lab's date-display component renders it.
+  expectedDateText(date: Date): string {
+    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   }
 }

@@ -1,6 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
-import type { Page } from '@playwright/test';
+import { scanWcag } from '../../utilities/accessibility';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -8,7 +7,6 @@ import path from 'path';
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-27 — HAR Recording
 
 const URL = '/practice/har-recording';
-const FIXTURE_HAR = path.join(process.cwd(), 'fixtures', 'har', 'har-recording', 'products.har');
 
 // Recorded from the live GET /api/products endpoint when fixtures/har/har-recording/products.har
 // was generated — see docs/test-plan/har-recording.test-plan.md §3.
@@ -24,18 +22,6 @@ const RECORDED_PRODUCTS = [
   { name: 'External SSD 1TB', stock: 'In stock' },
   { name: 'LED Desk Lamp', stock: 'Out of stock' },
 ] as const;
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
-// Applies the committed HAR fixture. Default `notFound: 'abort'` means any request not present
-// in the HAR is aborted rather than falling back to the network — proven directly by the AC-2
-// negative test below. (An earlier version of this helper also set `context.setOffline(true)` to
-// force the point, but that blocks navigation at a lower network layer than route interception in
-// Firefox/WebKit — NS_ERROR_OFFLINE — so it isn't cross-browser safe; the abort-on-notFound
-// behavior alone is sufficient proof and works identically in all four browsers.)
-async function replayFromHar(page: Page) {
-  await page.context().routeFromHAR(FIXTURE_HAR);
-}
 
 test.describe('HAR Recording', () => {
   // AC-1 (TAB1-27): Tests record a HAR by passing { update: true } to page.routeFromHAR() before
@@ -77,7 +63,7 @@ test.describe('HAR Recording', () => {
   // the product list renders all 10 products from the recorded data without a live server
   test.describe('AC-2 — HAR replay renders all 10 products with no live server', () => {
     test('positive: replaying the HAR renders all 10 recorded products with no live network call', async ({ page, harRecordingPage }) => {
-      await replayFromHar(page);
+      await harRecordingPage.replayFromHar();
       await page.goto(URL);
       await expect(harRecordingPage.statusRegion).toHaveText('10 products loaded');
       await expect(harRecordingPage.productCards).toHaveCount(10);
@@ -85,8 +71,9 @@ test.describe('HAR Recording', () => {
 
     test('negative: default notFound "abort" blocks any URL not present in the HAR, proving replay never falls back to the network', async ({
       page,
+      harRecordingPage,
     }) => {
-      await replayFromHar(page);
+      await harRecordingPage.replayFromHar();
       await expect(page.goto('/practice/network-api')).rejects.toThrow();
     });
   });
@@ -95,7 +82,7 @@ test.describe('HAR Recording', () => {
   // a mock response while all other requests are served from the HAR
   test.describe('AC-3 — page.route() overrides a single endpoint while everything else replays from the HAR', () => {
     test('positive: a page.route() override for /api/products wins over the HAR-recorded response', async ({ page, harRecordingPage }) => {
-      await replayFromHar(page);
+      await harRecordingPage.replayFromHar();
       await page.route('**/api/products', (route) =>
         route.fulfill({
           contentType: 'application/json',
@@ -116,7 +103,7 @@ test.describe('HAR Recording', () => {
       page,
       harRecordingPage,
     }) => {
-      await replayFromHar(page);
+      await harRecordingPage.replayFromHar();
       await page.goto(URL);
       await expect(harRecordingPage.productCards).toHaveCount(10);
       await expect(harRecordingPage.productCard('Override Product')).toHaveCount(0);
@@ -128,7 +115,7 @@ test.describe('HAR Recording', () => {
   test.describe('AC-4 — "In stock" / "Out of stock" badge text matches the recorded HAR data', () => {
     for (const product of RECORDED_PRODUCTS) {
       test(`data: "${product.name}" shows "${product.stock}"`, async ({ page, harRecordingPage }) => {
-        await replayFromHar(page);
+        await harRecordingPage.replayFromHar();
         await page.goto(URL);
         await expect(harRecordingPage.stockBadge(product.name)).toHaveText(product.stock);
       });
@@ -139,13 +126,13 @@ test.describe('HAR Recording', () => {
   // confirmed by the "10 products loaded" status
   test.describe('AC-5 — HAR replay correctly serves GET /api/products, confirmed by "10 products loaded"', () => {
     test('positive: initial replayed load shows "10 products loaded"', async ({ page, harRecordingPage }) => {
-      await replayFromHar(page);
+      await harRecordingPage.replayFromHar();
       await page.goto(URL);
       await expect(harRecordingPage.statusRegion).toHaveText('10 products loaded');
     });
 
     test('positive: clicking "Reload products" re-fetches and still shows "10 products loaded" from the HAR', async ({ page, harRecordingPage }) => {
-      await replayFromHar(page);
+      await harRecordingPage.replayFromHar();
       await page.goto(URL);
       await expect(harRecordingPage.statusRegion).toHaveText('10 products loaded');
 
@@ -160,14 +147,14 @@ test.describe('HAR Recording', () => {
     test('no violations on initial page load (live)', async ({ page }) => {
       await page.goto(URL);
       await expect(page.getByRole('status')).toHaveText('10 products loaded');
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
-    test('no violations when the page is rendered entirely from a replayed HAR', async ({ page }) => {
-      await replayFromHar(page);
+    test('no violations when the page is rendered entirely from a replayed HAR', async ({ page, harRecordingPage }) => {
+      await harRecordingPage.replayFromHar();
       await page.goto(URL);
       await expect(page.getByRole('status')).toHaveText('10 products loaded');
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

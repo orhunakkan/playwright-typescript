@@ -1,12 +1,10 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import type { Page } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-34 — Media & Locale Emulation
 
 const URL = '/practice/media-locale';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 test.describe('Media & Locale Emulation', () => {
   // AC-1 / AC-2: page.emulateMedia({ colorScheme }) drives the Colour Scheme label via
@@ -168,19 +166,19 @@ test.describe('Media & Locale Emulation', () => {
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial page load', async ({ page }) => {
       await page.goto(URL);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations under dark colour-scheme emulation', async ({ page }) => {
       await page.goto(URL);
       await page.emulateMedia({ colorScheme: 'dark' });
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations under print media emulation', async ({ page }) => {
       await page.goto(URL);
       await page.emulateMedia({ media: 'print' });
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

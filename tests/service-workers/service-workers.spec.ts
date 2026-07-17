@@ -1,6 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
-import type { Page } from '@playwright/test';
+import { scanWcag } from '../../utilities/accessibility';
 import { ServiceWorkersPage } from '../../pages/service-workers.page';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-28 — Service Workers
@@ -13,13 +12,6 @@ import { ServiceWorkersPage } from '../../pages/service-workers.page';
 
 const URL = '/practice/service-workers';
 
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
-async function registerServiceWorker(page: Page, serviceWorkersPage: ServiceWorkersPage) {
-  await serviceWorkersPage.registerButton.click();
-  await expect(serviceWorkersPage.registrationStatus).toHaveText('✓ Service worker registered');
-}
-
 test.describe('Service Workers', () => {
   // AC-6 (TAB1-28): tests that validate the SW's own caching strategy must leave it active, and
   // are kept in a structurally separate describe block from tests that need page.route() to win —
@@ -29,7 +21,7 @@ test.describe('Service Workers', () => {
     // from the SW cache (stale data) rather than the real network
     test('positive: after registering the service worker, fetched items are served from its cache (stale)', async ({ page, serviceWorkersPage }) => {
       await page.goto(URL);
-      await registerServiceWorker(page, serviceWorkersPage);
+      await serviceWorkersPage.registerServiceWorker();
 
       await serviceWorkersPage.fetchItemsButton.click();
       await expect(serviceWorkersPage.fetchedItems).toHaveCount(3);
@@ -61,7 +53,7 @@ test.describe('Service Workers', () => {
       serviceWorkersPage,
     }) => {
       await page.goto(URL);
-      await registerServiceWorker(page, serviceWorkersPage);
+      await serviceWorkersPage.registerServiceWorker();
 
       await context.setOffline(true);
       await serviceWorkersPage.fetchItemsButton.click();
@@ -127,7 +119,7 @@ test.describe('Service Workers', () => {
       });
 
       await page.goto(URL);
-      await registerServiceWorker(page, serviceWorkersPage);
+      await serviceWorkersPage.registerServiceWorker();
       await serviceWorkersPage.fetchItemsButton.click();
 
       await expect(serviceWorkersPage.fetchedItems).toHaveCount(3);
@@ -193,22 +185,22 @@ test.describe('Service Workers', () => {
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial page load', async ({ page }) => {
       await page.goto(URL);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations once items are rendered from the service worker cache', async ({ page, serviceWorkersPage }) => {
       await page.goto(URL);
-      await registerServiceWorker(page, serviceWorkersPage);
+      await serviceWorkersPage.registerServiceWorker();
       await serviceWorkersPage.fetchItemsButton.click();
       await expect(serviceWorkersPage.fetchedItems).toHaveCount(3);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations once items are rendered from the network', async ({ page, serviceWorkersPage }) => {
       await page.goto(URL);
       await serviceWorkersPage.fetchItemsButton.click();
       await expect(serviceWorkersPage.fetchedItems).toHaveCount(3);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations in the offline network-error state', async ({ browser }) => {
@@ -221,7 +213,7 @@ test.describe('Service Workers', () => {
       await serviceWorkersPage.fetchItemsButton.click();
       await expect(serviceWorkersPage.errorRegion).toBeVisible();
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
       await context.close();
     });
   });

@@ -1,5 +1,8 @@
 import { Page, Locator } from '@playwright/test';
 
+// Fields that gate the Subscribe button — verified against the live form.
+export type GatingField = 'name' | 'email' | 'topic' | 'frequency' | 'terms';
+
 export class FormsValidationPage {
   // ── Inputs ──────────────────────────────────────────────
   readonly fullNameInput: Locator;
@@ -67,5 +70,20 @@ export class FormsValidationPage {
     this.homeLink = page.getByRole('link', { name: 'Stagecraft' });
     this.allLabsLink = page.getByRole('link', { name: '← All labs' });
     this.playwrightDocsLink = page.getByRole('link', { name: 'Playwright Docs' });
+  }
+
+  /** Fills every required (gating) field with valid data, optionally skipping one. */
+  async fillGatingFields(name: string, email: string, skip?: GatingField): Promise<void> {
+    if (skip !== 'name') await this.fullNameInput.fill(name);
+    if (skip !== 'email') await this.emailAddressInput.fill(email);
+    if (skip !== 'topic') await this.topicCategorySelect.selectOption('technology');
+    if (skip !== 'frequency') await this.weeklyRadio.check();
+    if (skip !== 'terms') await this.termsCheckbox.check();
+  }
+
+  /** Fills every required field with valid data and submits the form. */
+  async submitValidForm(name: string, email: string): Promise<void> {
+    await this.fillGatingFields(name, email);
+    await this.subscribeButton.click();
   }
 }

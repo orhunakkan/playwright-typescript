@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag, violationsExcluding } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-14 — Async UI
 
@@ -180,44 +180,41 @@ test.describe('Async UI', () => {
 
   // Accessibility — WCAG 2.1 AA axe scan across all five UI states
   test.describe('accessibility (WCAG 2.1 AA, axe) — all UI states', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     // KNOWN DEFECT (TAB1-42): <code> elements (bg-surface-raised: #f4f4f5, fg: #71717a) = 4.39:1.
-    // Below WCAG 2.1 AA threshold of 4.5:1. Excluded so it doesn't mask regressions elsewhere.
-    // Remove filter once the app fixes the contrast (see TAB1-42).
-    const filterKnown = (violations: { id: string }[]) => violations.filter((v) => v.id !== 'color-contrast');
+    // Below WCAG 2.1 AA threshold of 4.5:1. Excluded so it doesn't mask regressions elsewhere via
+    // violationsExcluding(...). Remove the filter once the app fixes the contrast (see TAB1-42).
 
     test('no violations on initial page load', async ({ page }) => {
-      const results = await scan(page);
-      expect(filterKnown(results.violations)).toEqual([]);
+      const results = await scanWcag(page);
+      expect(violationsExcluding(results, ['color-contrast'])).toEqual([]);
     });
 
     test('no violations during loading skeleton state', async ({ page, asyncUiPage }) => {
       await asyncUiPage.loadArticlesButton.click();
       await expect(asyncUiPage.loadingIndicator).toBeVisible({ timeout: 2000 });
-      const results = await scan(page);
-      expect(filterKnown(results.violations)).toEqual([]);
+      const results = await scanWcag(page);
+      expect(violationsExcluding(results, ['color-contrast'])).toEqual([]);
     });
 
     test('no violations in loaded/success state', async ({ page, asyncUiPage }) => {
       await asyncUiPage.loadArticlesButton.click();
       await expect(asyncUiPage.articleItems.first()).toBeVisible({ timeout: 5000 });
-      const results = await scan(page);
-      expect(filterKnown(results.violations)).toEqual([]);
+      const results = await scanWcag(page);
+      expect(violationsExcluding(results, ['color-contrast'])).toEqual([]);
     });
 
     test('no violations in error state', async ({ page, asyncUiPage }) => {
       await asyncUiPage.loadWithErrorButton.click();
       await expect(asyncUiPage.errorAlert).toBeVisible({ timeout: 5000 });
-      const results = await scan(page);
-      expect(filterKnown(results.violations)).toEqual([]);
+      const results = await scanWcag(page);
+      expect(violationsExcluding(results, ['color-contrast'])).toEqual([]);
     });
 
     test('no violations while toast is visible', async ({ page, asyncUiPage }) => {
       await asyncUiPage.triggerNotificationButton.click();
       await expect(asyncUiPage.toastNotification).toBeVisible({ timeout: 3000 });
-      const results = await scan(page);
-      expect(filterKnown(results.violations)).toEqual([]);
+      const results = await scanWcag(page);
+      expect(violationsExcluding(results, ['color-contrast'])).toEqual([]);
     });
   });
 

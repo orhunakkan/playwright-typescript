@@ -1,12 +1,10 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import type { Page } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-22 — ARIA Snapshots
 
 const LAB_URL = '/practice/aria-snapshots';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 test.describe('ARIA Snapshots', () => {
   test.beforeEach(async ({ page }) => {
@@ -214,13 +212,13 @@ test.describe('ARIA Snapshots', () => {
 
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations at initial load', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations with an accordion section expanded', async ({ page, ariaSnapshotsPage }) => {
       await ariaSnapshotsPage.accordionButton('What is an ARIA snapshot?').click();
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after navigating the wizard to a later step', async ({ page, ariaSnapshotsPage }) => {
@@ -236,7 +234,7 @@ test.describe('ARIA Snapshots', () => {
         expect(after).toBe(before);
       }).toPass({ timeout: 2000 });
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

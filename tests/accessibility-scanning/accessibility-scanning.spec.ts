@@ -1,15 +1,9 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
-import type { Page } from '@playwright/test';
+import { scanA11y } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-35 — Accessibility Scanning
 
 const URL = '/practice/accessibility-scanning';
-
-const scan = (page: Page) => new AxeBuilder({ page }).analyze();
-const scanFormRegion = (page: Page) => new AxeBuilder({ page }).include('#form-region').analyze();
-const scanWcag2Tags = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-const scanChrome = (page: Page) => new AxeBuilder({ page }).exclude('#form-region').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 // The broken (default) state injects two known, real axe violations, both inside #form-region:
 // a decorative <img> with no alt attribute (rule: image-alt), and a Submit button whose text
@@ -28,7 +22,7 @@ test.describe('Accessibility Scanning', () => {
       // waiting for network idle before scanning is what makes the violation set deterministic.
       await page.waitForLoadState('networkidle');
 
-      const results = await scan(page);
+      const results = await scanA11y(page);
 
       expect(results.violations.length).toBeGreaterThan(0);
     });
@@ -39,7 +33,7 @@ test.describe('Accessibility Scanning', () => {
       // waiting for network idle before scanning is what makes the violation set deterministic.
       await page.waitForLoadState('networkidle');
 
-      const results = await scan(page);
+      const results = await scanA11y(page);
       const reportedIds = results.violations.map((v) => v.id);
 
       for (const id of KNOWN_BROKEN_VIOLATION_IDS) {
@@ -56,7 +50,7 @@ test.describe('Accessibility Scanning', () => {
       // waiting for network idle before scanning is what makes the violation set deterministic.
       await page.waitForLoadState('networkidle');
 
-      const results = await scan(page);
+      const results = await scanA11y(page);
       expect(results.violations.length).toBeGreaterThan(0);
 
       for (const violation of results.violations) {
@@ -80,7 +74,7 @@ test.describe('Accessibility Scanning', () => {
       await accessibilityScanningPage.accessibleControlsCheckbox.check();
       await expect(accessibilityScanningPage.violationStatusBadge).toHaveText('Accessible');
 
-      const results = await scan(page);
+      const results = await scanA11y(page);
 
       expect(results.violations).toEqual([]);
     });
@@ -96,11 +90,11 @@ test.describe('Accessibility Scanning', () => {
 
       await accessibilityScanningPage.accessibleControlsCheckbox.check();
       await expect(accessibilityScanningPage.violationStatusBadge).toHaveText('Accessible');
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanA11y(page)).violations).toEqual([]);
 
       await accessibilityScanningPage.accessibleControlsCheckbox.uncheck();
       await expect(accessibilityScanningPage.violationStatusBadge).toHaveText('Has violations');
-      expect((await scan(page)).violations.length).toBeGreaterThan(0);
+      expect((await scanA11y(page)).violations.length).toBeGreaterThan(0);
     });
   });
 
@@ -112,7 +106,7 @@ test.describe('Accessibility Scanning', () => {
       // waiting for network idle before scanning is what makes the violation set deterministic.
       await page.waitForLoadState('networkidle');
 
-      const results = await scanFormRegion(page);
+      const results = await scanA11y(page, { include: '#form-region' });
       const reportedIds = results.violations.map((v) => v.id).sort();
 
       expect(reportedIds).toEqual([...KNOWN_BROKEN_VIOLATION_IDS].sort());
@@ -129,7 +123,7 @@ test.describe('Accessibility Scanning', () => {
       await accessibilityScanningPage.accessibleControlsCheckbox.check();
       await expect(accessibilityScanningPage.violationStatusBadge).toHaveText('Accessible');
 
-      const results = await scanFormRegion(page);
+      const results = await scanA11y(page, { include: '#form-region' });
 
       expect(results.violations).toEqual([]);
     });
@@ -143,7 +137,7 @@ test.describe('Accessibility Scanning', () => {
       // waiting for network idle before scanning is what makes the violation set deterministic.
       await page.waitForLoadState('networkidle');
 
-      const results = await scanWcag2Tags(page);
+      const results = await scanA11y(page, { tags: ['wcag2a', 'wcag2aa'] });
 
       expect(results.violations.length).toBeGreaterThan(0);
       for (const violation of results.violations) {
@@ -157,7 +151,7 @@ test.describe('Accessibility Scanning', () => {
       // waiting for network idle before scanning is what makes the violation set deterministic.
       await page.waitForLoadState('networkidle');
 
-      const results = await new AxeBuilder({ page }).withTags(['nonexistent-tag']).analyze();
+      const results = await scanA11y(page, { tags: ['nonexistent-tag'] });
 
       expect(results.violations).toEqual([]);
     });
@@ -169,7 +163,7 @@ test.describe('Accessibility Scanning', () => {
       // axe's color-contrast/image-alt checks are flaky against a pre-hydration DOM snapshot —
       // waiting for network idle before scanning is what makes the violation set deterministic.
       await page.waitForLoadState('networkidle');
-      expect((await scanChrome(page)).violations).toEqual([]);
+      expect((await scanA11y(page, { exclude: '#form-region', tags: ['wcag2a', 'wcag2aa', 'wcag21aa'] })).violations).toEqual([]);
     });
 
     test('no violations with accessible controls toggled on, outside #form-region', async ({ page, accessibilityScanningPage }) => {
@@ -178,7 +172,7 @@ test.describe('Accessibility Scanning', () => {
       // waiting for network idle before scanning is what makes the violation set deterministic.
       await page.waitForLoadState('networkidle');
       await accessibilityScanningPage.accessibleControlsCheckbox.check();
-      expect((await scanChrome(page)).violations).toEqual([]);
+      expect((await scanA11y(page, { exclude: '#form-region', tags: ['wcag2a', 'wcag2aa', 'wcag21aa'] })).violations).toEqual([]);
     });
   });
 });

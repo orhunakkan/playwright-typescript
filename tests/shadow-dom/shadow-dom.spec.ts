@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import { faker } from '@faker-js/faker';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-37 — Shadow DOM & Web Components
@@ -148,15 +148,13 @@ test.describe('Shadow DOM & Web Components', () => {
 
   // Accessibility — scan load + star-selected + post-submit-confirmation states (Phase 5).
   test.describe('accessibility (WCAG 2.x, axe)', () => {
-    const scan = (page: import('@playwright/test').Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
     test('no violations on initial page load', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after selecting a star', async ({ page, shadowDomPage }) => {
       await shadowDomPage.star3Radio.click();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations on the post-submit confirmation state', async ({ page, shadowDomPage }) => {
@@ -165,7 +163,7 @@ test.describe('Shadow DOM & Web Components', () => {
       await shadowDomPage.submitButton.click();
       await expect(shadowDomPage.confirmationStatus).toBeVisible();
 
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

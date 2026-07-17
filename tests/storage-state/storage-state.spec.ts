@@ -1,6 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
-import type { Page, BrowserContext } from '@playwright/test';
+import { scanWcag } from '../../utilities/accessibility';
 import { StorageStatePage } from '../../pages/storage-state.page';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -27,35 +26,17 @@ const AC5_STATE_PATH = 'fixtures/auth/ss-ac5-admin.json';
 const A11Y_ADMIN_PATH = 'fixtures/auth/ss-a11y-admin.json';
 const A11Y_USER_PATH = 'fixtures/auth/ss-a11y-user.json';
 
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
-// Logs in via the UI login form and serializes the resulting session to statePath.
-async function loginAndSaveState(page: Page, context: BrowserContext, username: string, password: string, statePath: string) {
-  await page.goto(LOGIN_URL);
-  await page.getByRole('textbox', { name: 'Username' }).fill(username);
-  await page.getByRole('textbox', { name: 'Password' }).fill(password);
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.waitForURL(/\/practice\/fake-auth\/dashboard$/);
-  fs.mkdirSync(path.dirname(statePath), { recursive: true });
-  await context.storageState({ path: statePath });
-}
-
-function readSessionCookie(statePath: string) {
-  const state = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
-  return state.cookies.find((c: { name: string }) => c.name === 'connect.sid');
-}
-
 test.describe('Storage State', () => {
   // AC-1 (TAB1-23): Tests log in via the UI as alice and call context.storageState({ path })
   // to save the session to a file
   test.describe.serial('AC-1 — UI login as alice; context.storageState() persists session to file', () => {
     test('positive: after UI login, context.storageState() writes a file to disk', async ({ page, context }) => {
-      await loginAndSaveState(page, context, ADMIN.username, ADMIN.password, AC1_STATE_PATH);
+      await StorageStatePage.loginAndSaveState(page, context, ADMIN.username, ADMIN.password, AC1_STATE_PATH);
       expect(fs.existsSync(AC1_STATE_PATH)).toBe(true);
     });
 
     test('boundary: saved state file contains the session cookie that authenticates the user', async () => {
-      const sessionCookie = readSessionCookie(AC1_STATE_PATH);
+      const sessionCookie = StorageStatePage.readSessionCookie(AC1_STATE_PATH);
       expect(sessionCookie).toBeDefined();
       expect(sessionCookie.value.length).toBeGreaterThan(0);
     });
@@ -66,7 +47,7 @@ test.describe('Storage State', () => {
       await freshPage.goto(LOGIN_URL);
       fs.mkdirSync(path.dirname(AC1_NOAUTH_PATH), { recursive: true });
       await freshContext.storageState({ path: AC1_NOAUTH_PATH });
-      expect(readSessionCookie(AC1_NOAUTH_PATH)).toBeUndefined();
+      expect(StorageStatePage.readSessionCookie(AC1_NOAUTH_PATH)).toBeUndefined();
       await freshContext.close();
     });
   });
@@ -77,7 +58,7 @@ test.describe('Storage State', () => {
     test.beforeAll(async ({ browser }) => {
       const context = await browser.newContext();
       const page = await context.newPage();
-      await loginAndSaveState(page, context, ADMIN.username, ADMIN.password, AC2_STATE_PATH);
+      await StorageStatePage.loginAndSaveState(page, context, ADMIN.username, ADMIN.password, AC2_STATE_PATH);
       await context.close();
     });
 
@@ -112,12 +93,12 @@ test.describe('Storage State', () => {
     test.beforeAll(async ({ browser }) => {
       const adminContext = await browser.newContext();
       const adminPage = await adminContext.newPage();
-      await loginAndSaveState(adminPage, adminContext, ADMIN.username, ADMIN.password, AC3_ADMIN_PATH);
+      await StorageStatePage.loginAndSaveState(adminPage, adminContext, ADMIN.username, ADMIN.password, AC3_ADMIN_PATH);
       await adminContext.close();
 
       const userContext = await browser.newContext();
       const userPage = await userContext.newPage();
-      await loginAndSaveState(userPage, userContext, USER.username, USER.password, AC3_USER_PATH);
+      await StorageStatePage.loginAndSaveState(userPage, userContext, USER.username, USER.password, AC3_USER_PATH);
       await userContext.close();
     });
 
@@ -199,7 +180,7 @@ test.describe('Storage State', () => {
 
       fs.mkdirSync(path.dirname(AC4_USER_PATH), { recursive: true });
       await request.storageState({ path: AC4_USER_PATH });
-      expect(readSessionCookie(AC4_USER_PATH)).toBeDefined();
+      expect(StorageStatePage.readSessionCookie(AC4_USER_PATH)).toBeDefined();
     });
   });
 
@@ -209,7 +190,7 @@ test.describe('Storage State', () => {
     test.beforeAll(async ({ browser }) => {
       const context = await browser.newContext();
       const page = await context.newPage();
-      await loginAndSaveState(page, context, ADMIN.username, ADMIN.password, AC5_STATE_PATH);
+      await StorageStatePage.loginAndSaveState(page, context, ADMIN.username, ADMIN.password, AC5_STATE_PATH);
       await context.close();
     });
 
@@ -250,25 +231,25 @@ test.describe('Storage State', () => {
     test.beforeAll(async ({ browser }) => {
       const adminContext = await browser.newContext();
       const adminPage = await adminContext.newPage();
-      await loginAndSaveState(adminPage, adminContext, ADMIN.username, ADMIN.password, A11Y_ADMIN_PATH);
+      await StorageStatePage.loginAndSaveState(adminPage, adminContext, ADMIN.username, ADMIN.password, A11Y_ADMIN_PATH);
       await adminContext.close();
 
       const userContext = await browser.newContext();
       const userPage = await userContext.newPage();
-      await loginAndSaveState(userPage, userContext, USER.username, USER.password, A11Y_USER_PATH);
+      await StorageStatePage.loginAndSaveState(userPage, userContext, USER.username, USER.password, A11Y_USER_PATH);
       await userContext.close();
     });
 
     test('no violations on unauthenticated storage-state page', async ({ page }) => {
       await page.goto(STORAGE_STATE_URL);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations on admin-authenticated view', async ({ browser }) => {
       const authedContext = await browser.newContext({ storageState: A11Y_ADMIN_PATH });
       const authedPage = await authedContext.newPage();
       await authedPage.goto(STORAGE_STATE_URL);
-      expect((await scan(authedPage)).violations).toEqual([]);
+      expect((await scanWcag(authedPage)).violations).toEqual([]);
       await authedContext.close();
     });
 
@@ -276,7 +257,7 @@ test.describe('Storage State', () => {
       const authedContext = await browser.newContext({ storageState: A11Y_USER_PATH });
       const authedPage = await authedContext.newPage();
       await authedPage.goto(STORAGE_STATE_URL);
-      expect((await scan(authedPage)).violations).toEqual([]);
+      expect((await scanWcag(authedPage)).violations).toEqual([]);
       await authedContext.close();
     });
   });

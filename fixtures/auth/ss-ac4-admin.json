@@ -2,10 +2,10 @@
   "cookies": [
     {
       "name": "connect.sid",
-      "value": "s%3AePf241ltNvG-nr4j-Z5DVjcp2kK3jf-J.HgvSKSxokbk0MyxKsRGCaa9fswigmX55uEjLUGhPxRI",
+      "value": "s%3AZZ76uVj0_vqJ3GiymRFyxzATz9lQ0_3q.6kodhWLOv6LBzMGiauB7uw6TQ5Ct%2F7GhaSjcHLC4UAE",
       "domain": "stagecraftlabs.com",
       "path": "/",
-      "expires": 1783880887,
+      "expires": 1784278277,
       "httpOnly": true,
       "secure": true,
       "sameSite": "Lax"

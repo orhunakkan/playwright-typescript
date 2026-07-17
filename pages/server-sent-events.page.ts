@@ -4,6 +4,12 @@
 
 import { Page, Locator } from '@playwright/test';
 
+export type SseEventType = 'info' | 'warn' | 'error';
+export interface StubEvent {
+  type: SseEventType;
+  message: string;
+}
+
 export class ServerSentEventsPage {
   readonly page: Page;
 
@@ -59,5 +65,15 @@ export class ServerSentEventsPage {
   // Locates a specific log entry by its full accessible name, e.g. "info event: Build started".
   logEntry(type: 'system' | 'info' | 'warn' | 'error', message: string): Locator {
     return this.page.getByRole('listitem', { name: `${type} event: ${message}` });
+  }
+
+  // Matches the real backend's wire format exactly (captured via a raw fetch() against /api/sse):
+  // `event: log` + JSON data per entry, terminated by `event: done`. The "Connecting to stream…"
+  // and "Stream complete." system entries are synthesized client-side on EventSource open/`done`,
+  // not part of the SSE payload itself — confirmed by inspecting the raw stream, which never
+  // contains them.
+  buildSsePayload(events: StubEvent[]): string {
+    const body = events.map(({ type, message }) => `event: log\ndata: ${JSON.stringify({ type, message })}\n\n`).join('');
+    return `${body}event: done\ndata: {}\n\n`;
   }
 }

@@ -1,12 +1,10 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import type { Page } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-39 — Soft Assertions & Test Steps
 
 const LAB_URL = '/practice/soft-assertions';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 
 test.describe('Soft Assertions & Test Steps', () => {
   test.beforeEach(async ({ page }) => {
@@ -140,7 +138,7 @@ test.describe('Soft Assertions & Test Steps', () => {
   // Accessibility — scan load state (widgets mid-settle) and settled state (Gap #3: axe multi-state)
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations at initial load (widgets mid-settle)', async ({ page }) => {
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations once all widgets have settled', async ({ softAssertionsPage, page }) => {
@@ -149,7 +147,7 @@ test.describe('Soft Assertions & Test Steps', () => {
         const text = await softAssertionsPage.accountStatusBadge.textContent();
         expect(text).toBe('active');
       }).toPass({ timeout: 3000 });
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

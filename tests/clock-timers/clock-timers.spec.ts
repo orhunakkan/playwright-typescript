@@ -1,6 +1,5 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
-import type { Page } from '@playwright/test';
+import { scanWcag } from '../../utilities/accessibility';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-25 — Clock & Timers
 
@@ -13,30 +12,19 @@ const FIXED_DATE = new Date(Date.UTC(2026, 2, 15, 12, 0, 0));
 // doesn't roll over to the next calendar date due to a UTC/local Date mismatch.
 const BOUNDARY_DATE = new Date(Date.UTC(2026, 10, 3, 23, 59, 59));
 
-function expectedDateText(date: Date): string {
-  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-}
-
-async function installAndGoto(page: Page) {
-  await page.clock.install();
-  await page.goto(URL);
-}
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
 test.describe('Clock & Timers', () => {
   // AC-1 (TAB1-25): Tests install the fake clock with page.clock.install() before navigation
   // and advance it programmatically with clock.tick()
   test.describe('AC-1 — page.clock.install() before navigation; clock.tick() advances time', () => {
     test('positive: clock installed before navigation allows deterministic tick() advancement', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.countdownStartButton.click();
       await page.clock.runFor(10_000);
       await expect(clockTimersPage.countdownDisplay).toHaveText('00:50');
     });
 
     test('boundary: tick(0) leaves the countdown display unchanged', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.countdownStartButton.click();
       await page.clock.runFor(0);
       await expect(clockTimersPage.countdownDisplay).toHaveText('01:00');
@@ -47,20 +35,20 @@ test.describe('Clock & Timers', () => {
   // clock.tick(60_000), and assert the "Time's up!" message appears without any real waiting
   test.describe('AC-2 — 60s countdown expiry via clock.tick(60_000)', () => {
     test('positive: tick(60_000) shows "Time\'s up!" with no real waiting', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.countdownStartButton.click();
       await page.clock.runFor(60_000);
       await expect(clockTimersPage.timesUpMessage).toBeVisible();
     });
 
     test('negative: "Time\'s up!" is absent before the countdown completes', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.countdownStartButton.click();
       await expect(clockTimersPage.timesUpMessage).not.toBeVisible();
     });
 
     test('boundary: at 59_900ms elapsed (still 1s remaining), "Time\'s up!" has not appeared yet', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.countdownStartButton.click();
       await page.clock.runFor(59_900);
       await expect(clockTimersPage.countdownDisplay).toHaveText('00:01');
@@ -72,7 +60,7 @@ test.describe('Clock & Timers', () => {
   // to trigger the session expiry toast, asserting it appears with the correct countdown
   test.describe('AC-3 — session expiry toast via clock.tick(5000)', () => {
     test('positive: tick(5000) shows the expiry toast with the correct countdown', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.startSessionButton.click();
       await page.clock.runFor(5000);
       await expect(clockTimersPage.expiryToast).toBeVisible();
@@ -81,13 +69,13 @@ test.describe('Clock & Timers', () => {
     });
 
     test('negative: expiry toast is absent before the 5s threshold', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.startSessionButton.click();
       await expect(clockTimersPage.expiryToast).not.toBeVisible();
     });
 
     test('boundary: at 4_999ms elapsed, the toast has not yet appeared', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.startSessionButton.click();
       await page.clock.runFor(4_999);
       await expect(clockTimersPage.expiryToast).not.toBeVisible();
@@ -98,20 +86,20 @@ test.describe('Clock & Timers', () => {
   // cycle and assert the "Refresh #" counter increments
   test.describe('AC-4 — auto-refresh polling via clock.fastForward(30_000)', () => {
     test('positive: fastForward(30_000) triggers exactly one refresh cycle', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await expect(clockTimersPage.refreshCount).toHaveText('Refresh #0');
       await page.clock.fastForward(30_000);
       await expect(clockTimersPage.refreshCount).toHaveText('Refresh #1');
     });
 
     test('boundary: fast-forwarding less than the poll interval does not increment the counter', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await page.clock.fastForward(29_999);
       await expect(clockTimersPage.refreshCount).toHaveText('Refresh #0');
     });
 
     test('boundary: fast-forwarding exactly one interval increments by exactly 1', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       // Let the polling interval register before advancing the clock
       await expect(clockTimersPage.refreshCount).toHaveText('Refresh #0');
       await page.clock.fastForward(30_000);
@@ -132,7 +120,7 @@ test.describe('Clock & Timers', () => {
     ];
 
     test('positive: countdown reflects the correct remaining time at each intermediate tick', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.countdownStartButton.click();
       for (const { tickMs, expected } of steps) {
         await page.clock.runFor(tickMs);
@@ -147,13 +135,13 @@ test.describe('Clock & Timers', () => {
     test('positive: setFixedTime(date) before navigation pins the date display to that date', async ({ page, clockTimersPage }) => {
       await page.clock.setFixedTime(FIXED_DATE);
       await page.goto(URL);
-      await expect(clockTimersPage.currentDate).toHaveText(expectedDateText(FIXED_DATE));
+      await expect(clockTimersPage.currentDate).toHaveText(clockTimersPage.expectedDateText(FIXED_DATE));
     });
 
     test('boundary: a day-boundary fixed time (23:59:59) still renders the correct calendar date', async ({ page, clockTimersPage }) => {
       await page.clock.setFixedTime(BOUNDARY_DATE);
       await page.goto(URL);
-      await expect(clockTimersPage.currentDate).toHaveText(expectedDateText(BOUNDARY_DATE));
+      await expect(clockTimersPage.currentDate).toHaveText(clockTimersPage.expectedDateText(BOUNDARY_DATE));
     });
   });
 
@@ -161,30 +149,30 @@ test.describe('Clock & Timers', () => {
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial page load', async ({ page }) => {
       await page.goto(URL);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations while the countdown is active', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.countdownStartButton.click();
       await page.clock.runFor(10_000);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations on the expired ("Time\'s up!") state', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await clockTimersPage.countdownStartButton.click();
       await page.clock.runFor(60_000);
       await expect(clockTimersPage.timesUpMessage).toBeVisible();
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after an auto-refresh cycle', async ({ page, clockTimersPage }) => {
-      await installAndGoto(page);
+      await clockTimersPage.installAndGoto();
       await expect(clockTimersPage.refreshCount).toHaveText('Refresh #0');
       await page.clock.fastForward(30_000);
       await expect(clockTimersPage.refreshCount).toHaveText('Refresh #1');
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });

@@ -1,34 +1,17 @@
 import { test, expect } from '../../fixtures/index';
-import AxeBuilder from '@axe-core/playwright';
+import { scanWcag } from '../../utilities/accessibility';
 import { faker } from '@faker-js/faker';
-import type { Page, WebSocketRoute } from '@playwright/test';
 
 // JIRA: https://orhunakkan.atlassian.net/browse/TAB1-26 — WebSocket Interception
 
 const URL = '/practice/websocket-interception';
-// The lab's guidance text references ws://localhost:3001/ws, but the deployed site actually
-// opens a socket at this same-origin path — confirmed by instrumenting the WebSocket
-// constructor on the live page before writing this spec.
-const WS_URL = 'wss://stagecraftlabs.com/ws';
-
-const scan = (page: Page) => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-
-// Delays resolving the routeWebSocket handler so the client's WebSocket stays in its
-// "connecting" state long enough to assert against — without this, Playwright opens the
-// mocked socket as soon as the handler is installed and "connecting" is too transient to catch.
-async function routeAndDelayOpen(page: Page, onOpen: (ws: WebSocketRoute) => void, delayMs = 300) {
-  await page.routeWebSocket(WS_URL, async (ws) => {
-    await new Promise((resolve) => setTimeout(resolve, delayMs));
-    onOpen(ws);
-  });
-}
 
 test.describe('WebSocket Interception', () => {
   // AC-1 (TAB1-26): Tests register a page.routeWebSocket() handler before clicking Connect and
   // assert the status indicator transitions from "connecting" to "connected"
   test.describe('AC-1 — routeWebSocket registered pre-Connect; status "connecting" → "connected"', () => {
     test('positive: status transitions connecting -> connected after Connect is clicked', async ({ page, websocketInterceptionPage }) => {
-      await routeAndDelayOpen(page, (ws) => ws.onMessage(() => {}));
+      await websocketInterceptionPage.routeAndDelayOpen((ws) => ws.onMessage(() => {}));
       await page.goto(URL);
       await expect(websocketInterceptionPage.statusIndicator).toHaveText('disconnected');
 
@@ -38,7 +21,7 @@ test.describe('WebSocket Interception', () => {
     });
 
     test('negative: status remains "disconnected" before Connect is clicked', async ({ page, websocketInterceptionPage }) => {
-      await page.routeWebSocket(WS_URL, (ws) => ws.onMessage(() => {}));
+      await page.routeWebSocket(websocketInterceptionPage.wsUrl, (ws) => ws.onMessage(() => {}));
       await page.goto(URL);
       await expect(websocketInterceptionPage.statusIndicator).toHaveText('disconnected');
       await expect(websocketInterceptionPage.connectButton).toBeEnabled();
@@ -51,7 +34,7 @@ test.describe('WebSocket Interception', () => {
   test.describe('AC-2 (Challenge 1 — full mock) — fabricated message renders without contacting the real server', () => {
     test('positive: a handler-pushed message renders in the chat log', async ({ page, websocketInterceptionPage }) => {
       const fabricated = `mock-msg-${faker.string.alphanumeric(10)}`;
-      await page.routeWebSocket(WS_URL, (ws) => {
+      await page.routeWebSocket(websocketInterceptionPage.wsUrl, (ws) => {
         ws.onMessage(() => {});
         ws.send(fabricated);
       });
@@ -65,7 +48,7 @@ test.describe('WebSocket Interception', () => {
       page,
       websocketInterceptionPage,
     }) => {
-      await page.routeWebSocket(WS_URL, (ws) => ws.onMessage(() => {}));
+      await page.routeWebSocket(websocketInterceptionPage.wsUrl, (ws) => ws.onMessage(() => {}));
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
       await expect(websocketInterceptionPage.statusIndicator).toHaveText('connected');
@@ -77,20 +60,8 @@ test.describe('WebSocket Interception', () => {
   // AC-3 (TAB1-26, Challenge 2 — selective forward): Tests connect to the real server, forward
   // most messages, and modify "ticker" messages before they reach the page
   test.describe('AC-3 (Challenge 2 — selective forward) — ticker frames are rewritten; everything else passes through', () => {
-    function routeSelectiveForward(page: Page) {
-      return page.routeWebSocket(WS_URL, (ws) => {
-        const server = ws.connectToServer();
-        ws.onMessage((message) => server.send(message));
-        server.onMessage((message) => {
-          const text = message.toString();
-          if (text.includes('ticker')) ws.send('ticker (intercepted): rewritten');
-          else ws.send(message);
-        });
-      });
-    }
-
     test('positive: a "ticker" server message is rewritten before reaching the page', async ({ page, websocketInterceptionPage }) => {
-      await routeSelectiveForward(page);
+      await websocketInterceptionPage.routeSelectiveForward();
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
       await expect(websocketInterceptionPage.statusIndicator).toHaveText('connected');
@@ -99,7 +70,7 @@ test.describe('WebSocket Interception', () => {
     });
 
     test('negative: non-ticker server messages are forwarded unmodified', async ({ page, websocketInterceptionPage }) => {
-      await routeSelectiveForward(page);
+      await websocketInterceptionPage.routeSelectiveForward();
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
       await expect(websocketInterceptionPage.messageLog).toContainText('Welcome to the Stagecraft WebSocket server!');
@@ -109,18 +80,8 @@ test.describe('WebSocket Interception', () => {
   // AC-4 (TAB1-26, Challenge 3 — block frames): Tests let the connection succeed but block
   // outgoing messages containing "block", asserting the server never echoes them back
   test.describe('AC-4 (Challenge 3 — block frames) — outgoing "block" frames are never echoed', () => {
-    function routeBlockingFrames(page: Page) {
-      return page.routeWebSocket(WS_URL, (ws) => {
-        const server = ws.connectToServer();
-        ws.onMessage((message) => {
-          if (!message.toString().includes('block')) server.send(message);
-        });
-        server.onMessage((message) => ws.send(message));
-      });
-    }
-
     test('positive: a message containing "block" is never echoed back by the server', async ({ page, websocketInterceptionPage }) => {
-      await routeBlockingFrames(page);
+      await websocketInterceptionPage.routeBlockingFrames();
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
       await expect(websocketInterceptionPage.statusIndicator).toHaveText('connected');
@@ -135,7 +96,7 @@ test.describe('WebSocket Interception', () => {
     });
 
     test('negative: a message that does not contain "block" is still forwarded and echoed', async ({ page, websocketInterceptionPage }) => {
-      await routeBlockingFrames(page);
+      await websocketInterceptionPage.routeBlockingFrames();
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
 
@@ -147,7 +108,7 @@ test.describe('WebSocket Interception', () => {
     });
 
     test('boundary: a message containing "block" as a substring (e.g. "unblock") is also blocked', async ({ page, websocketInterceptionPage }) => {
-      await routeBlockingFrames(page);
+      await websocketInterceptionPage.routeBlockingFrames();
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
 
@@ -166,7 +127,7 @@ test.describe('WebSocket Interception', () => {
   test.describe('AC-5 — an intercepted outgoing message matches the typed input', () => {
     test('positive: the message captured by onMessage exactly matches what was typed', async ({ page, websocketInterceptionPage }) => {
       let captured: string | undefined;
-      await page.routeWebSocket(WS_URL, (ws) => {
+      await page.routeWebSocket(websocketInterceptionPage.wsUrl, (ws) => {
         const server = ws.connectToServer();
         ws.onMessage((message) => {
           captured = message.toString();
@@ -187,7 +148,7 @@ test.describe('WebSocket Interception', () => {
 
     test('negative: an empty input keeps Send disabled, so no client message is ever intercepted', async ({ page, websocketInterceptionPage }) => {
       let interceptCount = 0;
-      await page.routeWebSocket(WS_URL, (ws) => {
+      await page.routeWebSocket(websocketInterceptionPage.wsUrl, (ws) => {
         const server = ws.connectToServer();
         ws.onMessage((message) => {
           interceptCount++;
@@ -210,7 +171,7 @@ test.describe('WebSocket Interception', () => {
     const bleedMarker = `isolation-check-${faker.string.alphanumeric(10)}`;
 
     test("positive (test A): a fabricated message is sent under this test's isolated stub", async ({ page, websocketInterceptionPage }) => {
-      await page.routeWebSocket(WS_URL, (ws) => {
+      await page.routeWebSocket(websocketInterceptionPage.wsUrl, (ws) => {
         ws.onMessage(() => {});
         ws.send(bleedMarker);
       });
@@ -220,7 +181,7 @@ test.describe('WebSocket Interception', () => {
     });
 
     test("positive (test B): a fresh test never sees the previous test's fabricated message", async ({ page, websocketInterceptionPage }) => {
-      await page.routeWebSocket(WS_URL, (ws) => ws.onMessage(() => {}));
+      await page.routeWebSocket(websocketInterceptionPage.wsUrl, (ws) => ws.onMessage(() => {}));
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
       await expect(websocketInterceptionPage.statusIndicator).toHaveText('connected');
@@ -232,26 +193,26 @@ test.describe('WebSocket Interception', () => {
   test.describe('accessibility (WCAG 2.x, axe)', () => {
     test('no violations on initial page load (disconnected)', async ({ page }) => {
       await page.goto(URL);
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations while the connection is pending ("connecting")', async ({ page, websocketInterceptionPage }) => {
-      await routeAndDelayOpen(page, (ws) => ws.onMessage(() => {}), 2000);
+      await websocketInterceptionPage.routeAndDelayOpen((ws) => ws.onMessage(() => {}), 2000);
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
       await expect(websocketInterceptionPage.statusIndicator).toHaveText('connecting');
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations once connected with messages in the log', async ({ page, websocketInterceptionPage }) => {
-      await page.routeWebSocket(WS_URL, (ws) => {
+      await page.routeWebSocket(websocketInterceptionPage.wsUrl, (ws) => {
         ws.onMessage(() => {});
         ws.send('a11y-check message');
       });
       await page.goto(URL);
       await websocketInterceptionPage.connectButton.click();
       await expect(websocketInterceptionPage.messageLog).toContainText('a11y-check message');
-      expect((await scan(page)).violations).toEqual([]);
+      expect((await scanWcag(page)).violations).toEqual([]);
     });
   });
 });
