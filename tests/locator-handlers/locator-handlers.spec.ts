@@ -41,7 +41,7 @@ test.describe('Locator Handlers', () => {
       await expect(locatorHandlersPage.orderConfirmedStatus).toBeVisible();
 
       expect(handlerFired).toBe(true);
-      await expect(locatorHandlersPage.cookieConsentDialog).not.toBeVisible();
+      await expect(locatorHandlersPage.cookieConsentDialog).toBeHidden();
     });
 
     test('negative: with no handler registered, the Cookie Consent dialog remains visible and blocks interaction underneath it', async ({

@@ -20,20 +20,20 @@ test.describe('Soft Assertions & Test Steps', () => {
       // asserting — settling itself is covered by the dedicated AC-2/AC-3 tests below.
       await expect.poll(async () => softAssertionsPage.activityScoreValue.textContent(), { timeout: 5000 }).toBe('87');
       await expect(async () => {
-        const text = await softAssertionsPage.accountStatusBadge.textContent();
-        expect(text).toBe('active');
+        const text = softAssertionsPage.accountStatusBadge;
+        await expect(text).toHaveText('active');
       }).toPass({ timeout: 3000 });
 
       const stepNames: string[] = [];
 
       await test.step('Check Activity Score', async () => {
         stepNames.push('Check Activity Score');
-        expect.soft(await softAssertionsPage.activityScoreValue.textContent()).toBe('87');
+        await expect.soft(softAssertionsPage.activityScoreValue).toHaveText('87');
       });
 
       await test.step('Check Account Status', async () => {
         stepNames.push('Check Account Status');
-        expect.soft(await softAssertionsPage.accountStatusBadge.textContent()).toBe('active');
+        await expect.soft(softAssertionsPage.accountStatusBadge).toHaveText('active');
       });
 
       await test.step('Check Profile', async () => {
@@ -43,7 +43,7 @@ test.describe('Soft Assertions & Test Steps', () => {
 
       await test.step('Check Notifications', async () => {
         stepNames.push('Check Notifications');
-        expect.soft(await softAssertionsPage.notificationCount.textContent()).toBe('3');
+        await expect.soft(softAssertionsPage.notificationCount).toHaveText('3');
       });
 
       // AC-4-B: step names are unique per widget — no generic/duplicate titles
@@ -61,12 +61,12 @@ test.describe('Soft Assertions & Test Steps', () => {
 
       await test.step('Check Activity Score', async () => {
         // Intentional wrong expectation
-        expect.soft(await softAssertionsPage.activityScoreValue.textContent()).toBe('unreachable-value');
+        await expect.soft(softAssertionsPage.activityScoreValue).toHaveText('unreachable-value');
         checked.push('Activity Score');
       });
 
       await test.step('Check Account Status', async () => {
-        expect.soft(await softAssertionsPage.accountStatusBadge.textContent()).toBe('active');
+        await expect.soft(softAssertionsPage.accountStatusBadge).toHaveText('active');
         checked.push('Account Status');
       });
 
@@ -76,7 +76,7 @@ test.describe('Soft Assertions & Test Steps', () => {
       });
 
       await test.step('Check Notifications', async () => {
-        expect.soft(await softAssertionsPage.notificationCount.textContent()).toBe('3');
+        await expect.soft(softAssertionsPage.notificationCount).toHaveText('3');
         checked.push('Notifications');
       });
 
@@ -113,8 +113,8 @@ test.describe('Soft Assertions & Test Steps', () => {
   test.describe('AC-3 — toPass retries the animated Account Status badge until it settles', () => {
     test('positive/boundary: toPass({ timeout: 3000 }) retries until the badge settles on "active"', async ({ softAssertionsPage }) => {
       await expect(async () => {
-        const text = await softAssertionsPage.accountStatusBadge.textContent();
-        expect(text).toBe('active');
+        const text = softAssertionsPage.accountStatusBadge;
+        await expect(text).toHaveText('active');
       }).toPass({ timeout: 3000 });
     });
   });
@@ -126,8 +126,8 @@ test.describe('Soft Assertions & Test Steps', () => {
       await test.step('Check Account Status', async () => {
         testInfo.annotations.push({ type: 'issue', description: 'DASH-42' });
         await expect(async () => {
-          const text = await softAssertionsPage.accountStatusBadge.textContent();
-          expect(text).toBe('active');
+          const text = softAssertionsPage.accountStatusBadge;
+          await expect(text).toHaveText('active');
         }).toPass({ timeout: 3000 });
       });
 
@@ -144,8 +144,8 @@ test.describe('Soft Assertions & Test Steps', () => {
     test('no violations once all widgets have settled', async ({ softAssertionsPage, page }) => {
       await expect.poll(async () => softAssertionsPage.activityScoreValue.textContent(), { timeout: 5000 }).toBe('87');
       await expect(async () => {
-        const text = await softAssertionsPage.accountStatusBadge.textContent();
-        expect(text).toBe('active');
+        const text = softAssertionsPage.accountStatusBadge;
+        await expect(text).toHaveText('active');
       }).toPass({ timeout: 3000 });
       expect((await scanWcag(page)).violations).toEqual([]);
     });
@@ -160,8 +160,8 @@ test.describe('performance @performance', () => {
 
     await expect.poll(async () => softAssertionsPage.activityScoreValue.textContent(), { timeout: 5000 }).toBe('87');
     await expect(async () => {
-      const text = await softAssertionsPage.accountStatusBadge.textContent();
-      expect(text).toBe('active');
+      const text = softAssertionsPage.accountStatusBadge;
+      await expect(text).toHaveText('active');
     }).toPass({ timeout: 3000 });
 
     expect(Date.now() - start).toBeLessThan(8000);

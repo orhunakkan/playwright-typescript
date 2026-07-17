@@ -56,6 +56,10 @@ test.describe('Browser Events', () => {
       await browserEventsPage.triggerConfirmButton.click();
       const dismissedText = await browserEventsPage.dialogResult.textContent();
 
+      // Same locator is read twice for two different page states (accept, then dismiss after
+      // re-navigating) — a web-first assertion can't compare two point-in-time snapshots, so a
+      // plain string capture is required here.
+      // eslint-disable-next-line playwright/prefer-web-first-assertions
       expect(acceptedText).not.toEqual(dismissedText);
     });
   });

@@ -144,9 +144,9 @@ test.describe('Tables & Filtering', () => {
       const firstRowPage1 = await tablesFilteringPage.tableBodyRows.first().textContent();
 
       await tablesFilteringPage.pageButton(2).click();
-      const firstRowPage2 = await tablesFilteringPage.tableBodyRows.first().textContent();
+      const firstRowPage2 = tablesFilteringPage.tableBodyRows.first();
 
-      expect(firstRowPage2).not.toBe(firstRowPage1);
+      await expect(firstRowPage2).not.toHaveText(firstRowPage1);
       await expect(tablesFilteringPage.tableBodyRows.first()).toContainText('Hank Patel');
     });
 

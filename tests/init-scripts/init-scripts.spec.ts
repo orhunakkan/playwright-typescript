@@ -23,12 +23,12 @@ test.describe('Init Scripts & Seeding', () => {
       await page.goto(URL);
       await expect(initScriptsPage.betaFeatureBanner).toBeVisible();
       await expect(initScriptsPage.betaFeatureBanner).toContainText('Beta Feature is enabled');
-      await expect(initScriptsPage.betaFeatureEmptyState).not.toBeVisible();
+      await expect(initScriptsPage.betaFeatureEmptyState).toBeHidden();
     });
 
     test('negative: no init script means no flags — banner absent, empty state shown', async ({ page, initScriptsPage }) => {
       await page.goto(URL);
-      await expect(initScriptsPage.betaFeatureBanner).not.toBeVisible();
+      await expect(initScriptsPage.betaFeatureBanner).toBeHidden();
       await expect(initScriptsPage.betaFeatureEmptyState).toBeVisible();
     });
 
@@ -37,7 +37,7 @@ test.describe('Init Scripts & Seeding', () => {
         window.__FLAGS__ = { betaFeature: false };
       });
       await page.goto(URL);
-      await expect(initScriptsPage.betaFeatureBanner).not.toBeVisible();
+      await expect(initScriptsPage.betaFeatureBanner).toBeHidden();
       await expect(initScriptsPage.betaFeatureEmptyState).toBeVisible();
     });
   });
@@ -80,7 +80,7 @@ test.describe('Init Scripts & Seeding', () => {
         localStorage.setItem('onboarded', 'true');
       });
       await page.goto(URL);
-      await expect(initScriptsPage.onboardingModal).not.toBeVisible();
+      await expect(initScriptsPage.onboardingModal).toBeHidden();
       await expect(initScriptsPage.onboardingStatus).toContainText('Complete');
     });
 
@@ -109,12 +109,12 @@ test.describe('Init Scripts & Seeding', () => {
       const firstPage = await context.newPage();
       await firstPage.goto(URL);
       const firstModal = firstPage.getByRole('dialog', { name: 'Welcome to Init Scripts!' });
-      await expect(firstModal).not.toBeVisible();
+      await expect(firstModal).toBeHidden();
 
       const secondPage = await context.newPage();
       await secondPage.goto(URL);
       const secondModal = secondPage.getByRole('dialog', { name: 'Welcome to Init Scripts!' });
-      await expect(secondModal).not.toBeVisible();
+      await expect(secondModal).toBeHidden();
       await expect(secondPage.getByLabel('Onboarding state')).toContainText('Complete');
     });
 
@@ -170,14 +170,14 @@ test.describe('Init Scripts & Seeding', () => {
       });
       await page.goto(URL);
       await expect(initScriptsPage.betaFeatureBanner).toBeVisible();
-      await expect(initScriptsPage.onboardingModal).not.toBeVisible();
+      await expect(initScriptsPage.onboardingModal).toBeHidden();
       expect((await scanWcag(page)).violations).toEqual([]);
     });
 
     test('no violations after dismissing the modal via user interaction', async ({ page, initScriptsPage }) => {
       await page.goto(URL);
       await initScriptsPage.onboardingDismissButton.click();
-      await expect(initScriptsPage.onboardingModal).not.toBeVisible();
+      await expect(initScriptsPage.onboardingModal).toBeHidden();
       expect((await scanWcag(page)).violations).toEqual([]);
     });
   });

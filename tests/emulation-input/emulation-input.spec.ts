@@ -29,13 +29,13 @@ test.describe('Emulation & Input', () => {
   // AC-1 (TAB1-18): Tests open the command palette using page.keyboard.press("Control+K") and assert it becomes visible
   test.describe('AC-1 — keyboard shortcut opens command palette', () => {
     test('positive: Control+K opens the command palette', async ({ page, emulationInputPage }) => {
-      await expect(emulationInputPage.commandPaletteDialog).not.toBeVisible();
+      await expect(emulationInputPage.commandPaletteDialog).toBeHidden();
       await page.keyboard.press('Control+K');
       await expect(emulationInputPage.commandPaletteDialog).toBeVisible();
     });
 
     test('negative: command palette is not visible on initial page load', async ({ emulationInputPage }) => {
-      await expect(emulationInputPage.commandPaletteDialog).not.toBeVisible();
+      await expect(emulationInputPage.commandPaletteDialog).toBeHidden();
     });
   });
 
@@ -81,34 +81,34 @@ test.describe('Emulation & Input', () => {
       await page.keyboard.press('Control+K');
       await expect(emulationInputPage.commandPaletteDialog).toBeVisible();
       await page.keyboard.press('Escape');
-      await expect(emulationInputPage.commandPaletteDialog).not.toBeVisible();
+      await expect(emulationInputPage.commandPaletteDialog).toBeHidden();
     });
 
     test('negative: Escape when palette is closed causes no visible error', async ({ page, emulationInputPage }) => {
-      await expect(emulationInputPage.commandPaletteDialog).not.toBeVisible();
+      await expect(emulationInputPage.commandPaletteDialog).toBeHidden();
       await page.keyboard.press('Escape');
-      await expect(emulationInputPage.commandPaletteDialog).not.toBeVisible();
+      await expect(emulationInputPage.commandPaletteDialog).toBeHidden();
     });
   });
 
   // AC-4 (TAB1-18): Tests trigger the hover tooltip using locator.hover() or page.mouse.move() and assert the tooltip becomes visible
   test.describe('AC-4 — hover tooltip visibility', () => {
     test('positive: hovering the trigger shows the tooltip', async ({ emulationInputPage }) => {
-      await expect(emulationInputPage.hoverTooltip).not.toBeVisible();
+      await expect(emulationInputPage.hoverTooltip).toBeHidden();
       await emulationInputPage.hoverTriggerButton.hover();
       await expect(emulationInputPage.hoverTooltip).toBeVisible();
       await expect(emulationInputPage.hoverTooltip).toContainText('You found the tooltip');
     });
 
     test('negative: tooltip is not visible on initial page load', async ({ emulationInputPage }) => {
-      await expect(emulationInputPage.hoverTooltip).not.toBeVisible();
+      await expect(emulationInputPage.hoverTooltip).toBeHidden();
     });
 
     test('negative: tooltip disappears after moving mouse away', async ({ page, emulationInputPage }) => {
       await emulationInputPage.hoverTriggerButton.hover();
       await expect(emulationInputPage.hoverTooltip).toBeVisible();
       await page.mouse.move(0, 0);
-      await expect(emulationInputPage.hoverTooltip).not.toBeVisible();
+      await expect(emulationInputPage.hoverTooltip).toBeHidden();
     });
   });
 
@@ -117,13 +117,13 @@ test.describe('Emulation & Input', () => {
     test('positive: 375px viewport shows mobile (stacked) layout', async ({ page, emulationInputPage }) => {
       await page.setViewportSize({ width: 375, height: 667 });
       await expect(emulationInputPage.responsiveCardMobileLabel).toBeVisible();
-      await expect(emulationInputPage.responsiveCardDesktopLabel).not.toBeVisible();
+      await expect(emulationInputPage.responsiveCardDesktopLabel).toBeHidden();
     });
 
     test('negative: desktop viewport (1280px) shows side-by-side layout', async ({ page, emulationInputPage }) => {
       await page.setViewportSize({ width: 1280, height: 720 });
       await expect(emulationInputPage.responsiveCardDesktopLabel).toBeVisible();
-      await expect(emulationInputPage.responsiveCardMobileLabel).not.toBeVisible();
+      await expect(emulationInputPage.responsiveCardMobileLabel).toBeHidden();
     });
 
     for (const { width, height, label, mobile } of viewportCases) {
@@ -131,10 +131,10 @@ test.describe('Emulation & Input', () => {
         await page.setViewportSize({ width, height });
         if (mobile) {
           await expect(emulationInputPage.responsiveCardMobileLabel).toBeVisible();
-          await expect(emulationInputPage.responsiveCardDesktopLabel).not.toBeVisible();
+          await expect(emulationInputPage.responsiveCardDesktopLabel).toBeHidden();
         } else {
           await expect(emulationInputPage.responsiveCardDesktopLabel).toBeVisible();
-          await expect(emulationInputPage.responsiveCardMobileLabel).not.toBeVisible();
+          await expect(emulationInputPage.responsiveCardMobileLabel).toBeHidden();
         }
       });
     }
@@ -143,7 +143,7 @@ test.describe('Emulation & Input', () => {
   // AC-6 (TAB1-18): Tests use page.mouse.wheel() to scroll the scrollable container and assert the "Scroll to top" button appears only after scrolling
   test.describe('AC-6 — mouse wheel scroll reveals Scroll to top button', () => {
     test('positive: scrolling the container reveals the Scroll to top button', async ({ page, emulationInputPage }) => {
-      await expect(emulationInputPage.scrollToTopButton).not.toBeVisible();
+      await expect(emulationInputPage.scrollToTopButton).toBeHidden();
       await emulationInputPage.scrollContainer.scrollIntoViewIfNeeded();
       const box = await emulationInputPage.scrollContainer.boundingBox();
       await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
@@ -152,7 +152,7 @@ test.describe('Emulation & Input', () => {
     });
 
     test('negative: Scroll to top button is not visible on initial load', async ({ emulationInputPage }) => {
-      await expect(emulationInputPage.scrollToTopButton).not.toBeVisible();
+      await expect(emulationInputPage.scrollToTopButton).toBeHidden();
     });
 
     for (const { deltaY, label, expectsButton } of scrollCases) {
@@ -164,7 +164,7 @@ test.describe('Emulation & Input', () => {
         if (expectsButton) {
           await expect(emulationInputPage.scrollToTopButton).toBeVisible();
         } else {
-          await expect(emulationInputPage.scrollToTopButton).not.toBeVisible();
+          await expect(emulationInputPage.scrollToTopButton).toBeHidden();
         }
       });
     }
@@ -227,6 +227,6 @@ test.describe('AC-5 — iPhone 14 device emulation (Gap #10)', () => {
 
   test('positive: iPhone 14 viewport shows mobile (stacked) layout', async ({ emulationInputPage }) => {
     await expect(emulationInputPage.responsiveCardMobileLabel).toBeVisible();
-    await expect(emulationInputPage.responsiveCardDesktopLabel).not.toBeVisible();
+    await expect(emulationInputPage.responsiveCardDesktopLabel).toBeHidden();
   });
 });

@@ -252,10 +252,10 @@ test.describe('Accessible Locators', () => {
       accessibleLocatorsPage,
     }) => {
       // Chained link scoped to Clean Code card
-      const cleanCodeDetailsHref = await accessibleLocatorsPage.cleanCodeViewDetailsLink.getAttribute('href');
+      const cleanCodeDetailsHref = accessibleLocatorsPage.cleanCodeViewDetailsLink;
       const ppCard = page.getByRole('article').filter({ hasText: 'The Pragmatic Programmer' });
       const ppDetailsHref = await ppCard.getByRole('link', { name: 'View details' }).getAttribute('href');
-      expect(cleanCodeDetailsHref).not.toBe(ppDetailsHref);
+      await expect(cleanCodeDetailsHref).not.toHaveAttribute('href', ppDetailsHref);
     });
   });
 
@@ -273,9 +273,9 @@ test.describe('Accessible Locators', () => {
     test('positive: result count updates after search', async ({ accessibleLocatorsPage }) => {
       const statusBefore = await accessibleLocatorsPage.booksCountStatus.textContent();
       await accessibleLocatorsPage.searchBooksInput.fill('Design');
-      const statusAfter = await accessibleLocatorsPage.booksCountStatus.textContent();
+      const statusAfter = accessibleLocatorsPage.booksCountStatus;
       // Count should be different after narrowing the search
-      expect(statusAfter).not.toBe(statusBefore);
+      await expect(statusAfter).not.toHaveText(statusBefore);
     });
 
     test('negative: searching a non-existent title yields an empty book list', async ({ page, accessibleLocatorsPage }) => {

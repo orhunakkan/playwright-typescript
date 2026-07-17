@@ -44,7 +44,7 @@ test.describe('Clock & Timers', () => {
     test('negative: "Time\'s up!" is absent before the countdown completes', async ({ page, clockTimersPage }) => {
       await clockTimersPage.installAndGoto();
       await clockTimersPage.countdownStartButton.click();
-      await expect(clockTimersPage.timesUpMessage).not.toBeVisible();
+      await expect(clockTimersPage.timesUpMessage).toBeHidden();
     });
 
     test('boundary: at 59_900ms elapsed (still 1s remaining), "Time\'s up!" has not appeared yet', async ({ page, clockTimersPage }) => {
@@ -52,7 +52,7 @@ test.describe('Clock & Timers', () => {
       await clockTimersPage.countdownStartButton.click();
       await page.clock.runFor(59_900);
       await expect(clockTimersPage.countdownDisplay).toHaveText('00:01');
-      await expect(clockTimersPage.timesUpMessage).not.toBeVisible();
+      await expect(clockTimersPage.timesUpMessage).toBeHidden();
     });
   });
 
@@ -71,14 +71,14 @@ test.describe('Clock & Timers', () => {
     test('negative: expiry toast is absent before the 5s threshold', async ({ page, clockTimersPage }) => {
       await clockTimersPage.installAndGoto();
       await clockTimersPage.startSessionButton.click();
-      await expect(clockTimersPage.expiryToast).not.toBeVisible();
+      await expect(clockTimersPage.expiryToast).toBeHidden();
     });
 
     test('boundary: at 4_999ms elapsed, the toast has not yet appeared', async ({ page, clockTimersPage }) => {
       await clockTimersPage.installAndGoto();
       await clockTimersPage.startSessionButton.click();
       await page.clock.runFor(4_999);
-      await expect(clockTimersPage.expiryToast).not.toBeVisible();
+      await expect(clockTimersPage.expiryToast).toBeHidden();
     });
   });
 

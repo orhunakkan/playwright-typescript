@@ -204,9 +204,9 @@ test.describe('ARIA Snapshots', () => {
 
     test('negative/AC-6a: the live announcement region content is unchanged with no toggle action performed', async ({ ariaSnapshotsPage }) => {
       const before = await ariaSnapshotsPage.liveAnnouncement.textContent();
-      const after = await ariaSnapshotsPage.liveAnnouncement.textContent();
+      const after = ariaSnapshotsPage.liveAnnouncement;
 
-      expect(after).toBe(before);
+      await expect(after).toHaveText(before);
     });
   });
 

@@ -74,7 +74,7 @@ test.describe('Fake Auth', () => {
       await fakeAuthPage.signInButton.click();
       await expect(page).toHaveURL(/\/practice\/fake-auth$/);
       await expect(fakeAuthPage.loginErrorMessage).toBeVisible();
-      await expect(fakeAuthPage.dashboardHeading).not.toBeVisible();
+      await expect(fakeAuthPage.dashboardHeading).toBeHidden();
     });
   });
 
@@ -89,8 +89,8 @@ test.describe('Fake Auth', () => {
 
     test('negative: dashboard content is not visible after redirect to login', async ({ fakeAuthPage, page }) => {
       await page.goto(DASHBOARD_URL);
-      await expect(fakeAuthPage.dashboardHeading).not.toBeVisible();
-      await expect(fakeAuthPage.signOutButton).not.toBeVisible();
+      await expect(fakeAuthPage.dashboardHeading).toBeHidden();
+      await expect(fakeAuthPage.signOutButton).toBeHidden();
     });
   });
 
@@ -119,7 +119,7 @@ test.describe('Fake Auth', () => {
       await expect(page).toHaveURL(/\/practice\/fake-auth$/);
       await page.goto(DASHBOARD_URL);
       await expect(page).toHaveURL(/\/practice\/fake-auth$/);
-      await expect(fakeAuthPage.dashboardHeading).not.toBeVisible();
+      await expect(fakeAuthPage.dashboardHeading).toBeHidden();
     });
   });
 

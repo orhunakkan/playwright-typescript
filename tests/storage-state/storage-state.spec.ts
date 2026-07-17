@@ -81,7 +81,7 @@ test.describe('Storage State', () => {
       const authedPage = await authedContext.newPage();
       await authedPage.goto(STORAGE_STATE_URL);
       const storageStatePage = new StorageStatePage(authedPage);
-      await expect(storageStatePage.notAuthenticated).not.toBeVisible();
+      await expect(storageStatePage.notAuthenticated).toBeHidden();
       await expect(storageStatePage.profileCard).toBeVisible();
       await authedContext.close();
     });
@@ -111,7 +111,7 @@ test.describe('Storage State', () => {
       await userPage.goto(STORAGE_STATE_URL);
 
       await expect(new StorageStatePage(adminPage).adminPanel).toBeVisible();
-      await expect(new StorageStatePage(userPage).adminPanel).not.toBeVisible();
+      await expect(new StorageStatePage(userPage).adminPanel).toBeHidden();
 
       await adminContext.close();
       await userContext.close();
@@ -200,7 +200,7 @@ test.describe('Storage State', () => {
       await authedPage.goto(STORAGE_STATE_URL);
       const storageStatePage = new StorageStatePage(authedPage);
       await expect(storageStatePage.profileCard).toBeVisible();
-      await expect(storageStatePage.notAuthenticated).not.toBeVisible();
+      await expect(storageStatePage.notAuthenticated).toBeHidden();
       await authedContext.close();
     });
 
@@ -210,7 +210,7 @@ test.describe('Storage State', () => {
       await freshPage.goto(STORAGE_STATE_URL);
       const storageStatePage = new StorageStatePage(freshPage);
       await expect(storageStatePage.notAuthenticated).toBeVisible();
-      await expect(storageStatePage.profileCard).not.toBeVisible();
+      await expect(storageStatePage.profileCard).toBeHidden();
       await freshContext.close();
     });
 

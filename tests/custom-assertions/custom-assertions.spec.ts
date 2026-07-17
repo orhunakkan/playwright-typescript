@@ -132,8 +132,8 @@ test.describe('Custom Assertions & Matcher Composition', () => {
         if (el) el.textContent = 'totally different label';
       });
       await expect(customAssertionsPage.orderStatus).toHaveOrderStatus('pending');
-      const visibleText = await customAssertionsPage.orderStatus.textContent();
-      expect(visibleText).not.toBe('pending');
+      const visibleText = customAssertionsPage.orderStatus;
+      await expect(visibleText).not.toHaveText('pending');
     });
   });
 

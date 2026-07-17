@@ -38,7 +38,7 @@ test.describe('Network & API', () => {
 
       // App does not render the <ul> when notes array is empty — shows a placeholder instead.
       // Confirmed by DOM inspection: ul[aria-label="Notes list"] is absent from the DOM.
-      await expect(networkApiPage.notesList).not.toBeVisible();
+      await expect(networkApiPage.notesList).toBeHidden();
       await expect(networkApiPage.emptyStateText).toBeVisible();
     });
 
@@ -52,7 +52,7 @@ test.describe('Network & API', () => {
       const body = (await response.json()) as Array<{ id: number; text: string }>;
       expect(Array.isArray(body)).toBe(true);
       // Real notes render — stub notes are absent (confirms no interception occurred)
-      await expect(networkApiPage.noteItem(STUB_NOTES[0].text)).not.toBeVisible();
+      await expect(networkApiPage.noteItem(STUB_NOTES[0].text)).toBeHidden();
     });
   });
 
@@ -198,7 +198,7 @@ test.describe('Network & API', () => {
       await page.goto(URL);
 
       // App does not render the <ul> when the stub returns []; shows a placeholder instead.
-      await expect(networkApiPage.notesList).not.toBeVisible();
+      await expect(networkApiPage.notesList).toBeHidden();
       await expect(networkApiPage.emptyStateText).toBeVisible();
     });
   });

@@ -95,6 +95,7 @@ test.describe('Geolocation & Permissions', () => {
     test.beforeEach(({ browserName }) => {
       test.skip(browserName === 'firefox', 'Firefox does not auto-deny geolocation in Playwright — it hangs instead of erroring');
     });
+
     test.afterEach(async ({ context }) => {
       await context.clearPermissions();
     });
@@ -112,7 +113,7 @@ test.describe('Geolocation & Permissions', () => {
       await geolocationPermissionsPage.findCafesButton.click();
 
       await expect(geolocationPermissionsPage.geoErrorAlert).toBeVisible();
-      await expect(geolocationPermissionsPage.cafeList).not.toBeVisible();
+      await expect(geolocationPermissionsPage.cafeList).toBeHidden();
     });
 
     test('boundary: Find Cafés Near Me stays visible and enabled after the error, allowing a retry', async ({ page, geolocationPermissionsPage }) => {
@@ -168,7 +169,7 @@ test.describe('Geolocation & Permissions', () => {
 
       await geolocationPermissionsPage.pasteButton.click();
       await expect(geolocationPermissionsPage.clipboardErrorAlert).toBeVisible();
-      await expect(geolocationPermissionsPage.pastedUrlInput).not.toBeVisible();
+      await expect(geolocationPermissionsPage.pastedUrlInput).toBeHidden();
     });
 
     test('boundary: clipboard-write without any grant differs by engine — Chromium blocks it, Firefox/WebKit allow the user gesture', async ({
@@ -181,7 +182,7 @@ test.describe('Geolocation & Permissions', () => {
 
       if (browserName === 'chromium') {
         await expect(geolocationPermissionsPage.clipboardErrorAlert).toBeVisible();
-        await expect(geolocationPermissionsPage.copySuccessStatus).not.toBeVisible();
+        await expect(geolocationPermissionsPage.copySuccessStatus).toBeHidden();
       } else {
         // Firefox and WebKit allow clipboard-write via a genuine user gesture even without an
         // explicit permission grant (verified via manual diagnostic) — only Chromium requires it.
@@ -198,6 +199,7 @@ test.describe('Geolocation & Permissions', () => {
     test.beforeEach(({ browserName }) => {
       test.skip(browserName !== 'chromium', 'clipboard-read/clipboard-write grants are Chromium-only in Playwright');
     });
+
     test.afterEach(async ({ context }) => {
       await context.clearPermissions();
     });
@@ -222,9 +224,9 @@ test.describe('Geolocation & Permissions', () => {
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);
       await page.goto(GEO_URL);
 
-      await expect(geolocationPermissionsPage.pastedUrlInput).not.toBeVisible();
+      await expect(geolocationPermissionsPage.pastedUrlInput).toBeHidden();
       await geolocationPermissionsPage.copyShareLinkButton.click();
-      await expect(geolocationPermissionsPage.pastedUrlInput).not.toBeVisible();
+      await expect(geolocationPermissionsPage.pastedUrlInput).toBeHidden();
     });
 
     test('boundary: the pasted URL input is read-only and cannot be edited by the user', async ({ page, context, geolocationPermissionsPage }) => {

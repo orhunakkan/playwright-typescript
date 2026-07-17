@@ -43,9 +43,9 @@ test.describe('Debugging & Reporting', () => {
     // AC-1 negative: clicks 1–2 do NOT trigger the error state
     test('negative [AC-1]: clicks 1 and 2 never show the error indicator', async ({ debuggingReportingPage }) => {
       await debuggingReportingPage.clickFlakyButton();
-      await expect(debuggingReportingPage.flakyError).not.toBeVisible();
+      await expect(debuggingReportingPage.flakyError).toBeHidden();
       await debuggingReportingPage.clickFlakyButton();
-      await expect(debuggingReportingPage.flakyError).not.toBeVisible();
+      await expect(debuggingReportingPage.flakyError).toBeHidden();
     });
 
     // AC-2 positive: a test that passes on first attempt has no trace attachment

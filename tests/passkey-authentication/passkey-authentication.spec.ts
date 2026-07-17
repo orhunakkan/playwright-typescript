@@ -24,8 +24,8 @@ test.describe('Passkey Authentication', () => {
     test('positive: registration succeeds once a fully-configured virtual authenticator is attached', async ({ page, passkeyAuthenticationPage }) => {
       await passkeyAuthenticationPage.addVirtualAuthenticator();
       await passkeyAuthenticationPage.registerButton.click();
-      await expect(passkeyAuthenticationPage.ceremonyErrorAlert).not.toBeVisible();
-      await expect(passkeyAuthenticationPage.noPasskeyMessage).not.toBeVisible();
+      await expect(passkeyAuthenticationPage.ceremonyErrorAlert).toBeHidden();
+      await expect(passkeyAuthenticationPage.noPasskeyMessage).toBeHidden();
     });
 
     // Reproduces the app's real ceremony-failure state deterministically: an authenticator
@@ -48,7 +48,7 @@ test.describe('Passkey Authentication', () => {
       test.skip(browserName !== 'chromium', CHROMIUM_ONLY_REASON);
       await passkeyAuthenticationPage.addVirtualAuthenticator();
       await passkeyAuthenticationPage.registerButton.click();
-      await expect(passkeyAuthenticationPage.ceremonyErrorAlert).not.toBeVisible();
+      await expect(passkeyAuthenticationPage.ceremonyErrorAlert).toBeHidden();
       await passkeyAuthenticationPage.signInButton.click();
       await expect(page).toHaveURL(/\/practice\/passkey-authentication\/dashboard$/);
       await expect(passkeyAuthenticationPage.dashboardHeading).toBeVisible();
@@ -57,8 +57,8 @@ test.describe('Passkey Authentication', () => {
     });
 
     test('negative: dashboard is not visible before the registration ceremony completes', async ({ passkeyAuthenticationPage }) => {
-      await expect(passkeyAuthenticationPage.dashboardHeading).not.toBeVisible();
-      await expect(passkeyAuthenticationPage.welcomeMessage).not.toBeVisible();
+      await expect(passkeyAuthenticationPage.dashboardHeading).toBeHidden();
+      await expect(passkeyAuthenticationPage.welcomeMessage).toBeHidden();
     });
   });
 
@@ -85,7 +85,7 @@ test.describe('Passkey Authentication', () => {
       await expect(page).toHaveURL(/\/practice\/passkey-authentication$/);
       await page.reload();
       await expect(page).toHaveURL(/\/practice\/passkey-authentication$/);
-      await expect(passkeyAuthenticationPage.dashboardHeading).not.toBeVisible();
+      await expect(passkeyAuthenticationPage.dashboardHeading).toBeHidden();
     });
   });
 
@@ -104,8 +104,8 @@ test.describe('Passkey Authentication', () => {
 
     test('negative: dashboard content is not exposed after the guard redirect', async ({ page, passkeyAuthenticationPage }) => {
       await page.goto(DASHBOARD_URL);
-      await expect(passkeyAuthenticationPage.dashboardHeading).not.toBeVisible();
-      await expect(passkeyAuthenticationPage.signOutButton).not.toBeVisible();
+      await expect(passkeyAuthenticationPage.dashboardHeading).toBeHidden();
+      await expect(passkeyAuthenticationPage.signOutButton).toBeHidden();
     });
   });
 

@@ -147,19 +147,20 @@ test.describe('Media & Locale Emulation', () => {
       const deContext = await browser.newContext({ locale: 'de-DE', timezoneId: 'Europe/Berlin' });
       const dePage = await deContext.newPage();
       await dePage.goto(URL);
-      const deDate = await dePage.getByTestId('locale-date').textContent();
-      const deCurrency = await dePage.getByTestId('locale-currency').textContent();
-      await deContext.close();
+      const deDate = dePage.getByTestId('locale-date');
+      const deCurrency = dePage.getByTestId('locale-currency');
 
       const usContext = await browser.newContext({ locale: 'en-US', timezoneId: 'America/New_York' });
       const usPage = await usContext.newPage();
       await usPage.goto(URL);
       const usDate = await usPage.getByTestId('locale-date').textContent();
       const usCurrency = await usPage.getByTestId('locale-currency').textContent();
-      await usContext.close();
 
-      expect(deDate).not.toBe(usDate);
-      expect(deCurrency).not.toBe(usCurrency);
+      await expect(deDate).not.toHaveText(usDate);
+      await expect(deCurrency).not.toHaveText(usCurrency);
+
+      await deContext.close();
+      await usContext.close();
     });
   });
 

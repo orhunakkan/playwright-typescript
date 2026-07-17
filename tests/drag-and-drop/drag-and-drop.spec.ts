@@ -29,10 +29,12 @@ test.describe('Drag & Drop', () => {
     });
 
     test('positive: card counts update correctly after a drag (source -1, target +1)', async ({ dragAndDropPage }) => {
-      const todoBefore = await dragAndDropPage.columnCards('todo').count();
-      const inProgressBefore = await dragAndDropPage.columnCards('in-progress').count();
-      expect(todoBefore).toBe(3);
-      expect(inProgressBefore).toBe(2);
+      const todoCards = dragAndDropPage.columnCards('todo');
+      const inProgressCards = dragAndDropPage.columnCards('in-progress');
+      await expect(todoCards).toHaveCount(3);
+      await expect(inProgressCards).toHaveCount(2);
+      const todoBefore = await todoCards.count();
+      const inProgressBefore = await inProgressCards.count();
 
       await dragAndDropPage.card('Review pull request').dragTo(dragAndDropPage.inProgressColumn);
 
@@ -48,7 +50,7 @@ test.describe('Drag & Drop', () => {
       await dragAndDropPage.card('Review pull request').dragTo(dragAndDropPage.todoColumn);
 
       await expect(dragAndDropPage.columnCards('todo')).toHaveCount(before.length);
-      expect(await dragAndDropPage.columnCards('todo').allTextContents()).toEqual(before);
+      await expect(dragAndDropPage.columnCards('todo')).toHaveText(before);
     });
 
     test('boundary/AC-1c: a card dropped anywhere in the target column lands inside that column', async ({ dragAndDropPage }) => {
