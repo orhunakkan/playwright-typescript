@@ -6,7 +6,6 @@ artifacts/
 .idea/
 .vscode/
 *.log
-.mcp.json
 
 # Environment files
 .env
