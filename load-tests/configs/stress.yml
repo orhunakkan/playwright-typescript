@@ -1,0 +1,88 @@
+config:
+  target: 'https://stagecraftlabs.com'
+  phases:
+    - name: baseline
+      duration: 60
+      arrivalRate: 2
+    - name: ramp
+      duration: 300
+      arrivalRate: 2
+      rampTo: 300
+    - name: hold-peak
+      duration: 120
+      arrivalRate: 300
+
+# Uncapped stress/breaking-point test - ramps all the way to 300 req/s and holds
+# there. This is a single-user, non-autoscaling, cheap App Service plan, so this
+# is expected to genuinely find the breaking point rather than just observe a
+# strain signal. Running this WILL very likely cause real, temporary errors or
+# downtime on the live site while it runs - only run it deliberately, manually,
+# when you're ready to see the app fail.
+# Read the generated report by hand: rising p95 latency or a non-zero error rate
+# marks where it broke - there's no `ensure` gate here on purpose, since this is
+# meant to fail loudly, not pass/fail cleanly.
+# Same page-level scenarios as baseline.yml - see that file for scope rationale.
+scenarios:
+  - name: browse-forms-validation
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/forms-validation'
+
+  - name: browse-drag-and-drop
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/drag-and-drop'
+
+  - name: browse-api-request-context
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/api-request-context'
+
+  - name: browse-visual-regression
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/visual-regression'
+
+  - name: browse-service-workers
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/service-workers'
+
+  - name: browse-websocket-interception
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/websocket-interception'
+
+  - name: browse-multi-tab
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/multi-tab'
+
+  - name: browse-tables-filtering
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/tables-filtering'

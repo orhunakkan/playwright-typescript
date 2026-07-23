@@ -11,6 +11,11 @@ practice site with 35 independent "labs" (Forms & Validation, Drag & Drop, etc.)
 - `npm test -- --project="Desktop Chrome" tests/<lab>/` — one lab, one browser
 - `npm run lint` / `npm run format` — eslint / prettier
 - `npx playwright show-report` — view the last HTML report
+- `npm run load-test:baseline` / `npm run load-test:stress` — Artillery load/stress tests,
+  manual-only (no CI workflow). `stress.yml` is **uncapped** (ramps to 300 req/s) and will very
+  likely cause real, temporary downtime on the live site while it runs — run deliberately.
+  Metrics print to terminal and land in `load-tests/reports/<name>.json`; Artillery's HTML
+  `report` command is deprecated upstream, JSON + terminal output is all there is
 
 ## Layout
 
@@ -21,6 +26,9 @@ practice site with 35 independent "labs" (Forms & Validation, Drag & Drop, etc.)
 - `utilities/accessibility.ts` — `scanWcag()` axe-core helper
 - `fixtures/auth/*.json` — per-lab/role `storageState` files
 - `skills/` — custom STLC automation skills (see `skills/README.md`)
+- `load-tests/configs/*.yml` — Artillery scenarios (`baseline`, `stress`); black-box,
+  page-level only, target `https://stagecraftlabs.com` directly (no `BASE_URL`, no API replay —
+  see below)
 
 ## Conventions
 
@@ -32,6 +40,11 @@ practice site with 35 independent "labs" (Forms & Validation, Drag & Drop, etc.)
 - Every spec includes an accessibility `describe` (multi-state `scanWcag` checks) and a
   `@performance`-tagged budget test — a happy-path-only spec is incomplete
 - Tests run against the real external site (`BASE_URL` from `.env`), not a local server
+- Artillery load tests (`load-tests/`) are a separate concern from the per-lab `@performance`
+  Playwright tag: that tag is a single-page-load budget check, Artillery measures
+  concurrent-user throughput/stress. Both target production directly, but Artillery configs
+  hardcode the URL rather than reading `BASE_URL`, and intentionally stay page-level only (no
+  API replay, no auth flow) since this repo has no access to the app's server source
 
 ## STLC automation
 

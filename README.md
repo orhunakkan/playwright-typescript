@@ -26,6 +26,7 @@ What makes this repo unusual is that the tests are not hand-written one at a tim
 - [How the tests are orchestrated](#how-the-tests-are-orchestrated)
 - [The lab catalog](#the-lab-catalog)
 - [Continuous integration](#continuous-integration)
+- [Load and performance testing](#load-and-performance-testing)
 - [Code quality](#code-quality)
 - [Reference documentation](#reference-documentation)
 - [Troubleshooting](#troubleshooting)
@@ -274,6 +275,11 @@ playwright-typescript/
 │   ├── har/                      # recorded HAR files for network replay
 │   ├── reference-snapshots/      # visual (PNG) + ARIA (YAML) baselines
 │   └── index.ts                  # the custom `test` object — every POM fixture
+├── load-tests/                   # Artillery scenarios — see Load and performance testing
+│   ├── configs/
+│   │   ├── baseline.yml          #   steady-state load test, gated by `ensure` thresholds
+│   │   └── stress.yml            #   capped ramp for stress/breaking-point/scalability reads
+│   └── reports/                  #   gitignored — JSON output lands here (HTML `report` is deprecated upstream)
 ├── matchers/                     # custom expect matchers + composable fixtures
 │   ├── order-status.matcher.ts
 │   ├── price.matcher.ts
@@ -507,6 +513,26 @@ A lab-scoped run can legitimately match zero tests for a project when that lab i
 ### Artifacts
 
 Each job uploads a `playwright-report-<project>` artifact containing `playwright-report/` and `test-results/`, retained 14 days, with `if-no-files-found: ignore` for the intentionally-empty Safari/Service-Workers case. These artifacts are what the pipeline downloads and parses to verify a lab before moving its story to Done.
+
+---
+
+## Load and performance testing
+
+[Artillery](https://www.artillery.io/) covers concurrent-user load, stress/breaking-point, scalability, and throughput testing against the live site — a different concern from the per-lab `@performance` Playwright tag, which is a single-user page-load budget check (`domContentLoaded`/`load` timing), not a concurrent-load test.
+
+This repo has no access to the Stagecraft Labs app's server source, so Artillery is deliberately **black-box and page-level only**: scenarios request the homepage and a representative sample of `/practice/<lab>` routes, the same public URLs this repo's own Playwright specs navigate to. There is no API replay and no login/session flow — both would require knowing the app's internal request shapes.
+
+```bash
+npm run load-test:baseline   # steady load: 1 → 3 arrivals/sec over ~3.5 min, gated by ensure thresholds
+npm run load-test:stress     # uncapped ramp: 2 → 300 arrivals/sec over ~8 min, read by hand afterward
+```
+
+Both configs target `https://stagecraftlabs.com` directly — there's no `BASE_URL` indirection here, since production is the only target. **Both are manual, local-only commands — there is no CI workflow for either.** Run them deliberately, when you're ready to generate real load against the live site.
+
+- **`baseline.yml`** — a steady-state load test with `ensure` thresholds (`p95 < 3000ms`, error rate `< 1%`).
+- **`stress.yml`** — ramps arrival rate all the way to 300 req/s and holds there. This is deliberately **uncapped**: the app runs on a cheap, non-autoscaling Azure App Service plan with a single user (you), so the intent is to actually find the real breaking point rather than just observe a strain signal. **Running this will very likely cause real, temporary errors or downtime on the live site while it runs.** No `ensure` thresholds are set on this config — it's meant to fail loudly, not pass/fail cleanly; read the results by hand.
+
+Reporting is JSON-only: Artillery's own `report` command (which used to generate a standalone HTML file) was deprecated upstream in favor of the paid Artillery Cloud dashboard, so it's a no-op in the installed version. The full metrics — latency percentiles, RPS, status-code histogram, error rate, per-phase breakdown — print to the terminal during and after every run, and the same data is written to `load-tests/reports/<name>.json` for later inspection.
 
 ---
 

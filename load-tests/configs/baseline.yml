@@ -1,0 +1,81 @@
+config:
+  target: 'https://stagecraftlabs.com'
+  phases:
+    - name: warm-up
+      duration: 30
+      arrivalRate: 1
+    - name: sustained-load
+      duration: 180
+      arrivalRate: 3
+  ensure:
+    p95: 3000
+    maxErrorRate: 1
+
+# Black-box, page-level load test: each virtual user loads the homepage, then one
+# representative practice-lab page. No API calls are replayed and no auth/session
+# flow is simulated - this repo has no access to the app's server source, so scope
+# is deliberately limited to what a real visitor's browser would request.
+scenarios:
+  - name: browse-forms-validation
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/forms-validation'
+
+  - name: browse-drag-and-drop
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/drag-and-drop'
+
+  - name: browse-api-request-context
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/api-request-context'
+
+  - name: browse-visual-regression
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/visual-regression'
+
+  - name: browse-service-workers
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/service-workers'
+
+  - name: browse-websocket-interception
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/websocket-interception'
+
+  - name: browse-multi-tab
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/multi-tab'
+
+  - name: browse-tables-filtering
+    weight: 1
+    flow:
+      - get:
+          url: '/'
+      - get:
+          url: '/practice/tables-filtering'
