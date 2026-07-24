@@ -63,6 +63,7 @@ test.describe('Audit Log & Search', () => {
   test.describe('AC-3 — server-side pagination', () => {
     test('positive: Next and Prev change results and the last page disables Next', async ({ page, auditLogSearchPage }) => {
       await seedAuditLog(page);
+      await expect(auditLogSearchPage.auditLogItems).toHaveCount(20);
       const firstPageRows = await auditLogSearchPage.auditLogItems.allTextContents();
 
       await auditLogSearchPage.nextPageButton.click();

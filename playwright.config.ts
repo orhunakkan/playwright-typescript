@@ -4,8 +4,11 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: `.env.${process.env.ENV}`, override: true });
 dotenv.config({ path: '.env' });
 
+const sharedFixtureTestIgnore = process.env.CI_EXCLUDE_SHARED_FIXTURE_TESTS === 'true' ? ['**/audit-log-search/**'] : [];
+
 export default defineConfig({
   testDir: './tests',
+  testIgnore: sharedFixtureTestIgnore,
   snapshotDir: './fixtures/reference-snapshots',
   snapshotPathTemplate: '{snapshotDir}/{testFileName}/{arg}{ext}',
   fullyParallel: true,
@@ -40,7 +43,7 @@ export default defineConfig({
       // responding once context.setOffline(true) is set — confirmed with a raw fetch() call, no
       // app/test code involved. Not fixable in this app's source. Explicit team scope decision:
       // this lab is not run on Safari; all other labs keep full 4-browser coverage.
-      testIgnore: '**/service-workers/**',
+      testIgnore: ['**/service-workers/**', ...sharedFixtureTestIgnore],
     },
   ],
 });

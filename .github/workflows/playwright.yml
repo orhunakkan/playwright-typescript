@@ -26,6 +26,9 @@ jobs:
     env:
       BASE_URL: ${{ vars.BASE_URL }}
       CI: 'true'
+      # Audit Log & Search reseeds a single shared live fixture. It runs in the dedicated
+      # job below so browser-matrix workers cannot overwrite one another's fixture state.
+      CI_EXCLUDE_SHARED_FIXTURE_TESTS: 'true'
     steps:
       - uses: actions/checkout@v6
 
@@ -88,4 +91,54 @@ jobs:
           retention-days: 14
           # A lab intentionally excluded from this project (e.g. Service Workers on Desktop
           # Safari, TAB1-53) never runs Playwright, so no report exists — expected, not an error.
+          if-no-files-found: ignore
+
+  audit-log-search:
+    name: e2e shared fixture (${{ matrix.project }})
+    # Run the mutable audit fixture on its own for this PR and after merge. Other lab-scoped PRs
+    # keep their fast, independent matrix and do not need to rerun it.
+    if: ${{ github.event_name != 'pull_request' || github.head_ref == 'stlc/audit-log-search' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - project: 'Desktop Chrome'
+            browser: chromium
+          - project: 'Desktop Firefox'
+            browser: firefox
+          - project: 'Desktop Edge'
+            browser: chromium
+          - project: 'Desktop Safari'
+            browser: webkit
+    env:
+      BASE_URL: ${{ vars.BASE_URL }}
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Run Audit Log & Search tests
+        run: npx playwright test --project="${{ matrix.project }}" tests/audit-log-search --workers=1
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-audit-log-search-${{ matrix.project }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
           if-no-files-found: ignore
