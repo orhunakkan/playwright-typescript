@@ -1,13 +1,13 @@
 # Requirements Traceability Matrix — Audit Log & Search
 
-| Field      | Value                                                                      |
-| ---------- | -------------------------------------------------------------------------- |
-| JIRA Story | [TAB1-67](https://orhunakkan.atlassian.net/browse/TAB1-67)                 |
-| Lab URL    | https://stagecraftlabs.com/practice/audit-log-search                       |
-| Spec file  | tests/audit-log-search/audit-log-search.spec.ts                            |
-| POM file   | pages/audit-log-search.page.ts                                             |
-| Last run   | 2026-07-24 — 36 / 36 passed (Chrome · Firefox · Edge · Safari) — local run |
-| Generated  | 2026-07-24                                                                 |
+| Field      | Value                                                                        |
+| ---------- | ---------------------------------------------------------------------------- |
+| JIRA Story | [TAB1-67](https://orhunakkan.atlassian.net/browse/TAB1-67)                   |
+| Lab URL    | https://stagecraftlabs.com/practice/audit-log-search                         |
+| Spec file  | tests/audit-log-search/audit-log-search.spec.ts                              |
+| POM file   | pages/audit-log-search.page.ts                                               |
+| Last run   | 2026-07-24 — 36 / 36 passed (Chrome · Firefox · Edge · Safari) — CI verified |
+| Generated  | 2026-07-24                                                                   |
 
 ---
 
@@ -47,4 +47,4 @@ its known seeded baseline. This validates persistence without inferring a new ba
 - **Test cases:** 9 × 4 browsers = **36 planned executions**
 - **Fixed-fixture strategy:** ✅ serial, reseed-backed; no account-provisioning endpoint is assumed
 - **Open defects:** 0
-- **Exit criteria:** local all-browser gate passed; awaiting CI confirmation.
+- **Exit criteria:** ✅ all-browser local and CI gates passed.
