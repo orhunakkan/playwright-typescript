@@ -51,6 +51,7 @@ This table is embedded in the skill. Do not derive it from the POM — use it di
 | TAB1-17  | Browser Events                          | /practice/browser-events              | 2 — Advanced    |
 | TAB1-22  | ARIA Snapshots                          | /practice/aria-snapshots              | 2 — Advanced    |
 | TAB1-35  | Accessibility Scanning                  | /practice/accessibility-scanning      | 2 — Advanced    |
+| TAB1-67  | Book Catalog                            | /practice/book-catalog                | 2 — Advanced    |
 | TAB1-18  | Emulation & Input                       | /practice/emulation-input             | 3 — Specialized |
 | TAB1-19  | Debugging & Reporting                   | /practice/debugging-reporting         | 3 — Specialized |
 | TAB1-20  | Frames & Contexts                       | /practice/frames-contexts             | 3 — Specialized |
@@ -146,9 +147,9 @@ Project: playwright-typescript  |  Analyzed: <date>
 
 ---
 Summary:
-  ✅ Fully covered:  X / 35 labs
-  ⚠️ Partial:        X / 35 labs
-  ❌ Not started:    X / 35 labs
+  ✅ Fully covered:  X / 36 labs
+  ⚠️ Partial:        X / 36 labs
+  ❌ Not started:    X / 36 labs
 
 Top 3 recommended next labs (Priority Group 1 first, then ❌ before ⚠️):
   1. TAB1-13 Forms & Validation — ❌ missing POM + spec

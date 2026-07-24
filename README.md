@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Node](https://img.shields.io/badge/Node-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 
-An end-to-end test framework written in Playwright + TypeScript against [Stagecraft Labs](https://stagecraftlabs.com), a practice site of 35 self-contained "labs" (Forms & Validation, Network & API, Shadow DOM, Service Workers, and so on). Each lab has its own Page Object Model, its own spec file, a test plan, and a requirements traceability matrix.
+An end-to-end test framework written in Playwright + TypeScript against [Stagecraft Labs](https://stagecraftlabs.com), a practice site of 36 self-contained "labs" (Forms & Validation, Network & API, Shadow DOM, Service Workers, and so on). Each lab has its own Page Object Model, its own spec file, a test plan, and a requirements traceability matrix.
 
 **2,658 tests across 35 spec files, running on 4 browser projects.**
 
@@ -439,7 +439,7 @@ The skill runs one complete Software Testing Life Cycle for one lab, end to end,
 
 ### The supporting skills
 
-Beyond the linear path, two cross-cutting skills run at any time: **coverage-analyzer** reports which of the 35 labs have a POM, a spec, both, or neither, with live JIRA status, and recommends what to work on next; **framework-scaffolder** implements identified framework gaps on demand, one per invocation.
+Beyond the linear path, two cross-cutting skills run at any time: **coverage-analyzer** reports which of the 36 labs have a POM, a spec, both, or neither, with live JIRA status, and recommends what to work on next; **framework-scaffolder** implements identified framework gaps on demand, one per invocation.
 
 The pipeline requires the Atlassian MCP, Playwright MCP, and Chrome DevTools MCP servers, plus the Playwright CLI and an authenticated GitHub CLI. It performs a pre-flight check and stops with an explicit list if any is missing — it will not run partially and leave half-written artifacts behind.
 
@@ -451,7 +451,9 @@ The pipeline requires the Atlassian MCP, Playwright MCP, and Chrome DevTools MCP
 
 ## The lab catalog
 
-35 labs, each mapped 1:1 to a JIRA story in project `TAB1` and a URL path under `/practice/`.
+36 labs, each mapped 1:1 to a JIRA story in project `TAB1` and a URL path under `/practice/`.
+`TAB1-67` (Book Catalog) is newly added and not yet built — the counts above (2,658 tests, 35
+spec files) reflect the 35 labs the STLC pipeline has already produced.
 
 | JIRA    | Lab                                     | Path                                    |
 | ------- | --------------------------------------- | --------------------------------------- |
@@ -490,6 +492,7 @@ The pipeline requires the Atlassian MCP, Playwright MCP, and Chrome DevTools MCP
 | TAB1-62 | Console & Runtime Diagnostics           | `/practice/console-runtime-diagnostics` |
 | TAB1-63 | Memory & DOM Leak Diagnostics           | `/practice/dom-memory-diagnostics`      |
 | TAB1-64 | Custom Assertions & Matcher Composition | `/practice/custom-assertions`           |
+| TAB1-67 | Book Catalog (pending — not yet built)  | `/practice/book-catalog`                |
 
 Each lab has a test plan in [docs/test-plan/](docs/test-plan/) and a traceability matrix in [docs/rtm/](docs/rtm/) mapping every AC to the test cases covering it, their last result, and any linked defect.
 

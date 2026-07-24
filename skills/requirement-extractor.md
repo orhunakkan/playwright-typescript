@@ -63,6 +63,7 @@ This table is the authoritative mapping of Stagecraft labs to JIRA story keys:
 | TAB1-62  | Console & Runtime Diagnostics           | /practice/console-runtime-diagnostics |
 | TAB1-63  | Memory & DOM Leak Diagnostics           | /practice/dom-memory-diagnostics      |
 | TAB1-64  | Custom Assertions & Matcher Composition | /practice/custom-assertions           |
+| TAB1-67  | Book Catalog                            | /practice/book-catalog                |
 
 ---
 

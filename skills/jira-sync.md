@@ -18,7 +18,7 @@ compatibility: >
 
 # Playwright JIRA Sync
 
-Keeps JIRA story status aligned with actual test development progress across all 35 labs.
+Keeps JIRA story status aligned with actual test development progress across all 36 labs.
 
 ---
 
@@ -72,6 +72,7 @@ Keeps JIRA story status aligned with actual test development progress across all
 | TAB1-62  | Console & Runtime Diagnostics           | /practice/console-runtime-diagnostics |
 | TAB1-63  | Memory & DOM Leak Diagnostics           | /practice/dom-memory-diagnostics      |
 | TAB1-64  | Custom Assertions & Matcher Composition | /practice/custom-assertions           |
+| TAB1-67  | Book Catalog                            | /practice/book-catalog                |
 
 ---
 
