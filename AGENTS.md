@@ -1,7 +1,7 @@
 # playwright-typescript
 
 Playwright + TypeScript E2E suite testing [Stagecraft Labs](https://stagecraftlabs.com), a
-practice site with 35 independent "labs" (Forms & Validation, Drag & Drop, etc.), each mapped
+practice site with 36 independent "labs" (Forms & Validation, Drag & Drop, etc.), each mapped
 1:1 to a JIRA story in project `TAB1`. Full depth is in `README.md`; skip there before asking
 "how do I run/configure this" — don't re-derive it here.
 

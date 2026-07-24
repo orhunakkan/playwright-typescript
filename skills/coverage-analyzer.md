@@ -75,6 +75,7 @@ This table is embedded in the skill. Do not derive it from the POM — use it di
 | TAB1-62  | Console & Runtime Diagnostics           | /practice/console-runtime-diagnostics | 3 — Specialized |
 | TAB1-63  | Memory & DOM Leak Diagnostics           | /practice/dom-memory-diagnostics      | 3 — Specialized |
 | TAB1-64  | Custom Assertions & Matcher Composition | /practice/custom-assertions           | 3 — Specialized |
+| TAB1-67  | Audit Log & Search                      | /practice/audit-log-search            | 3 — Specialized |
 
 ---
 
@@ -146,9 +147,9 @@ Project: playwright-typescript  |  Analyzed: <date>
 
 ---
 Summary:
-  ✅ Fully covered:  X / 35 labs
-  ⚠️ Partial:        X / 35 labs
-  ❌ Not started:    X / 35 labs
+  ✅ Fully covered:  X / 36 labs
+  ⚠️ Partial:        X / 36 labs
+  ❌ Not started:    X / 36 labs
 
 Top 3 recommended next labs (Priority Group 1 first, then ❌ before ⚠️):
   1. TAB1-13 Forms & Validation — ❌ missing POM + spec

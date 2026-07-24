@@ -66,6 +66,7 @@ when a lab passes locally but fails in CI.
 | console-runtime-diagnostics | TAB1-62  |
 | dom-memory-diagnostics      | TAB1-63  |
 | custom-assertions           | TAB1-64  |
+| audit-log-search            | TAB1-67  |
 
 ---
 

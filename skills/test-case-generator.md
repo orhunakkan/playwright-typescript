@@ -61,6 +61,7 @@ stays 1:1 traceable to code while the coverage reflects real test design, not ha
 | TAB1-62  | Console & Runtime Diagnostics           | /practice/console-runtime-diagnostics | —                         |
 | TAB1-63  | Memory & DOM Leak Diagnostics           | /practice/dom-memory-diagnostics      | —                         |
 | TAB1-64  | Custom Assertions & Matcher Composition | /practice/custom-assertions           | Gap #3 (fixtures)         |
+| TAB1-67  | Audit Log & Search                      | /practice/audit-log-search            | Gap #7 (seeding)          |
 
 ---
 

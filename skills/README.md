@@ -29,9 +29,9 @@ early ("⛔ guardrail") rather than guessing when it lacks a required input or t
 
 ## The domain: Stagecraft Labs + JIRA
 
-The whole flow is built around a fixed catalog of **35 practice "labs"** (Forms & Validation,
+The whole flow is built around a fixed catalog of **36 practice "labs"** (Forms & Validation,
 Async UI, Network & API, etc.), each mapped 1:1 to a **JIRA story** in project `TAB1`
-(keys `TAB1-12` … `TAB1-41`, `TAB1-60` … `TAB1-64`) and a **URL path** under `/practice/...`. This mapping table is
+(keys `TAB1-12` … `TAB1-41`, `TAB1-60` … `TAB1-64`, `TAB1-67`) and a **URL path** under `/practice/...`. This mapping table is
 embedded in every skill that needs it, so any skill can resolve a lab name → JIRA key → URL →
 file paths without external lookups.
 
@@ -116,7 +116,7 @@ and **stops** if any are missing rather than producing a partial artifact.
      PR stays open — merge is a manual, human step
 
   Cross-cutting (run any time, not in the linear path):
-   • coverage-analyzer    — which of the 35 labs have POM/spec/tests; what to do next
+   • coverage-analyzer    — which of the 36 labs have POM/spec/tests; what to do next
    • framework-scaffolder — implement one of 10 framework gaps (fixtures, auth, mocking…)
 ```
 
@@ -146,7 +146,7 @@ and **stops** if any are missing rather than producing a partial artifact.
 
 | Skill                    | File                                               | What it does                                                                                                                                                                                                                         |
 | ------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **coverage-analyzer**    | [coverage-analyzer.md](coverage-analyzer.md)       | Reports which of the 35 labs have a POM, a spec, both, or neither — with live JIRA status — and recommends the next lab to work on.                                                                                                  |
+| **coverage-analyzer**    | [coverage-analyzer.md](coverage-analyzer.md)       | Reports which of the 36 labs have a POM, a spec, both, or neither — with live JIRA status — and recommends the next lab to work on.                                                                                                  |
 | **framework-scaffolder** | [framework-scaffolder.md](framework-scaffolder.md) | Implements one of 10 identified framework gaps on demand (auth `storageState`, `page.route` mocking, custom fixtures, global setup, typed env, Allure, seeding, flake/quarantine, worker isolation, mobile). One gap per invocation. |
 
 ---
