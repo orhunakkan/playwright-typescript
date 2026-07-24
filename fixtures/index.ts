@@ -35,6 +35,7 @@ import { ClientStoragePartitioningPage } from '../pages/client-storage-partition
 import { ConsoleRuntimeDiagnosticsPage } from '../pages/console-runtime-diagnostics.page';
 import { CustomAssertionsPage } from '../pages/custom-assertions.page';
 import { DomMemoryDiagnosticsPage } from '../pages/dom-memory-diagnostics.page';
+import { BookCatalogPage } from '../pages/book-catalog.page';
 
 type Fixtures = {
   fakeAuthPage: FakeAuthPage;
@@ -73,6 +74,7 @@ type Fixtures = {
   consoleRuntimeDiagnosticsPage: ConsoleRuntimeDiagnosticsPage;
   customAssertionsPage: CustomAssertionsPage;
   domMemoryDiagnosticsPage: DomMemoryDiagnosticsPage;
+  bookCatalogPage: BookCatalogPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -183,6 +185,9 @@ export const test = base.extend<Fixtures>({
   },
   domMemoryDiagnosticsPage: async ({ page }, use) => {
     await use(new DomMemoryDiagnosticsPage(page));
+  },
+  bookCatalogPage: async ({ page }, use) => {
+    await use(new BookCatalogPage(page));
   },
 });
 

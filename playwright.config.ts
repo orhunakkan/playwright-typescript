@@ -24,10 +24,19 @@ export default defineConfig({
     {
       name: 'Desktop Chrome',
       use: { ...devices['Desktop Chrome'] },
+      // TAB1-67: Book Catalog is backed by one real, shared, persistent Azure SQL database
+      // with no per-session isolation. The CI matrix runs all 4 browser projects as separate,
+      // truly parallel jobs, and this lab's Reset/reseed calls collide across them (confirmed
+      // directly: concurrent reseeds produced corrupted row counts, e.g. 24 = 2x12 duplicated
+      // rows). Explicit team scope decision: this lab runs on Desktop Edge only; all other
+      // labs keep full 4-browser coverage.
+      testIgnore: '**/book-catalog/**',
     },
     {
       name: 'Desktop Firefox',
       use: { ...devices['Desktop Firefox'] },
+      // TAB1-67: see the Desktop Chrome project comment — Book Catalog is Edge-only.
+      testIgnore: '**/book-catalog/**',
     },
     {
       name: 'Desktop Edge',
@@ -40,7 +49,8 @@ export default defineConfig({
       // responding once context.setOffline(true) is set — confirmed with a raw fetch() call, no
       // app/test code involved. Not fixable in this app's source. Explicit team scope decision:
       // this lab is not run on Safari; all other labs keep full 4-browser coverage.
-      testIgnore: '**/service-workers/**',
+      // TAB1-67: see the Desktop Chrome project comment — Book Catalog is Edge-only too.
+      testIgnore: ['**/service-workers/**', '**/book-catalog/**'],
     },
   ],
 });
