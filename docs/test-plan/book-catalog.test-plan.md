@@ -32,24 +32,24 @@
 
 ## 2. Test Objectives
 
-| #   | Objective                                                                                                  |
-| --- | ----------------------------------------------------------------------------------------------------------- |
-| 1   | Authors tab auto-runs its SELECT on load with no sign-in, shows seeded rows and the literal SQL executed    |
-| 2   | Searching Authors by name / Books by title after "Run Query" filters the count and matches the search term |
-| 3   | Country/Genre dropdown filters constrain every returned row to the selected value                           |
-| 4   | Catalog tab's JOIN SQL is displayed; filtering by author country narrows the joined result correctly        |
-| 5   | Sorting by each column and toggling direction reorders rows, asserted without hardcoded expected values     |
+| #   | Objective                                                                                                     |
+| --- | ------------------------------------------------------------------------------------------------------------- |
+| 1   | Authors tab auto-runs its SELECT on load with no sign-in, shows seeded rows and the literal SQL executed      |
+| 2   | Searching Authors by name / Books by title after "Run Query" filters the count and matches the search term    |
+| 3   | Country/Genre dropdown filters constrain every returned row to the selected value                             |
+| 4   | Catalog tab's JOIN SQL is displayed; filtering by author country narrows the joined result correctly          |
+| 5   | Sorting by each column and toggling direction reorders rows, asserted without hardcoded expected values       |
 | 6   | Paginating with Next/Prev after a filtered Run Query changes row content; boundaries disable the right button |
-| 7   | A SQL-injection-style search string is treated as a safe literal substring (0 rows, no crash); app recovers  |
-| 8   | "Reset catalog data" + confirm dialog: accept restores the 12/30 seeded state; dismiss leaves data unchanged |
+| 7   | A SQL-injection-style search string is treated as a safe literal substring (0 rows, no crash); app recovers   |
+| 8   | "Reset catalog data" + confirm dialog: accept restores the 12/30 seeded state; dismiss leaves data unchanged  |
 
 ---
 
 ## 3. Browser Matrix
 
 | Browser | Playwright Project | Priority |
-| ------- | ------------------- | -------- |
-| Edge    | Desktop Edge         | P1       |
+| ------- | ------------------ | -------- |
+| Edge    | Desktop Edge       | P1       |
 
 Source: `playwright.config.ts` — 4 desktop projects are configured for the suite overall, but
 Book Catalog is scoped to **Desktop Edge only** via `testIgnore` on the other 3 projects. Reason:
@@ -64,8 +64,8 @@ Same class of decision as the existing Service Workers → Desktop Safari exclus
 ## 4. Environments
 
 | Environment | Base URL                   |
-| ------------ | --------------------------- |
-| Default      | https://stagecraftlabs.com |
+| ----------- | -------------------------- |
+| Default     | https://stagecraftlabs.com |
 
 Source: `.env` → `BASE_URL=https://stagecraftlabs.com`
 
@@ -88,13 +88,13 @@ Source: `.env` → `BASE_URL=https://stagecraftlabs.com`
 
 ## 6. Risk Table
 
-| Risk                                                                                          | Priority | Mitigation                                                                                                     |
-| ---------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
-| Azure SQL serverless cold start returns a transient 503 on the first request after idle        | P1       | Observed directly during locator mapping (503 then 200 on retry); rely on `expect.poll` / generous timeouts and the config's existing `retries: 1` rather than treating a single 503 as a defect |
+| Risk                                                                                                     | Priority | Mitigation                                                                                                                                                                                                                                                                                                                                                                   |
+| -------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Azure SQL serverless cold start returns a transient 503 on the first request after idle                  | P1       | Observed directly during locator mapping (503 then 200 on retry); rely on `expect.poll` / generous timeouts and the config's existing `retries: 1` rather than treating a single 503 as a defect                                                                                                                                                                             |
 | Backend is a real, shared, persistent DB — concurrent test workers/projects can race each other on Reset | P1       | Confirmed directly (corrupted counts under 4-way parallel runs). Fixed at the config level: `playwright.config.ts` scopes Book Catalog to Desktop Edge only via `testIgnore`, so no two CI jobs touch the shared backend concurrently. `test.describe.configure({ mode: 'serial' })` additionally keeps this spec's own tests from racing each other within that one project |
-| Sort toggle button label is dynamic (Ascending ↑ / Descending ↓)                               | P2       | Locate by role + regex on both states, not a fixed string                                                       |
-| Row order assertions must not hardcode data that a future reseed could change                  | P2       | Assert order via pairwise comparison of the actual returned values (e.g. birth years / ratings), not literal names |
-| Confirm dialog (`window.confirm`) blocks the page until handled                                | P2       | Register `page.on('dialog')` / `page.once('dialog', ...)` before the triggering click                           |
+| Sort toggle button label is dynamic (Ascending ↑ / Descending ↓)                                         | P2       | Locate by role + regex on both states, not a fixed string                                                                                                                                                                                                                                                                                                                    |
+| Row order assertions must not hardcode data that a future reseed could change                            | P2       | Assert order via pairwise comparison of the actual returned values (e.g. birth years / ratings), not literal names                                                                                                                                                                                                                                                           |
+| Confirm dialog (`window.confirm`) blocks the page until handled                                          | P2       | Register `page.on('dialog')` / `page.once('dialog', ...)` before the triggering click                                                                                                                                                                                                                                                                                        |
 
 ---
 
@@ -120,15 +120,15 @@ Source: `.env` → `BASE_URL=https://stagecraftlabs.com`
 
 ## 10. Test Case Summary
 
-| AC   | Test Cases                                                                                              | Types                        |
-| ---- | ----------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| AC-1 | Authors tab shows 12 seeded rows + literal SELECT SQL on load; no sign-in performed                          | Positive                      |
-| AC-2 | Search "Austen"/"Solitude"-style terms narrows count and matches term; empty/no-match search                 | Positive, Negative, Boundary  |
-| AC-3 | Country/Genre dropdown filter — every row matches; "All" clears the filter                                   | Positive, Negative             |
-| AC-4 | Catalog JOIN SQL displayed; author-country filter narrows joined rows; no-match combo → 0 rows               | Positive, Negative             |
-| AC-5 | Sort each column asc/desc — order asserted via pairwise comparison, not hardcoded                            | Positive, Boundary             |
-| AC-6 | Paginate Next/Prev after filtered Run Query — content changes; Next disabled on last page, Prev on first     | Positive, Boundary             |
-| AC-7 | SQL-injection-style search → 0 rows, no crash; normal search afterward still works                            | Positive, Security             |
-| AC-8 | Reset + accept → 12/30 seeded state restored; Reset + dismiss → data unchanged                               | Positive, Negative              |
-| A11Y | Axe WCAG 2.x: load, search results, no-results, error, reset-confirm-dialog states                          | Accessibility                  |
-| PERF | Initial load within budget via `PerformanceNavigationTiming`                                                 | Performance                    |
+| AC   | Test Cases                                                                                               | Types                        |
+| ---- | -------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| AC-1 | Authors tab shows 12 seeded rows + literal SELECT SQL on load; no sign-in performed                      | Positive                     |
+| AC-2 | Search "Austen"/"Solitude"-style terms narrows count and matches term; empty/no-match search             | Positive, Negative, Boundary |
+| AC-3 | Country/Genre dropdown filter — every row matches; "All" clears the filter                               | Positive, Negative           |
+| AC-4 | Catalog JOIN SQL displayed; author-country filter narrows joined rows; no-match combo → 0 rows           | Positive, Negative           |
+| AC-5 | Sort each column asc/desc — order asserted via pairwise comparison, not hardcoded                        | Positive, Boundary           |
+| AC-6 | Paginate Next/Prev after filtered Run Query — content changes; Next disabled on last page, Prev on first | Positive, Boundary           |
+| AC-7 | SQL-injection-style search → 0 rows, no crash; normal search afterward still works                       | Positive, Security           |
+| AC-8 | Reset + accept → 12/30 seeded state restored; Reset + dismiss → data unchanged                           | Positive, Negative           |
+| A11Y | Axe WCAG 2.x: load, search results, no-results, error, reset-confirm-dialog states                       | Accessibility                |
+| PERF | Initial load within budget via `PerformanceNavigationTiming`                                             | Performance                  |
