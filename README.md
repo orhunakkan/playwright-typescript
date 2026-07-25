@@ -19,6 +19,7 @@ What makes this repo unusual is that the tests are not hand-written one at a tim
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
+  - [Environments (dev / uat / prod)](#environments-dev--uat--prod)
 - [Running tests](#running-tests)
 - [Reports and artifacts](#reports-and-artifacts)
 - [Project structure](#project-structure)
@@ -118,14 +119,46 @@ dotenv.config({ path: '.env' });
 The practical effect is a layered override. If you set an `ENV` variable, the matching `.env.<ENV>` file is loaded first and wins; `.env` is then loaded to fill in anything that file did not define. So:
 
 ```bash
-# uses .env only
+# uses .env only (defaults to prod)
 npx playwright test
 
-# uses .env.staging where it defines a value, .env for everything else
-ENV=staging npx playwright test        # PowerShell: $env:ENV="staging"; npx playwright test
+# uses .env.prod where it defines a value, .env for everything else
+ENV=prod npx playwright test           # PowerShell: $env:ENV="prod"; npx playwright test
 ```
 
 All `.env.*` files are gitignored except `.env.example`. Never commit real credentials.
+
+### Environments (dev / uat / prod)
+
+The `ENV` variable is a promotion-pipeline hook: it's how this suite would target `dev` → `uat` →
+`prod` if all three existed. Only **`prod`** (`https://stagecraftlabs.com`) is a real, live target
+today. `dev` and `uat` are intentionally reserved, unimplemented placeholders, kept in the config
+and CI to show how the framework is _architected_ to scale to a multi-environment setup — not
+because those hosts exist.
+
+| Environment | `ENV` value       | Live?         | `BASE_URL`                   |
+| ----------- | ----------------- | ------------- | ---------------------------- |
+| Production  | `prod` (or unset) | Yes           | `https://stagecraftlabs.com` |
+| UAT         | `uat`             | No — reserved | none                         |
+| Development | `dev`             | No — reserved | none                         |
+
+Selecting a reserved environment fails fast and on purpose. `playwright.config.ts` checks `ENV`
+before anything else runs and throws a clear error for `dev`/`uat`, rather than letting Playwright
+try to resolve an unset `BASE_URL` and time out obscurely:
+
+```bash
+npm run test:dev   # or test:uat — both throw immediately:
+# Error: ENV='dev' is reserved for an environment that does not exist yet.
+# Only 'prod' (the default — no ENV needed) currently points to a live target.
+```
+
+Run the real suite with `npm test`, `npm run test:prod`, or plain `ENV=prod npx playwright test`
+— all equivalent, since `prod` is the default.
+
+In CI, the same choice is exposed as a `workflow_dispatch` input (`environment: dev | uat | prod`,
+default `prod`) on [.github/workflows/playwright.yml](.github/workflows/playwright.yml) — push and
+pull_request triggers always run against `prod`; manually dispatching with `dev` or `uat` reproduces
+the same fail-fast error inside the CI job.
 
 ### What `playwright.config.ts` sets
 
@@ -503,6 +536,12 @@ Each lab has a test plan in [docs/test-plan/](docs/test-plan/) and a traceabilit
 [.github/workflows/playwright.yml](.github/workflows/playwright.yml) runs a 4-job matrix — one job per browser project, `fail-fast: false` so one browser's failure does not cancel the others — on pushes to `main`, on pull requests against `main`, and on manual dispatch.
 
 `BASE_URL` comes from a repository variable (`vars.BASE_URL`), not from a committed `.env`. If you fork this repo, set that variable or the CI runs will have no base URL.
+
+Manual dispatch also exposes the `environment` input described in
+[Environments](#environments-dev--uat--prod) (`dev | uat | prod`, default `prod`). Push and
+pull_request triggers always resolve to `prod`; dispatching with `dev` or `uat` reproduces the
+same fail-fast config error inside the job, on purpose — those two are reserved placeholders, not
+live targets.
 
 ### Test scope is decided per branch
 

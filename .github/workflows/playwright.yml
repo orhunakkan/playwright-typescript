@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment (dev/uat are reserved placeholders and fail fast — see README > Environments)'
+        type: choice
+        options: [prod, dev, uat]
+        default: prod
 
 jobs:
   test:
@@ -24,6 +30,7 @@ jobs:
           - project: 'Desktop Safari'
             browser: webkit
     env:
+      ENV: ${{ inputs.environment || 'prod' }}
       BASE_URL: ${{ vars.BASE_URL }}
       CI: 'true'
     steps:

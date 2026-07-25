@@ -8,6 +8,10 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint .",
+    "test": "playwright test",
+    "test:prod": "cross-env ENV=prod playwright test",
+    "test:dev": "cross-env ENV=dev playwright test",
+    "test:uat": "cross-env ENV=uat playwright test",
     "load-test:baseline": "artillery run --output load-tests/reports/baseline.json load-tests/configs/baseline.yml && node load-tests/generate-report.cjs",
     "load-test:stress": "artillery run --output load-tests/reports/stress.json load-tests/configs/stress.yml && node load-tests/generate-report.cjs",
     "load-test:report": "node load-tests/generate-report.cjs"
@@ -22,6 +26,7 @@
     "@types/node": "^26.1.1",
     "@typescript-eslint/parser": "^8.65.0",
     "artillery": "^2.0.33",
+    "cross-env": "^10.1.0",
     "eslint": "^10.7.0",
     "eslint-plugin-playwright": "^2.10.5",
     "js-yaml": "^5.2.1",
