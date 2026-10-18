@@ -52,8 +52,8 @@ npx playwright show-report
 
 | Requirement          | Version     | Notes                                                                                       |
 | -------------------- | ----------- | ------------------------------------------------------------------------------------------- |
-| **Node.js**          | 20 or newer | CI pins Node 20. Node 22+ works fine locally.                                               |
-| **npm**              | 10+         | Ships with Node 20.                                                                         |
+| **Node.js**          | 22 or newer | CI pins Node 24. The TypeSafe SDK needs Node 22+.                                           |
+| **npm**              | 11+         | Ships with Node 24.                                                                         |
 | **Browser binaries** | —           | Installed via `npx playwright install`, not npm.                                            |
 | **Network access**   | —           | Tests run against the live site at `BASE_URL`. There is no `webServer` block in the config. |
 
@@ -164,7 +164,7 @@ npx playwright show-trace test-results/<path-to>/trace.zip
 ```
 playwright-typescript/
 ├── .github/workflows/
-│   └── playwright.yml            # 4-browser CI matrix
+│   └── playwright.yml            # placeholder CI (manual dispatch only)
 ├── fixtures/
 │   └── index.ts                  # the custom `test` object; register POM fixtures here
 ├── pages/                        # Page Object Models (locators only)
@@ -244,13 +244,9 @@ Valid values are generated with `@faker-js/faker`. Invalid and boundary values a
 
 ## Continuous integration
 
-[.github/workflows/playwright.yml](.github/workflows/playwright.yml) runs a 4-job matrix, one job per browser project, with `fail-fast: false`. It runs on pushes to `main`, pull requests against `main`, and manual dispatch.
+[.github/workflows/playwright.yml](.github/workflows/playwright.yml) is a placeholder while `tests/` is empty. It has no push or pull request triggers, so it only runs when dispatched manually, and then it installs Chromium and runs `playwright test --pass-with-no-tests`.
 
-`BASE_URL` comes from a repository variable (`vars.BASE_URL`), not from a committed `.env`. Set it to the new target app once it is available.
-
-The test step passes `--pass-with-no-tests` so that CI stays green while `tests/` is empty. Remove the flag once specs exist, so that an accidentally empty run fails again.
-
-Each job uploads a `playwright-report-<project>` artifact (`playwright-report/` + `test-results/`), retained 14 days.
+Once the new target app and its specs exist, restore the push/PR triggers and the per-browser matrix, pass `BASE_URL` from a repository variable (`vars.BASE_URL`), upload the report as an artifact, and drop `--pass-with-no-tests` so that an accidentally empty run fails again.
 
 ---
 

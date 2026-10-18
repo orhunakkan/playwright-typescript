@@ -1,66 +1,28 @@
 name: Playwright Tests
 
+# Placeholder: the previous target app was retired and tests/ is empty. This workflow only runs
+# when triggered by hand. Restore push/pull_request triggers, the browser matrix and BASE_URL
+# once the new target app and its specs exist.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Target environment (dev/uat are reserved placeholders and fail fast — see README > Environments)'
-        type: choice
-        options: [prod, dev, uat]
-        default: prod
 
 jobs:
   test:
-    name: e2e (${{ matrix.project }})
+    name: e2e
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - project: 'Desktop Chrome'
-            browser: chromium
-          - project: 'Desktop Firefox'
-            browser: firefox
-          - project: 'Desktop Edge'
-            browser: chromium
-          - project: 'Desktop Safari'
-            browser: webkit
-    env:
-      ENV: ${{ inputs.environment || 'prod' }}
-      BASE_URL: ${{ vars.BASE_URL }}
-      CI: 'true'
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
-        # --pass-with-no-tests: the suite is empty until specs for the new target app land
-        # (see README). Drop the flag once tests/ has specs, so an empty run fails again.
-        env:
-          PROJECT: ${{ matrix.project }}
-        run: npx playwright test --project="$PROJECT" --pass-with-no-tests
-
-      - name: Upload report
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: playwright-report-${{ matrix.project }}
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 14
-          if-no-files-found: ignore
+        run: npx playwright test --pass-with-no-tests

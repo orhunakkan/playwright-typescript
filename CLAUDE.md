@@ -27,9 +27,10 @@ previous target (Stagecraft Labs) was retired and its specs, POMs and fixtures w
   prefixed `positive:` / `negative:` / `boundary:`
 - Every spec includes an accessibility `describe` (multi-state `scanWcag` checks) and a
   `@performance`-tagged budget test — a happy-path-only spec is incomplete
-- Tests run against the real external site (`BASE_URL` from `.env`, `vars.BASE_URL` in CI), not
-  a local server
-- CI runs with `--pass-with-no-tests` while `tests/` is empty — remove it once specs exist
+- Tests run against the real external site (`BASE_URL` from `.env`), not a local server
+- CI ([.github/workflows/playwright.yml](.github/workflows/playwright.yml)) is a manual-dispatch
+  placeholder while `tests/` is empty — restore triggers, browser matrix and `vars.BASE_URL` once
+  specs exist
 
 ## Jev skill routing
 
@@ -49,7 +50,7 @@ Jev is TypeSafe's "System One" model. It returns typed answers with probabilitie
 
 **Calling Jev from code:**
 
-- **SDK:** `@typesafe-ai/sdk` 0.6.0. Read the live docs before writing Jev code, starting at https://docs.typesafe.ai/llms.txt.
+- **SDK:** `@typesafe-ai/sdk` 0.7.0 (requires Node 22+). Read the live docs before writing Jev code, starting at https://docs.typesafe.ai/llms.txt.
 - **The API key stays in `.env` as `TYPESAFE_API_KEY`.** `.env` is git-ignored, and `.env.example` is its template.
 - **Never read, print or commit `.env`.**
 - **Keep the key server-side.** Never set the SDK's `dangerouslyAllowBrowser` option.
