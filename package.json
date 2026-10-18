@@ -8,6 +8,7 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint .",
+    "typecheck": "tsc -p .claude/hooks",
     "test": "playwright test",
     "test:prod": "cross-env ENV=prod playwright test",
     "test:dev": "cross-env ENV=dev playwright test",
@@ -17,6 +18,7 @@
     "load-test:report": "node load-tests/generate-report.cjs"
   },
   "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0",
     "dotenv": "^17.4.2"
   },
   "devDependencies": {
