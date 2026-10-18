@@ -12,7 +12,7 @@ export interface A11yScanOptions {
   tags?: string[];
 }
 
-// Framework-agnostic axe accessibility scan shared across every lab. Options map
+// Framework-agnostic axe accessibility scan shared across every spec. Options map
 // directly to AxeBuilder's .include()/.exclude()/.withTags() chain.
 export async function scanA11y(page: Page, options: A11yScanOptions = {}): Promise<AxeResults> {
   let builder = new AxeBuilder({ page });

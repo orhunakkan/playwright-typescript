@@ -14,7 +14,7 @@ const THRESHOLD = 0.5; // minimum probability of yes for a skill to be picked
 const MAX_PICKS = 3;
 const MAX_PROMPT_CHARS = 12_000; // keeps state + longest question well under Jev's 32k-token limit
 const REPOSITORY =
-  'A Playwright + TypeScript end-to-end test suite (page objects, fixtures, axe-core accessibility scans, performance budgets, Artillery load tests) for the 36 practice labs on the live Stagecraft Labs site, each lab mapped to a JIRA story.';
+  'A Playwright + TypeScript end-to-end test framework (page objects, fixtures, axe-core accessibility scans, performance budgets) that runs against a live site set by BASE_URL; the specs for its new target app have not been written yet.';
 
 interface HookInput {
   prompt?: string;
