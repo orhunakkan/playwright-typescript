@@ -26,4 +26,5 @@ export const env = {
   baseUrl: required('BASE_URL'),
   apiUrl: required('API_URL'),
   apiHealthPath: process.env['API_HEALTH_PATH']?.trim() || '/',
+  testIdAttribute: process.env['TEST_ID_ATTRIBUTE']?.trim() || 'data-testid',
 } as const;

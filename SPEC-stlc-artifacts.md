@@ -1,6 +1,6 @@
 # Spec: stlc-artifacts
 
-Module id: `stlc-artifacts` · Parent: [SPEC.md](SPEC.md) · Depends on: `foundation` · Status: **draft — awaiting approval**
+Module id: `stlc-artifacts` · Parent: [SPEC.md](SPEC.md) · Depends on: `foundation` · Status: **approved 2026-10-19**
 
 ## Objective
 

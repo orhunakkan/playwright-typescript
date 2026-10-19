@@ -26,3 +26,6 @@ coverage/
 
 # JSON results for the traceability script
 reports/
+
+# Saved signed-in sessions from tests/setup
+.auth/

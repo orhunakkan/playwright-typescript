@@ -1,6 +1,6 @@
 # Spec: test-harness
 
-Module id: `test-harness` · Parent: [SPEC.md](SPEC.md) · Depends on: `foundation` · Status: **draft — awaiting approval**
+Module id: `test-harness` · Parent: [SPEC.md](SPEC.md) · Depends on: `foundation` · Status: **approved 2026-10-19, in progress**
 
 ## Objective
 
@@ -23,7 +23,7 @@ examples do two jobs:
 | Site sits behind Cloudflare (`cf_clearance` cookie)                                                                              | Possible bot challenges. Keep request volume low and treat a challenge page as an _environment_ failure in triage |
 | Persistent widgets: `chat-toggle`, `live-activity-toggle`, `notification-bar`                                                    | Masked in visual tests, and considered for a11y scan scope                                                        |
 
-### ⚠ Change to approved decision 4: needs your OK
+### Change to decision 4 (approved 2026-10-19)
 
 The approved decision was "read flows use the seeded accounts". The evidence above shows those
 accounts get locked by other people's traffic. **Proposal:** every authenticated test uses users

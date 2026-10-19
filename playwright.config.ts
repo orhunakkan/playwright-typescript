@@ -25,6 +25,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }], ['json', { outputFile: 'reports/results.json' }]],
   use: {
     baseURL: env.baseUrl,
+    testIdAttribute: env.testIdAttribute,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

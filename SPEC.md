@@ -213,8 +213,9 @@ test.describe('AC-2: search filters products by name', () => {
    The "locators only, no methods" rule still applies to any POM that exists.
 3. **New dependencies approved:** `@axe-core/playwright`, `ajv` + `ajv-formats`, `eslint` +
    `typescript-eslint` + `eslint-plugin-playwright` + `prettier`.
-4. **Test data:** read flows use Toolshop's seeded accounts. Write flows create a unique user per
-   run through the API.
+4. **Test data (revised 2026-10-19):** every authenticated test uses users the framework registers
+   through `POST /users/register` (one per run, plus one per worker for state-changing tests). Seeded
+   accounts are never used, because other traffic locks them (`customer@` was found locked).
 5. **CI is out of MVP scope.** Everything runs locally. `ci-pipelines` and the CI-auth question
    are deferred.
 
