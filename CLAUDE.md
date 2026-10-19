@@ -43,7 +43,7 @@ MVP: there is no CI.
   - `workerUser`: a fresh user per worker.
   - `expect(response).toMatchContract(method, pathTemplate)`.
 - `utilities/`:
-  - `users.ts`: per-run users and `AUTH_FILE`.
+  - `users.ts`: per-run users, `AUTH_FILE` and `signInAs`.
   - `accessibility.ts`: `scanWcag`, `withoutKnown`.
   - `performance.ts` (`measurePageLoad`, `throttle`, `SLOW_4G`) with `perf-budgets.ts`.
   - `visual.ts`: `dynamicRegions` to mask.
@@ -78,6 +78,8 @@ MVP: there is no CI.
 - **Users.** Never use the target's seeded accounts: other traffic locks them.
   - Signed-in UI tests use `test.use({ storageState: AUTH_FILE })`.
   - Tests that change account state or send bad credentials use `workerUser`.
+  - Signed-in UI tests that read back their own user's data sign in as that user with
+    `signInAs(page.context(), workerUser)`.
 - **Mobile.** Model what a mobile user does (for example, open the collapsed Filters panel when
   `isMobile`). Don't skip mobile projects.
 

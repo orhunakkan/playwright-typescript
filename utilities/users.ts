@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import type { APIRequestContext } from '@playwright/test';
+import type { APIRequestContext, BrowserContext } from '@playwright/test';
+import { env } from '../config/env.ts';
 
 // Storage state written by tests/setup/auth.setup.ts; opt in with test.use({ storageState: AUTH_FILE }).
 export const AUTH_FILE = '.auth/user.json';
@@ -43,4 +44,16 @@ export async function registerUser(api: APIRequestContext, label: string): Promi
   const { access_token: token } = (await login.json()) as { access_token: string };
 
   return { email, password, token };
+}
+
+// Signs every page in `context` in as `user`, for tests that read back their own user's data (the
+// shared run user's AUTH_FILE is for read-only checks). The app keeps its session as the API token
+// in localStorage "auth-token", so this sets it on the app's origin before any page script runs.
+export async function signInAs(context: BrowserContext, user: TestUser): Promise<void> {
+  await context.addInitScript(
+    ({ origin, token }) => {
+      if (window.location.origin === origin) window.localStorage.setItem('auth-token', token);
+    },
+    { origin: new URL(env.baseUrl).origin, token: user.token },
+  );
 }
