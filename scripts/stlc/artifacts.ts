@@ -212,6 +212,23 @@ export function readDefects(root: string, feature?: string): Defect[] {
     .filter((d) => !feature || d.meta['feature'] === feature);
 }
 
+export const GENERATED_START = '<!-- generated:start -->';
+export const GENERATED_END = '<!-- generated:end -->';
+
+/** Replaces everything between the generated markers; the rest of the file is left untouched. */
+export function replaceGenerated(text: string, content: string): string {
+  const start = text.indexOf(GENERATED_START);
+  const end = text.indexOf(GENERATED_END);
+  if (start < 0 || end < start) throw new Error(`missing "${GENERATED_START}" / "${GENERATED_END}" markers`);
+  return `${text.slice(0, start + GENERATED_START.length)}\n\n${content.trim()}\n\n${text.slice(end)}`;
+}
+
+/** Sets a front-matter key that already exists (e.g. updated). */
+export const setFrontMatter = (text: string, key: string, value: string): string => text.replace(new RegExp(`^${key}:.*$`, 'm'), `${key}: ${value}`);
+
+/** Escapes a value for a markdown table cell. */
+export const cell = (v: string | undefined): string => (v ?? '').replaceAll('|', '\\|').replaceAll('\n', ' ');
+
 export type Feature = { name: string; dir: string; docs: Partial<Record<Phase, Doc>> };
 
 export function readFeature(root: string, name: string): Feature {

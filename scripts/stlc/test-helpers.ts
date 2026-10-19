@@ -1,6 +1,6 @@
 // Builds throwaway STLC roots for unit tests. A valid feature is the baseline; each test mutates one
 // file so a failure points at exactly one rule.
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -80,6 +80,15 @@ export function makeRoot(overrides: Record<string, string | null> = {}): string 
   }
   return root;
 }
+
+/** Copies the real stlc/_templates into a test root. */
+export function withTemplates(root: string): string {
+  cpSync(join(import.meta.dirname, '..', '..', 'stlc', '_templates'), join(root, '_templates'), { recursive: true });
+  return root;
+}
+
+/** The real Playwright 1.64 JSON report in __fixtures__ (feature shop-search; paths sanitised to /repo). */
+export const fixtureReport = () => JSON.parse(readFileSync(join(import.meta.dirname, '__fixtures__', 'results.json'), 'utf8'));
 
 /** VALID file with one substring replaced; throws if the substring is absent so tests can't go stale. */
 export function mutate(path: string, from: string, to: string): Record<string, string> {

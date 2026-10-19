@@ -22,6 +22,8 @@ export default defineConfig({
   forbidOnly: !!process.env['CI'],
   retries: 1,
   outputDir: 'test-results',
+  // Lands in reports/results.json (config.metadata) so run summaries name the env that actually ran.
+  metadata: { env: env.name, baseUrl: env.baseUrl, apiUrl: env.apiUrl },
   expect: {
     toHaveScreenshot: { animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.01 },
   },

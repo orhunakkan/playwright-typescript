@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
-import { cpSync, existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, test } from 'node:test';
 import { checkGate, resolvePhase } from './gate.ts';
 import { lintFeature } from './lint.ts';
 import { createFeature } from './new.ts';
-import { makeRoot, mutate } from './test-helpers.ts';
+import { makeRoot, mutate, withTemplates } from './test-helpers.ts';
 
 const REQ = 'shop-search/01-requirements.md';
 const PLAN = 'shop-search/02-test-plan.md';
@@ -53,11 +53,7 @@ describe('stlc:gate', () => {
 });
 
 describe('stlc:new', () => {
-  const rootWithTemplates = () => {
-    const root = makeRoot();
-    cpSync(join(import.meta.dirname, '..', '..', 'stlc', '_templates'), join(root, '_templates'), { recursive: true });
-    return root;
-  };
+  const rootWithTemplates = () => withTemplates(makeRoot());
 
   test('creates all five artifacts with feature and date filled in, and they pass lint', () => {
     const root = rootWithTemplates();

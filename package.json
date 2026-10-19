@@ -22,7 +22,9 @@
     "test:scripts": "node --test \"scripts/**/*.test.ts\"",
     "stlc:lint": "node scripts/stlc/lint.ts",
     "stlc:gate": "node scripts/stlc/gate.ts",
-    "stlc:new": "node scripts/stlc/new.ts"
+    "stlc:new": "node scripts/stlc/new.ts",
+    "stlc:run-summary": "node scripts/stlc/run-summary.ts",
+    "stlc:defect": "node scripts/stlc/defect.ts"
   },
   "dependencies": {
     "@typesafe-ai/sdk": "0.7.0"
