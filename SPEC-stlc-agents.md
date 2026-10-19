@@ -190,6 +190,29 @@ Where the build differs from the plan above, this section is what's true.
   - npm scripts, agents, gate phases and skill references.
 - **`npm run typecheck` and `npm run test:scripts`** now also cover `.claude/hooks/`.
 
+## Task 5 smoke run: status and findings (2026-10-18/19)
+
+- **Status: phases 1–2 done. Waiting for the user to approve `stlc/contact-form/02-test-plan.md`.**
+  Phases 3–8 run after approval via `/stlc contact-form`. The `stlc/contact-form/` artifacts are
+  **uncommitted**, on purpose: the final commit comes at the end of the smoke run.
+- **Phase 1 (`stlc-analyst`):** explored the live contact page signed out and signed in. Wrote 12
+  ACs (`source: inferred`) and seven open questions, including a possibly ignored first "Send"
+  click.
+- **Phase 2 (`stlc-strategist`)**, then a fresh-context adversarial review (doubt-driven, one
+  cycle, 19 findings), then a strategist revision.
+  - Removed: AC-11 negative cases that 01 didn't state.
+  - Fewer real sends: AC-10 is set up through the API, and the success-alert a11y scan uses a mocked
+    response.
+  - Added: four a11y scans, and design notes for deterministic "no request sent" checks.
+  - Cross-model review was offered to the user; no answer yet.
+- **Bugs found and fixed by the run:**
+  - `stlc:new` created all templates up front, and the untouched `02` deadlocked the plan gate.
+    Artifacts are now created per phase (commit 3d688cf).
+  - `today()` was UTC (commit c377812).
+  - Jev routed subagent hand-backs (commit f448129).
+- **Pending for build (phase 5):** a harness helper to sign a page in as a given `workerUser`, for
+  AC-10. The approved plan names it as ask-first; the plan approval covers it.
+
 ## Out of scope
 
 - The pilot feature `product-search` and the with-bugs run (`pilot`).
