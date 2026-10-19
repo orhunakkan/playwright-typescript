@@ -13,8 +13,9 @@ const EXCLUDED_SKILLS = new Set(['using-agent-skills']);
 const THRESHOLD = 0.5; // minimum probability of yes for a skill to be picked
 const MAX_PICKS = 3;
 const MAX_PROMPT_CHARS = 12_000; // keeps state + longest question well under Jev's 32k-token limit
-const REPOSITORY =
-  'A Playwright + TypeScript end-to-end test framework (page objects, fixtures, axe-core accessibility scans, performance budgets) that runs against a live site set by BASE_URL; the specs for its new target app have not been written yet.';
+// Blocks the IDE, browser and harness add around what the user typed. They are not the request,
+// and leaving them in skewed routing (see .claude/jev-routing.log).
+const WRAPPER_TAGS = ['ide_opened_file', 'ide_selection', 'browser_instruction', 'system-reminder'];
 
 interface HookInput {
   prompt?: string;
@@ -26,10 +27,24 @@ interface Skill {
   description: string;
 }
 
-const input = JSON.parse(readFileSync(0, 'utf8') || '{}') as HookInput;
-const prompt = input.prompt?.trim() ?? '';
-const projectDir = process.env['CLAUDE_PROJECT_DIR'] ?? input.cwd ?? process.cwd();
-const logFile = join(projectDir, '.claude', 'jev-routing.log');
+/** The user's own words: the prompt without wrapper blocks, trimmed. */
+export function cleanPrompt(raw: string): string {
+  const blocks = new RegExp(`<(${WRAPPER_TAGS.join('|')})>[\\s\\S]*?</\\1>`, 'g');
+  return raw.replace(blocks, '').trim();
+}
+
+/** What Jev is told about the repository: package.json's description, so it can't drift from the project. */
+export function repositoryContext(projectDir: string): string {
+  try {
+    const { description } = JSON.parse(readFileSync(join(projectDir, 'package.json'), 'utf8')) as { description?: string };
+    if (description?.trim()) return description.trim();
+  } catch {
+    // No readable package.json; fall through.
+  }
+  return 'A software repository.';
+}
+
+let logFile = '';
 
 function log(entry: Record<string, unknown>): void {
   try {
@@ -82,6 +97,11 @@ function loadSkills(): Skill[] {
 }
 
 async function main(): Promise<void> {
+  const input = JSON.parse(readFileSync(0, 'utf8') || '{}') as HookInput;
+  const prompt = cleanPrompt(input.prompt ?? '');
+  const projectDir = process.env['CLAUDE_PROJECT_DIR'] ?? input.cwd ?? process.cwd();
+  logFile = join(projectDir, '.claude', 'jev-routing.log');
+
   // Slash commands already name what to run.
   if (!prompt || prompt.startsWith('/')) return;
 
@@ -108,7 +128,7 @@ async function main(): Promise<void> {
 
     const client = new TypeSafeClient({ logLevel: 'off', timeout: 8_000, retry: { maxRetries: 1 } });
     const { model, answers, usage } = await client.systemOne({
-      state: { user_prompt: prompt.slice(0, MAX_PROMPT_CHARS), repository: REPOSITORY },
+      state: { user_prompt: prompt.slice(0, MAX_PROMPT_CHARS), repository: repositoryContext(projectDir) },
       questions,
     });
 
@@ -146,4 +166,4 @@ async function main(): Promise<void> {
   }
 }
 
-await main();
+if (import.meta.main) await main();

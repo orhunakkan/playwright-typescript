@@ -1,7 +1,7 @@
 {
   "name": "agentic-playwright-framework",
   "version": "1.0.0",
-  "description": "Playwright-Typescript Framework",
+  "description": "Agentic Playwright + TypeScript test framework: Claude Code agents and skills carry a feature through the whole STLC (requirements, risk-based plan, test design, environment check, test build, run, defect triage, traceability closure report) for e2e (5 browsers/devices), API contract, accessibility, performance and visual tests against a live target set in .env. Artifacts live in stlc/<feature>/; deterministic npm run stlc:* scripts gate every phase. Currently piloting on the Practice Software Testing Toolshop demo.",
   "license": "ISC",
   "author": "Orhun Akkan",
   "type": "module",
