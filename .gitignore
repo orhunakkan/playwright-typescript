@@ -23,3 +23,6 @@ build/
 # Coverage
 coverage/
 .nyc_output/
+
+# JSON results for the traceability script
+reports/
