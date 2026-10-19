@@ -1,4 +1,4 @@
-# playwright-typescript
+# agentic-playwright-framework
 
 Playwright + TypeScript E2E framework that runs against a live site set by `BASE_URL`. The
 previous target (Stagecraft Labs) was retired and its specs, POMs and fixtures were removed;

@@ -1,6 +1,6 @@
-# playwright-typescript
+# agentic-playwright-framework
 
-[![Playwright Tests](https://github.com/orhunakkan/playwright-typescript/actions/workflows/playwright.yml/badge.svg)](https://github.com/orhunakkan/playwright-typescript/actions/workflows/playwright.yml)
+[![Playwright Tests](https://github.com/orhunakkan/agentic-playwright-framework/actions/workflows/playwright.yml/badge.svg)](https://github.com/orhunakkan/agentic-playwright-framework/actions/workflows/playwright.yml)
 [![Playwright](https://img.shields.io/badge/Playwright-1.61-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Node](https://img.shields.io/badge/Node-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org)
@@ -30,8 +30,8 @@ An end-to-end test framework written in Playwright + TypeScript. It runs against
 ## Quick start
 
 ```bash
-git clone https://github.com/orhunakkan/playwright-typescript.git
-cd playwright-typescript
+git clone https://github.com/orhunakkan/agentic-playwright-framework.git
+cd agentic-playwright-framework
 
 npm ci                                # install dependencies
 npx playwright install --with-deps    # download the browser binaries
@@ -162,7 +162,7 @@ npx playwright show-trace test-results/<path-to>/trace.zip
 ## Project structure
 
 ```
-playwright-typescript/
+agentic-playwright-framework/
 ├── .github/workflows/
 │   └── playwright.yml            # placeholder CI (manual dispatch only)
 ├── fixtures/
