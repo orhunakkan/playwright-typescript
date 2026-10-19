@@ -21,4 +21,16 @@ export default defineConfig([
       'playwright/no-skipped-test': 'warn',
     },
   },
+  {
+    // Specs (generated ones included) must use our fixtures: api, workerUser, toMatchContract.
+    files: ['tests/**'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [{ name: '@playwright/test', message: 'Import test/expect from fixtures/index.ts instead.', allowTypeImports: true }],
+        },
+      ],
+    },
+  },
 ]);

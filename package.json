@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p .claude/hooks/tsconfig.json",
     "env:check": "node scripts/env-check.ts",
     "test": "playwright test",
     "test:e2e": "playwright test --project=chromium --project=firefox --project=webkit --project=mobile-chrome --project=mobile-safari",
@@ -19,13 +19,14 @@
     "test:visual": "node scripts/docker-playwright.ts --project=visual",
     "test:visual:update": "node scripts/docker-playwright.ts --project=visual --update-snapshots",
     "contract:pull": "node scripts/contract-pull.ts",
-    "test:scripts": "node --test \"scripts/**/*.test.ts\"",
+    "test:scripts": "node --test \"scripts/**/*.test.ts\" \".claude/hooks/**/*.test.mts\"",
     "stlc:lint": "node scripts/stlc/lint.ts",
     "stlc:gate": "node scripts/stlc/gate.ts",
     "stlc:new": "node scripts/stlc/new.ts",
     "stlc:run-summary": "node scripts/stlc/run-summary.ts",
     "stlc:defect": "node scripts/stlc/defect.ts",
-    "stlc:trace": "node scripts/stlc/trace.ts"
+    "stlc:trace": "node scripts/stlc/trace.ts",
+    "stlc:check-tests": "node scripts/stlc/check-tests.ts"
   },
   "dependencies": {
     "@typesafe-ai/sdk": "0.7.0"
