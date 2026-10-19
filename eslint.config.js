@@ -4,7 +4,7 @@ import playwright from 'eslint-plugin-playwright';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['playwright-report/', 'test-results/', 'reports/']),
+  globalIgnores(['playwright-report/', 'test-results/', 'test-results-mcp/', 'reports/']),
   js.configs.recommended,
   tseslint.configs.recommended,
   {

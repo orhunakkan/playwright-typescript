@@ -1,6 +1,7 @@
 package-lock.json
 playwright-report/
 test-results/
+test-results-mcp/
 reports/
 .claude/jev-routing.log
 contracts/

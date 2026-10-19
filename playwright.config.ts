@@ -15,13 +15,21 @@ const e2e = (name: string, device: string): Project => ({
 const visual: Project[] =
   process.env['PW_VISUAL'] === '1' ? [{ name: 'visual', testDir: './tests/visual', dependencies: ['setup'], use: { ...desktopChrome } }] : [];
 
+// The playwright-test MCP server (Playwright's agents and stlc-analyst) runs a seed with
+// pauseAtEnd and no timeout, so its browser stays open and would record video into the output dir.
+// On Windows a host run then blocks on clearing that dir, so MCP sessions get their own dir and no
+// video. The flag carries the decision to the server's workers, which load this config again.
+const MCP_SESSION = 'APF_MCP_SESSION';
+const mcpSession = process.argv.includes('run-test-mcp-server') || process.env[MCP_SESSION] === '1';
+if (mcpSession) process.env[MCP_SESSION] = '1';
+
 export default defineConfig({
   testDir: './tests',
   snapshotPathTemplate: '{testDir}/__snapshots__/{testFilePath}/{arg}{ext}',
   fullyParallel: true,
   forbidOnly: !!process.env['CI'],
   retries: 1,
-  outputDir: 'test-results',
+  outputDir: mcpSession ? 'test-results-mcp' : 'test-results',
   // Lands in reports/results.json (config.metadata) so run summaries name the env that actually ran.
   metadata: { env: env.name, baseUrl: env.baseUrl, apiUrl: env.apiUrl },
   expect: {
@@ -39,7 +47,7 @@ export default defineConfig({
     testIdAttribute: env.testIdAttribute,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: mcpSession ? 'off' : 'retain-on-failure',
   },
   projects: [
     { name: 'setup', testDir: './tests/setup', testMatch: '**/*.setup.ts', use: { ...desktopChrome } },

@@ -213,6 +213,12 @@ Where the build differs from the plan above, this section is what's true.
   - `/stlc-design` gave the planner one seed, but contact-form's e2e ACs are partly signed out
     and partly signed in. The planner now runs once per seed: `ui-scenarios.md` (signed out) and
     `ui-scenarios-signed-in.md`, and the designer reads both.
+  - Host runs hung with no output. The `playwright-test` MCP server runs a seed with
+    `pauseAtEnd` and no timeout, so every analyst or planner session left a browser open,
+    recording video into `test-results/` (about 300 MB). On Windows the next host run blocked
+    while clearing that dir, and closing the page didn't release it; only stopping the worker did.
+    MCP sessions now write to `test-results-mcp/` with video off, and host runs no longer
+    collide with them.
 - **Pending for build (phase 5):** a harness helper to sign a page in as a given `workerUser`, for
   AC-10. The approved plan names it as ask-first; the plan approval covers it.
 
