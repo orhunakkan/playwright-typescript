@@ -221,6 +221,8 @@ test.describe('AC-2: search filters products by name', () => {
 
 ## Open questions
 
-1. **Where the planner saves.** Playwright's planner writes to `specs/`. It's unverified whether
-   `planner_save_plan` accepts a path under `stlc/<feature>/`. If it doesn't, `specs/` stays and
-   `03-test-cases.md` links to it. This gets resolved in `SPEC-stlc-agents.md`.
+None.
+
+1. **Where the planner saves (resolved 2026-10-19).** `planner_save_plan.fileName` accepts any
+   path relative to the workspace, so UI plans go to `stlc/<feature>/ui-scenarios.md` and `specs/`
+   isn't used. Verified in `playwright/lib/mcp/test/plannerTools.js`; see `SPEC-stlc-agents.md`.
