@@ -1,295 +1,224 @@
 # agentic-playwright-framework
 
-[![Playwright Tests](https://github.com/orhunakkan/agentic-playwright-framework/actions/workflows/playwright.yml/badge.svg)](https://github.com/orhunakkan/agentic-playwright-framework/actions/workflows/playwright.yml)
-[![Playwright](https://img.shields.io/badge/Playwright-1.61-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev)
+[![Playwright](https://img.shields.io/badge/Playwright-1.64-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Node](https://img.shields.io/badge/Node-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![Node](https://img.shields.io/badge/Node-22%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 
-An end-to-end test framework written in Playwright + TypeScript. It runs against a live web application whose address is set by `BASE_URL`.
+A Playwright + TypeScript framework in which Claude Code agents carry a feature through the whole
+**Software Testing Life Cycle**: requirement analysis, test planning, test design, environment
+setup, implementation, execution, defect triage and closure. It covers E2E (cross-browser and
+mobile), API, visual, accessibility and performance tests against a live target.
 
-> **Status: no target app yet.** The previous target site has been retired, and its specs, page objects and fixtures were removed with it. The framework (config, fixture wiring, accessibility helpers, lint rules, CI matrix) is in place. Specs will be added once the new base URL is available.
+> **Status: `foundation`, `test-harness` and `stlc-artifacts` complete; `stlc-agents` built,
+> smoke run pending.** Tooling, env switching, per-type projects, helpers and reference examples
+> for every test type, deterministic STLC tooling, and the Claude Code agents and skills are in
+> place. See [SPEC.md](SPEC.md) for the design and build order. The MVP runs locally only, with no
+> CI.
 
----
+## Running the STLC with Claude Code
 
-## Table of contents
+```text
+/stlc <feature> [requirements-file]
+```
 
-- [Quick start](#quick-start)
-- [Prerequisites](#prerequisites)
-- [Configuration](#configuration)
-  - [Environments (dev / uat / prod)](#environments-dev--uat--prod)
-- [Running tests](#running-tests)
-- [Reports and artifacts](#reports-and-artifacts)
-- [Project structure](#project-structure)
-- [Architecture and conventions](#architecture-and-conventions)
-- [Continuous integration](#continuous-integration)
-- [Code quality](#code-quality)
-- [Troubleshooting](#troubleshooting)
+`/stlc` runs the eight phases, writing artifacts to `stlc/<feature>/`:
+
+1. analyze: requirements and acceptance criteria
+2. plan: risk-based coverage
+3. design: test cases
+4. env: preflight and contract drift
+5. build: tests
+6. run
+7. triage: defects and healing
+8. report: traceability and exit criteria
+
+It **stops for you twice**:
+
+- **After phase 2.** Review `stlc/<feature>/02-test-plan.md` and set `status: approved` in your
+  editor. Claude can't, because a hook blocks it. Then run `/stlc <feature>` again.
+- **In phase 5, if the plan has visual tests.** You decide whether baselines are created, then
+  review them.
+
+Each phase can also run on its own: `/stlc-analyze`, `/stlc-plan`, `/stlc-design`, `/stlc-env`,
+`/stlc-build`, `/stlc-run`, `/stlc-triage`, `/stlc-report`. The first time you open the repo,
+Claude Code asks you to trust the project MCP server `playwright-test` (from `.mcp.json`). Approve
+it, because the Playwright planner, generator and healer need it.
+
+The pilot target is [Practice Software Testing "Toolshop"](https://practicesoftwaretesting.com), a
+public storefront built for test practice. It has a REST API and a
+[deliberately buggy twin](https://with-bugs.practicesoftwaretesting.com).
 
 ---
 
 ## Quick start
 
 ```bash
-git clone https://github.com/orhunakkan/agentic-playwright-framework.git
-cd agentic-playwright-framework
-
-npm ci                                # install dependencies
-npx playwright install --with-deps    # download the browser binaries
-cp .env.example .env                  # create your local environment file, then set BASE_URL
-
-npx playwright test --project="Desktop Chrome"
+npm ci
+npx playwright install chromium firefox webkit
+cp .env.example .env        # set BASE_URL, API_URL (and TYPESAFE_API_KEY for the Jev hook)
+npm run env:check           # every line should say PASS
+npm test
 ```
-
-To see the results afterwards:
-
-```bash
-npx playwright show-report
-```
-
----
 
 ## Prerequisites
 
-| Requirement          | Version     | Notes                                                                                       |
-| -------------------- | ----------- | ------------------------------------------------------------------------------------------- |
-| **Node.js**          | 22 or newer | CI pins Node 24. The TypeSafe SDK needs Node 22+.                                           |
-| **npm**              | 11+         | Ships with Node 24.                                                                         |
-| **Browser binaries** | —           | Installed via `npx playwright install`, not npm.                                            |
-| **Network access**   | —           | Tests run against the live site at `BASE_URL`. There is no `webServer` block in the config. |
-
-Use `npm ci` rather than `npm install`. It installs exactly what `package-lock.json` specifies, which is what CI does. The browser matrix maps to three engines: `chromium` (Desktop Chrome and Desktop Edge), `firefox` (Desktop Firefox), and `webkit` (Desktop Safari).
-
----
+| Requirement | Notes                                                                                         |
+| ----------- | --------------------------------------------------------------------------------------------- |
+| Node.js 22+ | Scripts run as TypeScript through Node's native type stripping. Tested on Node 24.            |
+| Browsers    | `npx playwright install chromium firefox webkit`                                              |
+| Docker      | Linux engine. Only needed for visual tests (`npm run test:visual`).                           |
+| Network     | Tests run against the live site in `BASE_URL`. There is no local server or `webServer` block. |
 
 ## Configuration
 
-### Environment files
+[config/env.ts](config/env.ts) loads environment files in layers. The first source to define a
+value wins:
 
-The only required setting is `BASE_URL`. `.env` is gitignored, so create yours from the committed example:
+```
+shell environment  >  .env.<ENV>  (only when ENV is set)  >  .env
+```
+
+| Variable            | Required | Purpose                                                                                                        |
+| ------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `BASE_URL`          | yes      | UI under test. Becomes Playwright's `baseURL`.                                                                 |
+| `API_URL`           | yes      | API under test. `baseURL` of the `api` project.                                                                |
+| `API_HEALTH_PATH`   | no       | Path `env:check` probes on the API (default `/`).                                                              |
+| `API_SPEC_PATH`     | no       | Where `contract:pull` fetches the OpenAPI document (default `/openapi.json`; Toolshop: `/docs?api-docs.json`). |
+| `TEST_ID_ATTRIBUTE` | no       | Attribute behind `getByTestId` (default `data-testid`; Toolshop: `data-test`).                                 |
+| `TYPESAFE_API_KEY`  | no       | Used by the Jev skill-routing hook in `.claude/`, not by tests.                                                |
+
+A missing `BASE_URL` or `API_URL` stops the run immediately with a clear error. All `.env*` files
+except `.env.example` are git-ignored.
+
+**Switching targets** needs no code change. Create `.env.<name>` and set `ENV`:
 
 ```bash
-cp .env.example .env
+# .env.with-bugs
+BASE_URL=https://with-bugs.practicesoftwaretesting.com
+API_URL=https://api-with-bugs.practicesoftwaretesting.com
 ```
-
-```dotenv
-# .env
-BASE_URL=https://<your-app-host>    # TBD: set once the new target app is available
-```
-
-`playwright.config.ts` loads environment files in two passes:
-
-```typescript
-dotenv.config({ path: `.env.${process.env.ENV}`, override: true });
-dotenv.config({ path: '.env' });
-```
-
-If you set an `ENV` variable, the matching `.env.<ENV>` file is loaded first and wins. `.env` then fills in anything that file did not define. All `.env.*` files are gitignored except `.env.example`. Never commit real credentials.
-
-### Environments (dev / uat / prod)
-
-The `ENV` variable is a promotion-pipeline hook: it is how this suite would target `dev` → `uat` → `prod`. Only **`prod`** is wired up. `dev` and `uat` are reserved placeholders.
-
-| Environment | `ENV` value       | Live?         | `BASE_URL`                 |
-| ----------- | ----------------- | ------------- | -------------------------- |
-| Production  | `prod` (or unset) | Yes           | TBD (from `.env` / CI var) |
-| UAT         | `uat`             | No — reserved | none                       |
-| Development | `dev`             | No — reserved | none                       |
-
-Selecting a reserved environment fails fast on purpose. `playwright.config.ts` throws a clear error for `dev`/`uat` before anything runs, rather than letting Playwright time out on an unset `BASE_URL`.
-
-### What `playwright.config.ts` sets
-
-| Setting                | Value                                     | Why it matters                                                                 |
-| ---------------------- | ----------------------------------------- | ------------------------------------------------------------------------------ |
-| `testDir`              | `./tests`                                 | One folder per feature area.                                                   |
-| `snapshotDir`          | `./fixtures/reference-snapshots`          | Visual and ARIA baselines live outside `tests/`.                               |
-| `snapshotPathTemplate` | `{snapshotDir}/{testFileName}/{arg}{ext}` | Baselines are grouped by spec file name.                                       |
-| `fullyParallel`        | `true`                                    | Every test in every file runs in parallel. Tests must not share mutable state. |
-| `forbidOnly`           | `true` in CI                              | A stray `test.only` fails the CI build instead of silently skipping the suite. |
-| `retries`              | `1`                                       | One retry so that flaky tests show up in the report.                           |
-| `outputDir`            | `test-results`                            | Traces, screenshots, and videos from failed tests.                             |
-| `reporter`             | `list`, `html`, `json`                    | See [Reports and artifacts](#reports-and-artifacts).                           |
-| `use.baseURL`          | `process.env.BASE_URL`                    | Specs navigate with relative paths, e.g. `page.goto('/login')`.                |
-| `use.trace`            | `retain-on-failure`                       | A full trace is kept for every failed test.                                    |
-| `use.screenshot`       | `only-on-failure`                         |                                                                                |
-| `use.video`            | `retain-on-failure`                       |                                                                                |
-
-Four browser projects are defined: `Desktop Chrome`, `Desktop Firefox`, `Desktop Edge`, `Desktop Safari`.
-
----
-
-## Running tests
 
 ```bash
-npm test                                                   # everything, every browser
-npx playwright test --project="Desktop Chrome"             # one browser
-npx playwright test tests/<area> --project="Desktop Chrome" # one folder, one browser
-npx playwright test --grep "<title substring>"             # one test by title
-npx playwright test --grep-invert "@performance"           # skip performance budget tests
-npx playwright test --list                                 # list without running
+ENV=with-bugs npm run env:check
+ENV=with-bugs npm test
 ```
 
-Interactive and debugging modes:
+## Playwright projects
+
+Projects are split by **test type**. Each type has its own folder under `tests/`.
+
+| Project                                                           | Folder         | Runs on                                                 |
+| ----------------------------------------------------------------- | -------------- | ------------------------------------------------------- |
+| `setup`                                                           | `tests/setup`  | `*.setup.ts` (auth etc.); browser projects depend on it |
+| `chromium`, `firefox`, `webkit`, `mobile-chrome`, `mobile-safari` | `tests/e2e`    | Desktop Chrome / Firefox / Safari, Pixel 8, iPhone 16   |
+| `api`                                                             | `tests/api`    | No browser; `request` fixture with `API_URL`            |
+| `a11y`                                                            | `tests/a11y`   | Desktop Chrome                                          |
+| `perf`                                                            | `tests/perf`   | Desktop Chrome, one worker                              |
+| `visual`                                                          | `tests/visual` | Desktop Chrome, **in Docker only**                      |
+
+Shared settings: fully parallel, 1 retry, and trace, screenshot and video kept on failure.
+
+## Commands
 
 ```bash
-npx playwright test --ui        # UI mode: watch, time-travel, pick locators. Start here.
-npx playwright test --debug     # Playwright Inspector, step through with a live browser
-npx playwright test --headed    # watch the real browser without the inspector
-npx playwright test --workers=1 # serialize the run when parallelism confuses a diagnosis
+npm test                     # all host projects (everything except visual)
+npm run test:e2e             # e2e on all five browsers/devices
+npm run test:api
+npm run test:a11y
+npm run test:perf            # run alone for clean timings
+npm run test:visual          # visual, inside the Playwright Docker image
+npm run test:visual:update   # regenerate visual baselines (review the diff before committing)
+npm run env:check            # preflight: target reachable, browsers installed, Docker
+npm run contract:pull        # refresh contracts/openapi.json from the target (review the diff)
+
+npm run stlc:new -- <feature> [phase]   # start a feature (01), or add one phase artifact when that phase starts
+npm run stlc:lint -- <feature>          # structural check of the artifacts and defects
+npm run stlc:gate -- <feature> <phase>  # may phase 1-8 (or analyze|plan|design|env|build|run|triage|report) start?
+npm run stlc:run-summary -- <feature>   # write the run block of 04-execution.md from reports/results.json
+npm run stlc:defect -- <feature> <AC-n> <file:line>   # create the next DEF-nnn
+npm run stlc:trace -- <feature>         # traceability matrix + exit criteria into 05-closure.md
+npm run test:scripts                    # unit tests for scripts/ (node --test)
+
+npm run lint                 # eslint (typescript-eslint + eslint-plugin-playwright)
+npm run format               # prettier --write .
+npm run format:check
+npm run typecheck            # tsc --noEmit
 ```
 
-To regenerate visual/ARIA baselines after an intentional UI change, run `npx playwright test <path> --update-snapshots` and review the regenerated files before committing them.
-
----
-
-## Reports and artifacts
-
-| Reporter | Output                           | Use                                                                  |
-| -------- | -------------------------------- | -------------------------------------------------------------------- |
-| `list`   | terminal                         | Live pass/fail as tests run.                                         |
-| `html`   | `playwright-report/`             | Rich browsable report with traces, screenshots, and videos attached. |
-| `json`   | `playwright-report/results.json` | Machine-readable results.                                            |
+Useful Playwright flags (append after `--`, for example `npm run test:e2e -- --headed`):
 
 ```bash
-npx playwright show-report              # open the HTML report
-npx playwright show-trace test-results/<path-to>/trace.zip
+npx playwright test --project=chromium tests/e2e/<feature>   # one feature, one browser
+npx playwright test --grep @AC-2                              # by tag
+npx playwright test --ui                                      # UI mode
+npx playwright test --list                                    # list without running
 ```
 
-`playwright-report/`, `test-results/`, and `artifacts/` are all gitignored.
+### Why visual tests run in Docker
 
----
+Screenshots render differently on each OS. Visual baselines are created and compared only inside
+`mcr.microsoft.com/playwright:v<installed version>-noble`.
+[scripts/docker-playwright.ts](scripts/docker-playwright.ts) reads the version from the installed
+`@playwright/test`, so the image and the library always match. The `visual` project is registered
+only when that script sets `PW_VISUAL=1`, so a host run can never create or compare a baseline.
+
+## Reports
+
+| Output                | Where                  | Use                                     |
+| --------------------- | ---------------------- | --------------------------------------- |
+| list                  | terminal               | live progress                           |
+| HTML                  | `playwright-report/`   | `npx playwright show-report`            |
+| JSON                  | `reports/results.json` | machine-readable; input to traceability |
+| traces, videos, shots | `test-results/`        | `npx playwright show-trace <trace.zip>` |
+
+All four are git-ignored.
 
 ## Project structure
 
 ```
-agentic-playwright-framework/
-├── .github/workflows/
-│   └── playwright.yml            # placeholder CI (manual dispatch only)
-├── fixtures/
-│   └── index.ts                  # the custom `test` object; register POM fixtures here
-├── pages/                        # Page Object Models (locators only)
-├── tests/                        # one folder per feature area, one spec each
-├── utilities/
-│   └── accessibility.ts          # shared axe-core scan helpers
-├── eslint.config.js
-├── playwright.config.ts
-└── tsconfig.json
+config/env.ts                 typed, layered env loading
+fixtures/index.ts             the test/expect every spec imports (api, workerUser, toMatchContract)
+utilities/                    users, contract, accessibility, performance (+ budgets), visual
+contracts/openapi.json        pinned API contract
+scripts/env-check.ts          preflight (STLC phase 4)
+scripts/contract-pull.ts      refresh the pinned contract
+scripts/docker-playwright.ts  run Playwright in the pinned Linux image
+scripts/stlc/                 deterministic STLC tooling (parser, lint, gate, run summary, defects, trace) + tests
+stlc/_templates/              artifact templates (01-05, DEF); stlc/<feature>/ and stlc/defects/ hold the real ones
+tests/setup/auth.setup.ts     registers this run's user, signs in, saves .auth/user.json
+tests/<type>/examples/        reference examples per test type (@example)
+playwright.config.ts          per-type projects, reporters, snapshot paths
+eslint.config.js  .prettierrc.json  tsconfig.json
+SPEC.md  SPEC-<module>.md     design and per-module specs
+CLAUDE.md                     agent instructions and conventions
+.claude/                      Claude Code hooks (Jev skill routing); agents come later
 ```
 
-`pages/` and `tests/` are currently empty and will be populated for the new target app.
+## Conventions
 
----
+Test conventions live in [CLAUDE.md](CLAUDE.md) and are enforced by ESLint where possible:
 
-## Architecture and conventions
-
-### Page Object Models are a locator registry, not behavior
-
-A POM in `pages/` contains **only** `readonly` locator declarations and a constructor. No action methods, no assertions, no `goto()`.
-
-```typescript
-// pages/login.page.ts
-export class LoginPage {
-  readonly emailInput: Locator;
-  readonly submitButton: Locator;
-
-  constructor(page: Page) {
-    this.emailInput = page.getByLabel('Email');
-    this.submitButton = page.getByRole('button', { name: 'Sign in' });
-  }
-}
-```
-
-Behavior lives in the spec. A POM method like `fillFormAndSubmit()` hides the very interactions a test is supposed to be asserting on. Keeping the POM to locators means a locator changes in exactly one place, and the test reads as a literal description of what a user did.
-
-Locators follow Playwright's recommended priority: `getByRole` → `getByLabel` → `getByPlaceholder` → `getByText` → `getByTestId`. CSS or XPath is only an explicitly flagged fallback.
-
-### Fixtures inject the POMs
-
-[fixtures/index.ts](fixtures/index.ts) extends Playwright's base `test` with one fixture per POM, so specs never construct a page object by hand:
-
-```typescript
-import { test, expect } from '../../fixtures/index';
-
-test('positive: submit is disabled on load', async ({ loginPage }) => {
-  await expect(loginPage.submitButton).toBeDisabled();
-});
-```
-
-Always import `test` and `expect` from `fixtures/index`, never from `@playwright/test` directly.
-
-Naming is mechanical: kebab-case area name → PascalCase POM class → camelCase `...Page` fixture key → matching file paths (`login` → `LoginPage` → `loginPage` → `pages/login.page.ts`, `tests/login/login.spec.ts`).
-
-### Accessibility and performance are always on
-
-Every spec includes multi-state axe-core scans (at load, in the error state and in the success state) plus a `@performance` budget test. Scans go through [utilities/accessibility.ts](utilities/accessibility.ts):
-
-```typescript
-import { scanWcag, scanA11y, violationsExcluding } from '../../utilities/accessibility';
-
-const results = await scanWcag(page); // wcag2a + wcag2aa + wcag21aa
-expect(results.violations).toEqual([]);
-```
-
-`scanA11y(page, { include, exclude, tags })` is the general form, and `violationsExcluding(results, ['color-contrast'])` filters known, accepted violations.
-
-### Test data
-
-Valid values are generated with `@faker-js/faker`. Invalid and boundary values are fixed, typed tables, because a boundary case only means something if it is exactly the boundary.
-
-### Beyond the happy path
-
-`describe` blocks are grouped per acceptance criterion (`AC-1`, `AC-2`, …), and test titles are prefixed `positive:` / `negative:` / `boundary:`. A spec that only covers the happy path is incomplete.
-
----
-
-## Continuous integration
-
-[.github/workflows/playwright.yml](.github/workflows/playwright.yml) is a placeholder while `tests/` is empty. It has no push or pull request triggers, so it only runs when dispatched manually, and then it installs Chromium and runs `playwright test --pass-with-no-tests`.
-
-Once the new target app and its specs exist, restore the push/PR triggers and the per-browser matrix, pass `BASE_URL` from a repository variable (`vars.BASE_URL`), upload the report as an artifact, and drop `--pass-with-no-tests` so that an accidentally empty run fails again.
-
----
-
-## Code quality
-
-```bash
-npm run lint      # eslint
-npm run format    # prettier --write .
-npx tsc --noEmit  # type check
-```
-
-[eslint.config.js](eslint.config.js) applies `eslint-plugin-playwright` across `tests/`, `fixtures/`, `pages/`, and `matchers/`. Nearly every rule is `error`. These are the ones to know before writing a test:
-
-| Rule                          | What it prevents                                                                                |
-| ----------------------------- | ----------------------------------------------------------------------------------------------- |
-| `prefer-web-first-assertions` | `expect(await locator.textContent()).toBe(x)` instead of `await expect(locator).toHaveText(x)`. |
-| `missing-playwright-await`    | A forgotten `await` on an assertion, which lets the test pass regardless of the result.         |
-| `no-wait-for-timeout`         | `waitForTimeout()` as a synchronization mechanism. Assert on the condition instead.             |
-| `no-networkidle`              | `networkidle` waits, which Playwright discourages as inherently racy.                           |
-| `no-conditional-in-test`      | Branching in tests, which hides which path actually ran.                                        |
-| `no-element-handle`           | `elementHandle()` instead of locators: no auto-waiting, no auto-retry.                          |
-| `no-focused-test`             | A `test.only` reaching the shared branch.                                                       |
-| `no-force-option`             | `{ force: true }`, which suppresses the actionability check that would have caught a real bug.  |
-
-`no-skipped-test` is the only `warn`. Prettier uses 150-column lines, single quotes, trailing commas, and LF endings (see [.prettierrc.json](.prettierrc.json)).
-
----
+- AC/TC tags on every test
+- `positive:` / `negative:` / `boundary:` titles
+- role, label or test-id locators
+- web-first assertions
+- no `waitForTimeout`, `networkidle` or `force`
 
 ## Troubleshooting
 
-**`browserType.launch: Executable doesn't exist`**
-The browser binaries are not installed. Run `npx playwright install --with-deps`.
+**`BASE_URL is not set`**: copy `.env.example` to `.env`, or check the `ENV` value and its
+`.env.<ENV>` file.
 
-**Every test fails immediately on navigation**
-`BASE_URL` is unset. Specs navigate with relative paths, so with no `baseURL` there is nothing to resolve them against. In CI, check the `BASE_URL` repository variable.
+**`browserType.launch: Executable doesn't exist`**: run
+`npx playwright install chromium firefox webkit`. `npm run env:check` reports this too.
 
-**A test passes alone but fails in the suite**
-`fullyParallel: true` runs tests concurrently. Confirm with `--workers=1`. If the test passes serialized, it depends on state another test mutates, so fix the shared state rather than serializing the suite.
+**Every test fails on navigation**: run `npm run env:check`. The target may be down, or `.env`
+may point somewhere else.
 
-**A test fails and you cannot tell why from the terminal**
-Run `npx playwright show-report`, click the failed test and open its trace. Every failing test has one, because `trace: 'retain-on-failure'` is set.
+**`Project(s) "visual" not found`**: you ran visual tests on the host. Use `npm run test:visual`.
 
----
+**A test passes alone but fails in the suite**: tests run fully parallel. Confirm with
+`--workers=1`, then fix the shared state rather than serializing.
 
 ## License
 

@@ -1,5 +1,6 @@
 node_modules/
 test-results/
+test-results-mcp/
 playwright-report/
 artifacts/
 .playwright-mcp/
@@ -23,3 +24,9 @@ build/
 # Coverage
 coverage/
 .nyc_output/
+
+# JSON results for the traceability script
+reports/
+
+# Saved signed-in sessions from tests/setup
+.auth/
