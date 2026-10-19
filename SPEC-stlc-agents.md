@@ -262,6 +262,71 @@ Where the build differs from the plan above, this section is what's true.
   - AC-2's wording leaves out the "Select a subject \*" placeholder option.
   - 01's open questions are unanswered, and DEF-001 depends on one of them (the blur trigger).
 
+## Amendment 1: playwright-cli for exploring and writing tests (draft, for approval)
+
+**Why.** The smoke run's live-browser steps were the slow part. The MCP planner took 15 minutes
+for seven signed-out ACs, and the user stopped the second run. Every MCP seed session also stayed
+open (`pauseAtEnd`, no timeout) until the host-run hang fixed in 80ae363. `@playwright/cli`
+drives the browser from Bash and keeps snapshots in files, not in the model's context. Its README
+says it is token-efficient for coding agents, and it recommends MCP for "self-healing tests"
+(https://github.com/microsoft/playwright-cli). It makes no claim about speed, so we measure it
+(below).
+
+**Changes (recommended defaults):**
+
+1. **Dependency:** `@playwright/cli@0.1.22`, pinned in `devDependencies` and run as `npx
+playwright-cli`. It was released 2026-09-28. It ships its own Playwright `1.64.0-alpha`, next to
+   our `@playwright/test` 1.64.1.
+2. **Config:** `.playwright/cli.config.json` is generated from `config/env.ts` by `npm run
+cli:config`, so `testIdAttribute` (Toolshop uses `data-test`; the CLI defaults to
+   `data-testid`) can't drift from the tests. Browser `chromium`, headless. `.playwright-cli/`
+   (snapshots) is git-ignored. A unit test checks the generated values.
+3. **Skills:** run `playwright-cli install --skills` once, review what it writes, and commit it.
+   It's treated like the generated agent files: never edited, regenerated (ask first) after an
+   upgrade. Where it writes isn't documented; the build checks that.
+4. **Phase 1:** `stlc-analyst` explores with the CLI through Bash, not MCP tools. For signed in, it
+   first runs `npx playwright test --project=setup`, then `state-load .auth/user.json`.
+5. **Phase 3:** the `playwright-test-planner` delegation is removed. `stlc-designer` explores
+   with the CLI, using one named session per auth state (`-s=signed-out`, `-s=signed-in`), and
+   still writes `ui-scenarios.md` / `ui-scenarios-signed-in.md`.
+6. **Phase 5:** the `playwright-test-generator` delegation is removed. `stlc-author` writes the
+   e2e tests, as it did in the smoke run, and checks locators with `snapshot` /
+   `generate-locator` before running them.
+7. **Phase 7 is unchanged:** the healer stays on MCP for `test` verdicts, as the CLI README
+   recommends for self-healing.
+8. **Cleanup:** each skill that opens CLI sessions ends with `playwright-cli close-all`, and
+   `env:check` warns when `playwright-cli list` shows leftover sessions.
+9. **Least privilege:** `stlc-analyst` loses its `mcp__playwright-test__*` tools.
+   `definitions.test.ts` checks that no skill delegates to the planner or generator, and that the
+   analyst, designer and author have no MCP tools.
+10. **Generated agent files:** all three stay installed and byte-identical, because `init-agents`
+    writes them together. The planner and generator are unused. CLAUDE.md and README say so.
+
+**Success criteria changes:** "Generated tests follow CLAUDE.md" now covers author-written e2e
+tests. The generator item leaves "Not yet shown". The others are unchanged.
+
+**Measure it.** Baseline from the smoke run:
+
+| Step                    | Smoke-run time      |
+| ----------------------- | ------------------- |
+| Planner (signed out)    | 15.0 min            |
+| Designer                | 4.7 min             |
+| Three authors, parallel | 3.8 / 5.4 / 7.2 min |
+| Triager                 | 9.2 min             |
+
+Record the same steps, and subagent tokens, in the pilot's first feature. Target: each
+exploration step under 5 minutes.
+
+**Tasks:** A1 dependency, config script and ignores, with a unit test. A2 skills install and
+review. A3 agent and skill rewrites, `definitions.test.ts`, docs. A4 measured on the pilot's first
+feature. Each task: lint, format, typecheck and `test:scripts` green, then one commit.
+
+**Open decisions (recommendation first):**
+
+- Keep the healer on MCP (recommended), or move it to the CLI too.
+- Measure in the pilot (recommended, no extra live run), or re-run phases 1 and 3 for
+  contact-form under a scratch feature name first.
+
 ## Out of scope
 
 - The pilot feature `product-search` and the with-bugs run (`pilot`).
