@@ -19,7 +19,7 @@ import {
   type ExitCriteria,
 } from './artifacts.ts';
 import { STLC_ROOT } from './lint.ts';
-import { byTestId, envLabel, outcomes, readReport, RESULTS_FILE, type JsonReport, type Outcome } from './results.ts';
+import { byTestId, envLabel, outcomes, readReports, REPORT_FILES, sourcesLabel, type JsonReport, type Outcome } from './results.ts';
 
 export type AcStatus = 'covered' | 'failing, untriaged' | 'not run';
 export type Trace = { markdown: string; met: boolean; acCoverage: number; openCritical: number; flakyRate: number };
@@ -105,7 +105,7 @@ export function traceFeature(root: string, feature: string, report: JsonReport):
   }
 
   const lines = [
-    `Source: \`${RESULTS_FILE}\`, run started ${report.stats.startTime} · env \`${envLabel(report)}\``,
+    `Results: ${sourcesLabel(report)} · env \`${envLabel(report)}\``,
     '',
     '### Exit criteria',
     '',
@@ -150,9 +150,9 @@ if (import.meta.main) {
     console.error('usage: npm run stlc:trace -- <feature>');
     process.exit(2);
   }
-  const report = readReport(join(STLC_ROOT, '..', RESULTS_FILE));
+  const report = readReports(join(STLC_ROOT, '..'));
   if (!report) {
-    console.error(`${RESULTS_FILE} not found; run the tests first`);
+    console.error(`${REPORT_FILES.join(' / ')} not found; run the tests first`);
     process.exit(1);
   }
   const trace = writeTrace(STLC_ROOT, feature, report);

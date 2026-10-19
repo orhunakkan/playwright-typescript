@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { parseRequirements, readDoc } from './artifacts.ts';
 import { STLC_ROOT } from './lint.ts';
 import { today } from './new.ts';
-import { envLabel, readReport, RESULTS_FILE } from './results.ts';
+import { envLabel, readReports } from './results.ts';
 
 export function nextDefectId(root: string): string {
   const dir = join(root, 'defects');
@@ -42,7 +42,7 @@ if (import.meta.main) {
     process.exit(2);
   }
   try {
-    const env = envLabel(readReport(join(STLC_ROOT, '..', RESULTS_FILE)));
+    const env = envLabel(readReports(join(STLC_ROOT, '..')));
     console.log(createDefect(STLC_ROOT, feature, ac, test, env));
   } catch (e) {
     console.error((e as Error).message);

@@ -12,6 +12,7 @@ import {
   STATUSES,
   TEST_TYPES,
   TITLE_PREFIX,
+  RUN_TRIAGE_COLUMNS,
   TRIAGE_COLUMNS,
   VERDICTS,
   findTable,
@@ -124,7 +125,16 @@ export function lintFeature(root: string, feature: string): Issue[] {
   if (docs.execution) {
     const file = docs.execution.file;
     const known = new Set(readDefects(root).map((d) => d.id));
-    for (const row of findTable(docs.execution, TRIAGE_COLUMNS) ?? []) {
+    const triaged = findTable(docs.execution, TRIAGE_COLUMNS) ?? [];
+    // A complete execution artifact has a triage row for every test the run block says needs one.
+    if (docs.execution.meta['status'] === 'complete') {
+      const rowsFor = new Set(triaged.map((r) => r.cells['test']));
+      for (const row of findTable(docs.execution, RUN_TRIAGE_COLUMNS) ?? []) {
+        const test = row.cells['test'] ?? '';
+        if (!rowsFor.has(test)) issues.push({ file, line: row.line, message: `${test} needs triage, but has no row in the Triage table` });
+      }
+    }
+    for (const row of triaged) {
       const verdict = row.cells['verdict'] ?? '';
       const def = row.cells['DEF'] ?? '';
       if (!oneOf(VERDICTS, verdict)) issues.push({ file, line: row.line, message: `verdict must be one of ${VERDICTS.join(', ')}` });

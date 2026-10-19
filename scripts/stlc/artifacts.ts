@@ -195,6 +195,8 @@ export function parseCases(doc: Doc): TestCase[] | undefined {
 }
 
 export const TRIAGE_COLUMNS = ['test', 'verdict', 'DEF', 'note'] as const;
+/** The "Needs triage" table that stlc:run-summary generates in 04. */
+export const RUN_TRIAGE_COLUMNS = ['test', 'project', 'status', 'TC', 'AC', 'error'] as const;
 
 export type Defect = { file: string; id: string; meta: Record<string, string>; metaLine: Record<string, number> };
 

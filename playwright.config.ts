@@ -27,7 +27,13 @@ export default defineConfig({
   expect: {
     toHaveScreenshot: { animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.01 },
   },
-  reporter: [['list'], ['html', { open: 'never' }], ['json', { outputFile: 'reports/results.json' }]],
+  // Visual runs (Docker) write their own JSON so they never overwrite the host run's results;
+  // scripts/stlc/results.ts reads both.
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }],
+    ['json', { outputFile: process.env['PW_VISUAL'] === '1' ? 'reports/results-visual.json' : 'reports/results.json' }],
+  ],
   use: {
     baseURL: env.baseUrl,
     testIdAttribute: env.testIdAttribute,

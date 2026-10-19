@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { describe, test } from 'node:test';
 import { createDefect, nextDefectId } from './defect.ts';
 import { lintFeature } from './lint.ts';
-import { envLabel, outcomes } from './results.ts';
+import { envLabel, mergeReports, outcomes, sourcesLabel } from './results.ts';
 import { runSummary, writeRunSummary } from './run-summary.ts';
 import { fixtureReport, makeRoot, withTemplates } from './test-helpers.ts';
 
@@ -32,6 +32,19 @@ describe('results reader (real 1.64 report)', () => {
     assert.equal(at(10)?.status, 'flaky');
     assert.deepEqual([at(13)?.status, at(13)?.knownDefect, at(13)?.issues], ['expected', true, ['DEF-001']]);
     assert.equal(at(17)?.status, 'skipped');
+  });
+
+  test('merges the host and visual reports and names both sources', () => {
+    const host = fixtureReport();
+    const visual = { ...fixtureReport(), stats: { ...fixtureReport().stats, startTime: '2026-10-19T03:20:00.000Z' } };
+    const merged = mergeReports([
+      { file: 'reports/results.json', report: host },
+      { file: 'reports/results-visual.json', report: visual },
+    ]);
+    assert.equal(outcomes(merged).length, 14);
+    assert.equal(merged.stats.startTime, '2026-10-19T03:20:00.000Z', 'earliest start');
+    assert.equal(sourcesLabel(merged), '`reports/results.json` (2026-10-19T03:26:11.699Z), `reports/results-visual.json` (2026-10-19T03:20:00.000Z)');
+    assert.equal(sourcesLabel(host), '`reports/results.json` (2026-10-19T03:26:11.699Z)');
   });
 
   test('env label comes from the run metadata', () => {

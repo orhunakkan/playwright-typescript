@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { lintFeature } from './lint.ts';
-import { makeRoot, mutate } from './test-helpers.ts';
+import { runSummary } from './run-summary.ts';
+import { fixtureReport, makeRoot, mutate } from './test-helpers.ts';
 
 const lint = (overrides: Record<string, string | null> = {}) => lintFeature(makeRoot(overrides), 'shop-search').map((i) => i.message);
 const REQ = 'shop-search/01-requirements.md';
@@ -93,6 +94,19 @@ describe('stlc:lint', () => {
     test('referenced DEF must exist', () => {
       assert.ok(lint(mutate(EXEC, 'DEF-001 |', 'DEF-404 |')).some((m) => /DEF-404 does not exist/.test(m)));
     });
+    test('a complete 04 needs a triage row for every test the run block lists', () => {
+      const runBlock = runSummary(fixtureReport(), 'shop-search');
+      const exec = (status: string, rows: string) =>
+        `---\nfeature: shop-search\nphase: execution\nstatus: ${status}\nupdated: 2026-10-19\n---\n\n${runBlock}\n\n## Triage\n\n| test | verdict | DEF | note |\n| ---- | ------- | --- | ---- |\n${rows}`;
+      const flakyRow = '| tests/api/zz-fixture/probe.spec.ts:10 | flaky | DEF-001 | retry passed |\n';
+      const failedRow = '| tests/api/zz-fixture/probe.spec.ts:7 | test | | stale locator |\n';
+      assert.deepEqual(lint({ [EXEC]: exec('draft', flakyRow) }), [], 'drafts may be partially triaged');
+      assert.deepEqual(lint({ [EXEC]: exec('complete', flakyRow) }), [
+        'tests/api/zz-fixture/probe.spec.ts:7 needs triage, but has no row in the Triage table',
+      ]);
+      assert.deepEqual(lint({ [EXEC]: exec('complete', flakyRow + failedRow) }), []);
+    });
+
     test('verdict must be known', () => {
       assert.ok(lint(mutate(EXEC, '| product |', '| bug     |')).some((m) => /verdict must be one of/.test(m)));
     });

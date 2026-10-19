@@ -2,7 +2,7 @@
 // Shape verified against a real 1.64 report: tags are stored without "@" and include describe-level
 // tags; spec.file is POSIX and relative to config.rootDir (the testDir).
 import { existsSync, readFileSync } from 'node:fs';
-import { posix } from 'node:path';
+import { join, posix } from 'node:path';
 
 type JsonResult = { status: string; errors?: { message?: string }[] };
 type JsonTest = {
@@ -18,6 +18,8 @@ export type JsonReport = {
   config: { rootDir: string; metadata?: Record<string, unknown> };
   suites: JsonSuite[];
   stats: { startTime: string; duration: number };
+  /** Set when several report files were merged (host run + Docker visual run). */
+  sources?: { file: string; startTime: string }[];
 };
 
 /** expected = as expected (passed, or a test.fail() that failed); unexpected = failed. */
@@ -40,10 +42,39 @@ export type Outcome = {
 };
 
 export const RESULTS_FILE = posix.join('reports', 'results.json');
+/** Host run and Docker visual run (see playwright.config.ts), relative to the repo root. */
+export const REPORT_FILES = [RESULTS_FILE, posix.join('reports', 'results-visual.json')];
 
 export function readReport(path: string): JsonReport | undefined {
   return existsSync(path) ? (JSON.parse(readFileSync(path, 'utf8')) as JsonReport) : undefined;
 }
+
+/** Reads and merges every report in REPORT_FILES under `repoRoot`; undefined when none exist. */
+export function readReports(repoRoot: string): JsonReport | undefined {
+  const found = REPORT_FILES.flatMap((file) => {
+    const report = readReport(join(repoRoot, file));
+    return report ? [{ file, report }] : [];
+  });
+  return found.length ? mergeReports(found) : undefined;
+}
+
+export function mergeReports(parts: { file: string; report: JsonReport }[]): JsonReport {
+  const [first] = parts;
+  if (!first) throw new Error('nothing to merge');
+  return {
+    config: first.report.config,
+    suites: parts.flatMap((p) => p.report.suites),
+    stats: {
+      startTime: parts.map((p) => p.report.stats.startTime).sort()[0] ?? first.report.stats.startTime,
+      duration: parts.reduce((sum, p) => sum + p.report.stats.duration, 0),
+    },
+    sources: parts.map((p) => ({ file: p.file, startTime: p.report.stats.startTime })),
+  };
+}
+
+/** "reports/results.json (2026-…), reports/results-visual.json (2026-…)" for headers. */
+export const sourcesLabel = (report: JsonReport): string =>
+  (report.sources ?? [{ file: RESULTS_FILE, startTime: report.stats.startTime }]).map((s) => `\`${s.file}\` (${s.startTime})`).join(', ');
 
 const tagValue = (tags: string[], prefix: string) => tags.find((t) => t.startsWith(prefix));
 

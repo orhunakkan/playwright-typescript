@@ -1,17 +1,17 @@
 // npm run stlc:run-summary -- <feature>
-// Writes the generated run block of stlc/<feature>/04-execution.md from reports/results.json.
+// Writes the generated run block of stlc/<feature>/04-execution.md from reports/results*.json.
 // Output depends only on the report, so the same report always produces the same block.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { cell, replaceGenerated, setFrontMatter } from './artifacts.ts';
+import { cell, replaceGenerated, RUN_TRIAGE_COLUMNS, setFrontMatter } from './artifacts.ts';
 import { STLC_ROOT } from './lint.ts';
-import { byTestId, envLabel, outcomes, readReport, RESULTS_FILE, type JsonReport, type Outcome } from './results.ts';
+import { byTestId, envLabel, outcomes, readReports, REPORT_FILES, sourcesLabel, type JsonReport, type Outcome } from './results.ts';
 
 const statusLabel = (o: Outcome) => (o.status === 'unexpected' ? 'failed' : o.status);
 
 export function runSummary(report: JsonReport, feature: string): string {
   const mine = outcomes(report).filter((o) => o.feature === feature);
-  const header = `Run started ${report.stats.startTime} · env \`${envLabel(report)}\` · ${(report.stats.duration / 1000).toFixed(1)} s`;
+  const header = `Results: ${sourcesLabel(report)} · env \`${envLabel(report)}\` · ${(report.stats.duration / 1000).toFixed(1)} s`;
   if (mine.length === 0) return `${header}\n\nNo tests tagged \`@REQ-${feature}\` in this run.`;
 
   const projects = [...new Set(mine.map((o) => o.project))].sort();
@@ -40,7 +40,7 @@ export function runSummary(report: JsonReport, feature: string): string {
     ...rows.map((r) => `| ${r} |`),
     '',
     triage.length ? '### Needs triage' : '### Needs triage: none',
-    ...(triage.length ? ['', '| test | project | status | TC | AC | error |', '| ---- | ------- | ------ | -- | -- | ----- |', ...triage] : []),
+    ...(triage.length ? ['', `| ${RUN_TRIAGE_COLUMNS.join(' | ')} |`, `| ${RUN_TRIAGE_COLUMNS.map(() => '---').join(' | ')} |`, ...triage] : []),
   ].join('\n');
 }
 
@@ -58,9 +58,9 @@ if (import.meta.main) {
     console.error('usage: npm run stlc:run-summary -- <feature>');
     process.exit(2);
   }
-  const report = readReport(join(STLC_ROOT, '..', RESULTS_FILE));
+  const report = readReports(join(STLC_ROOT, '..'));
   if (!report) {
-    console.error(`${RESULTS_FILE} not found; run the tests first`);
+    console.error(`${REPORT_FILES.join(' / ')} not found; run the tests first`);
     process.exit(1);
   }
   console.log(`updated ${writeRunSummary(STLC_ROOT, feature, report)}`);
