@@ -92,6 +92,14 @@ describe('skill definitions', () => {
     assert.ok(designer.includes('ui-scenarios-signed-in.md'), 'the designer reads the signed-in scenarios');
   });
 
+  // stlc/<feature>/ stays uncommitted until the run ends, and `git diff` ignores untracked files,
+  // so a diff-based "rerun changed nothing" check always passed (contact-form smoke run).
+  test('stlc-report proves the generated block is untouched without relying on git tracking', () => {
+    const report = readFileSync(join(SKILLS, 'stlc-report', 'SKILL.md'), 'utf8');
+    assert.ok(!/git diff[^\n]*stlc\/\$0/.test(report), 'git diff is blind to an untracked 05');
+    assert.ok(report.includes('git hash-object stlc/$0/05-closure.md'), 'compare content hashes instead');
+  });
+
   test('every phase skill checks its own gate first', () => {
     for (const phase of phaseNames) {
       const text = readFileSync(join(SKILLS, `stlc-${phase}`, 'SKILL.md'), 'utf8');

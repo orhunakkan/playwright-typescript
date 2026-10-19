@@ -219,6 +219,9 @@ Where the build differs from the plan above, this section is what's true.
     while clearing that dir, and closing the page didn't release it; only stopping the worker did.
     MCP sessions now write to `test-results-mcp/` with video off, and host runs no longer
     collide with them.
+  - `/stlc-report` checked that rerunning `stlc:trace` left 05 unchanged with `git diff`, which
+    ignores untracked files, so the check always passed while `stlc/<feature>/` was uncommitted.
+    It now compares `git hash-object` before and after.
 - **Pending for build (phase 5):** a harness helper to sign a page in as a given `workerUser`, for
   AC-10. The approved plan names it as ask-first; the plan approval covers it.
 

@@ -13,7 +13,9 @@ disable-model-invocation: true
 3. Verify it yourself:
    - `npm run stlc:lint -- $0` exits 0;
    - `stlc/$0/05-closure.md` has `status: complete`;
-   - rerunning `npm run stlc:trace -- $0` leaves `git diff --stat -- stlc/$0/05-closure.md`
-     unchanged. That confirms the generated block wasn't hand-edited.
+   - `git hash-object stlc/$0/05-closure.md` prints the same hash before and after rerunning
+     `npm run stlc:trace -- $0`. That confirms the generated block wasn't hand-edited. (Not
+     `git diff`: it ignores untracked files, and the feature's artifacts stay uncommitted until
+     the run ends.)
 4. Report the exit-criteria table and verdict exactly as generated. "NOT MET" is a legitimate
    outcome: report it, never work around it.
