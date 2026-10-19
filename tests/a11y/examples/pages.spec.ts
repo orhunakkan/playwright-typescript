@@ -5,7 +5,7 @@ import { scanWcag, withoutKnown, type KnownViolation } from '../../../utilities/
 // still fail on anything else; the expected-failure test at the bottom tracks them until fixed.
 const KNOWN: KnownViolation[] = [
   { id: 'label-content-name-mismatch', target: /^#language$/, issue: 'finding: language selector visible text is not part of its accessible name' },
-  { id: 'button-name', target: /^\.btn-outline-secondary$/, issue: 'finding: login page icon button has no accessible name' },
+  { id: 'button-name', target: /^\.btn-outline-secondary$/, issue: 'finding: login password-visibility (eye) toggle has no accessible name' },
   { id: 'list', target: /^\.checkbox:nth-child\(\d+\) > ul$/, issue: 'finding: category filter <ul> contains non-<li> children' },
 ];
 

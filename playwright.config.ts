@@ -22,6 +22,9 @@ export default defineConfig({
   forbidOnly: !!process.env['CI'],
   retries: 1,
   outputDir: 'test-results',
+  expect: {
+    toHaveScreenshot: { animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.01 },
+  },
   reporter: [['list'], ['html', { open: 'never' }], ['json', { outputFile: 'reports/results.json' }]],
   use: {
     baseURL: env.baseUrl,

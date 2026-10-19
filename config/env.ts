@@ -15,6 +15,9 @@ const loadIfPresent = (file: string) => {
 if (process.env['ENV']) loadIfPresent(`.env.${process.env['ENV']}`);
 loadIfPresent('.env');
 
+/** Every variable this module reads; scripts that spawn other processes (e.g. Docker) forward exactly these. */
+export const ENV_KEYS = ['ENV', 'BASE_URL', 'API_URL', 'API_HEALTH_PATH', 'API_SPEC_PATH', 'TEST_ID_ATTRIBUTE'] as const;
+
 const required = (name: string): string => {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`${name} is not set. Copy .env.example to .env and fill it in.`);

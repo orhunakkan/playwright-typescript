@@ -4,6 +4,7 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { ENV_KEYS } from '../config/env.ts';
 
 const root = join(import.meta.dirname, '..');
 
@@ -11,8 +12,9 @@ const root = join(import.meta.dirname, '..');
 const { version } = JSON.parse(readFileSync(join(root, 'node_modules/@playwright/test/package.json'), 'utf8')) as { version: string };
 const image = `mcr.microsoft.com/playwright:v${version}-noble`;
 
-// `-e NAME` forwards the host value only when it is set, so .env files still apply otherwise.
-const forwarded = ['ENV', 'BASE_URL', 'API_URL', 'API_HEALTH_PATH', 'CI'].flatMap((name) => ['-e', name]);
+// `-e NAME` forwards the host value only when it is set. Importing config/env.ts has already layered
+// .env files into this process, so the container sees the same resolved values as a host run.
+const forwarded = [...ENV_KEYS, 'CI'].flatMap((name) => ['-e', name]);
 
 const args = [
   'run',
