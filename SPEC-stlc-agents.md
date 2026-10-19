@@ -1,6 +1,6 @@
 # Spec: stlc-agents
 
-Module id: `stlc-agents` · Parent: [SPEC.md](SPEC.md) · Depends on: `test-harness`, `stlc-artifacts` · Status: **draft — awaiting approval**
+Module id: `stlc-agents` · Parent: [SPEC.md](SPEC.md) · Depends on: `test-harness`, `stlc-artifacts` · Status: **approved 2026-10-19, in progress**
 
 ## Objective
 
