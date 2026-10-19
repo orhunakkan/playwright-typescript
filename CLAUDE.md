@@ -123,6 +123,8 @@ Jev is TypeSafe's "System One" model. It returns typed answers with probabilitie
   - Editor, browser and harness wrapper blocks (`<ide_opened_file>`, `<ide_selection>`,
     `<browser_instruction>`, `<system-reminder>`) are stripped first, by `WRAPPER_TAGS` in the
     router.
+  - Subagent hand-backs (`<agent-message from="…">`) are agent output, not requests, so they are
+    never routed.
   - The repository context is `package.json`'s `description`. Keep it current when the project's
     purpose changes.
 - **Base changes on the log.** Every decision, with all probabilities, is logged to `.claude/jev-routing.log`, which is git-ignored. Check it before changing any setting.

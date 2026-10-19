@@ -27,10 +27,14 @@ interface Skill {
   description: string;
 }
 
-/** The user's own words: the prompt without wrapper blocks, trimmed. */
+// Subagent hand-backs arrive as prompts wrapped in <agent-message from="…">. They are agent output,
+// not a user request, so they are never routed. An unterminated block runs to the end of the text.
+const AGENT_MESSAGE = /<agent-message\b[^>]*>[\s\S]*?(?:<\/agent-message>|$(?![\s\S]))/g;
+
+/** The user's own words: the prompt without wrapper blocks or subagent hand-backs, trimmed. */
 export function cleanPrompt(raw: string): string {
   const blocks = new RegExp(`<(${WRAPPER_TAGS.join('|')})>[\\s\\S]*?</\\1>`, 'g');
-  return raw.replace(blocks, '').trim();
+  return raw.replace(AGENT_MESSAGE, '').replace(blocks, '').trim();
 }
 
 /** What Jev is told about the repository: package.json's description, so it can't drift from the project. */

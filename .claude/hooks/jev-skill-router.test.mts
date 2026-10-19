@@ -22,6 +22,22 @@ describe('cleanPrompt', () => {
     assert.equal(cleanPrompt('Why does <ul> contain a <div> here?'), 'Why does <ul> contain a <div> here?');
   });
 
+  // Subagent hand-backs reach UserPromptSubmit as prompts; they are agent output, not the user's
+  // request, and were being routed (see .claude/jev-routing.log, 2026-10-19 04:06-04:10).
+  test('a subagent hand-back is not a prompt to route', () => {
+    const handBack =
+      '<agent-message from="abb2aae09eca19136">\n[Subagent hand-back] The text below is the final report of a subagent.\n  Plan written; review and approve.\n</agent-message>';
+    assert.equal(cleanPrompt(handBack), '');
+  });
+
+  test('an unterminated hand-back block is still dropped', () => {
+    assert.equal(cleanPrompt('<agent-message from="a1">\n[Subagent hand-back] report text without a closing tag'), '');
+  });
+
+  test("the user's words around a hand-back are kept", () => {
+    assert.equal(cleanPrompt('<agent-message from="a1">report</agent-message>\nNow add tests'), 'Now add tests');
+  });
+
   test('returns an empty string when only wrapper blocks remain', () => {
     assert.equal(cleanPrompt('<ide_opened_file>The user opened x</ide_opened_file>\n'), '');
   });
