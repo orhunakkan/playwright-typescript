@@ -36,16 +36,16 @@ skills in `.claude/skills/`. Deterministic work lives in scripts, not in agents.
 running tests, building the traceability matrix and checking gates. The agents handle the steps
 that need judgement.
 
-| #   | STLC phase           | Driven by                                                                          | Output artifact                       | Gate           |
-| --- | -------------------- | ---------------------------------------------------------------------------------- | ------------------------------------- | -------------- |
-| 1   | Requirement analysis | `stlc-analyst` subagent                                                            | `stlc/<feature>/01-requirements.md`   | —              |
-| 2   | Test planning        | `stlc-strategist` subagent                                                         | `stlc/<feature>/02-test-plan.md`      | **Human**      |
-| 3   | Test design          | Playwright `playwright-test-planner` (UI) + `stlc-designer` (API/visual/a11y/perf) | `stlc/<feature>/03-test-cases.md`     | —              |
-| 4   | Environment setup    | `/stlc-env` skill + `scripts/env-check.ts`                                         | console report; auth `storageState`   | must pass      |
-| 5   | Test implementation  | Playwright `playwright-test-generator` (UI) + `stlc-author` (other types)          | `tests/**`                            | **Human (PR)** |
-| 6   | Execution            | `npx playwright test` (plain, deterministic)                                       | `reports/results.json`, HTML report   | —              |
-| 7   | Triage and defects   | `stlc-triager` subagent → Playwright `playwright-test-healer` for test defects     | `stlc/defects/DEF-###.md`             | —              |
-| 8   | Closure              | `stlc-reporter` subagent + `scripts/traceability.ts`                               | `stlc/<feature>/05-closure-report.md` | —              |
+| #   | STLC phase           | Driven by                                                                          | Output artifact                                                      | Gate           |
+| --- | -------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------- |
+| 1   | Requirement analysis | `stlc-analyst` subagent                                                            | `stlc/<feature>/01-requirements.md`                                  | —              |
+| 2   | Test planning        | `stlc-strategist` subagent                                                         | `stlc/<feature>/02-test-plan.md`                                     | **Human**      |
+| 3   | Test design          | Playwright `playwright-test-planner` (UI) + `stlc-designer` (API/visual/a11y/perf) | `stlc/<feature>/03-test-cases.md`                                    | —              |
+| 4   | Environment setup    | `/stlc-env` skill + `scripts/env-check.ts`                                         | console report; auth `storageState`                                  | must pass      |
+| 5   | Test implementation  | Playwright `playwright-test-generator` (UI) + `stlc-author` (other types)          | `tests/**`                                                           | **Human (PR)** |
+| 6   | Execution            | `npx playwright test` (plain, deterministic) + `stlc:run-summary`                  | `reports/results.json`, `stlc/<feature>/04-execution.md` (run block) | —              |
+| 7   | Triage and defects   | `stlc-triager` subagent → Playwright `playwright-test-healer` for test defects     | `04-execution.md` (triage table), `stlc/defects/DEF-###.md`          | —              |
+| 8   | Closure              | `stlc-reporter` subagent + `stlc:trace`                                            | `stlc/<feature>/05-closure.md`                                       | —              |
 
 The `/stlc <feature>` orchestrator skill runs phases 1→8 in order. It stops at each gate and
 resumes from the first incomplete phase, which it detects from each artifact's front-matter
