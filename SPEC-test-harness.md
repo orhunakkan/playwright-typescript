@@ -1,6 +1,6 @@
 # Spec: test-harness
 
-Module id: `test-harness` · Parent: [SPEC.md](SPEC.md) · Depends on: `foundation` · Status: **approved 2026-10-19, in progress**
+Module id: `test-harness` · Parent: [SPEC.md](SPEC.md) · Depends on: `foundation` · Status: **complete 2026-10-19** (visual baselines awaiting review)
 
 ## Objective
 
@@ -136,12 +136,54 @@ Each task: lint, format and typecheck green, then one commit.
 
 ## Success criteria
 
-- [ ] `npm test` is green on every host project, and `npm run test:visual` is green in Docker.
-- [ ] No test uses a seeded account, CSS or XPath selectors, `waitForTimeout`, or `networkidle`.
-- [ ] Contract failures name the path, status, and failing JSON pointer.
-- [ ] Every example follows the CLAUDE.md conventions closely enough to be copied by an agent
+- [x] `npm test` is green on every host project, and `npm run test:visual` is green in Docker.
+- [x] No test uses a seeded account, CSS or XPath selectors, `waitForTimeout`, or `networkidle`.
+- [x] Contract failures name the path, status, and failing JSON pointer.
+- [x] Every example follows the CLAUDE.md conventions closely enough to be copied by an agent
       unchanged.
-- [ ] Re-running the whole suite 3 times shows no flaky tests (`flaky: 0` in `reports/results.json`).
+- [x] Re-running the whole suite 3 times shows no flaky tests (`flaky: 0` in `reports/results.json`).
+
+## As built (2026-10-19)
+
+Where the build differs from the plan above, this section is what's true.
+
+- **A11y API:** no `makeAxeBuilder` fixture. Instead, `utilities/accessibility.ts` exports:
+  - `wcagBuilder(page)` for custom scans
+  - `scanWcag(page, testInfo, opts)`
+  - `withoutKnown(violations, KNOWN)`, which drops only exact tracked (rule, element) pairs.
+    That's narrower than `disableRules` or `exclude`.
+- **Contract:** `await expect(response).toMatchContract(method, pathTemplate)`, a custom matcher
+  in `fixtures/index.ts`. `API_SPEC_PATH` sets where `contract:pull` fetches from.
+- **Perf throttling:** `SLOW_4G` uses Lighthouse's mobile network values via CDP
+  `Network.emulateNetworkConditionsByRule`. `emulateNetworkConditions` is deprecated in the CDP
+  version Playwright 1.64 ships.
+  - Budgets: `GOOD` is web.dev's thresholds.
+  - `HOME_SLOW_4G_CEILING` is a current-state ceiling for metrics that already miss `GOOD`.
+- **Known-defect pattern, refined.** `test.fail()` never wraps checks that currently pass. A
+  functional check stays a normal test. The known defect gets its own expected-failure test with
+  `issue` annotations, so a new regression can't hide behind a known failure.
+- **Docker runner:** forwards `ENV_KEYS` exported by `config/env.ts`, so new variables can't be
+  missed again.
+- **Mobile:** search lives in a collapsed Filters panel below the `md` breakpoint. Tests open it
+  when `isMobile` is true.
+
+### Findings on the target (not yet DEFs; converted once `stlc-artifacts` exists)
+
+| #   | Type       | Finding                                                                                                                     | Tracked by                                                   |
+| --- | ---------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| F1  | functional | Search fired before the initial catalogue loads is overwritten by the slower initial listing response (stale-response race) | comment in `tests/e2e/examples/search.spec.ts` (no test yet) |
+| F2  | contract   | `GET /products` past the last page returns `from`/`to` = `null`; contract says `integer`                                    | expected-failure test, `tests/api/examples`                  |
+| F3  | contract   | `POST /users/login` returns 401; contract documents only 200                                                                | expected-failure test, `tests/api/examples`                  |
+| F4  | a11y       | Language selector: visible text not in accessible name (`label-content-name-mismatch`), all pages                           | `KNOWN` + expected-failure test, `tests/a11y/examples`       |
+| F5  | a11y       | Login password-visibility toggle has no accessible name (`button-name`, critical)                                           | same                                                         |
+| F6  | a11y       | Category filter lists contain non-`<li>` children (`list`)                                                                  | same                                                         |
+| F7  | perf       | Home on slow 4G: LCP 2.8–2.9 s (good ≤ 2.5 s)                                                                               | expected-failure test + ceiling, `tests/perf/examples`       |
+| F8  | perf       | Home on slow 4G: CLS 0.258 (poor > 0.25)                                                                                    | same                                                         |
+
+**Unexplained:** the setup project failed in 2 consecutive `test:a11y` runs (about 60 s each:
+timeout plus retry) during a burst of registrations, then passed in every later run (3 full
+`npm test` runs, 28/28). The failure output was overwritten, so the cause is unconfirmed. The
+most likely cause is target rate-limiting. Watch for it.
 
 ## Out of scope
 

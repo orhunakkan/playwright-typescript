@@ -24,9 +24,23 @@ MVP: there is no CI.
 - `tests/<type>/<feature>/<scenario>.spec.ts`: one Playwright project per type (`e2e`, `api`,
   `a11y`, `perf`, `visual`, plus `setup` for `*.setup.ts`).
 - `tests/visual/__snapshots__/`: visual baselines, Linux and Docker only.
+- `tests/<type>/examples/`: the **reference examples**, one set per type. Copy their style. They
+  carry `@example` instead of REQ/AC/TC tags.
+- `fixtures/index.ts`: the `test`/`expect` every spec imports (never from `@playwright/test`).
+  - `api`: API_URL client.
+  - `workerUser`: a fresh user per worker.
+  - `expect(response).toMatchContract(method, pathTemplate)`.
+- `utilities/`:
+  - `users.ts`: per-run users and `AUTH_FILE`.
+  - `accessibility.ts`: `scanWcag`, `withoutKnown`.
+  - `performance.ts` (`measurePageLoad`, `throttle`, `SLOW_4G`) with `perf-budgets.ts`.
+  - `visual.ts`: `dynamicRegions` to mask.
+  - `contract.ts`.
+- `contracts/openapi.json`: the pinned API contract. Refresh it only with `npm run contract:pull`,
+  and show the diff before committing.
 - `reports/results.json`: JSON results from the last run (input to traceability).
 - `scripts/`: Node-run TypeScript (`node scripts/x.ts`), using native type stripping, so use
-  erasable syntax only and `.ts` import extensions.
+  erasable syntax only and `.ts` import extensions (also used in tests).
 
 ## Conventions
 
@@ -42,6 +56,18 @@ MVP: there is no CI.
   test needs a11y or perf.
 - Ask first before updating visual baselines, skipping or deleting a test, or adding a
   dependency. Never weaken an assertion to make a product bug pass.
+- **Known-defect pattern.** A real product bug never gets `test.fail()` wrapped around checks
+  that currently pass.
+  - Keep the functional check as a normal test.
+  - Put the defect in its own test with `test.fail()` and an
+    `annotation: { type: 'issue', description: 'DEF-nnn' }`.
+  - For a11y, list the exact (rule, element) pairs in `KNOWN` and filter them with `withoutKnown`.
+  - For perf, add a current-state ceiling.
+- **Users.** Never use the target's seeded accounts: other traffic locks them.
+  - Signed-in UI tests use `test.use({ storageState: AUTH_FILE })`.
+  - Tests that change account state or send bad credentials use `workerUser`.
+- **Mobile.** Model what a mobile user does (for example, open the collapsed Filters panel when
+  `isMobile`). Don't skip mobile projects.
 
 ## Jev skill routing
 

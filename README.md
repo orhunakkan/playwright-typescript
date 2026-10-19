@@ -9,9 +9,10 @@ A Playwright + TypeScript framework in which Claude Code agents carry a feature 
 setup, implementation, execution, defect triage and closure. It covers E2E (cross-browser and
 mobile), API, visual, accessibility and performance tests against a live target.
 
-> **Status: `foundation` complete.** Tooling, env switching and per-type Playwright projects are
-> in place. Test helpers, STLC artifacts and the agents come next. See [SPEC.md](SPEC.md) for the
-> design and build order. The MVP runs locally only, with no CI.
+> **Status: `foundation` and `test-harness` complete.** Tooling, env switching, per-type projects,
+> and helpers plus reference examples for every test type are in place. STLC artifacts and the
+> agents come next. See [SPEC.md](SPEC.md) for the design and build order. The MVP runs locally
+> only, with no CI.
 
 The pilot target is [Practice Software Testing "Toolshop"](https://practicesoftwaretesting.com), a
 public storefront built for test practice. It has a REST API and a
@@ -47,12 +48,14 @@ value wins:
 shell environment  >  .env.<ENV>  (only when ENV is set)  >  .env
 ```
 
-| Variable           | Required | Purpose                                                         |
-| ------------------ | -------- | --------------------------------------------------------------- |
-| `BASE_URL`         | yes      | UI under test. Becomes Playwright's `baseURL`.                  |
-| `API_URL`          | yes      | API under test. `baseURL` of the `api` project.                 |
-| `API_HEALTH_PATH`  | no       | Path `env:check` probes on the API (default `/`).               |
-| `TYPESAFE_API_KEY` | no       | Used by the Jev skill-routing hook in `.claude/`, not by tests. |
+| Variable            | Required | Purpose                                                                                                        |
+| ------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `BASE_URL`          | yes      | UI under test. Becomes Playwright's `baseURL`.                                                                 |
+| `API_URL`           | yes      | API under test. `baseURL` of the `api` project.                                                                |
+| `API_HEALTH_PATH`   | no       | Path `env:check` probes on the API (default `/`).                                                              |
+| `API_SPEC_PATH`     | no       | Where `contract:pull` fetches the OpenAPI document (default `/openapi.json`; Toolshop: `/docs?api-docs.json`). |
+| `TEST_ID_ATTRIBUTE` | no       | Attribute behind `getByTestId` (default `data-testid`; Toolshop: `data-test`).                                 |
+| `TYPESAFE_API_KEY`  | no       | Used by the Jev skill-routing hook in `.claude/`, not by tests.                                                |
 
 A missing `BASE_URL` or `API_URL` stops the run immediately with a clear error. All `.env*` files
 except `.env.example` are git-ignored.
@@ -96,6 +99,7 @@ npm run test:perf            # run alone for clean timings
 npm run test:visual          # visual, inside the Playwright Docker image
 npm run test:visual:update   # regenerate visual baselines (review the diff before committing)
 npm run env:check            # preflight: target reachable, browsers installed, Docker
+npm run contract:pull        # refresh contracts/openapi.json from the target (review the diff)
 
 npm run lint                 # eslint (typescript-eslint + eslint-plugin-playwright)
 npm run format               # prettier --write .
@@ -135,9 +139,14 @@ All four are git-ignored.
 
 ```
 config/env.ts                 typed, layered env loading
+fixtures/index.ts             the test/expect every spec imports (api, workerUser, toMatchContract)
+utilities/                    users, contract, accessibility, performance (+ budgets), visual
+contracts/openapi.json        pinned API contract
 scripts/env-check.ts          preflight (STLC phase 4)
+scripts/contract-pull.ts      refresh the pinned contract
 scripts/docker-playwright.ts  run Playwright in the pinned Linux image
-tests/{setup,e2e,api,a11y,perf,visual}/
+tests/setup/auth.setup.ts     registers this run's user, signs in, saves .auth/user.json
+tests/<type>/examples/        reference examples per test type (@example)
 playwright.config.ts          per-type projects, reporters, snapshot paths
 eslint.config.js  .prettierrc.json  tsconfig.json
 SPEC.md  SPEC-<module>.md     design and per-module specs
