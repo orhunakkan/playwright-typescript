@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, test } from 'node:test';
+import { PHASES } from './gate.ts';
 
 const ROOT = join(import.meta.dirname, '..', '..');
 const AGENTS = join(ROOT, '.claude', 'agents');
@@ -24,6 +25,10 @@ const mcpTools = new Set(
 );
 
 const customAgents = readdirSync(AGENTS).filter((f) => f.startsWith('stlc-'));
+const SKILLS = join(ROOT, '.claude', 'skills');
+const skills = readdirSync(SKILLS).filter((d) => d === 'stlc' || d.startsWith('stlc-'));
+const agentNames = new Set(readdirSync(AGENTS).map((f) => f.replace(/\.md$/, '')));
+const phaseNames = new Set(Object.values(PHASES).map((p) => p.name));
 
 describe('agent definitions', () => {
   test('the three Playwright agents and six stlc agents exist', () => {
@@ -50,4 +55,32 @@ describe('agent definitions', () => {
       for (const s of npmScriptsUsed(text)) assert.ok(scripts.includes(s), `npm run ${s} is not a script`);
     });
   }
+});
+
+describe('skill definitions', () => {
+  test('the orchestrator and one skill per STLC phase exist', () => {
+    assert.deepEqual(skills.sort(), ['stlc', ...[...phaseNames].map((p) => `stlc-${p}`)].sort());
+  });
+
+  for (const dir of skills) {
+    test(`${dir}: user-invoked only, real scripts, agents and gate phases`, () => {
+      const text = readFileSync(join(SKILLS, dir, 'SKILL.md'), 'utf8');
+      const fm = frontMatter(text);
+      assert.equal(fm['name'], dir);
+      assert.equal(fm['disable-model-invocation'], 'true', 'STLC skills run only when the user types them');
+      assert.ok(fm['argument-hint']?.startsWith('<feature>'));
+      for (const s of npmScriptsUsed(text)) assert.ok(scripts.includes(s), `npm run ${s} is not a script`);
+      for (const [, agent] of text.matchAll(/\*\*([a-z-]+)\*\* agent/g)) assert.ok(agentNames.has(agent ?? ''), `unknown agent ${agent}`);
+      for (const [, phase] of text.matchAll(/stlc:gate -- \$0 ([a-z]+)/g)) assert.ok(phaseNames.has(phase ?? ''), `unknown gate phase ${phase}`);
+      for (const [, ref] of text.matchAll(/\.claude\/skills\/(stlc-[a-z]+)\/SKILL\.md/g))
+        assert.ok(skills.includes(ref ?? ''), `missing skill ${ref}`);
+    });
+  }
+
+  test('every phase skill checks its own gate first', () => {
+    for (const phase of phaseNames) {
+      const text = readFileSync(join(SKILLS, `stlc-${phase}`, 'SKILL.md'), 'utf8');
+      assert.ok(text.includes(`npm run stlc:gate -- $0 ${phase}\``), `stlc-${phase} must check its gate`);
+    }
+  });
 });
