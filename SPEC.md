@@ -14,7 +14,7 @@ Users:
 
 - **QA engineer (interactive):** runs `/stlc <feature>` in Claude Code, reviews the plan, merges
   the PR.
-- **CI (headless):** *deferred past the MVP.* Later it will run the deterministic suite on every
+- **CI (headless):** _deferred past the MVP._ Later it will run the deterministic suite on every
   push, and the agent loop on dispatch or on a schedule.
 
 Target: the app under test is undecided. **Practice Software Testing "Toolshop" v5** is the
@@ -22,11 +22,11 @@ stand-in. It is a public storefront built for test practice, with an Angular UI 
 with Swagger docs. It also has a deliberately buggy twin, which lets us show that the defect phase
 finds real bugs. Changing targets must only mean editing `.env`, not code.
 
-| Variable      | Value (pilot)                                                            |
-| ------------- | ------------------------------------------------------------------------ |
-| `BASE_URL`    | `https://practicesoftwaretesting.com`                                    |
-| `API_URL`     | `https://api.practicesoftwaretesting.com`                                |
-| Buggy variant | `https://with-bugs.practicesoftwaretesting.com` / `api-with-bugs.…`      |
+| Variable      | Value (pilot)                                                                            |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| `BASE_URL`    | `https://practicesoftwaretesting.com`                                                    |
+| `API_URL`     | `https://api.practicesoftwaretesting.com`                                                |
+| Buggy variant | `https://with-bugs.practicesoftwaretesting.com` / `api-with-bugs.…`                      |
 | API docs      | `https://api.practicesoftwaretesting.com/api/documentation` (all four checked: HTTP 200) |
 
 ## STLC → agent mapping
@@ -36,16 +36,16 @@ skills in `.claude/skills/`. Deterministic work lives in scripts, not in agents.
 running tests, building the traceability matrix and checking gates. The agents handle the steps
 that need judgement.
 
-| #   | STLC phase           | Driven by                                                     | Output artifact                         | Gate          |
-| --- | -------------------- | ------------------------------------------------------------- | --------------------------------------- | ------------- |
-| 1   | Requirement analysis | `stlc-analyst` subagent                                       | `stlc/<feature>/01-requirements.md`     | —             |
-| 2   | Test planning        | `stlc-strategist` subagent                                    | `stlc/<feature>/02-test-plan.md`        | **Human**     |
-| 3   | Test design          | Playwright `playwright-test-planner` (UI) + `stlc-designer` (API/visual/a11y/perf) | `stlc/<feature>/03-test-cases.md` | —             |
-| 4   | Environment setup    | `/stlc-env` skill + `scripts/env-check.ts`                    | console report; auth `storageState`     | must pass     |
-| 5   | Test implementation  | Playwright `playwright-test-generator` (UI) + `stlc-author` (other types) | `tests/**`                   | **Human (PR)**|
-| 6   | Execution            | `npx playwright test` (plain, deterministic)                  | `reports/results.json`, HTML report | —            |
-| 7   | Triage and defects   | `stlc-triager` subagent → Playwright `playwright-test-healer` for test defects | `stlc/defects/DEF-###.md` | —     |
-| 8   | Closure              | `stlc-reporter` subagent + `scripts/traceability.ts`          | `stlc/<feature>/05-closure-report.md`   | —             |
+| #   | STLC phase           | Driven by                                                                          | Output artifact                       | Gate           |
+| --- | -------------------- | ---------------------------------------------------------------------------------- | ------------------------------------- | -------------- |
+| 1   | Requirement analysis | `stlc-analyst` subagent                                                            | `stlc/<feature>/01-requirements.md`   | —              |
+| 2   | Test planning        | `stlc-strategist` subagent                                                         | `stlc/<feature>/02-test-plan.md`      | **Human**      |
+| 3   | Test design          | Playwright `playwright-test-planner` (UI) + `stlc-designer` (API/visual/a11y/perf) | `stlc/<feature>/03-test-cases.md`     | —              |
+| 4   | Environment setup    | `/stlc-env` skill + `scripts/env-check.ts`                                         | console report; auth `storageState`   | must pass      |
+| 5   | Test implementation  | Playwright `playwright-test-generator` (UI) + `stlc-author` (other types)          | `tests/**`                            | **Human (PR)** |
+| 6   | Execution            | `npx playwright test` (plain, deterministic)                                       | `reports/results.json`, HTML report   | —              |
+| 7   | Triage and defects   | `stlc-triager` subagent → Playwright `playwright-test-healer` for test defects     | `stlc/defects/DEF-###.md`             | —              |
+| 8   | Closure              | `stlc-reporter` subagent + `scripts/traceability.ts`                               | `stlc/<feature>/05-closure-report.md` | —              |
 
 The `/stlc <feature>` orchestrator skill runs phases 1→8 in order. It stops at each gate and
 resumes from the first incomplete phase, which it detects from each artifact's front-matter
@@ -66,14 +66,14 @@ because Toolshop has no requirements.
 
 ## Capability map
 
-| Module id       | Responsibility                                                                                                   | Depends on                      |
-| --------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `foundation`    | npm scripts, lint/format, tsconfig, env loading (`BASE_URL`, `API_URL`), Playwright projects per test type, Docker image for visual baselines, rewrite stale README/CLAUDE.md | —                               |
-| `test-harness`  | Per-type fixtures and helpers (API client + OpenAPI schema validation, axe scan, perf budgets, visual config, auth setup project) and one exemplar spec per type against Toolshop. The exemplars also act as the seed and style reference for the agents | `foundation`                    |
-| `stlc-artifacts`| Artifact templates (01–05, DEF), ID scheme (`REQ-`, `AC-`, `TC-`, `DEF-`), tag conventions, `scripts/traceability.ts` (JSON report → AC/TC coverage matrix), gate check | `foundation`                    |
-| `stlc-agents`   | Install and adapt Playwright Test Agents; custom subagents (analyst, strategist, designer, author, triager, reporter); per-phase skills and `/stlc` orchestrator | `test-harness`, `stlc-artifacts` |
-| `pilot`         | Run the full loop on one Toolshop feature (product search → cart), then again on the with-bugs variant; fix the gaps it exposes | `stlc-agents`                   |
-| `ci-pipelines`  | **Deferred (post-MVP).** Deterministic Playwright workflow and headless agent workflow (`anthropics/claude-code-action@v1`) | `pilot`                         |
+| Module id        | Responsibility                                                                                                                                                                                                                                           | Depends on                       |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `foundation`     | npm scripts, lint/format, tsconfig, env loading (`BASE_URL`, `API_URL`), Playwright projects per test type, Docker image for visual baselines, rewrite stale README/CLAUDE.md                                                                            | —                                |
+| `test-harness`   | Per-type fixtures and helpers (API client + OpenAPI schema validation, axe scan, perf budgets, visual config, auth setup project) and one exemplar spec per type against Toolshop. The exemplars also act as the seed and style reference for the agents | `foundation`                     |
+| `stlc-artifacts` | Artifact templates (01–05, DEF), ID scheme (`REQ-`, `AC-`, `TC-`, `DEF-`), tag conventions, `scripts/traceability.ts` (JSON report → AC/TC coverage matrix), gate check                                                                                  | `foundation`                     |
+| `stlc-agents`    | Install and adapt Playwright Test Agents; custom subagents (analyst, strategist, designer, author, triager, reporter); per-phase skills and `/stlc` orchestrator                                                                                         | `test-harness`, `stlc-artifacts` |
+| `pilot`          | Run the full loop on one Toolshop feature (product search → cart), then again on the with-bugs variant; fix the gaps it exposes                                                                                                                          | `stlc-agents`                    |
+| `ci-pipelines`   | **Deferred (post-MVP).** Deterministic Playwright workflow and headless agent workflow (`anthropics/claude-code-action@v1`)                                                                                                                              | `pilot`                          |
 
 MVP build order: `foundation` → `test-harness` ∥ `stlc-artifacts` → `stlc-agents` → `pilot`
 
@@ -141,18 +141,14 @@ scripts/                         env-check.ts, traceability.ts, gate-check.ts
 import { test, expect } from '../../../fixtures';
 
 test.describe('AC-2: search filters products by name', () => {
-  test(
-    'positive: matching term lists only matching products',
-    { tag: ['@REQ-search', '@AC-2', '@TC-004'] },
-    async ({ page }) => {
-      // Step: search for "pliers"
-      await page.goto('/');
-      await page.getByTestId('search-query').fill('pliers');
-      await page.getByTestId('search-submit').click();
-      // Expect: every card title contains the term
-      await expect(page.getByTestId('product-name').first()).toContainText(/pliers/i);
-    },
-  );
+  test('positive: matching term lists only matching products', { tag: ['@REQ-search', '@AC-2', '@TC-004'] }, async ({ page }) => {
+    // Step: search for "pliers"
+    await page.goto('/');
+    await page.getByTestId('search-query').fill('pliers');
+    await page.getByTestId('search-submit').click();
+    // Expect: every card title contains the term
+    await expect(page.getByTestId('product-name').first()).toContainText(/pliers/i);
+  });
 });
 ```
 
@@ -208,6 +204,7 @@ test.describe('AC-2: search filters products by name', () => {
    least one correctly classified `DEF-###.md` and **zero** healer edits that weaken assertions.
 5. `05-closure-report.md` contains a traceability matrix generated by `scripts/traceability.ts`,
    not written by hand.
+
 ## Resolved decisions (2026-10-18)
 
 1. **One test per file.** Accept Playwright's generator layout (`tests/e2e/<feature>/<scenario>.spec.ts`).

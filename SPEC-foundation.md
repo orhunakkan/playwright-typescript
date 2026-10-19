@@ -74,18 +74,18 @@ export const env = {
 
 ### Playwright projects, split by test type
 
-| Project         | `testDir`        | Device / browser                    | Notes                                                    |
-| --------------- | ---------------- | ----------------------------------- | -------------------------------------------------------- |
-| `setup`         | `tests/setup`    | Desktop Chrome                      | dependency of every browser project; empty until `test-harness` |
-| `chromium`      | `tests/e2e`      | `Desktop Chrome`                    |                                                          |
-| `firefox`       | `tests/e2e`      | `Desktop Firefox`                   |                                                          |
-| `webkit`        | `tests/e2e`      | `Desktop Safari`                    |                                                          |
-| `mobile-chrome` | `tests/e2e`      | `Pixel 8`                           | device name checked in 1.64.1                            |
-| `mobile-safari` | `tests/e2e`      | `iPhone 16`                         | device name checked in 1.64.1                            |
-| `api`           | `tests/api`      | none (`request` fixture)            | `baseURL` = `API_URL`                                    |
-| `a11y`          | `tests/a11y`     | `Desktop Chrome`                    |                                                          |
-| `perf`          | `tests/perf`     | `Desktop Chrome`                    | `workers: 1`, so timings aren't skewed by parallel runs  |
-| `visual`        | `tests/visual`   | `Desktop Chrome`, 1280×720          | **registered only when `PW_VISUAL=1`**, which only the Docker script sets |
+| Project         | `testDir`      | Device / browser           | Notes                                                                     |
+| --------------- | -------------- | -------------------------- | ------------------------------------------------------------------------- |
+| `setup`         | `tests/setup`  | Desktop Chrome             | dependency of every browser project; empty until `test-harness`           |
+| `chromium`      | `tests/e2e`    | `Desktop Chrome`           |                                                                           |
+| `firefox`       | `tests/e2e`    | `Desktop Firefox`          |                                                                           |
+| `webkit`        | `tests/e2e`    | `Desktop Safari`           |                                                                           |
+| `mobile-chrome` | `tests/e2e`    | `Pixel 8`                  | device name checked in 1.64.1                                             |
+| `mobile-safari` | `tests/e2e`    | `iPhone 16`                | device name checked in 1.64.1                                             |
+| `api`           | `tests/api`    | none (`request` fixture)   | `baseURL` = `API_URL`                                                     |
+| `a11y`          | `tests/a11y`   | `Desktop Chrome`           |                                                                           |
+| `perf`          | `tests/perf`   | `Desktop Chrome`           | `workers: 1`, so timings aren't skewed by parallel runs                   |
+| `visual`        | `tests/visual` | `Desktop Chrome`, 1280×720 | **registered only when `PW_VISUAL=1`**, which only the Docker script sets |
 
 - `Desktop Edge` is dropped. It would duplicate Chromium coverage and need an extra install.
 - **Visual baselines.** Snapshots live at
@@ -199,18 +199,18 @@ Each task leaves the repo green under `npm run typecheck && npm run lint`, once 
 landed.
 
 1. **Tooling:** add lint/format/typecheck dependencies and configs, add the scripts, and format
-   the existing files. *Verify:* `npm run lint && npm run format:check && npm run typecheck` exit 0.
+   the existing files. _Verify:_ `npm run lint && npm run format:check && npm run typecheck` exit 0.
 2. **Env:** add `config/env.ts` and `.env.example`, remove `dotenv`, add `scripts/env-check.ts`.
-   *Verify:* `npm run env:check` passes against Toolshop once you've added the two lines to
+   _Verify:_ `npm run env:check` passes against Toolshop once you've added the two lines to
    `.env`. `ENV=nope npm run env:check` fails with the "not set" message only if `.env` also lacks
    the variables.
 3. **Projects:** rewrite `playwright.config.ts` with the project table, reporters and snapshot
-   template, and add the `tests/*` folders. *Verify:*
+   template, and add the `tests/*` folders. _Verify:_
    `npx playwright test --list --pass-with-no-tests` exits 0, and
    `PW_VISUAL=1 npx playwright test --list --pass-with-no-tests` also lists `visual`.
-4. **Docker visual runner:** add `scripts/docker-playwright.ts`. *Verify:*
+4. **Docker visual runner:** add `scripts/docker-playwright.ts`. _Verify:_
    `npm run test:visual -- --pass-with-no-tests` runs inside the container and exits 0.
-5. **Docs:** rewrite README.md, update CLAUDE.md, and remove `.github/workflows/`. *Verify:* every
+5. **Docs:** rewrite README.md, update CLAUDE.md, and remove `.github/workflows/`. _Verify:_ every
    command in either doc exists in `package.json` (a script checks this).
 
 ## Success criteria
