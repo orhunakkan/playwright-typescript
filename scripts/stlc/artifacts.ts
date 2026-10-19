@@ -215,12 +215,17 @@ export function readDefects(root: string, feature?: string): Defect[] {
 export const GENERATED_START = '<!-- generated:start -->';
 export const GENERATED_END = '<!-- generated:end -->';
 
-/** Replaces everything between the generated markers; the rest of the file is left untouched. */
+/**
+ * Replaces everything between the generated markers; the rest of the file is left untouched. The
+ * content is fenced with Prettier range-ignore comments so `npm run format` never re-aligns it and
+ * regenerating from the same inputs stays byte-identical.
+ */
 export function replaceGenerated(text: string, content: string): string {
   const start = text.indexOf(GENERATED_START);
   const end = text.indexOf(GENERATED_END);
   if (start < 0 || end < start) throw new Error(`missing "${GENERATED_START}" / "${GENERATED_END}" markers`);
-  return `${text.slice(0, start + GENERATED_START.length)}\n\n${content.trim()}\n\n${text.slice(end)}`;
+  const block = `<!-- prettier-ignore-start -->\n${content.trim()}\n<!-- prettier-ignore-end -->`;
+  return `${text.slice(0, start + GENERATED_START.length)}\n\n${block}\n\n${text.slice(end)}`;
 }
 
 /** Sets a front-matter key that already exists (e.g. updated). */
