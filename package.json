@@ -9,11 +9,11 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "env:check": "node scripts/env-check.ts"
   },
   "dependencies": {
-    "@typesafe-ai/sdk": "0.7.0",
-    "dotenv": "^18.0.8"
+    "@typesafe-ai/sdk": "0.7.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

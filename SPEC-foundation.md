@@ -68,6 +68,8 @@ export const env = {
 
 - `ENV=with-bugs npm test` switches to `.env.with-bugs`. This is the pilot's defect-hunting run,
   and it needs no code change.
+- `API_HEALTH_PATH` is optional and defaults to `/`. It was added during the build because
+  Toolshop's API root returns 404, so `env:check` probes `API_URL + API_HEALTH_PATH` (`/products`).
 - `.env.example` is committed, with the Toolshop values and a commented `.env.with-bugs` example.
   I **won't read or edit your `.env`**. You add `BASE_URL` and `API_URL` to it yourself (two lines,
   given in the handoff).
