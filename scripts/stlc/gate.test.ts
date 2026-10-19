@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { describe, test } from 'node:test';
 import { checkGate, resolvePhase } from './gate.ts';
 import { lintFeature } from './lint.ts';
-import { createArtifact, createFeature } from './new.ts';
+import { createArtifact, createFeature, today } from './new.ts';
 import { makeRoot, mutate, withTemplates } from './test-helpers.ts';
 
 const REQ = 'shop-search/01-requirements.md';
@@ -89,6 +89,13 @@ describe('stlc:new', () => {
     writeFileSync(plan, 'edited');
     assert.equal(createArtifact(root, 'demo', 'test-plan'), plan);
     assert.equal(readFileSync(plan, 'utf8'), 'edited');
+  });
+
+  // Regression (smoke run 2026-10-18): toISOString() is UTC, so an evening run in a UTC-minus zone
+  // stamped artifacts with tomorrow's date.
+  test('dates artifacts with the local calendar date, not the UTC one', () => {
+    assert.equal(today(new Date(2026, 9, 18, 23, 30)), '2026-10-18');
+    assert.equal(today(new Date(2026, 0, 5, 0, 15)), '2026-01-05');
   });
 
   test('a later artifact needs the feature to exist', () => {

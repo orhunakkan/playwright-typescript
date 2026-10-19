@@ -7,7 +7,9 @@ import { join } from 'node:path';
 import { ARTIFACTS, FEATURE_SLUG, type Phase } from './artifacts.ts';
 import { STLC_ROOT } from './lint.ts';
 
-export const today = () => new Date().toISOString().slice(0, 10);
+/** Local calendar date (YYYY-MM-DD). toISOString() would give the UTC date, a day off in the evening. */
+export const today = (now = new Date()) =>
+  `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
 const fill = (root: string, file: string, feature: string, date: string) =>
   readFileSync(join(root, '_templates', file), 'utf8')
