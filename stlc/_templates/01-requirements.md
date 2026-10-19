@@ -1,8 +1,8 @@
 ---
-feature: { { feature } }
+feature: {{feature}}
 phase: requirements
 status: draft # draft | approved | complete
-updated: { { date } }
+updated: {{date}}
 source: provided # provided | inferred (inferred = drafted by exploring the app; needs human confirmation)
 ---
 

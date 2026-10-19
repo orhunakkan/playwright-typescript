@@ -20,7 +20,9 @@
     "test:visual:update": "node scripts/docker-playwright.ts --project=visual --update-snapshots",
     "contract:pull": "node scripts/contract-pull.ts",
     "test:scripts": "node --test \"scripts/**/*.test.ts\"",
-    "stlc:lint": "node scripts/stlc/lint.ts"
+    "stlc:lint": "node scripts/stlc/lint.ts",
+    "stlc:gate": "node scripts/stlc/gate.ts",
+    "stlc:new": "node scripts/stlc/new.ts"
   },
   "dependencies": {
     "@typesafe-ai/sdk": "0.7.0"

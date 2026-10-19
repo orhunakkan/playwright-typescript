@@ -1,8 +1,8 @@
 ---
-feature: { { feature } }
+feature: {{feature}}
 phase: test-plan
 status: draft # draft | approved | complete. Only a human sets approved.
-updated: { { date } }
+updated: {{date}}
 ---
 
 # Test plan: {{feature}}

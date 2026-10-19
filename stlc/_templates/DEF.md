@@ -1,12 +1,12 @@
 ---
-id: { { id } }
-feature: { { feature } }
-ac: { { ac } }
+id: {{id}}
+feature: {{feature}}
+ac: {{ac}}
 severity: major # critical | major | minor | trivial
 status: open # open | fixed | wont-fix | duplicate
-found: { { date } }
-env: { { env } }
-test: { { test } }
+found: {{date}}
+env: {{env}}
+test: {{test}}
 ---
 
 # {{id}}: {{one-line summary}}

@@ -1,8 +1,8 @@
 ---
-feature: { { feature } }
+feature: {{feature}}
 phase: closure
 status: draft # draft | approved | complete
-updated: { { date } }
+updated: {{date}}
 ---
 
 # Closure: {{feature}}

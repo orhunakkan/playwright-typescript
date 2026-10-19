@@ -1,8 +1,8 @@
 ---
-feature: { { feature } }
+feature: {{feature}}
 phase: test-cases
 status: draft # draft | approved | complete
-updated: { { date } }
+updated: {{date}}
 ---
 
 # Test cases: {{feature}}

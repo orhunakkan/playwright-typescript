@@ -1,8 +1,8 @@
 ---
-feature: { { feature } }
+feature: {{feature}}
 phase: execution
 status: draft # draft | approved | complete. complete = every failure is triaged.
-updated: { { date } }
+updated: {{date}}
 ---
 
 # Execution: {{feature}}

@@ -4,3 +4,5 @@ test-results/
 reports/
 .claude/jev-routing.log
 contracts/
+# Templates hold {{placeholders}} in front matter, which Prettier would rewrite as YAML maps
+stlc/_templates/
