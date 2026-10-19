@@ -162,6 +162,34 @@ Each task: lint, format, typecheck and `test:scripts` green, then one commit.
 - [ ] Generated Playwright agent files are unmodified (`git diff` against a fresh `init-agents`
       run is empty).
 
+## As built (tasks 1–4, 2026-10-19)
+
+Where the build differs from the plan above, this section is what's true.
+
+- **One restart instead of two.** Tasks 2–4 don't need the MCP server, so they were built before
+  the restart. You restart once, before the task-5 smoke run.
+- **`specs/` removed.** `init-agents` also created `specs/README.md`. It was dropped, because plans
+  live in `stlc/<feature>/`. The generated agent files and `.mcp.json` are excluded from Prettier
+  so they stay byte-identical.
+- **Who sets statuses:** analyst → 01 `approved`; designer → 03 `approved`; triager → 04
+  `complete`; reporter → 05 `complete`. Only the user sets 02 `approved`.
+- **The guard hook** also blocks any agent edit that keeps an already approved plan approved. An
+  agent may set it back to `draft`, which needs re-approval. Shell commands are matched
+  heuristically: the file name plus "approved".
+- **Gaps found and fixed while designing the skills:**
+  - Docker visual runs now write `reports/results-visual.json`. Before, they overwrote the host
+    run's `results.json`. `run-summary`, `trace` and `defect` merge both, and the headers name
+    each source with its start time.
+  - `stlc:lint` rejects a `complete` 04 that leaves any "Needs triage" test without a Triage row.
+- **The orchestrator runs phases by reading the phase skill files**, because the phase skills are
+  `disable-model-invocation: true` and Claude can't invoke them itself.
+- **`definitions.test.ts`** statically checks agents and skills:
+  - names;
+  - user-only invocation;
+  - tools (MCP tools must exist in the generated Playwright agents);
+  - npm scripts, agents, gate phases and skill references.
+- **`npm run typecheck` and `npm run test:scripts`** now also cover `.claude/hooks/`.
+
 ## Out of scope
 
 - The pilot feature `product-search` and the with-bugs run (`pilot`).

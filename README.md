@@ -9,10 +9,40 @@ A Playwright + TypeScript framework in which Claude Code agents carry a feature 
 setup, implementation, execution, defect triage and closure. It covers E2E (cross-browser and
 mobile), API, visual, accessibility and performance tests against a live target.
 
-> **Status: `foundation`, `test-harness` and `stlc-artifacts` complete.** Tooling, env switching,
-> per-type projects, helpers plus reference examples for every test type, and the deterministic
-> STLC artifact tooling are in place. The agents come next. See [SPEC.md](SPEC.md) for the design and build order. The MVP runs locally
-> only, with no CI.
+> **Status: `foundation`, `test-harness` and `stlc-artifacts` complete; `stlc-agents` built,
+> smoke run pending.** Tooling, env switching, per-type projects, helpers and reference examples
+> for every test type, deterministic STLC tooling, and the Claude Code agents and skills are in
+> place. See [SPEC.md](SPEC.md) for the design and build order. The MVP runs locally only, with no
+> CI.
+
+## Running the STLC with Claude Code
+
+```text
+/stlc <feature> [requirements-file]
+```
+
+`/stlc` runs the eight phases, writing artifacts to `stlc/<feature>/`:
+
+1. analyze: requirements and acceptance criteria
+2. plan: risk-based coverage
+3. design: test cases
+4. env: preflight and contract drift
+5. build: tests
+6. run
+7. triage: defects and healing
+8. report: traceability and exit criteria
+
+It **stops for you twice**:
+
+- **After phase 2.** Review `stlc/<feature>/02-test-plan.md` and set `status: approved` in your
+  editor. Claude can't, because a hook blocks it. Then run `/stlc <feature>` again.
+- **In phase 5, if the plan has visual tests.** You decide whether baselines are created, then
+  review them.
+
+Each phase can also run on its own: `/stlc-analyze`, `/stlc-plan`, `/stlc-design`, `/stlc-env`,
+`/stlc-build`, `/stlc-run`, `/stlc-triage`, `/stlc-report`. The first time you open the repo,
+Claude Code asks you to trust the project MCP server `playwright-test` (from `.mcp.json`). Approve
+it, because the Playwright planner, generator and healer need it.
 
 The pilot target is [Practice Software Testing "Toolshop"](https://practicesoftwaretesting.com), a
 public storefront built for test practice. It has a REST API and a
