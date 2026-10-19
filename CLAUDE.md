@@ -1,36 +1,47 @@
 # agentic-playwright-framework
 
-Playwright + TypeScript E2E framework that runs against a live site set by `BASE_URL`. The
-previous target (Stagecraft Labs) was retired and its specs, POMs and fixtures were removed;
-`tests/` and `pages/` are empty until the new target app's base URL is known. Full depth is in
-`README.md`; read it before asking "how do I run/configure this" — don't re-derive it here.
+Agentic Playwright + TypeScript framework: Claude Code agents drive a feature through the whole
+STLC (requirements → plan → design → env → build → run → triage → closure) for E2E, API, visual,
+accessibility and performance tests against a live target set in `.env`. Design and build order
+are in [SPEC.md](SPEC.md); each module has its own `SPEC-<module>.md`. Run and config detail is in
+[README.md](README.md). Pilot target: Practice Software Testing "Toolshop". Local-only for the
+MVP: there is no CI.
 
 ## Commands
 
-- `npm test` — run the full suite (`playwright test`)
-- `npm test -- --project="Desktop Chrome" tests/<area>/` — one area, one browser
-- `npm run lint` / `npm run format` — eslint / prettier
-- `npx playwright show-report` — view the last HTML report
+- `npm run env:check`: preflight (target reachable, browsers, Docker). Run this first when
+  tests fail on navigation.
+- `npm test`: every host project. Per type: `npm run test:e2e`, `test:api`, `test:a11y`,
+  `test:perf`.
+- `npm run test:visual` / `test:visual:update`: visual tests, **only** in the pinned Docker image.
+- `npm run lint && npm run format:check && npm run typecheck`: run all three before every commit.
+- `ENV=<name> npm test`: target `.env.<name>` (for example `with-bugs`) instead of `.env`.
 
 ## Layout
 
-- `tests/<area>/<area>.spec.ts` — one spec file per feature area
-- `pages/<area>.page.ts` — POM: `readonly` locators + constructor only, no methods, no `goto()`
-- `fixtures/index.ts` — registers each POM as a fixture (`<area>Page`)
-- `utilities/accessibility.ts` — `scanWcag()` axe-core helper
+- `config/env.ts`: typed env (`BASE_URL`, `API_URL`). Import it; never read `process.env`
+  directly in tests.
+- `tests/<type>/<feature>/<scenario>.spec.ts`: one Playwright project per type (`e2e`, `api`,
+  `a11y`, `perf`, `visual`, plus `setup` for `*.setup.ts`).
+- `tests/visual/__snapshots__/`: visual baselines, Linux and Docker only.
+- `reports/results.json`: JSON results from the last run (input to traceability).
+- `scripts/`: Node-run TypeScript (`node scripts/x.ts`), using native type stripping, so use
+  erasable syntax only and `.ts` import extensions.
 
 ## Conventions
 
-- Kebab-name → PascalCase POM class → camelCase `...Page` fixture key → matching file paths
-  (e.g. `login` → `LoginPage` → `loginPage`)
-- `describe` blocks are grouped per acceptance criterion (`AC-1`, `AC-2`, …); test titles are
-  prefixed `positive:` / `negative:` / `boundary:`
-- Every spec includes an accessibility `describe` (multi-state `scanWcag` checks) and a
-  `@performance`-tagged budget test — a happy-path-only spec is incomplete
-- Tests run against the real external site (`BASE_URL` from `.env`), not a local server
-- CI ([.github/workflows/playwright.yml](.github/workflows/playwright.yml)) is a manual-dispatch
-  placeholder while `tests/` is empty — restore triggers, browser matrix and `vars.BASE_URL` once
-  specs exist
+- One test per file is fine. Traceability comes from tags: every test carries `@AC-n` and
+  `@TC-nnn` (plus `@REQ-<feature>`).
+- `describe` blocks are per acceptance criterion. Test titles start with `positive:`,
+  `negative:` or `boundary:`.
+- Use role, label or test-id locators and web-first assertions. No `waitForTimeout`,
+  `networkidle` or `force`; ESLint enforces these.
+- POMs are optional. Extract one only when three or more specs share the same locators. A POM
+  holds `readonly` locators and a constructor only.
+- Each AC gets the test types its risk calls for, as set in the feature's test plan. Not every
+  test needs a11y or perf.
+- Ask first before updating visual baselines, skipping or deleting a test, or adding a
+  dependency. Never weaken an assertion to make a product bug pass.
 
 ## Jev skill routing
 

@@ -1,6 +1,6 @@
 # Spec: foundation
 
-Module id: `foundation` · Parent: [SPEC.md](SPEC.md) · Depends on: — · Status: **draft — awaiting approval**
+Module id: `foundation` · Parent: [SPEC.md](SPEC.md) · Depends on: — · Status: **complete (2026-10-18)**
 
 ## Objective
 
@@ -217,9 +217,9 @@ landed.
 
 ## Success criteria
 
-- [ ] Every command in README.md and CLAUDE.md works on a fresh `npm ci`.
-- [ ] Changing the target means editing env files only. Proof: `ENV=with-bugs npm run env:check`
+- [x] Every command in README.md and CLAUDE.md works on a fresh `npm ci`.
+- [x] Changing the target means editing env files only. Proof: `ENV=with-bugs npm run env:check`
       reports the with-bugs hosts, given a `.env.with-bugs`.
-- [ ] `dotenv` is gone from `package.json`, and nothing imports it.
-- [ ] The visual project never runs outside Docker.
-- [ ] Lint, format and typecheck all pass.
+- [x] `dotenv` is gone from `package.json`, and nothing imports it.
+- [x] The visual project never runs outside Docker.
+- [x] Lint, format and typecheck all pass.
