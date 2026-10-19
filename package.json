@@ -18,7 +18,9 @@
     "test:perf": "playwright test --project=perf",
     "test:visual": "node scripts/docker-playwright.ts --project=visual",
     "test:visual:update": "node scripts/docker-playwright.ts --project=visual --update-snapshots",
-    "contract:pull": "node scripts/contract-pull.ts"
+    "contract:pull": "node scripts/contract-pull.ts",
+    "test:scripts": "node --test \"scripts/**/*.test.ts\"",
+    "stlc:lint": "node scripts/stlc/lint.ts"
   },
   "dependencies": {
     "@typesafe-ai/sdk": "0.7.0"
