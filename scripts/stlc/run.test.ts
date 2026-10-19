@@ -34,6 +34,17 @@ describe('results reader (real 1.64 report)', () => {
     assert.equal(at(17)?.status, 'skipped');
   });
 
+  // Playwright's expect messages are ANSI-coloured in the JSON report (contact-form smoke run), and
+  // the codes ended up in 04's triage table.
+  test('the error line is plain text, without ANSI colour codes', () => {
+    const coloured =
+      '\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed';
+    const report = JSON.parse(JSON.stringify(fixtureReport()).replace(/deliberate failure/g, coloured.replaceAll('\u001b', '\\u001b')));
+    const error = outcomes(report).find((o) => o.test === `${FILE}:7`)?.error ?? '';
+    assert.match(error, /expect\(locator\)\.toContainText\(expected\) failed/);
+    assert.ok(!error.includes('\u001b'), `no escape codes left in ${JSON.stringify(error)}`);
+  });
+
   test('merges the host and visual reports and names both sources', () => {
     const host = fixtureReport();
     const visual = { ...fixtureReport(), stats: { ...fixtureReport().stats, startTime: '2026-10-19T03:20:00.000Z' } };

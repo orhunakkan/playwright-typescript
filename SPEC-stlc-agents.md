@@ -222,6 +222,11 @@ Where the build differs from the plan above, this section is what's true.
   - `/stlc-report` checked that rerunning `stlc:trace` left 05 unchanged with `git diff`, which
     ignores untracked files, so the check always passed while `stlc/<feature>/` was uncommitted.
     It now compares `git hash-object` before and after.
+  - 04's triage table showed raw ANSI colour codes, because Playwright's `expect` messages are
+    coloured in the JSON report. The error line is now plain text.
+  - **Noticed, not fixed:** 04's header names a stale `reports/results-visual.json` from an
+    earlier run even when the plan has no visual tests. It adds no rows (contact-form has no
+    visual tests), but a stale visual failure of the same feature would be merged in.
 - **Pending for build (phase 5):** a harness helper to sign a page in as a given `workerUser`, for
   AC-10. The approved plan names it as ask-first; the plan approval covers it.
 

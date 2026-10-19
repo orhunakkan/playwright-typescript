@@ -3,6 +3,7 @@
 // tags; spec.file is POSIX and relative to config.rootDir (the testDir).
 import { existsSync, readFileSync } from 'node:fs';
 import { join, posix } from 'node:path';
+import { stripVTControlCharacters } from 'node:util';
 
 type JsonResult = { status: string; errors?: { message?: string }[] };
 type JsonTest = {
@@ -99,8 +100,9 @@ export function outcomes(report: JsonReport): Outcome[] {
           ac: tagValue(tags, 'AC-'),
           tc: tagValue(tags, 'TC-'),
           issues: t.annotations.filter((a) => a.type === 'issue' && a.description).map((a) => a.description as string),
-          error: failed?.errors?.[0]?.message
-            ?.split('\n')
+          // expect messages are ANSI-coloured; 04 is plain markdown.
+          error: stripVTControlCharacters(failed?.errors?.[0]?.message ?? '')
+            .split('\n')
             .find((l) => l.trim())
             ?.trim(),
         });
