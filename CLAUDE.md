@@ -16,6 +16,18 @@ MVP: there is no CI.
 - `npm run test:visual` / `test:visual:update`: visual tests, **only** in the pinned Docker image.
 - `npm run lint && npm run format:check && npm run typecheck`: run all three before every commit.
 - `ENV=<name> npm test`: target `.env.<name>` (for example `with-bugs`) instead of `.env`.
+- STLC artifacts, all deterministic with no LLM involved:
+  - `npm run stlc:new -- <feature>`
+  - `stlc:lint -- <feature>`
+  - `stlc:gate -- <feature> <1-8|name>`: exit 1 means closed. Never start a phase while it's
+    closed.
+  - `stlc:run-summary -- <feature>`
+  - `stlc:defect -- <feature> <AC-n> <file:line>`
+  - `stlc:trace -- <feature>`: exit 1 means the exit criteria aren't met.
+- `npm run test:scripts`: unit tests for `scripts/` (`node --test`). Run them after changing
+  anything there.
+- Never set `status: approved` in `stlc/<feature>/02-test-plan.md`: that's the human gate. Never
+  hand-edit anything between `<!-- generated:start/end -->`.
 
 ## Layout
 

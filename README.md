@@ -9,9 +9,9 @@ A Playwright + TypeScript framework in which Claude Code agents carry a feature 
 setup, implementation, execution, defect triage and closure. It covers E2E (cross-browser and
 mobile), API, visual, accessibility and performance tests against a live target.
 
-> **Status: `foundation` and `test-harness` complete.** Tooling, env switching, per-type projects,
-> and helpers plus reference examples for every test type are in place. STLC artifacts and the
-> agents come next. See [SPEC.md](SPEC.md) for the design and build order. The MVP runs locally
+> **Status: `foundation`, `test-harness` and `stlc-artifacts` complete.** Tooling, env switching,
+> per-type projects, helpers plus reference examples for every test type, and the deterministic
+> STLC artifact tooling are in place. The agents come next. See [SPEC.md](SPEC.md) for the design and build order. The MVP runs locally
 > only, with no CI.
 
 The pilot target is [Practice Software Testing "Toolshop"](https://practicesoftwaretesting.com), a
@@ -101,6 +101,14 @@ npm run test:visual:update   # regenerate visual baselines (review the diff befo
 npm run env:check            # preflight: target reachable, browsers installed, Docker
 npm run contract:pull        # refresh contracts/openapi.json from the target (review the diff)
 
+npm run stlc:new -- <feature>           # scaffold stlc/<feature>/01-05 from the templates
+npm run stlc:lint -- <feature>          # structural check of the artifacts and defects
+npm run stlc:gate -- <feature> <phase>  # may phase 1-8 (or analyze|plan|design|env|build|run|triage|report) start?
+npm run stlc:run-summary -- <feature>   # write the run block of 04-execution.md from reports/results.json
+npm run stlc:defect -- <feature> <AC-n> <file:line>   # create the next DEF-nnn
+npm run stlc:trace -- <feature>         # traceability matrix + exit criteria into 05-closure.md
+npm run test:scripts                    # unit tests for scripts/ (node --test)
+
 npm run lint                 # eslint (typescript-eslint + eslint-plugin-playwright)
 npm run format               # prettier --write .
 npm run format:check
@@ -145,6 +153,8 @@ contracts/openapi.json        pinned API contract
 scripts/env-check.ts          preflight (STLC phase 4)
 scripts/contract-pull.ts      refresh the pinned contract
 scripts/docker-playwright.ts  run Playwright in the pinned Linux image
+scripts/stlc/                 deterministic STLC tooling (parser, lint, gate, run summary, defects, trace) + tests
+stlc/_templates/              artifact templates (01-05, DEF); stlc/<feature>/ and stlc/defects/ hold the real ones
 tests/setup/auth.setup.ts     registers this run's user, signs in, saves .auth/user.json
 tests/<type>/examples/        reference examples per test type (@example)
 playwright.config.ts          per-type projects, reporters, snapshot paths
