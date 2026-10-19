@@ -7,7 +7,8 @@ disable-model-invocation: true
 
 # Phase 2: test planning for `$0`
 
-1. Run `npm run stlc:gate -- $0 plan`. If it exits 1, stop and report its reasons.
+1. Run `npm run stlc:gate -- $0 plan`. If it exits 1, stop and report its reasons. Then run
+   `npm run stlc:new -- $0 test-plan`, which creates 02 from its template if it doesn't exist yet.
 2. Delegate to the **stlc-strategist** agent with the prompt `Feature: $0.`
 3. Verify it yourself:
    - `npm run stlc:lint -- $0` exits 0;

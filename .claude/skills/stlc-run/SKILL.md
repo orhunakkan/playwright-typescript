@@ -9,7 +9,8 @@ disable-model-invocation: true
 
 No agent. Commands only.
 
-1. Run `npm run stlc:gate -- $0 run`. If it exits 1, stop and report its reasons.
+1. Run `npm run stlc:gate -- $0 run`. If it exits 1, stop and report its reasons. Then run
+   `npm run stlc:new -- $0 execution`, which creates 04 from its template if it doesn't exist yet.
 2. Map the coverage table in `stlc/$0/02-test-plan.md` to projects. Use a type's projects only if
    any AC has `x` under that type:
 

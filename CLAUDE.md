@@ -17,7 +17,7 @@ MVP: there is no CI.
 - `npm run lint && npm run format:check && npm run typecheck`: run all three before every commit.
 - `ENV=<name> npm test`: target `.env.<name>` (for example `with-bugs`) instead of `.env`.
 - STLC artifacts, all deterministic with no LLM involved:
-  - `npm run stlc:new -- <feature>`
+  - `npm run stlc:new -- <feature> [phase]`: 01 only; each later artifact is created when its phase starts
   - `stlc:lint -- <feature>`
   - `stlc:gate -- <feature> <1-8|name>`: exit 1 means closed. Never start a phase while it's
     closed.

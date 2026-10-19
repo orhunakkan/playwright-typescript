@@ -131,7 +131,7 @@ npm run test:visual:update   # regenerate visual baselines (review the diff befo
 npm run env:check            # preflight: target reachable, browsers installed, Docker
 npm run contract:pull        # refresh contracts/openapi.json from the target (review the diff)
 
-npm run stlc:new -- <feature>           # scaffold stlc/<feature>/01-05 from the templates
+npm run stlc:new -- <feature> [phase]   # start a feature (01), or add one phase artifact when that phase starts
 npm run stlc:lint -- <feature>          # structural check of the artifacts and defects
 npm run stlc:gate -- <feature> <phase>  # may phase 1-8 (or analyze|plan|design|env|build|run|triage|report) start?
 npm run stlc:run-summary -- <feature>   # write the run block of 04-execution.md from reports/results.json

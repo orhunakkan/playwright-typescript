@@ -8,7 +8,8 @@ disable-model-invocation: true
 # Phase 3: test design for `$0`
 
 1. Run `npm run stlc:gate -- $0 design`. If it exits 1, stop and report its reasons. A plan that
-   isn't approved yet is the usual reason.
+   isn't approved yet is the usual reason. Then run `npm run stlc:new -- $0 test-cases`, which
+   creates 03 from its template if it doesn't exist yet.
 2. Read the coverage table in `stlc/$0/02-test-plan.md`. If any AC has `x` under `e2e`, delegate
    to the **playwright-test-planner** agent with this prompt (its documented format). Fill in the
    e2e ACs with their titles and Given/When/Then from `stlc/$0/01-requirements.md`:
