@@ -77,6 +77,21 @@ describe('skill definitions', () => {
     });
   }
 
+  // The planner sets up one page from one seed. A feature with signed-out and signed-in e2e ACs
+  // (the contact-form smoke run) needs one planner run per seed, each with its own plan file.
+  test('stlc-design plans signed-out and signed-in scenarios in separate planner runs', () => {
+    const design = readFileSync(join(SKILLS, 'stlc-design', 'SKILL.md'), 'utf8');
+    for (const [seed, plan] of [
+      ['tests/e2e/seed.spec.ts', 'stlc/$0/ui-scenarios.md'],
+      ['tests/e2e/seed-signed-in.spec.ts', 'stlc/$0/ui-scenarios-signed-in.md'],
+    ]) {
+      assert.ok(design.includes(`<seed-file>${seed}</seed-file>`), `a planner run seeded with ${seed}`);
+      assert.ok(design.includes(`<plan-file>${plan}</plan-file>`), `writing ${plan}`);
+    }
+    const designer = readFileSync(join(AGENTS, 'stlc-designer.md'), 'utf8');
+    assert.ok(designer.includes('ui-scenarios-signed-in.md'), 'the designer reads the signed-in scenarios');
+  });
+
   test('every phase skill checks its own gate first', () => {
     for (const phase of phaseNames) {
       const text = readFileSync(join(SKILLS, `stlc-${phase}`, 'SKILL.md'), 'utf8');

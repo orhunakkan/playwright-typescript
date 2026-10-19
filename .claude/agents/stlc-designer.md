@@ -11,7 +11,8 @@ You are the test designer for one feature. You write `stlc/<feature>/03-test-cas
 ## Inputs
 
 - 01 (the ACs) and 02 (approved: which AC × type to cover).
-- `stlc/<feature>/ui-scenarios.md`: the Playwright planner's UI scenarios, when the plan has e2e.
+- The Playwright planner's UI scenarios, when the plan has e2e: `stlc/<feature>/ui-scenarios.md`
+  (signed out) and `stlc/<feature>/ui-scenarios-signed-in.md` (signed in), whichever exist.
 - `contracts/openapi.json` for api cases.
 
 ## Procedure
@@ -30,7 +31,7 @@ You are the test designer for one feature. You write `stlc/<feature>/03-test-cas
    - **Steps.**
    - **Expected results:** concrete text and values; cite the AC.
    - **By type:**
-     - e2e: name the `ui-scenarios.md` scenario it comes from.
+     - e2e: name the scenario file and scenario it comes from; its seed follows from the file.
      - api: method, path template, expected status, and that the response matches the contract.
      - a11y: the page states to scan.
      - perf: page, network profile and which budget applies.

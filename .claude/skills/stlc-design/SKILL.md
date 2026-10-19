@@ -10,25 +10,34 @@ disable-model-invocation: true
 1. Run `npm run stlc:gate -- $0 design`. If it exits 1, stop and report its reasons. A plan that
    isn't approved yet is the usual reason. Then run `npm run stlc:new -- $0 test-cases`, which
    creates 03 from its template if it doesn't exist yet.
-2. Read the coverage table in `stlc/$0/02-test-plan.md`. If any AC has `x` under `e2e`, delegate
-   to the **playwright-test-planner** agent with this prompt (its documented format). Fill in the
-   e2e ACs with their titles and Given/When/Then from `stlc/$0/01-requirements.md`:
+2. Read the coverage table in `stlc/$0/02-test-plan.md`. If any AC has `x` under `e2e`, sort
+   those ACs by the state their Given/When/Then in `stlc/$0/01-requirements.md` starts from:
+   signed out, signed in, or both (an AC that holds in both states goes in both groups). The
+   planner sets up one page from one seed, so delegate to the **playwright-test-planner** agent
+   once per non-empty group, one run at a time, with this prompt (its documented format). Fill in
+   the group's ACs with their titles and Given/When/Then:
+
+   Signed out:
 
    ```
    <plan>
-     <task-text>Plan UI test scenarios for feature "$0", covering only these acceptance criteria:
-     <the e2e ACs>.
+     <task-text>Plan UI test scenarios for feature "$0", signed out, covering only these
+     acceptance criteria: <the group's ACs>.
      For each AC include the main path, validation/error states and boundaries. Save test files as
      tests/e2e/$0/<short-scenario-slug>.spec.ts. Use project "chromium".</task-text>
-     <seed-file>tests/e2e/seed.spec.ts, or tests/e2e/seed-signed-in.spec.ts when the ACs need a signed-in user</seed-file>
+     <seed-file>tests/e2e/seed.spec.ts</seed-file>
      <plan-file>stlc/$0/ui-scenarios.md</plan-file>
    </plan>
    ```
 
-   Then check that `stlc/$0/ui-scenarios.md` exists.
+   Signed in: the same prompt with "signed in" for "signed out", and
+   `<seed-file>tests/e2e/seed-signed-in.spec.ts</seed-file>` and
+   `<plan-file>stlc/$0/ui-scenarios-signed-in.md</plan-file>`.
 
-3. Delegate to the **stlc-designer** agent with this prompt: `Feature: $0. UI scenarios:
-stlc/$0/ui-scenarios.md`. Leave out the second sentence if step 2 didn't run.
+   Then check that each plan file you asked for exists.
+
+3. Delegate to the **stlc-designer** agent with this prompt: `Feature: $0. UI scenarios: <the
+plan files from step 2>`. Leave out the second sentence if step 2 didn't run.
 4. Verify it yourself:
    - `npm run stlc:lint -- $0` exits 0;
    - `stlc/$0/03-test-cases.md` has `status: approved`.

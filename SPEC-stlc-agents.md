@@ -210,6 +210,9 @@ Where the build differs from the plan above, this section is what's true.
     Artifacts are now created per phase (commit 3d688cf).
   - `today()` was UTC (commit c377812).
   - Jev routed subagent hand-backs (commit f448129).
+  - `/stlc-design` gave the planner one seed, but contact-form's e2e ACs are partly signed out
+    and partly signed in. The planner now runs once per seed: `ui-scenarios.md` (signed out) and
+    `ui-scenarios-signed-in.md`, and the designer reads both.
 - **Pending for build (phase 5):** a harness helper to sign a page in as a given `workerUser`, for
   AC-10. The approved plan names it as ask-first; the plan approval covers it.
 
