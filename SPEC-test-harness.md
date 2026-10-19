@@ -60,10 +60,16 @@ One merged `test` and `expect` that every spec imports.
   the scan, attaches the full JSON to the report (as the Playwright docs recommend) and returns
   `violations`.
 - **`contract.ts`:** loads `contracts/openapi.json` into `Ajv2020` plus `ajv-formats` and exposes
-  `expectMatchesContract(response, { method, path })`. It picks the response schema for the
-  actual status code, resolves `$ref`s, and fails with a readable list of schema errors. Unknown
-  OpenAPI keywords (`example`, `xml`, `discriminator`) are registered as allowed vocabulary instead
-  of turning strict mode off.
+  `contractViolations(method, path, status, body)`. The fixtures wrap it as a custom matcher,
+  `await expect(response).toMatchContract('GET', '/products')`, following the documented
+  `expect.extend` pattern. That replaced the planned `expectMatchesContract` helper.
+  - It picks the response schema for the actual status code, and treats an undocumented status as
+    a violation.
+  - It resolves schema and response `$ref`s, and fails with a readable list naming the JSON
+    pointer and the schema rule.
+  - Strict mode stays on. The pinned spec's only non-standard keyword (`example`) is registered as
+    allowed vocabulary, and its four extra formats (`binary`, `float`, `number`, `password`) are
+    registered explicitly.
 - **`performance.ts`:** `measurePageLoad(page)` returns `{ ttfb, fcp, lcp, cls, domContentLoaded,
 transferSize }` from Navigation Timing plus a buffered `PerformanceObserver`.
   `throttle(page, profile)` applies CDP `Network.emulateNetworkConditions` (Chromium only). Budgets
@@ -82,7 +88,8 @@ works), and saves `.auth/user.json` (git-ignored). Tests opt in with
 ### Pinned contract
 
 - `contracts/openapi.json` is a committed snapshot of the API spec.
-- `npm run contract:pull` refreshes it from `API_URL/docs?api-docs.json`. You review the diff
+- `npm run contract:pull` refreshes it from `API_URL + API_SPEC_PATH` (Toolshop:
+  `/docs?api-docs.json`; default `/openapi.json`). You review the diff
   before committing (ask-first, like baselines). Contract tests never fetch the live spec, so an
   upstream change shows up as a reviewed diff, not a silent pass.
 

@@ -1,6 +1,7 @@
 // The one `test`/`expect` every spec imports. Never import them from '@playwright/test' in specs.
-import { test as base, expect, type APIRequestContext } from '@playwright/test';
+import { test as base, expect as baseExpect, type APIRequestContext, type APIResponse } from '@playwright/test';
 import { env } from '../config/env.ts';
+import { contractViolations } from '../utilities/contract.ts';
 import { registerUser, type TestUser } from '../utilities/users.ts';
 
 type TestFixtures = {
@@ -31,4 +32,22 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
   ],
 });
 
-export { expect };
+export const expect = baseExpect.extend({
+  /** Asserts status + JSON body conform to the pinned OpenAPI contract for `method path` (path template). */
+  async toMatchContract(response: APIResponse, method: string, path: string) {
+    const name = 'toMatchContract';
+    const status = response.status();
+    const body = status === 204 ? undefined : await response.json().catch(() => undefined);
+    const violations = contractViolations(method, path, status, body);
+    const pass = violations.length === 0;
+    const where = `${method.toUpperCase()} ${path} → ${status}`;
+    return {
+      name,
+      pass,
+      message: () =>
+        pass
+          ? `${this.utils.matcherHint(name, undefined, undefined, { isNot: this.isNot })}\n\n${where} conforms to the contract`
+          : `${this.utils.matcherHint(name, undefined, undefined, { isNot: this.isNot })}\n\n${where} violates the contract:\n  - ${violations.join('\n  - ')}`,
+    };
+  },
+});
