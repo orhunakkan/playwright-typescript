@@ -150,17 +150,25 @@ Each task: lint, format, typecheck and `test:scripts` green, then one commit.
 
 ## Success criteria
 
-- [ ] `/stlc <feature>` runs phases 1–2 unattended and stops at the plan gate with a clear
+Ticked only where the task-5 smoke run (contact-form, 2026-10-18/19) showed it.
+
+- [x] `/stlc <feature>` runs phases 1–2 unattended and stops at the plan gate with a clear
       message.
 - [ ] No agent or skill can set `status: approved` on a test plan (hook-enforced and unit-tested).
-- [ ] After approval, `/stlc` resumes and finishes phases 3–8 for the smoke feature.
-      `stlc:check-tests` passes, and `05-closure.md` has a generated matrix.
-- [ ] Generated tests follow CLAUDE.md: fixtures import (lint-enforced), tags (check-tests),
-      title prefixes, no CSS/XPath, no `waitForTimeout`.
+      Unit-tested in task 2. Not shown live: asked to approve, Claude declined before any tool
+      call. The hook fired once in the run, as a false positive (see "Task 5 smoke run").
+- [x] After approval, `/stlc` resumes and finishes phases 3–8 for the smoke feature.
+      `stlc:check-tests` passes, and `05-closure.md` has a generated matrix. Done with the
+      user's speed-ups listed under "Task 5 smoke run".
+- [x] Generated tests follow CLAUDE.md: fixtures import (lint-enforced), tags (check-tests),
+      title prefixes, no CSS/XPath, no `waitForTimeout`. Checked on all 32 contact-form specs,
+      which `stlc-author` wrote; the Playwright generator wasn't used.
 - [ ] The healer is only ever invoked on `test` verdicts. Product defects get a DEF and the
-      known-defect pattern, never a weakened assertion.
-- [ ] Generated Playwright agent files are unmodified (`git diff` against a fresh `init-agents`
-      run is empty).
+      known-defect pattern, never a weakened assertion. Only the second half was shown: 7
+      failures became DEF-001 to DEF-004 with the pattern. Triage gave no `test` verdicts, so the
+      healer path never ran.
+- [x] Generated Playwright agent files are unmodified (`git diff` against a fresh `init-agents`
+      run is empty). Checked byte for byte against a fresh run in a scratch dir.
 
 ## As built (tasks 1–4, 2026-10-19)
 
@@ -192,9 +200,17 @@ Where the build differs from the plan above, this section is what's true.
 
 ## Task 5 smoke run: status and findings (2026-10-18/19)
 
-- **Status: phases 1–2 done. Waiting for the user to approve `stlc/contact-form/02-test-plan.md`.**
-  Phases 3–8 run after approval via `/stlc contact-form`. The `stlc/contact-form/` artifacts are
-  **uncommitted**, on purpose: the final commit comes at the end of the smoke run.
+- **Status: phases 1–8 done (2026-10-19). Exit criteria MET:** 12/12 ACs covered, 0 open
+  critical, 0% flaky. Four defects are open: DEF-001 and DEF-002 major, DEF-003 and DEF-004 minor.
+  `stlc/contact-form/`, `stlc/defects/` and the 32 contact-form specs stay uncommitted until the
+  user approves that commit.
+- **Speed-ups the user chose for phases 3–8** (also recorded in 05):
+  - no signed-in planner run; the signed-in TCs were designed from 01 and 02;
+  - `stlc-author` wrote the e2e tests instead of the Playwright generator, three authors in
+    parallel;
+  - phase 6 ran only `chromium`, `api` and `a11y`;
+  - the triager's known-defect splits weren't re-run, so the matrix shows those tests as FAIL from
+    the pre-triage run.
 - **Phase 1 (`stlc-analyst`):** explored the live contact page signed out and signed in. Wrote 12
   ACs (`source: inferred`) and seven open questions, including a possibly ignored first "Send"
   click.
@@ -212,23 +228,39 @@ Where the build differs from the plan above, this section is what's true.
   - Jev routed subagent hand-backs (commit f448129).
   - `/stlc-design` gave the planner one seed, but contact-form's e2e ACs are partly signed out
     and partly signed in. The planner now runs once per seed: `ui-scenarios.md` (signed out) and
-    `ui-scenarios-signed-in.md`, and the designer reads both.
+    `ui-scenarios-signed-in.md`, and the designer reads both (commit 0daaf6d).
   - Host runs hung with no output. The `playwright-test` MCP server runs a seed with
     `pauseAtEnd` and no timeout, so every analyst or planner session left a browser open,
     recording video into `test-results/` (about 300 MB). On Windows the next host run blocked
     while clearing that dir, and closing the page didn't release it; only stopping the worker did.
     MCP sessions now write to `test-results-mcp/` with video off, and host runs no longer
-    collide with them.
+    collide with them (commit 80ae363).
   - `/stlc-report` checked that rerunning `stlc:trace` left 05 unchanged with `git diff`, which
     ignores untracked files, so the check always passed while `stlc/<feature>/` was uncommitted.
-    It now compares `git hash-object` before and after.
+    It now compares `git hash-object` before and after (commit 029237e).
   - 04's triage table showed raw ANSI colour codes, because Playwright's `expect` messages are
-    coloured in the JSON report. The error line is now plain text.
+    coloured in the JSON report. The error line is now plain text (commit 9e5221d).
   - **Noticed, not fixed:** 04's header names a stale `reports/results-visual.json` from an
     earlier run even when the plan has no visual tests. It adds no rows (contact-form has no
     visual tests), but a stale visual failure of the same feature would be merged in.
-- **Pending for build (phase 5):** a harness helper to sign a page in as a given `workerUser`, for
-  AC-10. The approved plan names it as ask-first; the plan approval covers it.
+  - **Noticed, not fixed:** the plan-approval hook blocked a shell command that only edited this
+    spec, because the command mentioned the plan's file name and "approved". That's the documented
+    heuristic for shell commands (see "As built"), and it errs on the safe side.
+- **Harness helper for AC-10:** `signInAs(context, user)` in `utilities/users.ts` (commit cc95879),
+  checked by the session reference example on all five e2e projects.
+- **Not yet shown, needed before the spec is complete:**
+  - The plan-approval hook blocking a real attempt at approval in a live session (unit tests
+    only so far).
+  - The healer path: a `test` verdict sent to the healer, then a re-run.
+  - The Playwright generator writing phase 5's e2e tests.
+  - e2e on `firefox`, `webkit`, `mobile-chrome` and `mobile-safari` for the smoke feature.
+  - A run of the known-defect splits, confirming that `test.fail()` and `KNOWN` show as known
+    defects in the matrix.
+- **Open for the user:**
+  - The known-defect splits add one real send per api TC (TC-009, TC-026, TC-028 and TC-030),
+    which goes over 02's budget.
+  - AC-2's wording leaves out the "Select a subject \*" placeholder option.
+  - 01's open questions are unanswered, and DEF-001 depends on one of them (the blur trigger).
 
 ## Out of scope
 
