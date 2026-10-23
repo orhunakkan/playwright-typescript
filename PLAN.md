@@ -1,6 +1,6 @@
 # Agentic Job Board — MVP Plan
 
-> **Status:** Approved intent (2026-10-23). Build has not started.
+> **Status:** Approved intent (2026-10-23). Build in progress; see the [Checkpoint log](#13-checkpoint-log).
 > **Owner:** Orhun Akkan (the only user, and the approver at every checkpoint).
 > **Audience:** the owner, and every coding agent that works in this repository.
 
@@ -460,10 +460,10 @@ Score badge colors carry meaning only together with the label text (accessibilit
 | Job | Expected |
 |---|---|
 | Senior Quality Assurance Engineer (Playwright, TypeScript, and Postman) · 3Pillar · United States | strong |
-| Senior QA Automation Test Engineer · Cboe Global Markets · Chicago, IL | strong |
+| Senior QA Automation Test Engineer · Cboe Global Markets · Chicago, IL | strong (re-confirm at CP-5: CP-1 profile is remote-US only, see DEC-016) |
 | AI Native, QA Engineer · ConsumerAffairs | strong / possible |
 | QA Automation Engineer II – IntelliScript (Remote) · Milliman IntelliScript | possible |
-| Senior Quality Assurance Engineer · Goosehead Insurance · Dallas-Fort Worth Metroplex | possible / weak (depends on CP-1 location preferences) |
+| Senior Quality Assurance Engineer · Goosehead Insurance · Dallas-Fort Worth Metroplex | possible / weak (CP-1: remote-US only, no relocation, see DEC-016) |
 | R&D Test Engineer · Agilent Technologies · Harrisburg, PA | weak |
 
 ---
@@ -542,10 +542,10 @@ At the end of every phase the agent must:
    - **Deviations from the plan:** anything changed, and why
    - **Open questions:** decisions the owner needs to make
 3. **STOP.** No further edits, commits or tool runs until the owner replies.
-4. On `Approve CP-<n>`: fill in the [Checkpoint log](#13-checkpoint-log) (date, status, notes), commit, merge the phase branch to `main`, then start the next phase.
+4. On `Approve CP-<n>`: fill in the [Checkpoint log](#13-checkpoint-log) (date, status, notes), tick that checkpoint's checklist in §10 (`- [x]`), commit, merge the phase branch to `main`, push `main` to `origin`, then start the next phase.
 5. On feedback instead of approval: fix it, re-run the gates, and send an updated report. Repeat until approved.
 
-**Git:** each phase works on `phase/<n>-<slug>`, using Conventional Commits (`feat:`, `test:`, `docs:`, …). Agents commit to the phase branch while they work. **Merging to `main` only happens after approval.** Nothing is pushed to a remote without the owner asking.
+**Git:** each phase works on `phase/<n>-<slug>`, using Conventional Commits (`feat:`, `test:`, `docs:`, …). Agents commit to the phase branch while they work. **Merging to `main` only happens after approval, and every approved merge is then pushed to `origin/main`** (DEC-018). The GitHub repo is public, so nothing else (phase branches, unapproved work) is pushed without the owner asking.
 
 ---
 
@@ -584,10 +584,10 @@ Tasks:
 **Done when:** `npm ci` succeeds, every script in Appendix A runs (empty suites pass), `npm run check` is green, and `npm audit` is clean.
 
 **🛑 CP-0. The owner checks:**
-- [ ] `CLAUDE.md` rules read correctly
-- [ ] Lint, format and type rules are acceptable (try breaking one on purpose)
-- [ ] `docs/test-strategy.md` reflects how they want to present their QA approach
-- [ ] No dependency changes in `package.json`
+- [x] `CLAUDE.md` rules read correctly
+- [x] Lint, format and type rules are acceptable (try breaking one on purpose)
+- [x] `docs/test-strategy.md` reflects how they want to present their QA approach
+- [x] No dependency changes in `package.json`
 
 ---
 
@@ -611,8 +611,8 @@ Tasks:
 **Done when:** the schema and its tests are green, and `data/profile.json` exists and validates.
 
 **🛑 CP-1. The owner checks:**
-- [ ] Every field of the profile is correct, especially location preferences and deal-breakers
-- [ ] Nothing from the résumé (phone, email, address) is in any tracked file (`git status` shows only schema and test files)
+- [x] Every field of the profile is correct, especially location preferences and deal-breakers
+- [x] Nothing from the résumé (phone, email, address) is in any tracked file (`git status` shows only schema and test files)
 
 ---
 
@@ -787,11 +787,11 @@ Tasks:
    - perf is `workflow_dispatch` only
 5. A11y and security re-run on the final UI. Any finding is logged in `docs/defects.md`.
 
-**Done when:** k6 thresholds pass locally, and the CI workflow file is valid. If the repo has a GitHub remote, CI is green there; pushing only happens when the owner asks.
+**Done when:** k6 thresholds pass locally, and the CI workflow file is valid. `main` is pushed after CP-7 approval (DEC-018), and CI must then be green on GitHub.
 
 **🛑 CP-7. The owner checks:**
 - [ ] Reads the k6 summary (p95 and error rate)
-- [ ] Reviews the CI stages and decides whether to push
+- [ ] Reviews the CI stages
 
 ---
 
@@ -848,6 +848,11 @@ Tasks:
 | DEC-011 | 2026-10-23 | `PLAN.md` is in `.prettierignore` (approved at CP-0) | Prettier would only re-pad its tables, adding noise to every diff of the source-of-truth plan |
 | DEC-012 | 2026-10-23 | Playwright's `webServer` starts only once `src/main.ts` exists; removed in Phase 4 (approved at CP-0) | Playwright starts the web server even with no tests, so `test:e2e` could not run in Phases 0–3 |
 | DEC-013 | 2026-10-23 | E2E server runs on port 3100 with a temporary database | E2E can run while the owner's dev server is up, and never touches `data/jobboard.db` |
+| DEC-014 | 2026-10-23 | `.gitattributes` forces LF line endings (added in Phase 0) | With `core.autocrlf=true`, a fresh Windows checkout gets CRLF and `prettier --check` fails |
+| DEC-015 | 2026-10-23 | The résumé lives at `data/Orhun_Akkan_Resume_Updated.pdf`, not `data/resume.pdf` (owner, CP-1) | The owner's file name; `data/` is git-ignored either way |
+| DEC-016 | 2026-10-23 | Profile is remote-US only: no hybrid or on-site metros, no relocation (owner, CP-1) | Owner's preference. §6.5 calibration rows for on-site jobs (Cboe, Goosehead) must be re-confirmed at CP-5 |
+| DEC-017 | 2026-10-23 | On approval, the checkpoint's checklist in §10 is ticked (`- [x]`) along with the Checkpoint log (owner) | The plan should show at a glance which owner checks have passed |
+| DEC-018 | 2026-10-23 | On approval, the agent merges the phase branch to `main` and pushes `main` to `origin` (owner) | Approved work is published without a separate request; only approved `main` is pushed because the repo is public |
 
 ---
 
