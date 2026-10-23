@@ -1,6 +1,6 @@
 # Agentic Job Board — MVP Plan
 
-> **Status:** Approved intent (2026-10-23). Build in progress; see the [Checkpoint log](#13-checkpoint-log).
+> **Status:** Approved intent (2026-10-23). MVP built; awaiting the owner's acceptance at CP-8 (see the [Checkpoint log](#13-checkpoint-log)).
 > **Owner:** Orhun Akkan (the only user, and the approver at every checkpoint).
 > **Audience:** the owner, and every coding agent that works in this repository.
 
@@ -883,7 +883,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 | CP-5 | `/find-jobs` agent | Done (DEC-026) | 2026-10-23 | Agent-reviewed; owner checks deferred to CP-8. Rubric `triage-v1`: calibration 6/6 on target (DEC-028). Real run: 14 emails, 64 new jobs, 20 seen again, 64 scored; second run 7 duplicates, 0 new. DEC-027 (cut URL query strings); DEF-008 fixed ("school alum" insight line) |
 | CP-6 | User interface | Done (DEC-026) | 2026-10-23 | Agent-reviewed plus an independent code review (4 findings, all fixed); owner checks deferred to CP-8. 124 E2E/a11y/smoke tests green on chromium, firefox, webkit, mobile; axe 0 violations (WCAG 2.2 AA, light and dark). DEC-029 (Referrer-Policy same-origin, DEF-009), DEC-030 (page conventions) |
 | CP-7 | Performance, CI and hardening | Done (DEC-026) | 2026-10-23 | Agent-reviewed; owner checks deferred to CP-8. k6 on 5,000 seeded jobs, 20 VUs: p95 19.5 ms overall (board 23.5, API 21.0, detail 13.8), 0 % errors, no tuning needed. CI workflow validated with actionlint; DEC-031 (CI stages). Defect log started (DEF-005 to DEF-013, none open) |
-| CP-8 | MVP acceptance | Not started | | |
+| CP-8 | MVP acceptance | Awaiting owner | | Phases 5–8 built under DEC-026; everything is ready for the owner's review (README, docs/traceability.md, docs/defects.md). CP-5 to CP-7 owner checklists in §10 are part of this review |
 
 ---
 

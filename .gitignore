@@ -43,3 +43,6 @@ Thumbs.db
 
 # Personal data: database, résumé, profile (PLAN.md NFR-08)
 data/
+
+# Test reports used by scripts/traceability.ts
+reports/

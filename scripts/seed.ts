@@ -34,43 +34,70 @@ export class SeedError extends Error {
   override name = 'SeedError';
 }
 
-const ROLES = [
-  'QA Automation Engineer',
-  'Senior QA Engineer',
-  'Software Development Engineer in Test',
-  'Senior SDET',
-  'Test Automation Engineer',
-  'Quality Engineer',
-  'Staff Quality Engineer',
-  'Lead Test Automation Engineer',
-  'AI Quality Engineer',
-  'Manual QA Analyst',
-  'Hardware Test Engineer',
-  'QA Engineer II',
+/** A fake job: the same title, company and location every time an email lists it, and a rubric-like score. */
+interface FakeJob {
+  linkedinId: string;
+  title: string;
+  company: string;
+  location: string;
+  score: number;
+  reason: string;
+}
+
+// Roles with a base score and the words a triage reason would use; `cap` marks a deal-breaker (scores ≤ 30).
+const ROLES: readonly { title: string; base: number; reason: string; cap?: string }[] = [
+  { title: 'QA Automation Engineer', base: 60, reason: 'QA automation role' },
+  { title: 'Senior QA Engineer', base: 68, reason: 'Senior QA role' },
+  { title: 'Software Development Engineer in Test', base: 62, reason: 'SDET role' },
+  { title: 'Senior SDET', base: 71, reason: 'Senior SDET role' },
+  { title: 'Test Automation Engineer', base: 61, reason: 'Test automation role' },
+  { title: 'Quality Engineer', base: 56, reason: 'Quality engineering role' },
+  { title: 'Staff Quality Engineer', base: 72, reason: 'Staff quality role' },
+  { title: 'Lead Test Automation Engineer', base: 71, reason: 'Lead automation role' },
+  { title: 'AI Quality Engineer', base: 66, reason: 'AI quality role, on the AI QA target' },
+  { title: 'QA Engineer II', base: 52, reason: 'Mid-level QA role' },
+  { title: 'Manual QA Analyst', base: 20, reason: '', cap: 'Capped: manual-only testing role (deal-breaker).' },
+  { title: 'Hardware Test Engineer', base: 18, reason: '', cap: 'Capped: hardware test role (deal-breaker).' },
 ];
-const STACKS = ['', '', '', ' (Playwright)', ' (TypeScript)', ' (Cypress)', ' (Selenium, Java)', ' - API Testing'];
+const STACKS: readonly { suffix: string; bonus: number; reason: string }[] = [
+  { suffix: '', bonus: 0, reason: 'no stack named' },
+  { suffix: '', bonus: 0, reason: 'no stack named' },
+  { suffix: ' (Playwright)', bonus: 12, reason: 'Playwright in the title' },
+  { suffix: ' (TypeScript)', bonus: 10, reason: 'TypeScript in the title' },
+  { suffix: ' (Cypress)', bonus: 9, reason: 'Cypress in the title' },
+  { suffix: ' (Selenium, Java)', bonus: 6, reason: 'Selenium and Java in the title' },
+  { suffix: ' - API Testing', bonus: 8, reason: 'API testing in the title' },
+];
+const LOCATIONS: readonly { name: string; adjust: number; reason: string }[] = [
+  { name: 'United States', adjust: 0, reason: 'US-wide' },
+  { name: 'United States', adjust: 0, reason: 'US-wide' },
+  { name: 'United States (Remote)', adjust: 8, reason: 'remote US' },
+  { name: 'Chicago, IL', adjust: -12, reason: 'Chicago-based, not marked remote' },
+  { name: 'Austin, TX', adjust: -12, reason: 'Austin-based, not marked remote' },
+  { name: 'New York, NY', adjust: -12, reason: 'New York-based, not marked remote' },
+  { name: 'Seattle, WA', adjust: -12, reason: 'Seattle-based, not marked remote' },
+  { name: 'Denver, CO', adjust: -12, reason: 'Denver-based, not marked remote' },
+];
 const COMPANY_A = ['Acme', 'Globex', 'Initech', 'Umbrella', 'Hooli', 'Vandelay', 'Stark', 'Wayne', 'Tyrell', 'Soylent'];
 const COMPANY_B = ['Labs', 'Systems', 'Health', 'Financial', 'Software', 'Analytics', 'Robotics', 'Media'];
-const LOCATIONS = [
-  'United States',
-  'United States',
-  'United States (Remote)',
-  'Chicago, IL',
-  'Austin, TX',
-  'New York, NY',
-  'Seattle, WA',
-  'Denver, CO',
-  'Atlanta, GA',
-];
 const SEARCHES = ['sdet in United States', 'senior quality assurance engineer in United States', 'test automation'];
-const REASONS = [
-  'Senior automation title, US-wide; no stack named.',
-  'Playwright named in the title, remote US.',
-  'QA role, but the city is not marked remote.',
-  'Mid-level title with a secondary stack.',
-  'Capped: manual-only role (deal-breaker).',
-  'Adjacent role, not core QA.',
-];
+
+function fakeJob(linkedinId: string, rand: () => number): FakeJob {
+  const pick = <T>(items: readonly T[]): T => items[Math.floor(rand() * items.length)] as T;
+  const role = pick(ROLES);
+  const stack = role.cap === undefined ? pick(STACKS) : { suffix: '', bonus: 0, reason: '' };
+  const location = pick(LOCATIONS);
+  const noise = Math.round((rand() - 0.5) * 8);
+  const raw = Math.min(100, Math.max(0, role.base + stack.bonus + location.adjust + noise));
+  return {
+    linkedinId,
+    title: `${role.title}${stack.suffix}`,
+    company: `${pick(COMPANY_A)} ${pick(COMPANY_B)}`,
+    location: location.name,
+    score: role.cap === undefined ? raw : Math.min(raw, 30),
+    reason: role.cap ?? `${role.reason}, ${stack.reason}; ${location.reason}.`,
+  };
+}
 
 /** Where each target status is reached from `new`, one allowed transition at a time (PLAN.md §5.4). */
 const PATHS: readonly (readonly Status[])[] = [
@@ -116,7 +143,7 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
   const tick = () => new Date((clock += 1000)).toISOString();
 
   // 1. Emails, through the real ingest service: about one run per day, each with its share of the emails.
-  const linkedinIds: string[] = [];
+  const fakeJobs: FakeJob[] = [];
   for (let e = 0; e < emailCount; e += 1) {
     const run = Math.floor((e * runCount) / emailCount);
     const runId = (runIds[run] ??= repos.runs.create(tick()));
@@ -124,14 +151,14 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
     clock = Math.max(clock, Date.parse(receivedAt));
 
     const blocks: string[] = [];
-    for (let n = 0; n < NEW_PER_EMAIL && linkedinIds.length < options.count; n += 1) {
-      const id = String(4_400_000_000 + linkedinIds.length);
-      linkedinIds.push(id);
-      blocks.push(block(id, pick, rand));
+    for (let n = 0; n < NEW_PER_EMAIL && fakeJobs.length < options.count; n += 1) {
+      const job = fakeJob(String(4_400_000_000 + fakeJobs.length), rand);
+      fakeJobs.push(job);
+      blocks.push(block(job, rand));
     }
-    for (let n = blocks.length; n < JOBS_PER_EMAIL && linkedinIds.length > blocks.length; n += 1) {
-      const earlier = linkedinIds.slice(0, linkedinIds.length - NEW_PER_EMAIL);
-      if (earlier.length > 0) blocks.push(block(pick(earlier), pick, rand));
+    const earlier = fakeJobs.slice(0, fakeJobs.length - blocks.length);
+    for (let n = blocks.length; n < JOBS_PER_EMAIL && earlier.length > 0; n += 1) {
+      blocks.push(block(pick(earlier), rand));
     }
     const email: IncomingEmail = {
       gmailMessageId: `seed${String(options.seed)}e${String(e)}`,
@@ -145,7 +172,8 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
     ingestEmails(db, repos, runId, [email], tick);
   }
 
-  // 2. Scores, statuses and notes, in one transaction.
+  // 2. Scores, statuses and notes, in one transaction. About 1 job in 10 stays unscored.
+  const byLinkedinId = new Map(fakeJobs.map((job) => [job.linkedinId, job]));
   const byStatus: Record<string, number> = {};
   let scored = 0;
   transaction(db, () => {
@@ -159,12 +187,12 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
       offset: 0,
     });
     for (const job of jobs) {
-      if (rand() < 0.9) {
-        const score = Math.min(100, Math.max(0, Math.round(35 + rand() * 45 + (rand() - 0.5) * 30)));
+      const fake = byLinkedinId.get(job.linkedinJobId);
+      if (fake !== undefined && rand() < 0.9) {
         repos.jobs.setScore(job.id, {
-          score,
-          label: labelForScore(score),
-          reason: pick(REASONS),
+          score: fake.score,
+          label: labelForScore(fake.score),
+          reason: fake.reason,
           rubricVersion: 'triage-v1',
           scoredAt: tick(),
         });
@@ -180,17 +208,18 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
     for (const runId of runIds) repos.runs.finish(runId, tick());
   });
 
-  return { runs: runIds.length, emails: emailCount, jobs: linkedinIds.length, scored, byStatus };
+  return { runs: runIds.length, emails: emailCount, jobs: fakeJobs.length, scored, byStatus };
 }
 
-function block(linkedinId: string, pick: <T>(items: readonly T[]) => T, rand: () => number): string {
+/** One job block; the two flags change from email to email, as LinkedIn's do. */
+function block(job: FakeJob, rand: () => number): string {
   const lines = [
-    `${pick(ROLES)}${pick(STACKS)}`,
-    `${pick(COMPANY_A)} ${pick(COMPANY_B)}`,
-    pick(LOCATIONS),
+    job.title,
+    job.company,
+    job.location,
     rand() < 0.3 ? 'This company is actively hiring' : '',
     rand() < 0.4 ? 'Apply with resume & profile' : '',
-    `View job: https://www.linkedin.com/comm/jobs/view/${linkedinId}/`,
+    `View job: https://www.linkedin.com/comm/jobs/view/${job.linkedinId}/`,
   ];
   return lines.filter((line) => line !== '').join('\n');
 }
