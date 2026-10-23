@@ -637,9 +637,9 @@ Tasks:
 **Done when:** unit tests are green, coverage of `src/domain` and `src/ingest` is ≥ 95 %, and the dry-run tool works on every fixture.
 
 **🛑 CP-2. The owner checks:**
-- [ ] Runs the dry-run tool on each fixture; titles, companies, locations and flags match the real emails
-- [ ] Opens each fixture: no tracking tokens, no real name or email
-- [ ] Agrees with the list of email formats found
+- [x] Runs the dry-run tool on each fixture; titles, companies, locations and flags match the real emails
+- [x] Opens each fixture: no tracking tokens, no real name or email
+- [x] Agrees with the list of email formats found
 
 ---
 
@@ -866,7 +866,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 |---|---|---|---|---|
 | CP-0 | Foundations and tooling | Approved | 2026-10-23 | DEC-010–DEC-013 approved; k6 placeholder kept until Phase 7 |
 | CP-1 | Candidate profile | Approved | 2026-10-23 | Remote-US only, no relocation; 4 deal-breakers; résumé kept as data/Orhun_Akkan_Resume_Updated.pdf; Cboe (Chicago) calibration label to revisit at CP-5 |
-| CP-2 | Domain core and email parser | Not started | | |
+| CP-2 | Domain core and email parser | Approved | 2026-10-23 | Two formats (digest, recommendations); recommendations stay ingested; DEC-019, DEC-020 approved; 3 sanitized fixtures |
 | CP-3 | Persistence | Not started | | |
 | CP-4 | HTTP server and JSON API | Not started | | |
 | CP-5 | `/find-jobs` agent | Not started | | |
