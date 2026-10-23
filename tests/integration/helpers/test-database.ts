@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { DatabaseSync } from 'node:sqlite';
@@ -6,10 +6,9 @@ import { z } from 'zod';
 import { openDatabase } from '../../../src/db/database.ts';
 import { migrate } from '../../../src/db/migrate.ts';
 import { createRepositories, type Repositories } from '../../../src/db/repositories/index.ts';
-import { parseEmailFile } from '../../../src/ingest/email-file.ts';
-import type { IncomingEmail } from '../../../src/ingest/ingest-service.ts';
 
 // PLAN.md §8.2: every test gets its own temporary SQLite file, deleted afterwards.
+export { fakeClock, fixtureEmail } from '../../helpers/fixtures.ts';
 
 export interface TestDatabase {
   db: DatabaseSync;
@@ -58,25 +57,4 @@ export function countAll(db: DatabaseSync): Record<Table, number> {
 // Every stored value of every table, for "this never reaches the database" checks.
 export function dumpAll(db: DatabaseSync): string {
   return JSON.stringify(TABLES.map((table) => db.prepare(`SELECT * FROM ${table}`).all()));
-}
-
-export function fixtureEmail(name: string, gmailMessageId = `msg-${name}`): IncomingEmail {
-  const email = parseEmailFile(readFileSync(new URL(`../../fixtures/emails/${name}`, import.meta.url), 'utf8'));
-  return {
-    gmailMessageId,
-    receivedAt: email.date ?? '2026-10-23T00:00:00Z',
-    sender: email.sender,
-    subject: email.subject,
-    plainText: email.plainText,
-  };
-}
-
-// A clock that returns 2026-10-23T12:00:00.000Z, then one second later on each call.
-export function fakeClock(start = '2026-10-23T12:00:00.000Z'): () => string {
-  let time = Date.parse(start);
-  return () => {
-    const now = new Date(time).toISOString();
-    time += 1000;
-    return now;
-  };
 }

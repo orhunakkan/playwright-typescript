@@ -25,6 +25,8 @@ export interface EmailsRepository {
   exists(gmailMessageId: string): boolean;
   insert(email: EmailRecord): void;
   get(gmailMessageId: string): EmailRecord | null;
+  /** The newest receivedAt of any stored email, where the next /find-jobs run resumes (FR-02). */
+  latestReceivedAt(): string | null;
 }
 
 const Row = z.object({
@@ -40,6 +42,8 @@ const Row = z.object({
   processedAt: z.string(),
 });
 
+const LatestRow = z.object({ at: z.string().nullable() });
+
 export function createEmailsRepository(db: DatabaseSync): EmailsRepository {
   const existsStatement = db.prepare('SELECT 1 FROM emails WHERE gmail_message_id = ?');
   const insertStatement = db.prepare(
@@ -47,6 +51,7 @@ export function createEmailsRepository(db: DatabaseSync): EmailsRepository {
                          unrecognized_reason, jobs_found, processed_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
+  const latestStatement = db.prepare('SELECT max(received_at) AS at FROM emails');
   const selectStatement = db.prepare(
     `SELECT gmail_message_id AS gmailMessageId, run_id AS runId, received_at AS receivedAt, sender, subject,
             saved_search AS savedSearch, parse_status AS parseStatus, unrecognized_reason AS unrecognizedReason,
@@ -75,6 +80,9 @@ export function createEmailsRepository(db: DatabaseSync): EmailsRepository {
     get(gmailMessageId) {
       const row = selectStatement.get(gmailMessageId);
       return row === undefined ? null : Row.parse(row);
+    },
+    latestReceivedAt() {
+      return LatestRow.parse(latestStatement.get()).at;
     },
   };
 }

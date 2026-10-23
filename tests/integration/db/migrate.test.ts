@@ -8,6 +8,7 @@ import { createTestDatabase, type TestDatabase } from '../helpers/test-database.
 const EXPECTED_TABLES = ['emails', 'jobs', 'profile', 'runs', 'schema_migrations', 'sightings', 'status_history'];
 const EXPECTED_INDEXES = [
   'idx_emails_received',
+  'idx_jobs_first_run',
   'idx_jobs_first_seen',
   'idx_jobs_status_score',
   'idx_status_history_job',
@@ -38,11 +39,26 @@ describe('migrate', () => {
 
     const applied = migrate(test.db, loadMigrations(), () => '2026-10-23T12:00:00.000Z');
 
-    expect(applied).toEqual([1]);
+    expect(applied).toEqual([1, 2]);
     expect(names('table')).toEqual(EXPECTED_TABLES);
     expect(names('index')).toEqual(EXPECTED_INDEXES);
     expect(test.db.prepare('SELECT version, applied_at FROM schema_migrations').all()).toEqual([
       { version: 1, applied_at: '2026-10-23T12:00:00.000Z' },
+      { version: 2, applied_at: '2026-10-23T12:00:00.000Z' },
+    ]);
+  });
+
+  it('FR-04: upgrading a database built on 001 keeps its jobs, with no first run recorded', () => {
+    test = createTestDatabase({ migrated: false });
+    const migrations = loadMigrations();
+    migrate(test.db, migrations.slice(0, 1));
+    test.db.exec(`INSERT INTO jobs (linkedin_job_id, title, company, location, url, status_changed_at,
+                                    first_seen_at, last_seen_at)
+                  VALUES ('1', 'SDET', 'Example Co', 'Remote', 'https://www.linkedin.com/jobs/view/1/', 'x', 'x', 'x')`);
+
+    expect(migrate(test.db, migrations)).toEqual([2]);
+    expect(test.db.prepare('SELECT title, first_run_id FROM jobs').all()).toEqual([
+      { title: 'SDET', first_run_id: null },
     ]);
   });
 
@@ -50,7 +66,7 @@ describe('migrate', () => {
     test = createTestDatabase();
 
     expect(migrate(test.db)).toEqual([]);
-    expect(appliedVersions(test.db)).toEqual([1]);
+    expect(appliedVersions(test.db)).toEqual([1, 2]);
   });
 
   it('FR-05: an empty database has no applied versions', () => {
