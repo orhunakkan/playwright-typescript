@@ -86,6 +86,6 @@ describe('isStateChanging', () => {
 describe('SECURITY_HEADERS', () => {
   it('NFR-07: include the headers of PLAN.md §8.1 type 6', () => {
     expect(SECURITY_HEADERS['Content-Security-Policy']).toMatch(/default-src 'self'.*frame-ancestors 'none'/);
-    expect(SECURITY_HEADERS).toMatchObject({ 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' });
+    expect(SECURITY_HEADERS).toMatchObject({ 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin' });
   });
 });

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { defaultSortForTab, statusesForTab, TABS, type BoardSort, type Tab } from '../../../src/domain/board-tabs.ts';
+import {
+  defaultSortForTab,
+  statusesForTab,
+  tabForStatus,
+  TABS,
+  type BoardSort,
+  type Tab,
+} from '../../../src/domain/board-tabs.ts';
 import { STATUSES, type Status } from '../../../src/domain/status.ts';
 
 // PLAN.md §5.5, written out in full.
@@ -25,6 +32,10 @@ describe('board tabs', () => {
     const shown = TABS.flatMap((tab) => statusesForTab(tab));
 
     expect([...shown].sort()).toEqual([...STATUSES].sort());
+  });
+
+  it.each(STATUSES)('FR-10: a %s job links back to the tab that lists it', (status) => {
+    expect(statusesForTab(tabForStatus(status))).toContain(status);
   });
 
   it('FR-07: with no tab, the list is sorted by score', () => {

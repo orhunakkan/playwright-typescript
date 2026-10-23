@@ -9,8 +9,10 @@ import { migrate } from './db/migrate.ts';
 import { createRepositories } from './db/repositories/index.ts';
 import { createAppServer } from './http/server.ts';
 import type { Logger } from './logger.ts';
+import { pageRoutes, renderErrorPage } from './ui/routes.ts';
 
-// Starts the app: database → migrations → HTTP server on 127.0.0.1 only (NFR-01). Used by main.ts and tests.
+// Starts the app: database → migrations → HTTP server on 127.0.0.1 only (NFR-01), serving the JSON API and the
+// HTML pages. Used by main.ts and tests.
 
 export interface StartOptions {
   port: number; // 0 picks a free port (tests)
@@ -40,7 +42,7 @@ export async function startApp(options: StartOptions): Promise<RunningApp> {
       now: options.now ?? (() => new Date().toISOString()),
       version: readVersion(),
     };
-    const server = createAppServer(apiRoutes(ctx), options.logger);
+    const server = createAppServer([...apiRoutes(ctx), ...pageRoutes(ctx)], options.logger, renderErrorPage);
     const port = await listen(server, options.port);
 
     let closing: Promise<void> | undefined;

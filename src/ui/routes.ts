@@ -1,0 +1,151 @@
+import type { AppContext } from '../api/context.ts';
+import type { JobRecord } from '../db/repositories/jobs.ts';
+import { defaultSortForTab, statusesForTab, TABS, tabForStatus, type Tab } from '../domain/board-tabs.ts';
+import { html as htmlReply, parseInput, queryObject, redirect, type TextReply } from '../http/respond.ts';
+import type { ApiRequest, Route } from '../http/router.ts';
+import { staticRoutes } from '../http/static.ts';
+import { changeJobStatus, JobNotFoundError } from '../jobs/status-service.ts';
+import { IdParamSchema } from '../schemas/api.ts';
+import {
+  BoardQuerySchema,
+  JobPageQuerySchema,
+  NotesFormSchema,
+  safeReturnPath,
+  StatusFormSchema,
+  withoutEmpty,
+} from '../schemas/pages.ts';
+import type { SafeHtml } from './html.ts';
+import { layout, type NavItem } from './layout.ts';
+import { boardPage } from './pages/board.ts';
+import { errorPage, errorTitle } from './pages/error.ts';
+import { jobDetailPage } from './pages/job-detail.ts';
+import { profilePage } from './pages/profile.ts';
+import { runsPage } from './pages/runs.ts';
+
+// The HTML pages of PLAN.md §6.2. Forms post, then redirect back with 303 (post/redirect/get), so reloading a
+// page never sends a form twice. No page needs client-side JavaScript (DEC-006).
+
+export const PAGE_SIZE = 50;
+const RECENT = 50;
+
+export function pageRoutes(ctx: AppContext): Route[] {
+  const { db, repos } = ctx;
+
+  function page(title: string, nav: NavItem | null, body: SafeHtml): TextReply {
+    return htmlReply(layout({ title, nav, lastRun: repos.runs.list(1)[0] ?? null, body }));
+  }
+
+  function findJob(request: ApiRequest): JobRecord {
+    const jobId = parseInput(IdParamSchema, request.params['id'], 'job ID');
+    const job = repos.jobs.get(jobId);
+    if (job === null) throw new JobNotFoundError(jobId);
+    return job;
+  }
+
+  function pageQuery(request: ApiRequest): Record<string, string> {
+    return withoutEmpty(queryObject(request.query));
+  }
+
+  return [
+    {
+      method: 'GET',
+      path: '/',
+      handler: (request) => {
+        const query = parseInput(BoardQuerySchema, pageQuery(request), 'query string');
+        const filter = {
+          statuses: statusesForTab(query.tab),
+          minScore: query.minScore ?? null,
+          text: query.q ?? null,
+          unscoredOnly: false,
+        };
+        const sort = query.sort ?? defaultSortForTab(query.tab);
+        const counts = Object.fromEntries(
+          TABS.map((tab) => [
+            tab,
+            repos.jobs.count({ statuses: statusesForTab(tab), minScore: null, text: null, unscoredOnly: false }),
+          ]),
+        ) as Record<Tab, number>;
+
+        const body = boardPage({
+          tab: query.tab,
+          minScore: query.minScore,
+          q: query.q,
+          sort,
+          page: query.page,
+          pageSize: PAGE_SIZE,
+          items: repos.jobs.list({ ...filter, sort, limit: PAGE_SIZE, offset: (query.page - 1) * PAGE_SIZE }),
+          total: repos.jobs.count(filter),
+          counts,
+          changed: query.changed === undefined ? null : repos.jobs.get(query.changed),
+          now: ctx.now(),
+        });
+        return page('Board', 'board', body);
+      },
+    },
+    {
+      method: 'GET',
+      path: '/jobs/:id',
+      handler: (request) => {
+        const job = findJob(request);
+        const query = parseInput(JobPageQuerySchema, pageQuery(request), 'query string');
+        const body = jobDetailPage({
+          job,
+          sightings: repos.sightings.listForJob(job.id),
+          history: repos.statusHistory.listForJob(job.id),
+          backHref: `/?tab=${tabForStatus(job.status)}`,
+          statusChanged: query.changed === job.id,
+          notesSaved: query.notes === 'saved',
+        });
+        return page(job.title, null, body);
+      },
+    },
+    {
+      method: 'POST',
+      path: '/jobs/:id/status',
+      accepts: 'form',
+      handler: (request) => {
+        const job = findJob(request);
+        const form = parseInput(StatusFormSchema, request.body, 'form');
+        changeJobStatus(db, repos, job.id, form.status, ctx.now);
+
+        const back = new URL(safeReturnPath(form.return, `/jobs/${String(job.id)}`), 'http://app.invalid');
+        back.searchParams.delete('notes');
+        back.searchParams.set('changed', String(job.id));
+        return redirect(`${back.pathname}${back.search}`);
+      },
+    },
+    {
+      method: 'POST',
+      path: '/jobs/:id/notes',
+      accepts: 'form',
+      handler: (request) => {
+        const job = findJob(request);
+        const { notes } = parseInput(NotesFormSchema, request.body, 'form');
+        repos.jobs.updateNotes(job.id, notes);
+        return redirect(`/jobs/${String(job.id)}?notes=saved`);
+      },
+    },
+    {
+      method: 'GET',
+      path: '/runs',
+      handler: () =>
+        page(
+          'Runs',
+          'runs',
+          runsPage({ runs: repos.runs.list(RECENT), unrecognized: repos.emails.listUnrecognized(RECENT) }),
+        ),
+    },
+    {
+      method: 'GET',
+      path: '/profile',
+      handler: () => page('Profile', 'profile', profilePage(repos.profile.get())),
+    },
+    ...staticRoutes(),
+  ];
+}
+
+/** Any error outside /api/ as a full page. It shows no last run: the database may be what failed. */
+export function renderErrorPage(status: number, message: string): string {
+  const sentence = message.charAt(0).toUpperCase() + message.slice(1);
+  return layout({ title: errorTitle(status), nav: null, body: errorPage(status, sentence) });
+}

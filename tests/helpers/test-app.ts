@@ -31,6 +31,8 @@ export interface TestApp {
   call(method: string, path: string, body?: unknown, headers?: Record<string, string>): Promise<ApiResponse>;
   get(path: string): Promise<ApiResponse>;
   post(path: string, body?: unknown): Promise<ApiResponse>;
+  /** Posts an HTML form as a browser on this site would; redirects are returned, not followed. */
+  form(path: string, fields: Record<string, string>, headers?: Record<string, string>): Promise<ApiResponse>;
   raw(options: {
     method?: string;
     path: string;
@@ -62,7 +64,10 @@ export async function startTestApp(): Promise<TestApp> {
       status: response.status,
       headers: response.headers,
       text,
-      body: text === '' ? undefined : (JSON.parse(text) as unknown),
+      // HTML pages and redirects have no JSON body; their markup is in `text`.
+      body: response.headers.get('content-type')?.startsWith('application/json')
+        ? (JSON.parse(text) as unknown)
+        : undefined,
     };
   }
 
@@ -101,6 +106,21 @@ export async function startTestApp(): Promise<TestApp> {
     call,
     get: (path) => call('GET', path),
     post: (path, body = {}) => call('POST', path, body),
+    async form(path, fields, headers = {}) {
+      const response = await fetch(`${app.url}${path}`, {
+        method: 'POST',
+        redirect: 'manual',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Origin: app.url,
+          'Sec-Fetch-Site': 'same-origin',
+          ...headers,
+        },
+        body: new URLSearchParams(fields).toString(),
+      });
+      const text = await response.text();
+      return { status: response.status, headers: response.headers, text, body: undefined };
+    },
     raw,
     async close() {
       await app.close(0);

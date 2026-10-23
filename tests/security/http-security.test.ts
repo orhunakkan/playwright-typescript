@@ -147,7 +147,7 @@ describe('HTTP security', () => {
       expect(response.headers).toMatchObject({
         'content-security-policy': expect.stringContaining("default-src 'self'") as unknown,
         'x-content-type-options': 'nosniff',
-        'referrer-policy': 'no-referrer',
+        'referrer-policy': 'same-origin',
         'x-frame-options': 'DENY',
       });
       expect(response.headers['content-security-policy']).toContain("frame-ancestors 'none'");

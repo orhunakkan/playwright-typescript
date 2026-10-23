@@ -45,7 +45,7 @@ Errors always look like this:
 | `internal_error`         | 500    | A bug; the message has the request ID to find in the server log                |
 | `db_unavailable`         | 503    | Health check: the database does not answer                                     |
 
-Every response has the security headers (CSP `default-src 'self'` with `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`), `Cache-Control: no-store`, and an `X-Request-Id` that matches the server's log line for that request.
+Every response has the security headers (CSP `default-src 'self'` with `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, `X-Frame-Options: DENY`), `Cache-Control: no-store`, and an `X-Request-Id` that matches the server's log line for that request.
 
 Timestamps are ISO-8601 in UTC, for example `2026-10-23T12:00:00.000Z`.
 

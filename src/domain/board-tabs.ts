@@ -29,6 +29,21 @@ export function statusesForTab(tab: Tab): readonly Status[] {
   return TAB_STATUSES[tab];
 }
 
+const STATUS_TAB: Readonly<Record<Status, Tab>> = {
+  new: 'new',
+  saved: 'saved',
+  applied: 'in-progress',
+  interviewing: 'in-progress',
+  offer: 'closed',
+  rejected: 'closed',
+  dismissed: 'dismissed',
+};
+
+/** The tab a job with this status is listed in. */
+export function tabForStatus(status: Status): Tab {
+  return STATUS_TAB[status];
+}
+
 /** The tab's own order, or score order when no tab is chosen. */
 export function defaultSortForTab(tab: Tab | null): BoardSort {
   return tab === null ? 'score' : TAB_SORT[tab];
