@@ -1,0 +1,154 @@
+# Test Strategy — Agentic Job Board
+
+|                      |                                                                                                                                     |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Product**          | Agentic Job Board: a private, localhost-only tracker for LinkedIn job alerts, with AI triage scoring                                |
+| **Owner / approver** | Orhun Akkan                                                                                                                         |
+| **Status**           | v1.0, written in Phase 0 (CP-0)                                                                                                     |
+| **Related**          | [`PLAN.md`](../PLAN.md) (requirements §3, testing §8), [`decisions.md`](decisions.md), `traceability.md` and `defects.md` (Phase 8) |
+
+## 1. Purpose
+
+This document explains how the Agentic Job Board is tested, why each layer exists, and what "done" means at each stage. The product is small, but it is tested like a production system: ten test types, from static analysis to load testing, each aimed at a specific risk.
+
+## 2. Scope
+
+### 2.1 In scope
+
+| Area                          | What we verify                                                                                                                                                  |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Email parsing                 | LinkedIn alert emails become structured jobs: title, company, location, job ID, canonical URL, flags and saved search (FR-03)                                   |
+| Deduplication and idempotency | One job per LinkedIn job ID; re-sending an email changes nothing (FR-04, FR-05, FR-12)                                                                          |
+| Domain rules                  | Status workflow (all 49 from/to pairs), score-to-label bands, URL canonicalization (FR-06, FR-08)                                                               |
+| Persistence                   | Migrations, repositories, transactions and rollback on `node:sqlite`                                                                                            |
+| JSON API                      | Every endpoint and status code: 200/201, 400, 404, 409, 413, 415 (FR-02, FR-06, FR-11, NFR-09)                                                                  |
+| Agent ↔ app contract          | The payloads `/find-jobs` sends match the API's Zod request schemas                                                                                             |
+| Security                      | Loopback binding, DNS-rebinding guard, same-origin form posts, output escaping, parameterized SQL, security headers, no stored tracking tokens (NFR-01, NFR-07) |
+| UI                            | Board, job detail, runs and profile pages: flows, responsiveness and accessibility (FR-07, FR-09, FR-10, NFR-06, NFR-11)                                        |
+| Performance                   | p95 latency and error rate with 5,000 jobs (NFR-05)                                                                                                             |
+
+### 2.2 Out of scope
+
+| Item                                               | Reason                                                                                                 |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Quality of Claude's scores (AI evals, red-teaming) | Post-MVP R4. In the MVP, scores are checked by hand against a six-job calibration set at CP-5.         |
+| Gmail and LinkedIn themselves                      | Third-party systems. We test against sanitized copies of real emails, never against the live services. |
+| Multi-user, authentication, hosting                | Not part of the MVP (R6).                                                                              |
+| Browsers older than the current Playwright builds  | Single owner on current browsers.                                                                      |
+
+## 3. Risks and how they are tested
+
+| #    | Risk                                                                              | Likelihood                 | Impact | Mitigation (test type)                                                                                                                          |
+| ---- | --------------------------------------------------------------------------------- | -------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| R-01 | LinkedIn changes its email format and jobs are silently lost                      | Medium                     | High   | Parser unit tests on real-email fixtures; unknown formats are stored as `unrecognized` and shown on `/runs` (FR-12), never dropped              |
+| R-02 | Duplicate jobs flood the board                                                    | High (alerts repeat a lot) | Medium | Integration tests for dedupe by job ID, sightings and idempotent re-ingest                                                                      |
+| R-03 | Tracking tokens (`otpToken`, `midToken`) or personal data get stored or committed | Medium                     | High   | URL canonicalizer unit tests; a security test that no stored URL has a query string; `.gitignore` test; fixture review at CP-2                  |
+| R-04 | Email content injects HTML or script into the board                               | Low                        | High   | Escaping unit tests; security tests with `<script>` titles on every page                                                                        |
+| R-05 | A web page in the owner's browser drives the local API (CSRF, DNS rebinding)      | Low                        | High   | Security tests: wrong `Host` → 421, cross-site post → 403                                                                                       |
+| R-06 | Prompt injection in an email changes the agent's behavior                         | Low                        | Medium | The agent prompt treats email text as data; the app validates every score with Zod and rejects inconsistent labels                              |
+| R-07 | Invalid status changes corrupt the history                                        | Medium                     | Medium | Table-driven unit test on all 49 pairs; API test for 409; E2E checks that invalid transitions are not offered                                   |
+| R-08 | The board becomes slow as jobs pile up                                            | Low                        | Medium | k6 with 5,000 seeded jobs, p95 < 200 ms                                                                                                         |
+| R-09 | Pages are unusable with a keyboard or screen reader                               | Medium                     | Medium | axe on every page and tab, plus keyboard-focus checks in E2E                                                                                    |
+| R-10 | Tests are weakened to get to green                                                | Medium                     | High   | Written rules (CLAUDE.md, PLAN.md §8.4); `forbidOnly` / `allowOnly: false`; coverage thresholds that may only go up; review at every checkpoint |
+
+## 4. Test levels
+
+The pyramid runs from many fast, isolated tests at the bottom to a few slow, broad tests at the top. Each level has its own Vitest project or tool, so it can be run on its own.
+
+| #   | Type          | Tool                                                 | Location                 | What it proves                                                                                                    | From phase                   |
+| --- | ------------- | ---------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| 1   | Static        | `tsc` (strict), ESLint `strictTypeChecked`, Prettier | whole repo               | Types are sound, risky patterns are banned (floating promises, non-exhaustive switches, `any`), code is formatted | 0                            |
+| 2   | Unit          | Vitest + v8 coverage                                 | `tests/unit`             | Pure logic: parser, URL canonicalizer, status machine, score bands, HTML escaping, router, config                 | 1                            |
+| 3   | Integration   | Vitest + `node:sqlite` (temp file per test)          | `tests/integration`      | Migrations, repositories, ingest service, transactions                                                            | 3                            |
+| 4   | API           | Vitest + built-in `fetch` against a real server      | `tests/api`              | Every endpoint and error code                                                                                     | 4                            |
+| 5   | Contract      | Vitest + Zod                                         | `tests/contract`         | Every response matches its schema; the agent's example payloads match the request schemas                         | 4                            |
+| 6   | Security      | Vitest + `fetch`                                     | `tests/security`         | Threat-model checks (see R-03, R-04, R-05) and `npm audit`                                                        | 0 (`.gitignore`), 4 (server) |
+| 7   | End-to-end    | Playwright: Chromium, Firefox, WebKit, Pixel 7       | `tests/e2e`              | Real user flows: filter, save, apply, interview, notes, dismiss and restore                                       | 6                            |
+| 8   | Smoke         | Playwright `@smoke` on Chromium                      | `tests/e2e` (tagged)     | The app starts, health is ok, the board renders, a job opens                                                      | 6                            |
+| 9   | Accessibility | `@axe-core/playwright`                               | `tests/e2e/a11y.spec.ts` | Zero WCAG 2.2 AA violations on every page and tab                                                                 | 6                            |
+| 10  | Performance   | k6 (TypeScript scripts)                              | `tests/perf`             | p95 < 200 ms and < 1 % errors with 5,000 jobs                                                                     | 7                            |
+
+**Design principle:** deterministic code is tested deterministically. Parsing, deduplication, storage and validation are app code with full test coverage. Claude does only the scoring, and the app still validates every score it receives.
+
+## 5. Test data
+
+- **Email fixtures** are real LinkedIn alert emails, one per format, **sanitized** before commit: URL query strings removed, the recipient line replaced with `Test User (QA Engineer)`, and email addresses replaced with `test@example.com`. The owner reviews each fixture at CP-2.
+- **Hand-written edge cases:** an empty alert, a single-job alert, a `<script>` title, non-ASCII company names, a missing location and an unknown format.
+- **Databases:** every test file gets its own temporary SQLite file and deletes it afterwards. E2E uses a separate server on port 3100 with a temporary database. No test ever reads or writes `data/`.
+- **Performance data:** `scripts/seed.ts` generates 5,000 realistic fake jobs. No real data is used.
+
+## 6. Environments
+
+| Environment                                                    | Used for                                               | Notes                                                   |
+| -------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
+| Owner's machine (Windows 11, Node 24, Git Bash and PowerShell) | All levels                                             | The reference environment (NFR-10)                      |
+| GitHub Actions (Phase 7)                                       | Static → integration/API/contract/security → E2E/smoke | Perf runs on manual dispatch only                       |
+| Browsers                                                       | Chromium, Firefox, WebKit, Pixel 7 emulation           | Installed with `npx playwright install`                 |
+| k6                                                             | Load tests                                             | Installed with `winget install k6` (not an npm package) |
+
+## 7. Entry and exit criteria
+
+### 7.1 Entry criteria (before a phase starts)
+
+- The previous checkpoint is `Approved` in PLAN.md §13.
+- `npm ci` succeeds and `npm run check` is green on `main`.
+- The phase's requirements and acceptance criteria are clear. Open questions are answered by the owner before work starts.
+
+### 7.2 Exit criteria (before a checkpoint is reported)
+
+- Every gate that applies to the phase is green (PLAN.md §8.4):
+
+  | From phase | Gate                                                                |
+  | ---------- | ------------------------------------------------------------------- |
+  | 1          | `npm run check` (typecheck, lint, format, unit + coverage)          |
+  | 3          | `npm run test:integration`                                          |
+  | 4          | `npm run test:api`, `test:contract`, `test:security`                |
+  | 6          | `npm run test:e2e`, `test:smoke`                                    |
+  | 7          | `npm run test:perf`                                                 |
+  | always     | `npm run audit` passes and `package.json` has no dependency changes |
+
+- Coverage meets §8 below.
+- Every defect found in the phase is logged with its status.
+- The checkpoint report lists real results, deviations and open questions.
+
+### 7.3 Suspension criteria
+
+Work stops and the owner is asked when:
+
+- a test can't pass without weakening it
+- a new dependency seems unavoidable
+- a requirement turns out to be wrong or impossible
+
+## 8. Coverage targets
+
+| Area                       | Line coverage | Enforced by                   |
+| -------------------------- | ------------- | ----------------------------- |
+| `src/domain`, `src/ingest` | ≥ 95 %        | `vitest.config.ts` thresholds |
+| All of `src`               | ≥ 85 %        | `vitest.config.ts` thresholds |
+
+Thresholds may only go up. Coverage is a floor, not the goal: every requirement must also map to at least one named test in `docs/traceability.md` (Phase 8).
+
+## 9. Rules for keeping tests honest
+
+- No `.skip` or `.only`. `.only` is also blocked by config (`allowOnly: false`, `forbidOnly: true`).
+- No deleted tests or weakened assertions, and no lowered thresholds.
+- No `@ts-ignore` or `eslint-disable` without a written reason next to it.
+- No stubbing of the code under test. Fakes are allowed only at real boundaries (the clock, the filesystem location).
+- Test names start with the requirement ID they cover (`FR-04: …`), so the traceability matrix can be built from the test output.
+
+## 10. Defect management
+
+Defects are logged in `docs/defects.md` with ID (`DEF-###`), title, severity, steps, expected, actual, status and fix commit.
+
+| Severity | Meaning                                                     |
+| -------- | ----------------------------------------------------------- |
+| Critical | Data loss, personal data exposure, or the app doesn't start |
+| High     | A requirement is not met and there is no workaround         |
+| Medium   | A requirement is partly met, or there is a workaround       |
+| Low      | Cosmetic or minor                                           |
+
+A fix comes with a regression test that fails before the fix and passes after it.
+
+## 11. Reporting
+
+Each checkpoint report includes the gate output, pass and fail counts, and coverage percentages. The final report (CP-8) adds the traceability matrix and the defect summary.

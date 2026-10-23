@@ -844,6 +844,10 @@ Tasks:
 | DEC-007 | 2026-10-23 | Triage-only MVP (no deep match, no auto-apply) | Smallest useful daily loop; deep match is R1 |
 | DEC-008 | 2026-10-23 | Discovery on demand, not scheduled | The owner sees exactly what runs; scheduling is R2 |
 | DEC-009 | 2026-10-23 | Contract tests are schema-based (Zod), no Pact | No independent consumer service exists |
+| DEC-010 | 2026-10-23 | `lint` script adds `--flag unstable_native_nodejs_ts_config` (proposed at CP-0) | ESLint 10 otherwise needs the `jiti` package to load `eslint.config.ts`; the flag uses Node 24's built-in type stripping instead |
+| DEC-011 | 2026-10-23 | `PLAN.md` is in `.prettierignore` (proposed at CP-0) | Prettier would only re-pad its tables, adding noise to every diff of the source-of-truth plan |
+| DEC-012 | 2026-10-23 | Playwright's `webServer` starts only once `src/main.ts` exists; removed in Phase 4 (proposed at CP-0) | Playwright starts the web server even with no tests, so `test:e2e` could not run in Phases 0–3 |
+| DEC-013 | 2026-10-23 | E2E server runs on port 3100 with a temporary database | E2E can run while the owner's dev server is up, and never touches `data/jobboard.db` |
 
 ---
 
@@ -874,7 +878,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
   "build": "tsc -p tsconfig.build.json",
 
   "typecheck": "tsc --noEmit && tsc --noEmit -p tests/perf",
-  "lint": "eslint . --max-warnings 0",
+  "lint": "eslint . --max-warnings 0 --flag unstable_native_nodejs_ts_config",   // flag: DEC-010
   "format": "prettier --write .",
   "format:check": "prettier --check .",
   "audit": "npm audit --audit-level=high",
