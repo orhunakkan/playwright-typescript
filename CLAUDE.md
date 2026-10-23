@@ -26,16 +26,17 @@ Node ≥ 24 running TypeScript natively (TS `~6.0.3`, `tsconfig.json` is strict)
 
 ## Commands
 
-| Command                               | What it does                                                                         |
-| ------------------------------------- | ------------------------------------------------------------------------------------ |
-| `npm run check`                       | typecheck + lint + format:check + unit tests with coverage. Run before every commit. |
-| `npm run typecheck`                   | `tsc` on the repo, then on `tests/perf` (k6 types)                                   |
-| `npm run lint` / `npm run format`     | ESLint (zero warnings) / Prettier write                                              |
-| `npm run test:unit` … `test:security` | One Vitest project each: `unit`, `integration`, `api`, `contract`, `security`        |
-| `npm run test:e2e` / `test:smoke`     | Playwright on chromium, firefox, webkit, mobile / `@smoke` on chromium               |
-| `npm run test:perf`                   | k6 (`tests/perf/load.ts`); k6 is installed with `winget install k6`, not npm         |
-| `npm run audit`                       | `npm audit --audit-level=high`                                                       |
-| `npm start` / `npm run dev`           | App on `127.0.0.1:$PORT` (needs `.env`; copy `.env.example`)                         |
+| Command                               | What it does                                                                  |
+| ------------------------------------- | ----------------------------------------------------------------------------- |
+| `npm run check`                       | typecheck + lint + format:check + `test:coverage`. Run before every commit.   |
+| `npm run typecheck`                   | `tsc` on the repo, then on `tests/perf` (k6 types)                            |
+| `npm run lint` / `npm run format`     | ESLint (zero warnings) / Prettier write                                       |
+| `npm run test:unit` … `test:security` | One Vitest project each: `unit`, `integration`, `api`, `contract`, `security` |
+| `npm run test:coverage`               | All Vitest projects at once, with the coverage thresholds (DEC-021)           |
+| `npm run test:e2e` / `test:smoke`     | Playwright on chromium, firefox, webkit, mobile / `@smoke` on chromium        |
+| `npm run test:perf`                   | k6 (`tests/perf/load.ts`); k6 is installed with `winget install k6`, not npm  |
+| `npm run audit`                       | `npm audit --audit-level=high`                                                |
+| `npm start` / `npm run dev`           | App on `127.0.0.1:$PORT` (needs `.env`; copy `.env.example`)                  |
 
 ## Conventions
 
@@ -51,6 +52,6 @@ Node ≥ 24 running TypeScript natively (TS `~6.0.3`, `tsconfig.json` is strict)
 ## Tool details
 
 - ESLint loads `eslint.config.ts` natively through `--flag unstable_native_nodejs_ts_config`, which is already in the `lint` script. Without the flag, ESLint wants the `jiti` package, which is not allowed.
-- Coverage thresholds live in `vitest.config.ts` (PLAN.md §8.3): 85 % lines overall, 95 % for `src/domain` and `src/ingest`. They may only go up.
+- Coverage thresholds live in `vitest.config.ts` (PLAN.md §8.3): 85 % lines overall, 95 % for `src/domain` and `src/ingest`. They may only go up. Coverage is measured over all Vitest projects together (DEC-021), because database and HTTP code is tested by the integration and API projects.
 - Playwright starts the app on port 3100 with a temporary `DB_PATH`, so E2E tests never touch `data/jobboard.db`.
 - Prettier skips `PLAN.md` so its tables stay as the owner wrote them.

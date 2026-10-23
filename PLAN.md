@@ -518,7 +518,7 @@ Thresholds are enforced in `vitest.config.ts`. They may only go up.
 ### 8.4 Quality gates (must be green at every checkpoint from Phase 1 on)
 
 ```
-npm run check                        # typecheck + lint + format:check + unit
+npm run check                        # typecheck + lint + format:check + all Vitest projects with coverage (DEC-021)
 npm run test:integration             # from Phase 3
 npm run test:api && npm run test:contract && npm run test:security   # from Phase 4
 npm run test:e2e && npm run test:smoke                               # from Phase 6
@@ -855,6 +855,8 @@ Tasks:
 | DEC-018 | 2026-10-23 | On approval, the agent merges the phase branch to `main` and pushes `main` to `origin` (owner) | Approved work is published without a separate request; only approved `main` is pushed because the repo is public |
 | DEC-019 | 2026-10-23 | The parser marks the whole email `unrecognized` when any job block can't be read or no job is found; it never returns a partial list (owner, CP-2) | A LinkedIn format change then shows up on `/runs` (FR-12) instead of silently losing jobs |
 | DEC-020 | 2026-10-23 | `jobs-noreply` emails are a second format ("Expand your search" recommendations in titled sections) with no saved search, stored as `savedSearch: null`; they stay in the Gmail query (owner, CP-2) | Verified against the owner's emails in Phase 2 (§1.4 asked for it); its jobs are often off-target, which scoring handles |
+| DEC-021 | 2026-10-23 | Coverage is measured over all Vitest projects together: new `test:coverage` script, `check` runs it, `test:unit` drops `--coverage`; thresholds unchanged (proposed for CP-3) | Database code is tested in the integration project (§8.1), so unit-only coverage fell to 39 % with the ingest service at 0 %; the thresholds can only be met honestly by counting the tests that exercise that code |
+| DEC-022 | 2026-10-23 | `emails` gets an `unrecognized_reason` column, required exactly when `parse_status = 'unrecognized'` (proposed for CP-3) | FR-12 lists unrecognized emails on `/runs`; the parser's reason (for example `unknown email format`) is what makes that list useful. Email bodies are still never stored |
 
 ---
 
@@ -890,7 +892,8 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
   "format:check": "prettier --check .",
   "audit": "npm audit --audit-level=high",
 
-  "test:unit": "vitest run --project unit --coverage",
+  "test:unit": "vitest run --project unit",
+  "test:coverage": "vitest run --coverage",                                     // DEC-021
   "test:integration": "vitest run --project integration",
   "test:api": "vitest run --project api",
   "test:contract": "vitest run --project contract",
@@ -899,7 +902,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
   "test:smoke": "playwright test --grep @smoke --project chromium",
   "test:perf": "k6 run tests/perf/load.ts",
 
-  "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:unit"
+  "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:coverage"   // DEC-021
 }
 ```
 

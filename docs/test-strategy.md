@@ -100,7 +100,7 @@ The pyramid runs from many fast, isolated tests at the bottom to a few slow, bro
 
   | From phase | Gate                                                                |
   | ---------- | ------------------------------------------------------------------- |
-  | 1          | `npm run check` (typecheck, lint, format, unit + coverage)          |
+  | 1          | `npm run check` (typecheck, lint, format, all Vitest + coverage)    |
   | 3          | `npm run test:integration`                                          |
   | 4          | `npm run test:api`, `test:contract`, `test:security`                |
   | 6          | `npm run test:e2e`, `test:smoke`                                    |
@@ -126,7 +126,7 @@ Work stops and the owner is asked when:
 | `src/domain`, `src/ingest` | ≥ 95 %        | `vitest.config.ts` thresholds |
 | All of `src`               | ≥ 85 %        | `vitest.config.ts` thresholds |
 
-Thresholds may only go up. Coverage is a floor, not the goal: every requirement must also map to at least one named test in `docs/traceability.md` (Phase 8).
+Coverage is measured over all Vitest projects together (`npm run test:coverage`, DEC-021): database and HTTP code is covered by the integration and API tests, not by unit tests. Thresholds may only go up. Coverage is a floor, not the goal: every requirement must also map to at least one named test in `docs/traceability.md` (Phase 8).
 
 ## 9. Rules for keeping tests honest
 
