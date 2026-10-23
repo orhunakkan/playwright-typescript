@@ -8,14 +8,21 @@ describe('parseEmailFile', () => {
     expect(email).toEqual({
       sender: 'jobs-noreply@linkedin.com',
       subject: 'Hello',
+      date: null,
       plainText: 'Line one\n\nLine two\n',
     });
   });
 
   it('FR-02: header names are case-insensitive, values are trimmed, other headers are ignored', () => {
-    const email = parseEmailFile('subject:   Hello  \nDate: today\nFROM: a@linkedin.com\n\nBody');
+    const email = parseEmailFile('subject:   Hello  \nX-Mailer: test\nFROM: a@linkedin.com\n\nBody');
 
-    expect(email).toEqual({ sender: 'a@linkedin.com', subject: 'Hello', plainText: 'Body' });
+    expect(email).toEqual({ sender: 'a@linkedin.com', subject: 'Hello', date: null, plainText: 'Body' });
+  });
+
+  it('FR-02: reads an optional Date header', () => {
+    const email = parseEmailFile('From: a@linkedin.com\nSubject: Hi\nDate:  2026-10-22T14:10:48Z \n\nBody');
+
+    expect(email.date).toBe('2026-10-22T14:10:48Z');
   });
 
   it('FR-02: keeps a colon inside a header value', () => {
@@ -34,6 +41,7 @@ describe('parseEmailFile', () => {
     ['a missing Subject', 'From: a@linkedin.com\n\nBody', 'the From: and Subject: headers are required'],
     ['a missing From', 'Subject: Hi\n\nBody', 'the From: and Subject: headers are required'],
     ['an empty From', 'From:   \nSubject: Hi\n\nBody', 'the From: and Subject: headers are required'],
+    ['a Date that is not a date', 'From: a@linkedin.com\nSubject: Hi\nDate: today\n\nBody', 'the Date: header'],
   ])('FR-02: rejects %s', (_case, text, message) => {
     expect(() => parseEmailFile(text)).toThrow(EmailFileError);
     expect(() => parseEmailFile(text)).toThrow(message);
