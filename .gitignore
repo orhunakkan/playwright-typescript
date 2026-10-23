@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Environment files (keep the example)
+.env
+.env.*
+!.env.example
+
+# SQLite databases
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Vitest
+coverage/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+.auth/
+
+# k6
+tests/perf/results/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
