@@ -52,7 +52,7 @@ const EASY_APPLY = 'Apply with resume & profile';
 // Every line LinkedIn has been seen adding under the location. Only the two flags above are stored,
 // but all of them must be told apart from the location when the location line is missing.
 const INSIGHT_LINE =
-  /^(?:This company is actively hiring|Apply with resume & profile|Fast growing|Top applicant|\d+ connections?|\d+ company alum(?:s|ni)?)$/i;
+  /^(?:This company is actively hiring|Apply with resume & profile|Fast growing|Top applicant|\d+ connections?|\d+ (?:company|school) alum(?:s|ni)?)$/i;
 
 export function parseAlertEmail(email: AlertEmail): ParseResult {
   if (!isLinkedInSender(email.sender)) return unrecognized('sender is not a linkedin.com address');

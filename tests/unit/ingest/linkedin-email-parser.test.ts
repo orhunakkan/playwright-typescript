@@ -189,14 +189,21 @@ describe('parseAlertEmail on edge cases', () => {
     ]);
   });
 
-  it.each(['Fast growing', 'Top applicant', '1 connection', '12 connections', '1 company alum', '3 company alumni'])(
-    'FR-03: the insight line "%s" is never taken for a location',
-    (insight) => {
-      const result = parsed(parseAlertEmail(digest([block(['QA Engineer', 'Example Co', insight])])));
+  it.each([
+    'Fast growing',
+    'Top applicant',
+    '1 connection',
+    '12 connections',
+    '1 company alum',
+    '3 company alumni',
+    // DEF-008: seen in the owner's emails on 2026-10-22, after the parser was written.
+    '1 school alum',
+    '4 school alumni',
+  ])('FR-03: the insight line "%s" is never taken for a location', (insight) => {
+    const result = parsed(parseAlertEmail(digest([block(['QA Engineer', 'Example Co', insight])])));
 
-      expect(result.jobs[0]?.location).toBe('');
-    },
-  );
+    expect(result.jobs[0]?.location).toBe('');
+  });
 
   it('FR-03: ignores unknown extra lines after the location', () => {
     const result = parsed(
