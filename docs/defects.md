@@ -4,17 +4,18 @@ Every defect found while building the Agentic Job Board (PLAN.md Phase 8 task 2)
 
 ## Summary
 
-| ID      | Title                                                                 | Severity | Found by                | Status | Fix commit |
-| ------- | --------------------------------------------------------------------- | -------- | ----------------------- | ------ | ---------- |
-| DEF-005 | `prettier --check` fails on a fresh Windows checkout                  | Medium   | Static gate (Phase 0)   | Fixed  | `8e47927`  |
-| DEF-006 | Coverage gate can't pass: database code counted at 0 %                | Medium   | Coverage gate (Phase 3) | Fixed  | `792d2f2`  |
-| DEF-007 | A repeat sighting keeps a job's old title, location and flags         | Medium   | Owner review (CP-3)     | Fixed  | `5a61ef1`  |
-| DEF-008 | "1 school alum" can be stored as a job's location                     | Medium   | Live run (Phase 5)      | Fixed  | `73578ee`  |
-| DEF-009 | Every board form is refused with 403 in a real browser                | High     | E2E suite (Phase 6)     | Fixed  | `02e20f9`  |
-| DEF-010 | The return-path guard lets dot segments collapse into `//`            | Low      | Code review (Phase 6)   | Fixed  | `5767497`  |
-| DEF-011 | A board page past the end shows "No new jobs" while jobs exist        | Medium   | Code review (Phase 6)   | Fixed  | `5767497`  |
-| DEF-012 | Status notices are not announced, and focus is lost after a form post | Low      | Code review (Phase 6)   | Fixed  | `5767497`  |
-| DEF-013 | Every card's buttons and LinkedIn link have the same accessible name  | Low      | Code review (Phase 6)   | Fixed  | `5767497`  |
+| ID      | Title                                                                 | Severity | Found by                         | Status | Fix commit |
+| ------- | --------------------------------------------------------------------- | -------- | -------------------------------- | ------ | ---------- |
+| DEF-005 | `prettier --check` fails on a fresh Windows checkout                  | Medium   | Static gate (Phase 0)            | Fixed  | `8e47927`  |
+| DEF-006 | Coverage gate can't pass: database code counted at 0 %                | Medium   | Coverage gate (Phase 3)          | Fixed  | `792d2f2`  |
+| DEF-007 | A repeat sighting keeps a job's old title, location and flags         | Medium   | Owner review (CP-3)              | Fixed  | `5a61ef1`  |
+| DEF-008 | "1 school alum" can be stored as a job's location                     | Medium   | Live run (Phase 5)               | Fixed  | `73578ee`  |
+| DEF-009 | Every board form is refused with 403 in a real browser                | High     | E2E suite (Phase 6)              | Fixed  | `02e20f9`  |
+| DEF-010 | The return-path guard lets dot segments collapse into `//`            | Low      | Code review (Phase 6)            | Fixed  | `5767497`  |
+| DEF-011 | A board page past the end shows "No new jobs" while jobs exist        | Medium   | Code review (Phase 6)            | Fixed  | `5767497`  |
+| DEF-012 | Status notices are not announced, and focus is lost after a form post | Low      | Code review (Phase 6)            | Fixed  | `5767497`  |
+| DEF-013 | Every card's buttons and LinkedIn link have the same accessible name  | Low      | Code review (Phase 6)            | Fixed  | `5767497`  |
+| DEF-014 | The CI browser job times out while installing browsers                | High     | First CI run on GitHub (Phase 7) | Fixed  | see below  |
 
 Open defects: none.
 
@@ -91,3 +92,11 @@ Open defects: none.
 - **Expected:** each button says which job it acts on.
 - **Actual:** dozens of identical "Save", "Dismiss" and "Open on LinkedIn" entries.
 - **Fix:** each button and link carries the job title in visually hidden text. **Status:** Fixed in `5767497`.
+
+### DEF-014: The CI browser job times out while installing browsers
+
+- **Severity:** High (the E2E, accessibility and smoke gates never run in CI)
+- **Steps:** push to `main`; watch the "E2E, accessibility and smoke" job.
+- **Expected:** browsers install in a minute or two, then the tests run.
+- **Actual:** `npx playwright install --with-deps` spent 20 minutes downloading WebKit's media libraries from the runner's Ubuntu mirror at a few KB/s, and the job hit its timeout. Nothing in the app was at fault; the job depended on a slow external mirror.
+- **Fix:** the job runs in the official `mcr.microsoft.com/playwright` image, which has the browsers and their libraries preinstalled, so there is no apt step. A unit test keeps the image tag equal to the installed `@playwright/test` version. **Status:** Fixed on `main` (merge of `phase/7-ci-fix`).
