@@ -542,7 +542,7 @@ At the end of every phase the agent must:
    - **Deviations from the plan:** anything changed, and why
    - **Open questions:** decisions the owner needs to make
 3. **STOP.** No further edits, commits or tool runs until the owner replies.
-4. On `Approve CP-<n>`: fill in the [Checkpoint log](#13-checkpoint-log) (date, status, notes), commit, merge the phase branch to `main`, then start the next phase.
+4. On `Approve CP-<n>`: fill in the [Checkpoint log](#13-checkpoint-log) (date, status, notes), tick that checkpoint's checklist in §10 (`- [x]`), commit, merge the phase branch to `main`, then start the next phase.
 5. On feedback instead of approval: fix it, re-run the gates, and send an updated report. Repeat until approved.
 
 **Git:** each phase works on `phase/<n>-<slug>`, using Conventional Commits (`feat:`, `test:`, `docs:`, …). Agents commit to the phase branch while they work. **Merging to `main` only happens after approval.** Nothing is pushed to a remote without the owner asking.
@@ -584,10 +584,10 @@ Tasks:
 **Done when:** `npm ci` succeeds, every script in Appendix A runs (empty suites pass), `npm run check` is green, and `npm audit` is clean.
 
 **🛑 CP-0. The owner checks:**
-- [ ] `CLAUDE.md` rules read correctly
-- [ ] Lint, format and type rules are acceptable (try breaking one on purpose)
-- [ ] `docs/test-strategy.md` reflects how they want to present their QA approach
-- [ ] No dependency changes in `package.json`
+- [x] `CLAUDE.md` rules read correctly
+- [x] Lint, format and type rules are acceptable (try breaking one on purpose)
+- [x] `docs/test-strategy.md` reflects how they want to present their QA approach
+- [x] No dependency changes in `package.json`
 
 ---
 
@@ -611,8 +611,8 @@ Tasks:
 **Done when:** the schema and its tests are green, and `data/profile.json` exists and validates.
 
 **🛑 CP-1. The owner checks:**
-- [ ] Every field of the profile is correct, especially location preferences and deal-breakers
-- [ ] Nothing from the résumé (phone, email, address) is in any tracked file (`git status` shows only schema and test files)
+- [x] Every field of the profile is correct, especially location preferences and deal-breakers
+- [x] Nothing from the résumé (phone, email, address) is in any tracked file (`git status` shows only schema and test files)
 
 ---
 
@@ -851,6 +851,7 @@ Tasks:
 | DEC-014 | 2026-10-23 | `.gitattributes` forces LF line endings (added in Phase 0) | With `core.autocrlf=true`, a fresh Windows checkout gets CRLF and `prettier --check` fails |
 | DEC-015 | 2026-10-23 | The résumé lives at `data/Orhun_Akkan_Resume_Updated.pdf`, not `data/resume.pdf` (owner, CP-1) | The owner's file name; `data/` is git-ignored either way |
 | DEC-016 | 2026-10-23 | Profile is remote-US only: no hybrid or on-site metros, no relocation (owner, CP-1) | Owner's preference. §6.5 calibration rows for on-site jobs (Cboe, Goosehead) must be re-confirmed at CP-5 |
+| DEC-017 | 2026-10-23 | On approval, the checkpoint's checklist in §10 is ticked (`- [x]`) along with the Checkpoint log (owner) | The plan should show at a glance which owner checks have passed |
 
 ---
 
