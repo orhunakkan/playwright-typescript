@@ -27,6 +27,8 @@ export interface EmailsRepository {
   get(gmailMessageId: string): EmailRecord | null;
   /** The newest receivedAt of any stored email, where the next /find-jobs run resumes (FR-02). */
   latestReceivedAt(): string | null;
+  /** Emails the parser could not read, newest first (FR-12, listed on /runs). */
+  listUnrecognized(limit: number): EmailRecord[];
 }
 
 const Row = z.object({
@@ -52,11 +54,13 @@ export function createEmailsRepository(db: DatabaseSync): EmailsRepository {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
   const latestStatement = db.prepare('SELECT max(received_at) AS at FROM emails');
-  const selectStatement = db.prepare(
-    `SELECT gmail_message_id AS gmailMessageId, run_id AS runId, received_at AS receivedAt, sender, subject,
-            saved_search AS savedSearch, parse_status AS parseStatus, unrecognized_reason AS unrecognizedReason,
-            jobs_found AS jobsFound, processed_at AS processedAt
-     FROM emails WHERE gmail_message_id = ?`,
+  const columns = `gmail_message_id AS gmailMessageId, run_id AS runId, received_at AS receivedAt, sender, subject,
+    saved_search AS savedSearch, parse_status AS parseStatus, unrecognized_reason AS unrecognizedReason,
+    jobs_found AS jobsFound, processed_at AS processedAt`;
+  const selectStatement = db.prepare(`SELECT ${columns} FROM emails WHERE gmail_message_id = ?`);
+  const unrecognizedStatement = db.prepare(
+    `SELECT ${columns} FROM emails WHERE parse_status = 'unrecognized'
+     ORDER BY received_at DESC, gmail_message_id LIMIT ?`,
   );
 
   return {
@@ -83,6 +87,9 @@ export function createEmailsRepository(db: DatabaseSync): EmailsRepository {
     },
     latestReceivedAt() {
       return LatestRow.parse(latestStatement.get()).at;
+    },
+    listUnrecognized(limit) {
+      return unrecognizedStatement.all(limit).map((row) => Row.parse(row));
     },
   };
 }

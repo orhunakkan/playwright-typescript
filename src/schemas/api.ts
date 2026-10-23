@@ -11,7 +11,7 @@ const Count = z.number().int().nonnegative();
 const Id = z.number().int().positive();
 
 /** A whole number in a query string or path, e.g. "?limit=20" or "/api/jobs/7". */
-function intString(min: number, max: number) {
+export function intString(min: number, max: number) {
   return z
     .string()
     .regex(/^\d{1,16}$/, 'must be a whole number')

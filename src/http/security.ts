@@ -7,7 +7,9 @@ import type { IncomingHttpHeaders } from 'node:http';
 export const SECURITY_HEADERS: Readonly<Record<string, string>> = {
   'Content-Security-Policy': "default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
   'X-Content-Type-Options': 'nosniff',
-  'Referrer-Policy': 'no-referrer',
+  // same-origin, not no-referrer: with no-referrer, browsers send "Origin: null" on our own form posts, which the
+  // cross-site check must refuse (DEF-009). Links to other sites (LinkedIn) still get no referrer.
+  'Referrer-Policy': 'same-origin',
   'X-Frame-Options': 'DENY',
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Resource-Policy': 'same-origin',
@@ -41,7 +43,14 @@ export function isCrossSite(headers: IncomingHttpHeaders, port: number): boolean
 
 /** API writes must be JSON: application/json, with or without a charset parameter. */
 export function isJsonContentType(contentType: string | undefined): boolean {
-  if (contentType === undefined) return false;
-  const [mediaType] = contentType.split(';');
-  return mediaType?.trim().toLowerCase() === 'application/json';
+  return mediaType(contentType) === 'application/json';
+}
+
+/** Page writes are plain HTML form posts (multipart is never accepted: no page uploads files). */
+export function isFormContentType(contentType: string | undefined): boolean {
+  return mediaType(contentType) === 'application/x-www-form-urlencoded';
+}
+
+function mediaType(contentType: string | undefined): string | undefined {
+  return contentType?.split(';')[0]?.trim().toLowerCase();
 }

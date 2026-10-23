@@ -9,15 +9,19 @@ export interface ApiRequest {
   path: string;
   params: Readonly<Record<string, string>>;
   query: URLSearchParams;
-  body: unknown; // parsed JSON for POST/PUT/PATCH, undefined for GET
+  body: unknown; // POST/PUT/PATCH: parsed JSON, or the form fields as a string record; undefined for GET
 }
 
 export type Handler = (request: ApiRequest) => Reply;
+
+/** What a write route reads: a JSON body (the API) or an HTML form post (the pages). */
+export type BodyKind = 'json' | 'form';
 
 export interface Route {
   method: Method;
   path: string;
   handler: Handler;
+  accepts?: BodyKind; // writes only; default 'json'
 }
 
 export type RouteMatch =

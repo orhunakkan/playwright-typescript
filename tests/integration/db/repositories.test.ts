@@ -162,6 +162,26 @@ describe('repositories', () => {
         test.repos.emails.insert(email(999));
       }).toThrow(/FOREIGN KEY constraint failed/);
     });
+
+    it('FR-12: lists only unrecognized emails, newest first, up to the limit', () => {
+      const runId = test.repos.runs.create('2026-10-23T12:00:00.000Z');
+      const bad = (id: string, receivedAt: string) =>
+        email(runId, {
+          gmailMessageId: id,
+          receivedAt,
+          parseStatus: 'unrecognized',
+          unrecognizedReason: 'unknown email format',
+          savedSearch: null,
+          jobsFound: 0,
+        });
+      test.repos.emails.insert(email(runId, { gmailMessageId: 'ok', receivedAt: '2026-10-22T18:00:00.000Z' }));
+      test.repos.emails.insert(bad('old', '2026-10-20T10:00:00.000Z'));
+      test.repos.emails.insert(bad('new', '2026-10-22T10:00:00.000Z'));
+      test.repos.emails.insert(bad('mid', '2026-10-21T10:00:00.000Z'));
+
+      expect(test.repos.emails.listUnrecognized(10).map((row) => row.gmailMessageId)).toEqual(['new', 'mid', 'old']);
+      expect(test.repos.emails.listUnrecognized(1)).toEqual([bad('new', '2026-10-22T10:00:00.000Z')]);
+    });
   });
 
   describe('jobs', () => {
