@@ -16,7 +16,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "audit": "npm audit --audit-level=high",
-    "test:unit": "vitest run --project unit --coverage",
+    "test:unit": "vitest run --project unit",
+    "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --project integration",
     "test:api": "vitest run --project api",
     "test:contract": "vitest run --project contract",
@@ -24,7 +25,7 @@
     "test:e2e": "playwright test",
     "test:smoke": "playwright test --grep @smoke --project chromium",
     "test:perf": "k6 run tests/perf/load.ts",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:unit"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:coverage"
   },
   "dependencies": {
     "zod": "^4.6.7"

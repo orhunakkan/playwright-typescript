@@ -518,7 +518,7 @@ Thresholds are enforced in `vitest.config.ts`. They may only go up.
 ### 8.4 Quality gates (must be green at every checkpoint from Phase 1 on)
 
 ```
-npm run check                        # typecheck + lint + format:check + unit
+npm run check                        # typecheck + lint + format:check + all Vitest projects with coverage (DEC-021)
 npm run test:integration             # from Phase 3
 npm run test:api && npm run test:contract && npm run test:security   # from Phase 4
 npm run test:e2e && npm run test:smoke                               # from Phase 6
@@ -542,7 +542,7 @@ At the end of every phase the agent must:
    - **Deviations from the plan:** anything changed, and why
    - **Open questions:** decisions the owner needs to make
 3. **STOP.** No further edits, commits or tool runs until the owner replies.
-4. On `Approve CP-<n>`: fill in the [Checkpoint log](#13-checkpoint-log) (date, status, notes), tick that checkpoint's checklist in §10 (`- [x]`), commit, merge the phase branch to `main`, push `main` to `origin`, then start the next phase.
+4. On `Approve CP-<n>`: fill in the [Checkpoint log](#13-checkpoint-log) (date, status, notes), tick that checkpoint's checklist in §10 (`- [x]`), commit, merge the phase branch to `main`, push `main` to `origin`, delete the merged phase branch so only `main` stays (DEC-024), then start the next phase.
 5. On feedback instead of approval: fix it, re-run the gates, and send an updated report. Repeat until approved.
 
 **Git:** each phase works on `phase/<n>-<slug>`, using Conventional Commits (`feat:`, `test:`, `docs:`, …). Agents commit to the phase branch while they work. **Merging to `main` only happens after approval, and every approved merge is then pushed to `origin/main`** (DEC-018). The GitHub repo is public, so nothing else (phase branches, unapproved work) is pushed without the owner asking.
@@ -670,8 +670,8 @@ Tasks:
 **Done when:** integration tests are green, and `node --env-file=.env scripts/parse-email.ts --ingest <fixture>` loads a fixture into a dev database.
 
 **🛑 CP-3. The owner checks:**
-- [ ] Ingests all fixtures twice into a dev database; the second run reports only duplicates
-- [ ] (Optional) inspects `data/jobboard.db` with any SQLite viewer
+- [x] Ingests all fixtures twice into a dev database; the second run reports only duplicates
+- [x] (Optional) inspects `data/jobboard.db` with any SQLite viewer
 
 ---
 
@@ -855,6 +855,10 @@ Tasks:
 | DEC-018 | 2026-10-23 | On approval, the agent merges the phase branch to `main` and pushes `main` to `origin` (owner) | Approved work is published without a separate request; only approved `main` is pushed because the repo is public |
 | DEC-019 | 2026-10-23 | The parser marks the whole email `unrecognized` when any job block can't be read or no job is found; it never returns a partial list (owner, CP-2) | A LinkedIn format change then shows up on `/runs` (FR-12) instead of silently losing jobs |
 | DEC-020 | 2026-10-23 | `jobs-noreply` emails are a second format ("Expand your search" recommendations in titled sections) with no saved search, stored as `savedSearch: null`; they stay in the Gmail query (owner, CP-2) | Verified against the owner's emails in Phase 2 (§1.4 asked for it); its jobs are often off-target, which scoring handles |
+| DEC-021 | 2026-10-23 | Coverage is measured over all Vitest projects together: new `test:coverage` script, `check` runs it, `test:unit` drops `--coverage`; thresholds unchanged (owner, CP-3) | Database code is tested in the integration project (§8.1), so unit-only coverage fell to 39 % with the ingest service at 0 %; the thresholds can only be met honestly by counting the tests that exercise that code |
+| DEC-022 | 2026-10-23 | `emails` gets an `unrecognized_reason` column, required exactly when `parse_status = 'unrecognized'` (owner, CP-3) | FR-12 lists unrecognized emails on `/runs`; the parser's reason (for example `unknown email format`) is what makes that list useful. Email bodies are still never stored |
+| DEC-023 | 2026-10-23 | A repeat sighting from a newer email (by received time) refreshes the job's title, company, location and flags; an older email arriving late only widens first/last seen. Status, notes and score are never changed (owner, CP-3) | Flags like "actively hiring" and Easy Apply change over time, and the newest email has the current ones. Jobs are scored once, so a changed title is not re-scored |
+| DEC-024 | 2026-10-23 | After `main` is pushed, the merged phase branch is deleted locally (and on `origin` if it was ever pushed); only `main` stays (owner, CP-3) | Keeps the repository tidy; the merge commit on `main` keeps the phase history |
 
 ---
 
@@ -867,7 +871,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 | CP-0 | Foundations and tooling | Approved | 2026-10-23 | DEC-010–DEC-013 approved; k6 placeholder kept until Phase 7 |
 | CP-1 | Candidate profile | Approved | 2026-10-23 | Remote-US only, no relocation; 4 deal-breakers; résumé kept as data/Orhun_Akkan_Resume_Updated.pdf; Cboe (Chicago) calibration label to revisit at CP-5 |
 | CP-2 | Domain core and email parser | Approved | 2026-10-23 | Two formats (digest, recommendations); recommendations stay ingested; DEC-019, DEC-020 approved; 3 sanitized fixtures |
-| CP-3 | Persistence | Not started | | |
+| CP-3 | Persistence | Approved | 2026-10-23 | DEC-021 (coverage over all Vitest projects), DEC-022 (`unrecognized_reason`), DEC-023 (newest sighting refreshes details), DEC-024 (delete merged branches) |
 | CP-4 | HTTP server and JSON API | Not started | | |
 | CP-5 | `/find-jobs` agent | Not started | | |
 | CP-6 | User interface | Not started | | |
@@ -890,7 +894,8 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
   "format:check": "prettier --check .",
   "audit": "npm audit --audit-level=high",
 
-  "test:unit": "vitest run --project unit --coverage",
+  "test:unit": "vitest run --project unit",
+  "test:coverage": "vitest run --coverage",                                     // DEC-021
   "test:integration": "vitest run --project integration",
   "test:api": "vitest run --project api",
   "test:contract": "vitest run --project contract",
@@ -899,7 +904,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
   "test:smoke": "playwright test --grep @smoke --project chromium",
   "test:perf": "k6 run tests/perf/load.ts",
 
-  "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:unit"
+  "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:coverage"   // DEC-021
 }
 ```
 
