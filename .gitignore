@@ -40,3 +40,6 @@ npm-debug.log*
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Personal data: database, résumé, profile (PLAN.md NFR-08)
+data/

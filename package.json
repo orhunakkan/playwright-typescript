@@ -7,7 +7,25 @@
   "engines": {
     "node": ">=24"
   },
-  "scripts": {},
+  "scripts": {
+    "start": "node --env-file=.env src/main.ts",
+    "dev": "node --env-file=.env --watch src/main.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tests/perf",
+    "lint": "eslint . --max-warnings 0 --flag unstable_native_nodejs_ts_config",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "audit": "npm audit --audit-level=high",
+    "test:unit": "vitest run --project unit --coverage",
+    "test:integration": "vitest run --project integration",
+    "test:api": "vitest run --project api",
+    "test:contract": "vitest run --project contract",
+    "test:security": "vitest run --project security",
+    "test:e2e": "playwright test",
+    "test:smoke": "playwright test --grep @smoke --project chromium",
+    "test:perf": "k6 run tests/perf/load.ts",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:unit"
+  },
   "dependencies": {
     "zod": "^4.6.7"
   },
