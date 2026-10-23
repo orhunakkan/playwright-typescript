@@ -25,6 +25,8 @@ export interface RunsRepository {
   get(id: number): RunRecord | null;
   addCounts(id: number, counts: Partial<RunCounters>): void;
   finish(id: number, finishedAt: string): void;
+  /** Newest first. */
+  list(limit: number): RunRecord[];
 }
 
 const Count = z.number().int().nonnegative();
@@ -41,15 +43,15 @@ const Row = z.object({
   jobsScored: Count,
 });
 
+const COLUMNS = `id, started_at AS startedAt, finished_at AS finishedAt,
+  emails_seen AS emailsSeen, emails_new AS emailsNew, emails_duplicate AS emailsDuplicate,
+  emails_unrecognized AS emailsUnrecognized, jobs_new AS jobsNew, jobs_seen_again AS jobsSeenAgain,
+  jobs_scored AS jobsScored`;
+
 export function createRunsRepository(db: DatabaseSync): RunsRepository {
   const insert = db.prepare('INSERT INTO runs (started_at) VALUES (?)');
-  const select = db.prepare(
-    `SELECT id, started_at AS startedAt, finished_at AS finishedAt,
-            emails_seen AS emailsSeen, emails_new AS emailsNew, emails_duplicate AS emailsDuplicate,
-            emails_unrecognized AS emailsUnrecognized, jobs_new AS jobsNew, jobs_seen_again AS jobsSeenAgain,
-            jobs_scored AS jobsScored
-     FROM runs WHERE id = ?`,
-  );
+  const select = db.prepare(`SELECT ${COLUMNS} FROM runs WHERE id = ?`);
+  const selectRecent = db.prepare(`SELECT ${COLUMNS} FROM runs ORDER BY id DESC LIMIT ?`);
   const add = db.prepare(
     `UPDATE runs SET
        emails_seen = emails_seen + ?, emails_new = emails_new + ?, emails_duplicate = emails_duplicate + ?,
@@ -81,6 +83,9 @@ export function createRunsRepository(db: DatabaseSync): RunsRepository {
     },
     finish(id, finishedAt) {
       close.run(finishedAt, id);
+    },
+    list(limit) {
+      return selectRecent.all(limit).map((row) => Row.parse(row));
     },
   };
 }

@@ -706,9 +706,9 @@ Tasks:
 **Done when:** all gates up to security are green, and `npm start` serves `GET /api/health` → `ok`.
 
 **🛑 CP-4. The owner checks:**
-- [ ] Runs `npm start` and calls a few endpoints from `docs/api.md` (curl or the Postman CLI)
-- [ ] Tries a bad request (missing field, invalid transition) and sees a clear error
-- [ ] Reviews the security tests list and agrees with the threat model (localhost, single user)
+- [x] Runs `npm start` and calls a few endpoints from `docs/api.md` (curl or the Postman CLI)
+- [x] Tries a bad request (missing field, invalid transition) and sees a clear error
+- [x] Reviews the security tests list and agrees with the threat model (localhost, single user)
 
 ---
 
@@ -859,6 +859,7 @@ Tasks:
 | DEC-022 | 2026-10-23 | `emails` gets an `unrecognized_reason` column, required exactly when `parse_status = 'unrecognized'` (owner, CP-3) | FR-12 lists unrecognized emails on `/runs`; the parser's reason (for example `unknown email format`) is what makes that list useful. Email bodies are still never stored |
 | DEC-023 | 2026-10-23 | A repeat sighting from a newer email (by received time) refreshes the job's title, company, location and flags; an older email arriving late only widens first/last seen. Status, notes and score are never changed (owner, CP-3) | Flags like "actively hiring" and Easy Apply change over time, and the newest email has the current ones. Jobs are scored once, so a changed title is not re-scored |
 | DEC-024 | 2026-10-23 | After `main` is pushed, the merged phase branch is deleted locally (and on `origin` if it was ever pushed); only `main` stays (owner, CP-3) | Keeps the repository tidy; the merge commit on `main` keeps the phase history |
+| DEC-025 | 2026-10-23 | Migration `002_job_first_run.sql` adds `jobs.first_run_id`, the run that first ingested each job (owner, CP-4) | FR-11/FR-13 need each run's top 5 new jobs, and §5.1 has no link from a job to its run. Applied migrations are never edited, so it is a new migration; older jobs keep NULL |
 
 ---
 
@@ -872,7 +873,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 | CP-1 | Candidate profile | Approved | 2026-10-23 | Remote-US only, no relocation; 4 deal-breakers; résumé kept as data/Orhun_Akkan_Resume_Updated.pdf; Cboe (Chicago) calibration label to revisit at CP-5 |
 | CP-2 | Domain core and email parser | Approved | 2026-10-23 | Two formats (digest, recommendations); recommendations stay ingested; DEC-019, DEC-020 approved; 3 sanitized fixtures |
 | CP-3 | Persistence | Approved | 2026-10-23 | DEC-021 (coverage over all Vitest projects), DEC-022 (`unrecognized_reason`), DEC-023 (newest sighting refreshes details), DEC-024 (delete merged branches) |
-| CP-4 | HTTP server and JSON API | Not started | | |
+| CP-4 | HTTP server and JSON API | Approved | 2026-10-23 | DEC-025 (`jobs.first_run_id`) approved; threat model agreed (no-Origin clients such as curl and `/find-jobs` allowed; cross-site reads left to the browser) |
 | CP-5 | `/find-jobs` agent | Not started | | |
 | CP-6 | User interface | Not started | | |
 | CP-7 | Performance, CI and hardening | Not started | | |

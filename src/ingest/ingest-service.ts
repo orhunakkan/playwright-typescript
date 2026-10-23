@@ -117,7 +117,7 @@ function ingestOne(
   for (const job of parsed.jobs) {
     let jobId = repos.jobs.findIdByLinkedinId(job.linkedinJobId);
     if (jobId === null) {
-      jobId = repos.jobs.insert(job, email.receivedAt, processedAt);
+      jobId = repos.jobs.insert(job, { runId, seenAt: email.receivedAt, createdAt: processedAt });
       repos.statusHistory.insert(jobId, { fromStatus: null, toStatus: 'new', changedAt: processedAt });
       newJobIds.push(jobId);
       jobsNew += 1;
