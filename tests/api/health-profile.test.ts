@@ -1,0 +1,107 @@
+import { readFileSync } from 'node:fs';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import type { Profile } from '../../src/schemas/profile.ts';
+import { startTestApp, type TestApp } from '../helpers/test-app.ts';
+
+// Fictional profile: test data must never contain the owner's real details.
+const PROFILE: Profile = {
+  targetRoles: ['Senior QA Engineer', 'SDET'],
+  seniority: 'senior',
+  yearsExperience: 8,
+  coreSkills: ['Playwright', 'TypeScript'],
+  secondarySkills: ['Java'],
+  locations: { remoteUS: true, hybridMetros: [], onsiteMetros: [], relocate: false },
+  workAuthorization: 'US, no sponsorship needed',
+  dealBreakers: ['manual-only roles'],
+  excludedCompanies: [],
+};
+
+const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as { version: string };
+
+describe('GET /api/health', () => {
+  let t: TestApp;
+  beforeEach(async () => {
+    t = await startTestApp();
+  });
+  afterEach(async () => {
+    await t.close();
+  });
+
+  it('NFR-01: reports ok for the server and the database, with the app version', async () => {
+    const response = await t.get('/api/health');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ status: 'ok', db: 'ok', version: pkg.version });
+  });
+
+  it('NFR-01: reports 503 when the database is gone', async () => {
+    t.app.db.close();
+
+    const response = await t.get('/api/health');
+
+    expect(response.status).toBe(503);
+    expect(response.body).toEqual({ error: { code: 'db_unavailable', message: 'The database is not available' } });
+  });
+});
+
+describe('/api/profile', () => {
+  let t: TestApp;
+  beforeEach(async () => {
+    t = await startTestApp();
+  });
+  afterEach(async () => {
+    await t.close();
+  });
+
+  it('FR-01: is 404 until a profile is loaded', async () => {
+    const response = await t.get('/api/profile');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toMatchObject({
+      error: { code: 'not_found', message: expect.stringContaining('PUT') as unknown },
+    });
+  });
+
+  it('FR-01: PUT stores the profile and GET returns it', async () => {
+    const put = await t.call('PUT', '/api/profile', PROFILE);
+    const get = await t.get('/api/profile');
+
+    expect(put.status).toBe(200);
+    expect(put.body).toEqual(PROFILE);
+    expect(get.status).toBe(200);
+    expect(get.body).toEqual(PROFILE);
+  });
+
+  it('FR-01: PUT replaces the whole profile', async () => {
+    await t.call('PUT', '/api/profile', PROFILE);
+    await t.call('PUT', '/api/profile', { ...PROFILE, yearsExperience: 10, dealBreakers: [] });
+
+    expect((await t.get('/api/profile')).body).toEqual({ ...PROFILE, yearsExperience: 10, dealBreakers: [] });
+  });
+
+  it('NFR-09: an invalid profile is a 400 that names every bad field, and nothing is stored', async () => {
+    const response = await t.call('PUT', '/api/profile', { ...PROFILE, seniority: 'principal', coreSkills: [] });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toMatchObject({
+      error: {
+        code: 'validation_failed',
+        message: 'The profile is invalid',
+        details: expect.arrayContaining([
+          expect.objectContaining({ path: 'seniority' }),
+          expect.objectContaining({ path: 'coreSkills' }),
+        ]) as unknown,
+      },
+    });
+    expect((await t.get('/api/profile')).status).toBe(404);
+  });
+
+  it('NFR-09: a profile with an unknown field is rejected', async () => {
+    const response = await t.call('PUT', '/api/profile', { ...PROFILE, remote: true });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toMatchObject({
+      error: { details: [{ path: '', message: expect.stringContaining('remote') as unknown }] },
+    });
+  });
+});

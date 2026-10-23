@@ -1,4 +1,3 @@
-import { existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
@@ -23,19 +22,15 @@ export default defineConfig({
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
-  // TODO(Phase 4): drop the existsSync guard once src/main.ts exists; until then there is no app to start.
-  ...(existsSync('src/main.ts')
-    ? {
-        webServer: {
-          command: 'node src/main.ts',
-          url: `${baseURL}/api/health`,
-          reuseExistingServer: false,
-          env: {
-            PORT: String(PORT),
-            DB_PATH: join(tmpdir(), 'agentic-job-board-e2e', `${String(Date.now())}.db`),
-            LOG_LEVEL: 'warn',
-          },
-        },
-      }
-    : {}),
+  // Starts the real app (src/main.ts) with a fresh temporary database for every test run (DEC-012, DEC-013).
+  webServer: {
+    command: 'node src/main.ts',
+    url: `${baseURL}/api/health`,
+    reuseExistingServer: false,
+    env: {
+      PORT: String(PORT),
+      DB_PATH: join(tmpdir(), 'agentic-job-board-e2e', `${String(Date.now())}.db`),
+      LOG_LEVEL: 'warn',
+    },
+  },
 });
