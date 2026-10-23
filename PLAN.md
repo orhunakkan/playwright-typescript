@@ -853,8 +853,8 @@ Tasks:
 | DEC-016 | 2026-10-23 | Profile is remote-US only: no hybrid or on-site metros, no relocation (owner, CP-1) | Owner's preference. §6.5 calibration rows for on-site jobs (Cboe, Goosehead) must be re-confirmed at CP-5 |
 | DEC-017 | 2026-10-23 | On approval, the checkpoint's checklist in §10 is ticked (`- [x]`) along with the Checkpoint log (owner) | The plan should show at a glance which owner checks have passed |
 | DEC-018 | 2026-10-23 | On approval, the agent merges the phase branch to `main` and pushes `main` to `origin` (owner) | Approved work is published without a separate request; only approved `main` is pushed because the repo is public |
-| DEC-019 | 2026-10-23 | The parser marks the whole email `unrecognized` when any job block can't be read or no job is found; it never returns a partial list (proposed for CP-2) | A LinkedIn format change then shows up on `/runs` (FR-12) instead of silently losing jobs |
-| DEC-020 | 2026-10-23 | `jobs-noreply` emails are a second format ("Expand your search" recommendations in titled sections) with no saved search, stored as `savedSearch: null` (proposed for CP-2) | Verified against the owner's emails in Phase 2 (§1.4 asked for it); its jobs are often off-target, which scoring handles |
+| DEC-019 | 2026-10-23 | The parser marks the whole email `unrecognized` when any job block can't be read or no job is found; it never returns a partial list (owner, CP-2) | A LinkedIn format change then shows up on `/runs` (FR-12) instead of silently losing jobs |
+| DEC-020 | 2026-10-23 | `jobs-noreply` emails are a second format ("Expand your search" recommendations in titled sections) with no saved search, stored as `savedSearch: null`; they stay in the Gmail query (owner, CP-2) | Verified against the owner's emails in Phase 2 (§1.4 asked for it); its jobs are often off-target, which scoring handles |
 
 ---
 
