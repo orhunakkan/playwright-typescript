@@ -70,6 +70,12 @@ jobs:
     needs: vitest
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Browsers and their system libraries come preinstalled, so no slow apt mirror can stall the job (DEF-014).
+    # The tag must equal the installed @playwright/test version (tests/unit/toolchain.test.ts checks it).
+    # Firefox refuses to run as root under a different HOME, hence the runner's own user.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --user 1001
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -77,7 +83,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:e2e
       - run: npm run test:smoke
       - name: Upload the Playwright report
