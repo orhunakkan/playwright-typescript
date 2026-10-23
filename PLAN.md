@@ -859,6 +859,7 @@ Tasks:
 | DEC-022 | 2026-10-23 | `emails` gets an `unrecognized_reason` column, required exactly when `parse_status = 'unrecognized'` (owner, CP-3) | FR-12 lists unrecognized emails on `/runs`; the parser's reason (for example `unknown email format`) is what makes that list useful. Email bodies are still never stored |
 | DEC-023 | 2026-10-23 | A repeat sighting from a newer email (by received time) refreshes the job's title, company, location and flags; an older email arriving late only widens first/last seen. Status, notes and score are never changed (owner, CP-3) | Flags like "actively hiring" and Easy Apply change over time, and the newest email has the current ones. Jobs are scored once, so a changed title is not re-scored |
 | DEC-024 | 2026-10-23 | After `main` is pushed, the merged phase branch is deleted locally (and on `origin` if it was ever pushed); only `main` stays (owner, CP-3) | Keeps the repository tidy; the merge commit on `main` keeps the phase history |
+| DEC-025 | 2026-10-23 | Migration `002_job_first_run.sql` adds `jobs.first_run_id`, the run that first ingested each job (proposed for CP-4) | FR-11/FR-13 need each run's top 5 new jobs, and §5.1 has no link from a job to its run. Applied migrations are never edited, so it is a new migration; older jobs keep NULL |
 
 ---
 
