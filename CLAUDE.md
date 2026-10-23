@@ -9,6 +9,7 @@ A private, localhost-only job-search board for one user (the owner). LinkedIn jo
 1. Find the first checkpoint in PLAN.md §13 (Checkpoint log) that is not `Approved`.
 2. Work only on the phase that ends at that checkpoint. Never start a later phase early.
 3. At the end of the phase, follow the checkpoint protocol (PLAN.md §9) and **STOP** until the owner replies `Approve CP-<n>`.
+   Exception (owner, DEC-026): CP-5 to CP-7 don't stop; the agent self-reviews, merges and continues. CP-8 still stops.
 
 ## Hard rules
 
