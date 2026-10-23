@@ -460,7 +460,7 @@ Score badge colors carry meaning only together with the label text (accessibilit
 | Job | Expected |
 |---|---|
 | Senior Quality Assurance Engineer (Playwright, TypeScript, and Postman) · 3Pillar · United States | strong |
-| Senior QA Automation Test Engineer · Cboe Global Markets · Chicago, IL | strong (re-confirm at CP-5: CP-1 profile is remote-US only, see DEC-016) |
+| Senior QA Automation Test Engineer · Cboe Global Markets · Chicago, IL | possible (re-confirmed at CP-5: remote-US only, DEC-016, DEC-028) |
 | AI Native, QA Engineer · ConsumerAffairs | strong / possible |
 | QA Automation Engineer II – IntelliScript (Remote) · Milliman IntelliScript | possible |
 | Senior Quality Assurance Engineer · Goosehead Insurance · Dallas-Fort Worth Metroplex | possible / weak (CP-1: remote-US only, no relocation, see DEC-016) |
@@ -860,6 +860,9 @@ Tasks:
 | DEC-023 | 2026-10-23 | A repeat sighting from a newer email (by received time) refreshes the job's title, company, location and flags; an older email arriving late only widens first/last seen. Status, notes and score are never changed (owner, CP-3) | Flags like "actively hiring" and Easy Apply change over time, and the newest email has the current ones. Jobs are scored once, so a changed title is not re-scored |
 | DEC-024 | 2026-10-23 | After `main` is pushed, the merged phase branch is deleted locally (and on `origin` if it was ever pushed); only `main` stays (owner, CP-3) | Keeps the repository tidy; the merge commit on `main` keeps the phase history |
 | DEC-025 | 2026-10-23 | Migration `002_job_first_run.sql` adds `jobs.first_run_id`, the run that first ingested each job (owner, CP-4) | FR-11/FR-13 need each run's top 5 new jobs, and §5.1 has no link from a job to its run. Applied migrations are never edited, so it is a new migration; older jobs keep NULL |
+| DEC-026 | 2026-10-23 | Phases 5–8 run back to back without stopping at CP-5, CP-6 and CP-7. At each of them the agent runs every gate, writes the checkpoint report, records it in §13 as `Done (DEC-026)`, merges the phase branch to `main`, pushes and deletes the branch (DEC-018, DEC-024). Open questions are decided by the agent and logged here. The owner's checklist boxes in §10 stay unticked until the owner checks them. The owner reviews the final product at CP-8, which still needs `Approve CP-8` (owner) | The owner asked for the whole plan to be executed and will check only the final product |
+| DEC-027 | 2026-10-23 | `/find-jobs` cuts every URL in an email body at its `?` before writing the payload file (safety rule 5 in `agent/find-jobs.md`); nothing else in the body changes | LinkedIn query strings hold one-time login tokens (`otpToken`, `midToken`, `loid`). The app drops them anyway (§5.3), so cutting them first keeps them out of temp files and agent transcripts, and shrinks each payload about tenfold |
+| DEC-028 | 2026-10-23 | Calibration: Cboe "Senior QA Automation Test Engineer" in Chicago, IL is expected `possible`, not `strong` (re-confirmed at CP-5 under DEC-026) | The profile is remote-US only (DEC-016); a city location with no remote marker scores 2–5 of 20 for location, so a senior QA title with no named stack lands at 70 |
 
 ---
 
@@ -874,7 +877,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 | CP-2 | Domain core and email parser | Approved | 2026-10-23 | Two formats (digest, recommendations); recommendations stay ingested; DEC-019, DEC-020 approved; 3 sanitized fixtures |
 | CP-3 | Persistence | Approved | 2026-10-23 | DEC-021 (coverage over all Vitest projects), DEC-022 (`unrecognized_reason`), DEC-023 (newest sighting refreshes details), DEC-024 (delete merged branches) |
 | CP-4 | HTTP server and JSON API | Approved | 2026-10-23 | DEC-025 (`jobs.first_run_id`) approved; threat model agreed (no-Origin clients such as curl and `/find-jobs` allowed; cross-site reads left to the browser) |
-| CP-5 | `/find-jobs` agent | Not started | | |
+| CP-5 | `/find-jobs` agent | Done (DEC-026) | 2026-10-23 | Agent-reviewed; owner checks deferred to CP-8. Rubric `triage-v1`: calibration 6/6 on target (DEC-028). Real run: 14 emails, 64 new jobs, 20 seen again, 64 scored; second run 7 duplicates, 0 new. DEC-027 (cut URL query strings); DEF-008 fixed ("school alum" insight line) |
 | CP-6 | User interface | Not started | | |
 | CP-7 | Performance, CI and hardening | Not started | | |
 | CP-8 | MVP acceptance | Not started | | |

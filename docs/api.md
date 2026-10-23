@@ -108,7 +108,7 @@ Up to 50 emails per call. `gmailMessageId` is letters, digits, `-` and `_` (Gmai
 ```bash
 cat > /tmp/batch.json <<'JSON'
 { "emails": [ {
-  "gmailMessageId": "1a163f3689125938",
+  "gmailMessageId": "19f0a1b2c3d4e5f6",
   "receivedAt": "2026-10-22T14:10:48Z",
   "sender": "jobalerts-noreply@linkedin.com",
   "subject": "You may be a fit for Example Co's SDET role",
@@ -117,7 +117,7 @@ cat > /tmp/batch.json <<'JSON'
 JSON
 curl -s -X POST http://127.0.0.1:3000/api/runs/1/emails \
   -H "Content-Type: application/json" --data-binary @/tmp/batch.json
-# 200 {"results":[{"gmailMessageId":"1a163f3689125938","outcome":"new","jobsFound":1}],"newJobs":[JobSummary]}
+# 200 {"results":[{"gmailMessageId":"19f0a1b2c3d4e5f6","outcome":"new","jobsFound":1}],"newJobs":[JobSummary]}
 # 404 for an unknown run, 409 run_finished for a finished one
 ```
 
