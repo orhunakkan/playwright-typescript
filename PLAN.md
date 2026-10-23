@@ -857,6 +857,7 @@ Tasks:
 | DEC-020 | 2026-10-23 | `jobs-noreply` emails are a second format ("Expand your search" recommendations in titled sections) with no saved search, stored as `savedSearch: null`; they stay in the Gmail query (owner, CP-2) | Verified against the owner's emails in Phase 2 (§1.4 asked for it); its jobs are often off-target, which scoring handles |
 | DEC-021 | 2026-10-23 | Coverage is measured over all Vitest projects together: new `test:coverage` script, `check` runs it, `test:unit` drops `--coverage`; thresholds unchanged (proposed for CP-3) | Database code is tested in the integration project (§8.1), so unit-only coverage fell to 39 % with the ingest service at 0 %; the thresholds can only be met honestly by counting the tests that exercise that code |
 | DEC-022 | 2026-10-23 | `emails` gets an `unrecognized_reason` column, required exactly when `parse_status = 'unrecognized'` (proposed for CP-3) | FR-12 lists unrecognized emails on `/runs`; the parser's reason (for example `unknown email format`) is what makes that list useful. Email bodies are still never stored |
+| DEC-023 | 2026-10-23 | A repeat sighting from a newer email (by received time) refreshes the job's title, company, location and flags; an older email arriving late only widens first/last seen. Status, notes and score are never changed (owner, CP-3) | Flags like "actively hiring" and Easy Apply change over time, and the newest email has the current ones. Jobs are scored once, so a changed title is not re-scored |
 
 ---
 

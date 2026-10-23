@@ -144,6 +144,31 @@ describe('ingestEmails', () => {
     expect(test.repos.sightings.listForJob(jobId).map((s) => s.gmailMessageId)).toEqual(['msg-earlier', 'msg-later']);
   });
 
+  it('FR-04: the board shows the newest email’s details, even when the older email is ingested last (DEC-023)', () => {
+    const newer = oneJobEmail('msg-oct-23', '2026-10-23T08:00:00Z', '42');
+    const newerWithFlags = {
+      ...newer,
+      plainText: newer.plainText.replace(
+        'Remote\n',
+        'Remote\nThis company is actively hiring\nApply with resume & profile\n',
+      ),
+    };
+    const older = {
+      ...oneJobEmail('msg-oct-21', '2026-10-21T08:00:00Z', '42'),
+      subject: 'Older alert',
+    };
+
+    const [jobId] = ingest([newerWithFlags, older]).newJobIds;
+
+    expect(test.repos.jobs.get(jobId ?? 0)).toMatchObject({
+      activelyHiring: true,
+      easyApply: true,
+      seenCount: 2,
+      firstSeenAt: '2026-10-21T08:00:00.000Z',
+      lastSeenAt: '2026-10-23T08:00:00.000Z',
+    });
+  });
+
   it('FR-04: a job already on the board is never reset by a new sighting', () => {
     const [jobId] = ingest([oneJobEmail('msg-1', '2026-10-22T10:00:00Z')]).newJobIds;
     test.repos.jobs.updateStatus(jobId ?? 0, 'applied', '2026-10-22T11:00:00.000Z');

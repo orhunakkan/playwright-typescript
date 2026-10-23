@@ -202,14 +202,77 @@ describe('repositories', () => {
     it('FR-04: repeat sightings count up and widen first/last seen, whatever order they arrive in', () => {
       const id = test.repos.jobs.insert(PARSED_JOB, '2026-10-22T14:00:00.000Z', '2026-10-23T12:00:00.000Z');
 
-      test.repos.jobs.recordSighting(id, '2026-10-21T09:00:00.000Z');
-      test.repos.jobs.recordSighting(id, '2026-10-23T08:00:00.000Z');
-      test.repos.jobs.recordSighting(id, '2026-10-22T10:00:00.000Z');
+      test.repos.jobs.recordSighting(id, PARSED_JOB, '2026-10-21T09:00:00.000Z');
+      test.repos.jobs.recordSighting(id, PARSED_JOB, '2026-10-23T08:00:00.000Z');
+      test.repos.jobs.recordSighting(id, PARSED_JOB, '2026-10-22T10:00:00.000Z');
 
       expect(test.repos.jobs.get(id)).toMatchObject({
         seenCount: 4,
         firstSeenAt: '2026-10-21T09:00:00.000Z',
         lastSeenAt: '2026-10-23T08:00:00.000Z',
+      });
+    });
+
+    it('FR-04: a newer sighting refreshes the title, company, location and flags (DEC-023)', () => {
+      const id = test.repos.jobs.insert(PARSED_JOB, '2026-10-21T09:00:00.000Z', '2026-10-23T12:00:00.000Z');
+      const newer = {
+        ...PARSED_JOB,
+        title: 'Senior QA Automation Engineer (Remote)',
+        company: 'Example Markets Inc.',
+        location: 'United States',
+        activelyHiring: false,
+        easyApply: true,
+      };
+
+      test.repos.jobs.recordSighting(id, newer, '2026-10-23T08:00:00.000Z');
+
+      expect(test.repos.jobs.get(id)).toMatchObject({
+        title: 'Senior QA Automation Engineer (Remote)',
+        company: 'Example Markets Inc.',
+        location: 'United States',
+        activelyHiring: false,
+        easyApply: true,
+        lastSeenAt: '2026-10-23T08:00:00.000Z',
+      });
+    });
+
+    it('FR-04: an older sighting arriving late, or one at the same time, keeps the current details (DEC-023)', () => {
+      const id = test.repos.jobs.insert(PARSED_JOB, '2026-10-22T14:00:00.000Z', '2026-10-23T12:00:00.000Z');
+      const stale = {
+        ...PARSED_JOB,
+        title: 'Old title',
+        company: 'Old Co',
+        location: 'Nowhere',
+        activelyHiring: false,
+      };
+
+      test.repos.jobs.recordSighting(id, stale, '2026-10-21T09:00:00.000Z');
+      test.repos.jobs.recordSighting(id, stale, '2026-10-22T14:00:00.000Z');
+
+      expect(test.repos.jobs.get(id)).toMatchObject({
+        title: PARSED_JOB.title,
+        company: PARSED_JOB.company,
+        location: PARSED_JOB.location,
+        activelyHiring: true,
+        seenCount: 3,
+        firstSeenAt: '2026-10-21T09:00:00.000Z',
+      });
+    });
+
+    it('FR-04: a newer sighting never touches status, notes or score (DEC-023)', () => {
+      const id = test.repos.jobs.insert(PARSED_JOB, '2026-10-21T09:00:00.000Z', '2026-10-23T12:00:00.000Z');
+      test.repos.jobs.updateStatus(id, 'applied', '2026-10-23T13:00:00.000Z');
+      test.db.prepare("UPDATE jobs SET notes = 'called them', score = 88, score_label = 'strong' WHERE id = ?").run(id);
+
+      test.repos.jobs.recordSighting(id, { ...PARSED_JOB, title: 'New title' }, '2026-10-24T08:00:00.000Z');
+
+      expect(test.repos.jobs.get(id)).toMatchObject({
+        title: 'New title',
+        status: 'applied',
+        statusChangedAt: '2026-10-23T13:00:00.000Z',
+        notes: 'called them',
+        score: 88,
+        scoreLabel: 'strong',
       });
     });
 

@@ -34,8 +34,12 @@ export interface JobsRepository {
   insert(job: ParsedJob, seenAt: string, createdAt: string): number;
   findIdByLinkedinId(linkedinJobId: string): number | null;
   get(id: number): JobRecord | null;
-  /** Counts one more sighting. Emails can arrive out of order, so first/last seen widen to include `seenAt`. */
-  recordSighting(id: number, seenAt: string): void;
+  /**
+   * Counts one more sighting of `job` in an email received at `seenAt`. Emails can arrive out of order, so
+   * first/last seen widen to include `seenAt`, and the title, company, location and flags are taken from the
+   * sighting only when it is newer than every earlier one (DEC-023). Status, notes and score are never touched.
+   */
+  recordSighting(id: number, job: ParsedJob, seenAt: string): void;
   updateStatus(id: number, status: Status, changedAt: string): void;
 }
 
@@ -78,9 +82,17 @@ export function createJobsRepository(db: DatabaseSync): JobsRepository {
      FROM jobs WHERE id = ?`,
   );
   const sightingStatement = db.prepare(
-    `UPDATE jobs SET seen_count = seen_count + 1,
-                     first_seen_at = min(first_seen_at, ?1), last_seen_at = max(last_seen_at, ?1)
-     WHERE id = ?2`,
+    // Every right-hand side reads the row as it was before this UPDATE, so `?1 > last_seen_at` is the old value.
+    `UPDATE jobs SET
+       title           = CASE WHEN ?1 > last_seen_at THEN ?2 ELSE title END,
+       company         = CASE WHEN ?1 > last_seen_at THEN ?3 ELSE company END,
+       location        = CASE WHEN ?1 > last_seen_at THEN ?4 ELSE location END,
+       actively_hiring = CASE WHEN ?1 > last_seen_at THEN ?5 ELSE actively_hiring END,
+       easy_apply      = CASE WHEN ?1 > last_seen_at THEN ?6 ELSE easy_apply END,
+       seen_count      = seen_count + 1,
+       first_seen_at   = min(first_seen_at, ?1),
+       last_seen_at    = max(last_seen_at, ?1)
+     WHERE id = ?7`,
   );
   const statusStatement = db.prepare('UPDATE jobs SET status = ?, status_changed_at = ? WHERE id = ?');
 
@@ -108,8 +120,16 @@ export function createJobsRepository(db: DatabaseSync): JobsRepository {
       const row = selectStatement.get(id);
       return row === undefined ? null : Row.parse(row);
     },
-    recordSighting(id, seenAt) {
-      sightingStatement.run(seenAt, id);
+    recordSighting(id, job, seenAt) {
+      sightingStatement.run(
+        seenAt,
+        job.title,
+        job.company,
+        job.location,
+        toSqlBoolean(job.activelyHiring),
+        toSqlBoolean(job.easyApply),
+        id,
+      );
     },
     updateStatus(id, status, changedAt) {
       statusStatement.run(status, changedAt, id);

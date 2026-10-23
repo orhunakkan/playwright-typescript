@@ -122,7 +122,7 @@ function ingestOne(
       newJobIds.push(jobId);
       jobsNew += 1;
     } else {
-      repos.jobs.recordSighting(jobId, email.receivedAt);
+      repos.jobs.recordSighting(jobId, job, email.receivedAt);
       jobsSeenAgain += 1;
     }
     repos.sightings.insert(jobId, gmailMessageId, parsed.savedSearch);
