@@ -542,10 +542,10 @@ At the end of every phase the agent must:
    - **Deviations from the plan:** anything changed, and why
    - **Open questions:** decisions the owner needs to make
 3. **STOP.** No further edits, commits or tool runs until the owner replies.
-4. On `Approve CP-<n>`: fill in the [Checkpoint log](#13-checkpoint-log) (date, status, notes), tick that checkpoint's checklist in §10 (`- [x]`), commit, merge the phase branch to `main`, then start the next phase.
+4. On `Approve CP-<n>`: fill in the [Checkpoint log](#13-checkpoint-log) (date, status, notes), tick that checkpoint's checklist in §10 (`- [x]`), commit, merge the phase branch to `main`, push `main` to `origin`, then start the next phase.
 5. On feedback instead of approval: fix it, re-run the gates, and send an updated report. Repeat until approved.
 
-**Git:** each phase works on `phase/<n>-<slug>`, using Conventional Commits (`feat:`, `test:`, `docs:`, …). Agents commit to the phase branch while they work. **Merging to `main` only happens after approval.** Nothing is pushed to a remote without the owner asking.
+**Git:** each phase works on `phase/<n>-<slug>`, using Conventional Commits (`feat:`, `test:`, `docs:`, …). Agents commit to the phase branch while they work. **Merging to `main` only happens after approval, and every approved merge is then pushed to `origin/main`** (DEC-018). The GitHub repo is public, so nothing else (phase branches, unapproved work) is pushed without the owner asking.
 
 ---
 
@@ -787,11 +787,11 @@ Tasks:
    - perf is `workflow_dispatch` only
 5. A11y and security re-run on the final UI. Any finding is logged in `docs/defects.md`.
 
-**Done when:** k6 thresholds pass locally, and the CI workflow file is valid. If the repo has a GitHub remote, CI is green there; pushing only happens when the owner asks.
+**Done when:** k6 thresholds pass locally, and the CI workflow file is valid. `main` is pushed after CP-7 approval (DEC-018), and CI must then be green on GitHub.
 
 **🛑 CP-7. The owner checks:**
 - [ ] Reads the k6 summary (p95 and error rate)
-- [ ] Reviews the CI stages and decides whether to push
+- [ ] Reviews the CI stages
 
 ---
 
@@ -852,6 +852,7 @@ Tasks:
 | DEC-015 | 2026-10-23 | The résumé lives at `data/Orhun_Akkan_Resume_Updated.pdf`, not `data/resume.pdf` (owner, CP-1) | The owner's file name; `data/` is git-ignored either way |
 | DEC-016 | 2026-10-23 | Profile is remote-US only: no hybrid or on-site metros, no relocation (owner, CP-1) | Owner's preference. §6.5 calibration rows for on-site jobs (Cboe, Goosehead) must be re-confirmed at CP-5 |
 | DEC-017 | 2026-10-23 | On approval, the checkpoint's checklist in §10 is ticked (`- [x]`) along with the Checkpoint log (owner) | The plan should show at a glance which owner checks have passed |
+| DEC-018 | 2026-10-23 | On approval, the agent merges the phase branch to `main` and pushes `main` to `origin` (owner) | Approved work is published without a separate request; only approved `main` is pushed because the repo is public |
 
 ---
 
