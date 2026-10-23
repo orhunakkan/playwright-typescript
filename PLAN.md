@@ -637,9 +637,9 @@ Tasks:
 **Done when:** unit tests are green, coverage of `src/domain` and `src/ingest` is ≥ 95 %, and the dry-run tool works on every fixture.
 
 **🛑 CP-2. The owner checks:**
-- [ ] Runs the dry-run tool on each fixture; titles, companies, locations and flags match the real emails
-- [ ] Opens each fixture: no tracking tokens, no real name or email
-- [ ] Agrees with the list of email formats found
+- [x] Runs the dry-run tool on each fixture; titles, companies, locations and flags match the real emails
+- [x] Opens each fixture: no tracking tokens, no real name or email
+- [x] Agrees with the list of email formats found
 
 ---
 
@@ -853,6 +853,8 @@ Tasks:
 | DEC-016 | 2026-10-23 | Profile is remote-US only: no hybrid or on-site metros, no relocation (owner, CP-1) | Owner's preference. §6.5 calibration rows for on-site jobs (Cboe, Goosehead) must be re-confirmed at CP-5 |
 | DEC-017 | 2026-10-23 | On approval, the checkpoint's checklist in §10 is ticked (`- [x]`) along with the Checkpoint log (owner) | The plan should show at a glance which owner checks have passed |
 | DEC-018 | 2026-10-23 | On approval, the agent merges the phase branch to `main` and pushes `main` to `origin` (owner) | Approved work is published without a separate request; only approved `main` is pushed because the repo is public |
+| DEC-019 | 2026-10-23 | The parser marks the whole email `unrecognized` when any job block can't be read or no job is found; it never returns a partial list (owner, CP-2) | A LinkedIn format change then shows up on `/runs` (FR-12) instead of silently losing jobs |
+| DEC-020 | 2026-10-23 | `jobs-noreply` emails are a second format ("Expand your search" recommendations in titled sections) with no saved search, stored as `savedSearch: null`; they stay in the Gmail query (owner, CP-2) | Verified against the owner's emails in Phase 2 (§1.4 asked for it); its jobs are often off-target, which scoring handles |
 
 ---
 
@@ -864,7 +866,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 |---|---|---|---|---|
 | CP-0 | Foundations and tooling | Approved | 2026-10-23 | DEC-010–DEC-013 approved; k6 placeholder kept until Phase 7 |
 | CP-1 | Candidate profile | Approved | 2026-10-23 | Remote-US only, no relocation; 4 deal-breakers; résumé kept as data/Orhun_Akkan_Resume_Updated.pdf; Cboe (Chicago) calibration label to revisit at CP-5 |
-| CP-2 | Domain core and email parser | Not started | | |
+| CP-2 | Domain core and email parser | Approved | 2026-10-23 | Two formats (digest, recommendations); recommendations stay ingested; DEC-019, DEC-020 approved; 3 sanitized fixtures |
 | CP-3 | Persistence | Not started | | |
 | CP-4 | HTTP server and JSON API | Not started | | |
 | CP-5 | `/find-jobs` agent | Not started | | |

@@ -1,0 +1,31 @@
+// Triage score bands (PLAN.md FR-06): strong ≥ 75, possible 50–74, weak < 50.
+
+export const SCORE_LABELS = ['strong', 'possible', 'weak'] as const;
+
+export type ScoreLabel = (typeof SCORE_LABELS)[number];
+
+const STRONG_MIN = 75;
+const POSSIBLE_MIN = 50;
+
+export class InvalidScoreError extends Error {
+  override name = 'InvalidScoreError';
+
+  constructor(score: number) {
+    super(`A score must be a whole number from 0 to 100, got ${String(score)}`);
+  }
+}
+
+export function isValidScore(score: number): boolean {
+  return Number.isInteger(score) && score >= 0 && score <= 100;
+}
+
+export function labelForScore(score: number): ScoreLabel {
+  if (!isValidScore(score)) throw new InvalidScoreError(score);
+  if (score >= STRONG_MIN) return 'strong';
+  if (score >= POSSIBLE_MIN) return 'possible';
+  return 'weak';
+}
+
+export function isLabelConsistent(score: number, label: ScoreLabel): boolean {
+  return isValidScore(score) && labelForScore(score) === label;
+}
