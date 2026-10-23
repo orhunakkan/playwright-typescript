@@ -865,6 +865,7 @@ Tasks:
 | DEC-028 | 2026-10-23 | Calibration: Cboe "Senior QA Automation Test Engineer" in Chicago, IL is expected `possible`, not `strong` (re-confirmed at CP-5 under DEC-026) | The profile is remote-US only (DEC-016); a city location with no remote marker scores 2–5 of 20 for location, so a senior QA title with no named stack lands at 70 |
 | DEC-029 | 2026-10-23 | `Referrer-Policy` is `same-origin`, not `no-referrer` (agent, CP-6 under DEC-026) | With `no-referrer`, browsers send `Origin: null` on the app's own form posts, which the cross-site guard must refuse (DEF-009). Links to other sites, LinkedIn included, still send no referrer, and they also carry `rel="noopener noreferrer"` |
 | DEC-030 | 2026-10-23 | Page conventions (agent, CP-6 under DEC-026): the board shows 50 jobs per page and clamps a page past the end to the last page; page query strings ignore unknown keys and treat empty values as unset (form bodies stay strict); errors outside `/api/` are HTML pages with the same status codes; form redirects end in `#notice` so focus lands on the message | FR-07 needs a usable board at 5,000 jobs (NFR-05); old bookmarks and empty filter fields should still open the page; browsers should show a real page, not JSON; a status message on a freshly loaded page is not announced, but a focused one is |
+| DEC-031 | 2026-10-23 | CI has three stages: static checks with unit tests; every Vitest project at once with the coverage thresholds (so integration, API, contract and security run there); then Playwright E2E and smoke. The k6 load test is a manual `workflow_dispatch` job that seeds 5,000 jobs itself (agent, CP-7 under DEC-026) | Keeps PLAN.md's fast-to-slow order while honouring DEC-021: running the four Vitest projects as separate jobs would measure coverage per project again, which can't meet the thresholds |
 
 ---
 
@@ -881,7 +882,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 | CP-4 | HTTP server and JSON API | Approved | 2026-10-23 | DEC-025 (`jobs.first_run_id`) approved; threat model agreed (no-Origin clients such as curl and `/find-jobs` allowed; cross-site reads left to the browser) |
 | CP-5 | `/find-jobs` agent | Done (DEC-026) | 2026-10-23 | Agent-reviewed; owner checks deferred to CP-8. Rubric `triage-v1`: calibration 6/6 on target (DEC-028). Real run: 14 emails, 64 new jobs, 20 seen again, 64 scored; second run 7 duplicates, 0 new. DEC-027 (cut URL query strings); DEF-008 fixed ("school alum" insight line) |
 | CP-6 | User interface | Done (DEC-026) | 2026-10-23 | Agent-reviewed plus an independent code review (4 findings, all fixed); owner checks deferred to CP-8. 124 E2E/a11y/smoke tests green on chromium, firefox, webkit, mobile; axe 0 violations (WCAG 2.2 AA, light and dark). DEC-029 (Referrer-Policy same-origin, DEF-009), DEC-030 (page conventions) |
-| CP-7 | Performance, CI and hardening | Not started | | |
+| CP-7 | Performance, CI and hardening | Done (DEC-026) | 2026-10-23 | Agent-reviewed; owner checks deferred to CP-8. k6 on 5,000 seeded jobs, 20 VUs: p95 19.5 ms overall (board 23.5, API 21.0, detail 13.8), 0 % errors, no tuning needed. CI workflow validated with actionlint; DEC-031 (CI stages). Defect log started (DEF-005 to DEF-013, none open) |
 | CP-8 | MVP acceptance | Not started | | |
 
 ---

@@ -76,16 +76,22 @@ The pyramid runs from many fast, isolated tests at the bottom to a few slow, bro
 - **Hand-written edge cases:** an empty alert, a single-job alert, a `<script>` title, non-ASCII company names, a missing location and an unknown format.
 - **Databases:** every test file gets its own temporary SQLite file and deletes it afterwards. E2E uses a separate server on port 3100 with a temporary database. No test ever reads or writes `data/`.
 - **E2E isolation:** all Playwright projects share one E2E server, so every test seeds its own jobs through the JSON API (`tests/e2e/seed.ts`), with a unique tag in each title and company, unique LinkedIn IDs, and the board filtered by that tag. Tests then run fully parallel without seeing each other's jobs.
-- **Performance data:** `scripts/seed.ts` generates 5,000 realistic fake jobs. No real data is used.
+- **Performance data:** `scripts/seed.ts` generates 5,000 realistic fake jobs through the real ingest and status services, the same every time for a given `--seed`. No real data is used, and it refuses to write into a database that already has jobs. To run the load test:
+
+  ```bash
+  node scripts/seed.ts --count 5000 --db data/perf.db
+  PORT=3000 DB_PATH=data/perf.db LOG_LEVEL=warn node src/main.ts    # in a second terminal
+  npm run test:perf                                                  # k6, BASE_URL=http://127.0.0.1:3000
+  ```
 
 ## 6. Environments
 
-| Environment                                                    | Used for                                               | Notes                                                   |
-| -------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
-| Owner's machine (Windows 11, Node 24, Git Bash and PowerShell) | All levels                                             | The reference environment (NFR-10)                      |
-| GitHub Actions (Phase 7)                                       | Static → integration/API/contract/security → E2E/smoke | Perf runs on manual dispatch only                       |
-| Browsers                                                       | Chromium, Firefox, WebKit, Pixel 7 emulation           | Installed with `npx playwright install`                 |
-| k6                                                             | Load tests                                             | Installed with `winget install k6` (not an npm package) |
+| Environment                                                    | Used for                                                      | Notes                                                   |
+| -------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------- |
+| Owner's machine (Windows 11, Node 24, Git Bash and PowerShell) | All levels                                                    | The reference environment (NFR-10)                      |
+| GitHub Actions (`.github/workflows/ci.yml`)                    | Static + unit → all Vitest projects with coverage → E2E/smoke | Perf runs on manual dispatch only                       |
+| Browsers                                                       | Chromium, Firefox, WebKit, Pixel 7 emulation                  | Installed with `npx playwright install`                 |
+| k6                                                             | Load tests                                                    | Installed with `winget install k6` (not an npm package) |
 
 ## 7. Entry and exit criteria
 

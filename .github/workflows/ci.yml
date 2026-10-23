@@ -1,0 +1,116 @@
+# CI for the Agentic Job Board (PLAN.md Phase 7 task 4), staged fast to slow:
+#   static (typecheck, lint, format, audit, unit) → vitest (every Vitest project with coverage thresholds:
+#   integration, API, contract, security, DEC-021) → browsers (Playwright E2E on 4 projects, then smoke).
+# The k6 load test runs only when started by hand (Actions → CI → Run workflow → perf).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      perf:
+        description: Run the k6 load test against 5,000 seeded jobs
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  static:
+    name: Static checks and unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run audit
+      - run: npm run test:unit
+
+  vitest:
+    name: Integration, API, contract and security tests (with coverage)
+    needs: static
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      # Every Vitest project at once, so the coverage thresholds see all of them (DEC-021).
+      - run: npm run test:coverage
+      - name: Upload the coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 14
+
+  browsers:
+    name: E2E, accessibility and smoke (Playwright)
+    needs: vitest
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:e2e
+      - run: npm run test:smoke
+      - name: Upload the Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+  perf:
+    name: Load test (k6, manual only)
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.perf }}
+    needs: static
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PORT: '3000'
+      DB_PATH: perf/perf.db
+      LOG_LEVEL: warn
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - uses: grafana/setup-k6-action@v1
+      - run: node scripts/seed.ts --count 5000 --db "$DB_PATH"
+      - name: Start the app on the seeded database
+        run: |
+          node src/main.ts > app.log 2>&1 &
+          for _ in $(seq 1 30); do curl -sf http://127.0.0.1:3000/api/health && exit 0; sleep 1; done
+          cat app.log
+          exit 1
+      - run: npm run test:perf
