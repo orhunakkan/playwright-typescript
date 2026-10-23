@@ -187,3 +187,17 @@ curl -s -X PATCH http://127.0.0.1:3000/api/jobs/1 -H "Content-Type: application/
 curl -s -X PATCH http://127.0.0.1:3000/api/jobs/1 -H "Content-Type: application/json" -d '{"status":"offer"}'
 # 409 {"error":{"code":"invalid_transition","message":"a job can't move from applied to offer","details":{"from":"applied","to":"offer"}}}
 ```
+
+## HTML pages
+
+The board is server-rendered HTML with no client-side JavaScript (PLAN.md §6.2, DEC-006). The same Host, cross-site and size rules apply. Page forms post `application/x-www-form-urlencoded` (anything else is a 415), then redirect with `303 See Other`. Errors outside `/api/` are HTML pages with the same status codes, never JSON.
+
+| Route                   | What it does                                                                                                                                                                                                                                                |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /`                 | The board. Query: `tab` (`new` default, `saved`, `in-progress`, `closed`, `dismissed`), `minScore` (0–100), `q` (title or company), `sort` (`score`, `recent`, `changed`), `page` (50 jobs per page). Empty values mean "not set"; unknown keys are ignored |
+| `GET /jobs/:id`         | Job detail: score and reason, status form (only allowed next statuses), notes, history, sightings, the LinkedIn link                                                                                                                                        |
+| `POST /jobs/:id/status` | Form fields `status` and optional `return` (a path on this site; anything else falls back to the job page). 303 back with `changed=<id>`, which shows a notice. 409 page for a transition §5.4 doesn't allow                                                |
+| `POST /jobs/:id/notes`  | Form field `notes` (up to 5,000 characters; CRLF is stored as LF). 303 to `/jobs/:id?notes=saved`                                                                                                                                                           |
+| `GET /runs`             | Every run with its counters, and the unrecognized emails with the parser's reason (FR-11, FR-12)                                                                                                                                                            |
+| `GET /profile`          | The profile, read-only (FR-01)                                                                                                                                                                                                                              |
+| `GET /static/<file>`    | `app.css` and `favicon.svg` only; every other name is a 404                                                                                                                                                                                                 |

@@ -1,6 +1,6 @@
 # Agentic Job Board
 
-A private, localhost-only job-search board for one person. LinkedIn job-alert emails are read from Gmail by the `/find-jobs` agent in Claude Code, parsed and deduplicated by this app, and scored by Claude against the owner's profile. [`PLAN.md`](PLAN.md) is the full plan; the board UI arrives in Phase 6.
+A private, localhost-only job-search board for one person. LinkedIn job-alert emails are read from Gmail by the `/find-jobs` agent in Claude Code, parsed and deduplicated by this app, and scored by Claude against the owner's profile. [`PLAN.md`](PLAN.md) is the full plan.
 
 ## Setup
 
@@ -24,7 +24,7 @@ curl -s -X PUT http://127.0.0.1:3000/api/profile \
   -H "Content-Type: application/json" --data-binary @data/profile.json
 ```
 
-Every endpoint is described, with a curl example, in [`docs/api.md`](docs/api.md). Stop the server with Ctrl+C: it finishes open requests and closes the database.
+Open the board at http://127.0.0.1:3000/. Every endpoint and page is described in [`docs/api.md`](docs/api.md). Stop the server with Ctrl+C: it finishes open requests and closes the database.
 
 ## Checks
 

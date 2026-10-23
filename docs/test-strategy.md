@@ -75,6 +75,7 @@ The pyramid runs from many fast, isolated tests at the bottom to a few slow, bro
 - **Email fixtures** are real LinkedIn alert emails, one per format, **sanitized** before commit: URL query strings removed, the recipient line replaced with `Test User (QA Engineer)`, and email addresses replaced with `test@example.com`. The owner reviews each fixture at CP-2.
 - **Hand-written edge cases:** an empty alert, a single-job alert, a `<script>` title, non-ASCII company names, a missing location and an unknown format.
 - **Databases:** every test file gets its own temporary SQLite file and deletes it afterwards. E2E uses a separate server on port 3100 with a temporary database. No test ever reads or writes `data/`.
+- **E2E isolation:** all Playwright projects share one E2E server, so every test seeds its own jobs through the JSON API (`tests/e2e/seed.ts`), with a unique tag in each title and company, unique LinkedIn IDs, and the board filtered by that tag. Tests then run fully parallel without seeing each other's jobs.
 - **Performance data:** `scripts/seed.ts` generates 5,000 realistic fake jobs. No real data is used.
 
 ## 6. Environments
@@ -90,7 +91,7 @@ The pyramid runs from many fast, isolated tests at the bottom to a few slow, bro
 
 ### 7.1 Entry criteria (before a phase starts)
 
-- The previous checkpoint is `Approved` in PLAN.md §13.
+- The previous checkpoint is `Approved` in PLAN.md §13 (or, for CP-5 to CP-7, `Done (DEC-026)`: the owner reviews the final product at CP-8).
 - `npm ci` succeeds and `npm run check` is green on `main`.
 - The phase's requirements and acceptance criteria are clear. Open questions are answered by the owner before work starts.
 

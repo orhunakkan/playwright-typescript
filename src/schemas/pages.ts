@@ -50,5 +50,7 @@ export function withoutEmpty(values: Readonly<Record<string, string>>): Record<s
 export function safeReturnPath(value: string | undefined, fallback: string): string {
   if (value === undefined || !/^\/(?![/\\])[^\s\\]*$/.test(value)) return fallback;
   const url = new URL(value, 'http://app.invalid');
-  return url.origin === 'http://app.invalid' ? `${url.pathname}${url.search}` : fallback;
+  // Dot segments can collapse into "//": "/.//evil.example" parses to the path "//evil.example".
+  if (url.origin !== 'http://app.invalid' || /^\/[/\\]/.test(url.pathname)) return fallback;
+  return `${url.pathname}${url.search}`;
 }

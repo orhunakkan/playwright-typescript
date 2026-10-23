@@ -66,15 +66,19 @@ export function pageRoutes(ctx: AppContext): Route[] {
           ]),
         ) as Record<Tab, number>;
 
+        // A page past the end (the last job on it was just moved away, or an old bookmark) shows the last page.
+        const total = repos.jobs.count(filter);
+        const pageNumber = Math.min(query.page, Math.max(1, Math.ceil(total / PAGE_SIZE)));
+
         const body = boardPage({
           tab: query.tab,
           minScore: query.minScore,
           q: query.q,
           sort,
-          page: query.page,
+          page: pageNumber,
           pageSize: PAGE_SIZE,
-          items: repos.jobs.list({ ...filter, sort, limit: PAGE_SIZE, offset: (query.page - 1) * PAGE_SIZE }),
-          total: repos.jobs.count(filter),
+          items: repos.jobs.list({ ...filter, sort, limit: PAGE_SIZE, offset: (pageNumber - 1) * PAGE_SIZE }),
+          total,
           counts,
           changed: query.changed === undefined ? null : repos.jobs.get(query.changed),
           now: ctx.now(),
@@ -111,7 +115,7 @@ export function pageRoutes(ctx: AppContext): Route[] {
         const back = new URL(safeReturnPath(form.return, `/jobs/${String(job.id)}`), 'http://app.invalid');
         back.searchParams.delete('notes');
         back.searchParams.set('changed', String(job.id));
-        return redirect(`${back.pathname}${back.search}`);
+        return redirect(`${back.pathname}${back.search}#notice`);
       },
     },
     {
@@ -122,7 +126,7 @@ export function pageRoutes(ctx: AppContext): Route[] {
         const job = findJob(request);
         const { notes } = parseInput(NotesFormSchema, request.body, 'form');
         repos.jobs.updateNotes(job.id, notes);
-        return redirect(`/jobs/${String(job.id)}?notes=saved`);
+        return redirect(`/jobs/${String(job.id)}?notes=saved#notice`);
       },
     },
     {

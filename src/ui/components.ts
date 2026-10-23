@@ -16,9 +16,10 @@ export function scoreBadge(job: Pick<JobRecord, 'score' | 'scoreLabel'>): SafeHt
 }
 
 /** The canonical LinkedIn link (§5.3), opened by the owner; the app itself never fetches it (NFR-03). */
-export function linkedinLink(job: Pick<JobRecord, 'url'>): SafeHtml {
+export function linkedinLink(job: Pick<JobRecord, 'url' | 'title'>): SafeHtml {
   return html`<a class="external" href="${job.url}" target="_blank" rel="noopener noreferrer"
-    >Open on LinkedIn<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens in a new tab)</span></a
+    >Open on LinkedIn<span class="visually-hidden">: ${job.title} (opens in a new tab)</span
+    ><span aria-hidden="true"> ↗</span></a
   >`;
 }
 
@@ -28,21 +29,27 @@ export function flags(job: Pick<JobRecord, 'activelyHiring' | 'easyApply'>): Saf
   }`;
 }
 
-/** One small form per allowed next status (§5.4); the server checks the transition again. */
-export function statusButtons(job: Pick<JobRecord, 'id' | 'status'>, returnTo: string): SafeHtml {
+/**
+ * One small form per allowed next status (§5.4); the server checks the transition again. Each button also names
+ * its job for screen readers, so a list of the page's buttons doesn't read "Save, Save, Save, …".
+ */
+export function statusButtons(job: Pick<JobRecord, 'id' | 'status' | 'title'>, returnTo: string): SafeHtml {
   return html`${nextStatuses(job.status).map(
     (status) =>
       html`<form class="inline-form" method="post" action="/jobs/${job.id}/status">
         <input type="hidden" name="status" value="${status}" />
         <input type="hidden" name="return" value="${returnTo}" />
         <button type="submit" class="button${status === 'dismissed' ? ' button-quiet' : ''}">
-          ${ACTION_LABELS[status]}
+          ${ACTION_LABELS[status]}<span class="visually-hidden">: ${job.title}</span>
         </button>
       </form>`,
   )}`;
 }
 
-/** A polite status message after a form post, announced by screen readers. */
+/**
+ * The message after a form post. Redirects end in #notice, so the browser scrolls to it and moves focus there;
+ * a status role alone isn't announced on a freshly loaded page.
+ */
 export function notice(message: SafeHtml | string): SafeHtml {
-  return html`<p class="notice" role="status">${message}</p>`;
+  return html`<p class="notice" role="status" id="notice" tabindex="-1">${message}</p>`;
 }

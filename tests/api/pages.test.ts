@@ -144,6 +144,14 @@ describe('the HTML pages', () => {
       expect(new Set([...cardIds(first), ...cardIds(second)]).size).toBe(PAGE_SIZE + 18);
     });
 
+    it('FR-07: a page past the end shows the last page instead of an empty board', async () => {
+      const board = await page('/?page=99');
+
+      expect(cardIds(board)).toHaveLength(18);
+      expect(board).toContain('Showing 1–18 of 18');
+      expect(board).not.toContain('No new jobs');
+    });
+
     it.each(['/?tab=archived', '/?minScore=101', '/?page=0', '/?sort=random', '/?tab=new&tab=saved'])(
       'NFR-09: the board query %s is a 400 page',
       async (path) => {
@@ -174,13 +182,15 @@ describe('the HTML pages', () => {
       const response = await t.form(`/jobs/${String(jobId)}/status`, { status: 'saved', return: '/?tab=new&q=x' });
 
       expect(response.status).toBe(303);
-      expect(response.headers.get('location')).toBe(`/?tab=new&q=x&changed=${String(jobId)}`);
+      expect(response.headers.get('location')).toBe(`/?tab=new&q=x&changed=${String(jobId)}#notice`);
       expect((await t.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({
         status: 'saved',
         history: [{ toStatus: 'new' }, { fromStatus: 'new', toStatus: 'saved' }],
       });
       const board = await page(`/?tab=saved&changed=${String(jobId)}`);
-      expect(board).toMatch(/<p class="notice" role="status"><a href="\/jobs\/\d+">Senior Quality Assurance Engineer/);
+      expect(board).toMatch(
+        /<p class="notice" role="status" id="notice" tabindex="-1"><a href="\/jobs\/\d+">Senior Quality Assurance Engineer/,
+      );
       expect(board).toContain('is now Saved.');
     });
 
@@ -189,7 +199,7 @@ describe('the HTML pages', () => {
 
       const response = await t.form(`/jobs/${String(jobId)}/status`, { status: 'applied' });
 
-      expect(response.headers.get('location')).toBe(`/jobs/${String(jobId)}?changed=${String(jobId)}`);
+      expect(response.headers.get('location')).toBe(`/jobs/${String(jobId)}?changed=${String(jobId)}#notice`);
       expect(await page(`/jobs/${String(jobId)}?changed=${String(jobId)}`)).toContain('Status changed to Applied.');
     });
 
@@ -204,7 +214,7 @@ describe('the HTML pages', () => {
 
       const response = await t.form(`/jobs/${String(jobId)}/status`, { status: 'saved', return: target });
 
-      expect(response.headers.get('location')).toBe(`/jobs/${String(jobId)}?changed=${String(jobId)}`);
+      expect(response.headers.get('location')).toBe(`/jobs/${String(jobId)}?changed=${String(jobId)}#notice`);
     });
 
     it('FR-08: an invalid transition is a 409 page and changes nothing', async () => {
@@ -312,7 +322,7 @@ describe('the HTML pages', () => {
       const response = await t.form(`/jobs/${String(jobId)}/notes`, { notes: '\r\nCall recruiter\r\n<b>Friday</b>' });
 
       expect(response.status).toBe(303);
-      expect(response.headers.get('location')).toBe(`/jobs/${String(jobId)}?notes=saved`);
+      expect(response.headers.get('location')).toBe(`/jobs/${String(jobId)}?notes=saved#notice`);
       expect((await t.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({
         notes: '\nCall recruiter\n<b>Friday</b>',
       });

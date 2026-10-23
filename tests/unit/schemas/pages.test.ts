@@ -64,6 +64,10 @@ describe('page inputs', () => {
       '/with space',
       '/tab\tchar',
       '/new\nline',
+      // Dot segments that collapse into a protocol-relative path once parsed.
+      '/.//evil.example',
+      '/a/..//evil.example',
+      '/%2e%2e//evil.example',
     ])('NFR-07: refuses %j', (value) => {
       expect(safeReturnPath(value, '/fallback')).toBe('/fallback');
     });

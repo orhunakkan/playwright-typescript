@@ -30,7 +30,7 @@ test.describe('smoke', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Board' })).toBeVisible();
     await expect(card(page, job?.title ?? '')).toContainText('88 Strong');
 
-    await page.getByRole('link', { name: job?.title ?? '' }).click();
+    await page.getByRole('link', { name: job?.title ?? '', exact: true }).click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(job?.title ?? '');
     await expect(page.getByText('Reason: Seeded reason for Smoke Co.')).toBeVisible();
   });
@@ -84,19 +84,23 @@ test.describe('board', () => {
     const title = job?.title ?? '';
 
     await page.goto(`/?q=${tag}`);
-    await card(page, title).getByRole('button', { name: 'Save' }).click();
+    await card(page, title).getByRole('button', { name: /^Save/ }).click();
     await expect(page.getByRole('status')).toHaveText(`${title} is now Saved.`);
+    // The redirect ends in #notice, so keyboard and screen-reader users land on the message.
+    await expect(page.getByRole('status')).toBeFocused();
     await expect(card(page, title)).toHaveCount(0);
     await expect(page.getByLabel('Search')).toHaveValue(tag);
 
     await page.goto(`/?tab=saved&q=${tag}`);
     await expect(page.getByRole('link', { name: /^Saved/ })).toHaveAttribute('aria-current', 'page');
-    await card(page, title).getByRole('button', { name: 'Applied' }).click();
+    await card(page, title)
+      .getByRole('button', { name: /^Applied/ })
+      .click();
     await expect(page.getByRole('status')).toHaveText(`${title} is now Applied.`);
 
     await page.goto(`/?tab=in-progress&q=${tag}`);
     await expect(card(page, title)).toContainText('Applied');
-    await page.getByRole('link', { name: title }).click();
+    await page.getByRole('link', { name: title, exact: true }).click();
 
     await expect(page.getByLabel('Change to').locator('option')).toHaveText(['Interviewing', 'Rejected', 'Dismissed']);
     await page.getByLabel('Change to').selectOption('interviewing');
@@ -117,12 +121,16 @@ test.describe('board', () => {
     const title = job?.title ?? '';
 
     await page.goto(`/?q=${tag}`);
-    await card(page, title).getByRole('button', { name: 'Dismiss' }).click();
+    await card(page, title)
+      .getByRole('button', { name: /^Dismiss/ })
+      .click();
     await expect(page.getByRole('status')).toHaveText(`${title} is now Dismissed.`);
 
     await page.goto(`/?tab=dismissed&q=${tag}`);
-    await expect(card(page, title).getByRole('button')).toHaveText(['Restore']);
-    await card(page, title).getByRole('button', { name: 'Restore' }).click();
+    await expect(card(page, title).getByRole('button')).toHaveText([/^\s*Restore/]);
+    await card(page, title)
+      .getByRole('button', { name: /^Restore/ })
+      .click();
     await expect(page.getByRole('status')).toHaveText(`${title} is now New.`);
 
     await page.goto(`/?q=${tag}`);
@@ -135,9 +143,9 @@ test.describe('board', () => {
     const title = job?.title ?? '';
 
     await page.goto(`/?q=${tag}`);
-    await expect(card(page, title).getByRole('button')).toHaveText(['Save', 'Applied', 'Dismiss']);
+    await expect(card(page, title).getByRole('button')).toHaveText([/^\s*Save/, /^\s*Applied/, /^\s*Dismiss/]);
 
-    await page.getByRole('link', { name: title }).click();
+    await page.getByRole('link', { name: title, exact: true }).click();
     await expect(page.getByLabel('Change to').locator('option')).toHaveText(['Saved', 'Applied', 'Dismissed']);
     for (const status of ['applied', 'rejected']) {
       await page.getByLabel('Change to').selectOption(status);
