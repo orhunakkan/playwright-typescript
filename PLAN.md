@@ -858,7 +858,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 | CP | Phase | Status | Approved on | Notes |
 |---|---|---|---|---|
 | CP-0 | Foundations and tooling | Approved | 2026-10-23 | DEC-010–DEC-013 approved; k6 placeholder kept until Phase 7 |
-| CP-1 | Candidate profile | Not started | | |
+| CP-1 | Candidate profile | Approved | 2026-10-23 | Remote-US only, no relocation; 4 deal-breakers; résumé kept as data/Orhun_Akkan_Resume_Updated.pdf; Cboe (Chicago) calibration label to revisit at CP-5 |
 | CP-2 | Domain core and email parser | Not started | | |
 | CP-3 | Persistence | Not started | | |
 | CP-4 | HTTP server and JSON API | Not started | | |
