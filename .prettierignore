@@ -1,0 +1,10 @@
+# Prettier also skips everything in .gitignore.
+package-lock.json
+
+# The owner's source-of-truth plan: keep its hand-aligned tables as written.
+PLAN.md
+
+# Local-only tooling (git-excluded on the owner's machine), not part of the app.
+.claude/
+.playwright/
+.playwright-cli/
