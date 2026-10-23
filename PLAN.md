@@ -1,6 +1,6 @@
 # Agentic Job Board — MVP Plan
 
-> **Status:** Approved intent (2026-10-23). Build has not started.
+> **Status:** Approved intent (2026-10-23). Build in progress; see the [Checkpoint log](#13-checkpoint-log).
 > **Owner:** Orhun Akkan (the only user, and the approver at every checkpoint).
 > **Audience:** the owner, and every coding agent that works in this repository.
 
@@ -460,10 +460,10 @@ Score badge colors carry meaning only together with the label text (accessibilit
 | Job | Expected |
 |---|---|
 | Senior Quality Assurance Engineer (Playwright, TypeScript, and Postman) · 3Pillar · United States | strong |
-| Senior QA Automation Test Engineer · Cboe Global Markets · Chicago, IL | strong |
+| Senior QA Automation Test Engineer · Cboe Global Markets · Chicago, IL | strong (re-confirm at CP-5: CP-1 profile is remote-US only, see DEC-016) |
 | AI Native, QA Engineer · ConsumerAffairs | strong / possible |
 | QA Automation Engineer II – IntelliScript (Remote) · Milliman IntelliScript | possible |
-| Senior Quality Assurance Engineer · Goosehead Insurance · Dallas-Fort Worth Metroplex | possible / weak (depends on CP-1 location preferences) |
+| Senior Quality Assurance Engineer · Goosehead Insurance · Dallas-Fort Worth Metroplex | possible / weak (CP-1: remote-US only, no relocation, see DEC-016) |
 | R&D Test Engineer · Agilent Technologies · Harrisburg, PA | weak |
 
 ---
@@ -848,6 +848,9 @@ Tasks:
 | DEC-011 | 2026-10-23 | `PLAN.md` is in `.prettierignore` (approved at CP-0) | Prettier would only re-pad its tables, adding noise to every diff of the source-of-truth plan |
 | DEC-012 | 2026-10-23 | Playwright's `webServer` starts only once `src/main.ts` exists; removed in Phase 4 (approved at CP-0) | Playwright starts the web server even with no tests, so `test:e2e` could not run in Phases 0–3 |
 | DEC-013 | 2026-10-23 | E2E server runs on port 3100 with a temporary database | E2E can run while the owner's dev server is up, and never touches `data/jobboard.db` |
+| DEC-014 | 2026-10-23 | `.gitattributes` forces LF line endings (added in Phase 0) | With `core.autocrlf=true`, a fresh Windows checkout gets CRLF and `prettier --check` fails |
+| DEC-015 | 2026-10-23 | The résumé lives at `data/Orhun_Akkan_Resume_Updated.pdf`, not `data/resume.pdf` (owner, CP-1) | The owner's file name; `data/` is git-ignored either way |
+| DEC-016 | 2026-10-23 | Profile is remote-US only: no hybrid or on-site metros, no relocation (owner, CP-1) | Owner's preference. §6.5 calibration rows for on-site jobs (Cboe, Goosehead) must be re-confirmed at CP-5 |
 
 ---
 
