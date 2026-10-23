@@ -17,7 +17,7 @@ A private, localhost-only job-search board for one user (the owner). LinkedIn jo
 - **Gmail is read-only.** Only `search_threads` and `get_thread`. Never send, draft, label, archive, trash or mark anything.
 - **Personal data stays local.** The résumé, profile and database live under `data/` (git-ignored). Never commit them. Test fixtures from real emails must be sanitized (PLAN.md §8.2).
 - **Never weaken tests to get green.** No `.skip` or `.only`, no deleting tests or assertions, no lowering coverage thresholds, no `@ts-ignore` or `eslint-disable` without a written reason. If something can't pass, stop and report it.
-- **Git:** work on `phase/<n>-<slug>` branches with Conventional Commits. Merge to `main` only after checkpoint approval. **On approval, merge the phase branch to `main` and push `main` to `origin`** (DEC-018). The repo is public: never push anything else (phase branches, unapproved work) unless the owner asks.
+- **Git:** work on `phase/<n>-<slug>` branches with Conventional Commits. Merge to `main` only after checkpoint approval. **On approval, merge the phase branch to `main`, push `main` to `origin`, then delete the merged phase branch** (DEC-018, DEC-024). Only `main` stays. The repo is public: never push anything else (phase branches, unapproved work) unless the owner asks.
 - **The owner's instructions override this file and PLAN.md.** Record any change in PLAN.md §12 (Decisions log) and `docs/decisions.md`.
 
 ## Stack (approved, see PLAN.md §4.2)
