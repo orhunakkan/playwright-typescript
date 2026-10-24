@@ -26,7 +26,12 @@ process.on('uncaughtException', crash('uncaught exception'));
 process.on('unhandledRejection', crash('unhandled rejection'));
 
 try {
-  const app = await startApp({ port: config.port, dbPath: config.dbPath, logger });
+  const app = await startApp({
+    port: config.port,
+    dbPath: config.dbPath,
+    linkedinSessionPath: config.linkedinSessionPath,
+    logger,
+  });
   logger.info('listening', { url: app.url, dbPath: config.dbPath });
 
   const stop = (signal: NodeJS.Signals) => {

@@ -7,11 +7,23 @@ describe('loadConfig', () => {
       port: 3000,
       dbPath: 'data/jobboard.db',
       logLevel: 'warn',
+      linkedinSessionPath: 'data/linkedin/session.json',
     });
   });
 
   it('NFR-09: PORT defaults to 3000 and LOG_LEVEL to info', () => {
-    expect(loadConfig({ DB_PATH: 'x.db' })).toEqual({ port: 3000, dbPath: 'x.db', logLevel: 'info' });
+    expect(loadConfig({ DB_PATH: 'x.db' })).toEqual({
+      port: 3000,
+      dbPath: 'x.db',
+      logLevel: 'info',
+      linkedinSessionPath: 'data/linkedin/session.json',
+    });
+  });
+
+  it('FR-14: LINKEDIN_SESSION_PATH sets where the saved LinkedIn login lives', () => {
+    expect(loadConfig({ DB_PATH: 'x.db', LINKEDIN_SESSION_PATH: ' tmp/li.json ' })).toMatchObject({
+      linkedinSessionPath: 'tmp/li.json',
+    });
   });
 
   it('NFR-09: trims surrounding whitespace', () => {
@@ -30,6 +42,7 @@ describe('loadConfig', () => {
     ['a PORT above 65535', { DB_PATH: 'x', PORT: '65536' }, 'PORT:'],
     ['a negative PORT', { DB_PATH: 'x', PORT: '-1' }, 'PORT: must be a whole number'],
     ['an unknown LOG_LEVEL', { DB_PATH: 'x', LOG_LEVEL: 'verbose' }, 'LOG_LEVEL:'],
+    ['an empty LINKEDIN_SESSION_PATH', { DB_PATH: 'x', LINKEDIN_SESSION_PATH: ' ' }, 'LINKEDIN_SESSION_PATH:'],
   ])('NFR-09: %s is a ConfigError that says what to fix', (_case, env, message) => {
     expect(() => loadConfig(env)).toThrow(ConfigError);
     expect(() => loadConfig(env)).toThrow(message);

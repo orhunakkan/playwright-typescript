@@ -69,6 +69,18 @@ The command file lives in `.claude/commands/find-jobs.md`, which is not committe
 
 Open the board at http://127.0.0.1:3000/. Stop the server with Ctrl+C: it finishes open requests and closes the database.
 
+### LinkedIn login
+
+Sign in to LinkedIn once. The session is saved and reused, so you sign in again only when LinkedIn ends it:
+
+```bash
+node scripts/linkedin-login.ts            # opens Edge (Windows) or Chromium; sign in by hand, 2FA included
+node scripts/linkedin-login.ts --check    # active / expired / missing, without opening a browser
+curl -s http://127.0.0.1:3000/api/linkedin/session
+```
+
+The session (cookies only, never the password) is saved to `data/linkedin/session.json`, and the browser profile to `data/linkedin/browser-profile/`. Both are git-ignored. `--channel chrome` or `--channel chromium` picks another browser, and `LINKEDIN_SESSION_PATH` moves the file. Using your LinkedIn account this way is your decision and your responsibility (DEC-032).
+
 ## Testing pyramid
 
 Ten test types, each run by one command. Every test name starts with the requirement it covers (`it('FR-04: …')`), and [`docs/traceability.md`](docs/traceability.md) maps every requirement to its tests and their latest result.
@@ -103,7 +115,7 @@ CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs static checks a
 
 ## Privacy and safety
 
-- **No automated access to linkedin.com, ever.** The only LinkedIn data is the alert emails LinkedIn sends. The app makes no outbound requests at all (a test checks every source file), and the agent's rules forbid opening links.
+- **LinkedIn only through your own login.** Jobs come from the alert emails. LinkedIn is reached only by scripts you run, with the session you saved yourself (DEC-032). The app server makes no outbound requests at all (a test checks every source file), and `/find-jobs` never opens links. Cookie values never appear in API responses, pages, logs or script output.
 - **Gmail is read-only.** The agent may only search and read threads. It never sends, labels, archives or deletes anything.
 - **Personal data stays local.** The database, résumé and profile live in `data/`, which git ignores. Email bodies are never stored, and tracking links are cut down to the canonical job URL, so one-time login tokens never reach a file or the database.
 - **Email text is data, never instructions.** Everything from an email is HTML-escaped on every page, and the agent treats a job title like "ignore previous instructions" as just a strange title.

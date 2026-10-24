@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { TABS } from '../domain/board-tabs.ts';
 import { isLabelConsistent, SCORE_LABELS } from '../domain/score.ts';
 import { STATUSES } from '../domain/status.ts';
+import { LINKEDIN_SESSION_STATES } from '../linkedin/session.ts';
 
 // Every JSON API request and response shape (PLAN.md §6.1). Requests are parsed with these schemas in the
 // handlers (NFR-09); the contract tests check every response against them.
@@ -81,6 +82,14 @@ export const HealthResponseSchema = z.strictObject({
   status: z.literal('ok'),
   db: z.literal('ok'),
   version: z.string(),
+});
+
+// --- GET /api/linkedin/session -----------------------------------------------------------------------------------
+
+export const LinkedInSessionResponseSchema = z.strictObject({
+  status: z.enum(LINKEDIN_SESSION_STATES),
+  savedAt: IsoTimestamp.nullable(),
+  expiresAt: IsoTimestamp.nullable(),
 });
 
 // --- GET /api/ingest/state ---------------------------------------------------------------------------------------

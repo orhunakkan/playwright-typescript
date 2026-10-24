@@ -31,9 +31,14 @@ export const REQUIREMENTS: readonly Requirement[] = [
     title: 'Agent summary',
     also: 'Printed by Claude at the end of /find-jobs (agent/find-jobs.md step 6); checked by hand at CP-5',
   },
+  {
+    id: 'FR-14',
+    title: 'LinkedIn login',
+    also: 'Signing in with node scripts/linkedin-login.ts is checked by hand at CP-9 (it needs a real LinkedIn account)',
+  },
   { id: 'NFR-01', title: 'Localhost only' },
   { id: 'NFR-02', title: 'No new npm dependencies', also: '`npm run audit` in CI' },
-  { id: 'NFR-03', title: 'No automated LinkedIn access' },
+  { id: 'NFR-03', title: 'The app server makes no outbound requests' },
   { id: 'NFR-04', title: 'Gmail read-only', also: 'Only search_threads and get_thread were called in every live run' },
   { id: 'NFR-05', title: 'Board and API p95 < 200 ms with 5,000 jobs', also: 'k6: `tests/perf/load.ts`' },
   { id: 'NFR-06', title: 'Accessibility: no axe violations (WCAG 2.2 AA)' },
@@ -46,6 +51,7 @@ export const REQUIREMENTS: readonly Requirement[] = [
     also: "Every suite runs on the owner's Windows 11 machine (Git Bash and PowerShell); CI runs them on Linux",
   },
   { id: 'NFR-11', title: 'Responsive down to 375 px', also: 'Every E2E test also runs on the Pixel 7 project' },
+  { id: 'NFR-12', title: 'The saved LinkedIn session stays local and secret' },
 ];
 
 export interface TestCase {
