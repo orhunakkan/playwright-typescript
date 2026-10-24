@@ -19,6 +19,7 @@ import { DEFAULT_LINKEDIN_SESSION_PATH } from '../src/config.ts';
 import {
   createLinkedInSessionFile,
   LINKEDIN_AUTH_COOKIE,
+  LINKEDIN_SESSION_LABELS,
   linkedInSessionStatus,
   saveLinkedInSession,
   type LinkedInSessionStatus,
@@ -180,18 +181,19 @@ function warning(text: string): string {
 
 /** One coloured line: "✔ LinkedIn: signed in · saved … · expires …", or what is wrong and how to fix it. */
 export function describeLinkedInSession(status: LinkedInSessionStatus, sessionPath: string): string {
+  const label = `LinkedIn: ${LINKEDIN_SESSION_LABELS[status.status]}`;
   const fix = styleText('dim', ` · run node scripts/linkedin-login.ts`);
   switch (status.status) {
     case 'missing':
-      return `${styleText('yellow', '✘ LinkedIn: not signed in')} ${styleText('dim', `(no ${sessionPath})`)}${fix}`;
+      return `${styleText('yellow', `✘ ${label}`)} ${styleText('dim', `(no ${sessionPath})`)}${fix}`;
     case 'invalid':
-      return `${styleText('yellow', '✘ LinkedIn: saved session unreadable')} ${styleText('dim', `(${sessionPath})`)}${fix}`;
+      return `${styleText('yellow', `✘ ${label}`)} ${styleText('dim', `(${sessionPath})`)}${fix}`;
     case 'expired':
-      return `${styleText('yellow', `✘ LinkedIn: session expired ${formatDay(String(status.expiresAt))}`)}${fix}`;
+      return `${styleText('yellow', `✘ ${label} ${formatDay(String(status.expiresAt))}`)}${fix}`;
     case 'active': {
       const saved = status.savedAt === null ? '' : ` · saved ${formatDateTime(status.savedAt)}`;
       const expires = ` · expires ${status.expiresAt === null ? 'with the browser session' : formatDay(status.expiresAt)}`;
-      return `${styleText('green', '✔ LinkedIn: signed in')}${styleText('dim', saved + expires)}`;
+      return `${styleText('green', `✔ ${label}`)}${styleText('dim', saved + expires)}`;
     }
   }
 }
