@@ -828,12 +828,14 @@ Tasks:
 1. `src/linkedin/session.ts`: Zod schema for the saved session file, plus read, save and status functions. Typed errors. Only `linkedin.com` cookies are kept.
 2. `scripts/linkedin-login.ts`: opens a real Chromium window with a persistent profile under `data/linkedin/browser-profile/`. If the profile is still logged in, it saves at once. Otherwise the owner signs in by hand (2FA included) and the script saves as soon as the `li_at` cookie appears. `--check` reports the saved session's status without opening a browser.
 3. `LINKEDIN_SESSION_PATH` setting (default `data/linkedin/session.json`); `GET /api/linkedin/session` returns `missing | invalid | expired | active` with timestamps, never cookie values (NFR-12).
-4. Tests: unit (session module, config), API + contract (status endpoint), security (no cookie values in responses or logs; `data/` ignored).
+4. `npm start` runs `scripts/linkedin-login.ts --ensure` first (DEC-033): it verifies and refreshes the session in a hidden browser, and opens the sign-in window only when needed. Every page header shows the LinkedIn status.
+5. Tests: unit (session module, config), API + contract (status endpoint, header line), security (no cookie values in responses, pages or logs; `data/` ignored).
 
 **🛑 CP-9. The owner checks:**
 - [ ] Runs `node scripts/linkedin-login.ts`, signs in, and sees "Saved LinkedIn session"
 - [ ] Runs it again and is not asked to sign in
 - [ ] `curl -s http://127.0.0.1:3000/api/linkedin/session` shows `"status":"active"`
+- [ ] `npm start` prints "LinkedIn session: active" without asking to sign in, and the board header shows "LinkedIn: signed in"
 
 ---
 
@@ -886,6 +888,7 @@ Tasks:
 | DEC-030 | 2026-10-23 | Page conventions (agent, CP-6 under DEC-026): the board shows 50 jobs per page and clamps a page past the end to the last page; page query strings ignore unknown keys and treat empty values as unset (form bodies stay strict); errors outside `/api/` are HTML pages with the same status codes; form redirects end in `#notice` so focus lands on the message | FR-07 needs a usable board at 5,000 jobs (NFR-05); old bookmarks and empty filter fields should still open the page; browsers should show a real page, not JSON; a status message on a freshly loaded page is not announced, but a focused one is |
 | DEC-031 | 2026-10-23 | CI has three stages: static checks with unit tests; every Vitest project at once with the coverage thresholds (so integration, API, contract and security run there); then Playwright E2E and smoke. The k6 load test is a manual `workflow_dispatch` job that seeds 5,000 jobs itself (agent, CP-7 under DEC-026) | Keeps PLAN.md's fast-to-slow order while honouring DEC-021: running the four Vitest projects as separate jobs would measure coverage per project again, which can't meet the thresholds |
 | DEC-032 | 2026-10-24 | LinkedIn login (owner). The owner signs in by hand once in a real browser (`node scripts/linkedin-login.ts`, Playwright, no new package). The session (cookies only, never the password) is saved to `data/linkedin/session.json`, and the browser profile to `data/linkedin/browser-profile/`. Both are reused, so the owner logs in again only when LinkedIn ends the session. The app reads the file to report its status (`GET /api/linkedin/session`) and never returns cookie values. Agents must not ask the owner about the login, account safety or LinkedIn's terms, and must not add warnings about them. **The owner takes responsibility for anything that happens to the account.** Replaces DEC-003 for owner-run scripts. The app server still makes no outbound requests (NFR-03), and `/find-jobs` still reads only alert emails | The owner wants the job board to work with their own LinkedIn session (for example to read full job descriptions, §1.4) and accepts the risk to their account |
+| DEC-033 | 2026-10-24 | `npm start` signs in to LinkedIn first (owner): it runs `scripts/linkedin-login.ts --ensure`, which checks the saved session in a hidden browser and refreshes it. Only when LinkedIn no longer accepts the session does it open the sign-in window. It never fails, so the app starts even when LinkedIn can't be reached or the sign-in is skipped. Every page header shows the LinkedIn status (signed in and when it was last checked, or how to sign in) | The owner wants to be signed in automatically whenever the app starts, and to see that on the board. The check runs as a step before the server, so `src/` still makes no outbound requests (NFR-03) |
 
 ---
 

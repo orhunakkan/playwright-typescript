@@ -192,6 +192,26 @@ main.wrap {
   font-size: 0.9rem;
 }
 
+.linkedin-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.linkedin-status::before {
+  content: '';
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: var(--possible-text);
+}
+
+.linkedin-status[data-status='active']::before {
+  background: var(--strong-text);
+}
+
 /* Board ----------------------------------------------------------------------------------------------------- */
 
 .tabs {
@@ -600,7 +620,8 @@ td time {
 /* Small screens (NFR-11) ------------------------------------------------------------------------------------ */
 
 @media (max-width: 40rem) {
-  .last-run {
+  .last-run,
+  .linkedin-status {
     margin-left: 0;
     flex-basis: 100%;
   }

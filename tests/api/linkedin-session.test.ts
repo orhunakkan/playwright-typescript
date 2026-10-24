@@ -59,3 +59,60 @@ describe('GET /api/linkedin/session', () => {
     expect((await t.get('/api/linkedin/session')).body).toMatchObject({ status: 'active', expiresAt: null });
   });
 });
+
+describe('LinkedIn status in the page header', () => {
+  let t: TestApp;
+  beforeEach(async () => {
+    t = await startTestApp();
+  });
+  afterEach(async () => {
+    await t.close();
+  });
+
+  function header(text: string): string {
+    return /<p class="linkedin-status"[\s\S]*?<\/p>/.exec(text)?.[0] ?? '';
+  }
+
+  it('FR-14: every page says when LinkedIn is not signed in, and how to sign in', async () => {
+    for (const path of ['/', '/runs', '/profile']) {
+      const line = header((await t.get(path)).text);
+      expect(line).toContain('data-status="missing"');
+      expect(line).toContain('LinkedIn: <strong>not signed in</strong>');
+      expect(line).toContain('<code>node scripts/linkedin-login.ts</code>');
+    }
+  });
+
+  it('FR-14: shows signed in, with when the session was last checked', async () => {
+    saveLinkedInSession(
+      t.linkedinSessionPath,
+      createLinkedInSessionFile(fakeLinkedInStorageState(), '2026-10-23T09:00:00.000Z'),
+    );
+    const line = header((await t.get('/')).text);
+
+    expect(line).toContain('data-status="active"');
+    expect(line).toContain('LinkedIn: <strong>signed in</strong> · checked Oct 23');
+    expect(line).not.toContain('linkedin-login.ts');
+  });
+
+  it('FR-14: shows an expired session', async () => {
+    saveLinkedInSession(
+      t.linkedinSessionPath,
+      createLinkedInSessionFile(fakeLinkedInStorageState(Date.parse('2026-10-01T00:00:00Z') / 1000), SAVED_AT),
+    );
+    expect(header((await t.get('/')).text)).toContain('LinkedIn: <strong>session expired</strong>');
+  });
+
+  it('FR-14: shows an unreadable session file', async () => {
+    mkdirSync(dirname(t.linkedinSessionPath), { recursive: true });
+    writeFileSync(t.linkedinSessionPath, 'garbage');
+
+    expect(header((await t.get('/')).text)).toContain('LinkedIn: <strong>saved session unreadable</strong>');
+  });
+
+  it('FR-14: error pages leave the status out', async () => {
+    const response = await t.get('/jobs/999');
+
+    expect(response.status).toBe(404);
+    expect(header(response.text)).toBe('');
+  });
+});

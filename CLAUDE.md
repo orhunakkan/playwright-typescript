@@ -37,7 +37,7 @@ Node ≥ 24 running TypeScript natively (TS `~6.0.3`, `tsconfig.json` is strict)
 | `npm run test:e2e` / `test:smoke`                     | Playwright on chromium, firefox, webkit, mobile / `@smoke` on chromium                   |
 | `npm run test:perf`                                   | k6 (`tests/perf/load.ts`); k6 is installed with `winget install k6`, not npm             |
 | `npm run audit`                                       | `npm audit --audit-level=high`                                                           |
-| `npm start` / `npm run dev`                           | App on `127.0.0.1:$PORT` (needs `.env`; copy `.env.example`)                             |
+| `npm start` / `npm run dev`                           | App on `127.0.0.1:$PORT` (needs `.env`); `start` first signs in to LinkedIn (DEC-033)    |
 | `node scripts/seed.ts --count 5000 --db data/perf.db` | Fake jobs for the load test and screenshots; refuses a non-empty database                |
 | `node scripts/screenshots.ts`                         | README screenshots from fake data (`docs/screenshots/`)                                  |
 | `node scripts/traceability.ts`                        | Rebuilds `docs/traceability.md` from `reports/vitest.json` and `reports/playwright.json` |

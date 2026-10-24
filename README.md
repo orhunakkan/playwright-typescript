@@ -49,7 +49,7 @@ cp .env.example .env          # PORT=3000, DB_PATH=data/jobboard.db, LOG_LEVEL=i
 ## Running
 
 ```bash
-npm start                     # serves http://127.0.0.1:3000 (never other network addresses)
+npm start                     # signs in to LinkedIn, then serves http://127.0.0.1:3000 (never other addresses)
 ```
 
 The first start creates `data/jobboard.db`. Load your profile once (it is the basis of every score):
@@ -71,7 +71,7 @@ Open the board at http://127.0.0.1:3000/. Stop the server with Ctrl+C: it finish
 
 ### LinkedIn login
 
-Sign in to LinkedIn once. The session is saved and reused, so you sign in again only when LinkedIn ends it:
+`npm start` signs you in to LinkedIn before it starts the app. It checks the saved session in a hidden browser and refreshes it. Only when LinkedIn no longer accepts the session does it open a window for you to sign in (2FA included). Every page header shows **LinkedIn: signed in** and when the session was last checked. The same steps by hand:
 
 ```bash
 node scripts/linkedin-login.ts            # opens Edge (Windows) or Chromium; sign in by hand, 2FA included
