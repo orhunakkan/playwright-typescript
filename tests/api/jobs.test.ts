@@ -5,13 +5,13 @@ import { jobAt, seedBoard } from '../helpers/seed-board.ts';
 import { startTestApp, type TestApp } from '../helpers/test-app.ts';
 
 describe('the jobs API', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   let runId: number;
   let jobs: JobSummary[];
 
   beforeEach(async () => {
-    t = await startTestApp();
-    ({ runId, jobs } = await seedBoard(t));
+    testApp = await startTestApp();
+    ({ runId, jobs } = await seedBoard(testApp));
     const scores = [
       ['3Pillar', 92, 'strong'],
       ['Cboe Global Markets', 88, 'strong'],
@@ -19,7 +19,7 @@ describe('the jobs API', () => {
       ['Agilent Technologies', 10, 'weak'],
       ['Optum', 45, 'weak'],
     ] as const;
-    await t.post(`/api/runs/${String(runId)}/scores`, {
+    await testApp.post(`/api/runs/${String(runId)}/scores`, {
       rubricVersion: 'v1',
       scores: scores
         .filter(([company]) => jobs.some((job) => job.company === company))
@@ -27,18 +27,18 @@ describe('the jobs API', () => {
     });
   });
   afterEach(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   async function list(query = ''): Promise<{ companies: string[]; total: number }> {
-    const response = await t.get(`/api/jobs${query}`);
+    const response = await testApp.get(`/api/jobs${query}`);
     expect(response.status).toBe(200);
     const body = JobListResponseSchema.parse(response.body);
     return { companies: body.items.map((job) => job.company), total: body.total };
   }
 
   async function patch(jobId: number, body: unknown) {
-    return t.call('PATCH', `/api/jobs/${String(jobId)}`, body);
+    return testApp.call('PATCH', `/api/jobs/${String(jobId)}`, body);
   }
 
   describe('GET /api/jobs', () => {
@@ -51,7 +51,7 @@ describe('the jobs API', () => {
     });
 
     it('FR-07: unscored jobs come after scored ones, newest first seen first', async () => {
-      const response = JobListResponseSchema.parse((await t.get('/api/jobs?unscored=true&limit=100')).body);
+      const response = JobListResponseSchema.parse((await testApp.get('/api/jobs?unscored=true&limit=100')).body);
 
       expect(response.total).toBe(14);
       expect(response.items.every((job) => job.score === null)).toBe(true);
@@ -74,7 +74,7 @@ describe('the jobs API', () => {
     });
 
     it('FR-07: sort=recent orders by first seen, newest first', async () => {
-      const response = JobListResponseSchema.parse((await t.get('/api/jobs?sort=recent&limit=100')).body);
+      const response = JobListResponseSchema.parse((await testApp.get('/api/jobs?sort=recent&limit=100')).body);
 
       const seen = response.items.map((job) => job.firstSeenAt);
       expect(seen).toEqual([...seen].sort().reverse());
@@ -136,7 +136,7 @@ describe('the jobs API', () => {
       '__proto__=x',
       `q=${'x'.repeat(201)}`,
     ])('NFR-09: GET /api/jobs?%s is a 400', async (query) => {
-      const response = await t.get(`/api/jobs?${query}`);
+      const response = await testApp.get(`/api/jobs?${query}`);
 
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({ error: { code: 'validation_failed' } });
@@ -146,12 +146,12 @@ describe('the jobs API', () => {
   describe('GET /api/jobs/:id', () => {
     it('FR-10: returns every field, with sightings and status history', async () => {
       const job = jobAt(jobs, 'ConsumerAffairs');
-      const again = await t.post('/api/runs');
+      const again = await testApp.post('/api/runs');
       const secondRun = (again.body as { runId: number }).runId;
       const later = { ...fixtureEmail('digest-senior-qa.txt', 'msglater'), receivedAt: '2026-10-24T09:00:00Z' };
-      await t.post(`/api/runs/${String(secondRun)}/emails`, { emails: [later] });
+      await testApp.post(`/api/runs/${String(secondRun)}/emails`, { emails: [later] });
 
-      const response = await t.get(`/api/jobs/${String(job.id)}`);
+      const response = await testApp.get(`/api/jobs/${String(job.id)}`);
 
       expect(response.status).toBe(200);
       const detail = JobDetailSchema.parse(response.body);
@@ -180,8 +180,8 @@ describe('the jobs API', () => {
     });
 
     it('FR-10: an unknown job is 404 and a malformed ID is 400', async () => {
-      const unknown = await t.get('/api/jobs/9999');
-      const malformed = await t.get('/api/jobs/first');
+      const unknown = await testApp.get('/api/jobs/9999');
+      const malformed = await testApp.get('/api/jobs/first');
 
       expect(unknown.status).toBe(404);
       expect(unknown.body).toEqual({ error: { code: 'not_found', message: 'job 9999 does not exist' } });
@@ -199,7 +199,7 @@ describe('the jobs API', () => {
       expect(response.status).toBe(200);
       const detail = JobDetailSchema.parse(response.body);
       expect(detail.status).toBe('saved');
-      expect(detail.history.map((h) => [h.fromStatus, h.toStatus])).toEqual([
+      expect(detail.history.map((change) => [change.fromStatus, change.toStatus])).toEqual([
         [null, 'new'],
         ['new', 'saved'],
       ]);
@@ -218,7 +218,7 @@ describe('the jobs API', () => {
           details: { from: 'new', to: 'offer' },
         },
       });
-      expect((await t.get(`/api/jobs/${String(job.id)}`)).body).toMatchObject({ status: 'new', notes: '' });
+      expect((await testApp.get(`/api/jobs/${String(job.id)}`)).body).toMatchObject({ status: 'new', notes: '' });
     });
 
     it('FR-08: dismiss and restore', async () => {

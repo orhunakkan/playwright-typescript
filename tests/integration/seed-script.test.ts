@@ -16,9 +16,9 @@ const root = fileURLToPath(new URL('../../', import.meta.url));
 const UNTIL = '2026-10-23T12:00:00.000Z';
 
 describe('scripts/seed.ts', () => {
-  const t = createTestDatabase();
-  const summary = seedDatabase(t.db, t.repos, { count: 400, seed: 7, until: UNTIL });
-  const jobs = t.repos.jobs.list({
+  const testDb = createTestDatabase();
+  const summary = seedDatabase(testDb.db, testDb.repos, { count: 400, seed: 7, until: UNTIL });
+  const jobs = testDb.repos.jobs.list({
     statuses: null,
     minScore: null,
     text: null,
@@ -28,14 +28,14 @@ describe('scripts/seed.ts', () => {
     offset: 0,
   });
   afterAll(() => {
-    t.close();
+    testDb.close();
   });
 
   it('NFR-05: creates exactly the requested number of jobs, with repeat sightings', () => {
     expect(summary.jobs).toBe(400);
     expect(jobs).toHaveLength(400);
-    expect(countAll(t.db)).toMatchObject({ runs: 30, emails: 100, jobs: 400 });
-    expect(countAll(t.db).sightings).toBeGreaterThan(400);
+    expect(countAll(testDb.db)).toMatchObject({ runs: 30, emails: 100, jobs: 400 });
+    expect(countAll(testDb.db).sightings).toBeGreaterThan(400);
     expect(jobs.filter((job) => job.seenCount > 1).length).toBeGreaterThan(50);
   });
 
@@ -49,7 +49,7 @@ describe('scripts/seed.ts', () => {
 
   it('FR-08: every status history follows the allowed transitions', () => {
     for (const job of jobs) {
-      const history = t.repos.statusHistory.listForJob(job.id);
+      const history = testDb.repos.statusHistory.listForJob(job.id);
       expect(history[0]).toMatchObject({ fromStatus: null, toStatus: 'new' });
       for (const change of history.slice(1)) {
         expect(change.fromStatus === null ? false : canTransition(change.fromStatus, change.toStatus)).toBe(true);
@@ -59,7 +59,7 @@ describe('scripts/seed.ts', () => {
   });
 
   it('FR-11: every run is finished and its counters add up', () => {
-    const runs = t.repos.runs.list(100);
+    const runs = testDb.repos.runs.list(100);
 
     expect(runs.every((run) => run.finishedAt !== null)).toBe(true);
     expect(runs.reduce((sum, run) => sum + run.jobsNew, 0)).toBe(400);
@@ -71,16 +71,16 @@ describe('scripts/seed.ts', () => {
     const again = createTestDatabase();
     try {
       seedDatabase(again.db, again.repos, { count: 400, seed: 7, until: UNTIL });
-      const titles = (db: typeof t.db) => db.prepare('SELECT title, score, status FROM jobs ORDER BY id').all();
+      const titles = (db: typeof testDb.db) => db.prepare('SELECT title, score, status FROM jobs ORDER BY id').all();
 
-      expect(titles(again.db)).toEqual(titles(t.db));
+      expect(titles(again.db)).toEqual(titles(testDb.db));
     } finally {
       again.close();
     }
   });
 
   it('NFR-08: refuses to seed a database that already has jobs', () => {
-    expect(() => seedDatabase(t.db, t.repos, { count: 5, seed: 1, until: UNTIL })).toThrow(SeedError);
+    expect(() => seedDatabase(testDb.db, testDb.repos, { count: 5, seed: 1, until: UNTIL })).toThrow(SeedError);
   });
 
   describe('from the command line', () => {

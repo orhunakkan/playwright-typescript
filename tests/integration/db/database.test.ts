@@ -40,19 +40,19 @@ describe('openDatabase', () => {
 });
 
 describe('transaction', () => {
-  let test: TestDatabase;
+  let testDb: TestDatabase;
   afterEach(() => {
-    test.close();
+    testDb.close();
   });
 
   function setUp(): TestDatabase {
-    test = createTestDatabase({ migrated: false });
-    test.db.exec('CREATE TABLE t (v INTEGER NOT NULL)');
-    return test;
+    testDb = createTestDatabase({ migrated: false });
+    testDb.db.exec('CREATE TABLE t (v INTEGER NOT NULL)');
+    return testDb;
   }
 
   function values(): unknown[] {
-    return test.db.prepare('SELECT v FROM t ORDER BY v').all();
+    return testDb.db.prepare('SELECT v FROM t ORDER BY v').all();
   }
 
   it('FR-05: commits when the work returns, and passes its result through', () => {

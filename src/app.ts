@@ -37,14 +37,14 @@ export async function startApp(options: StartOptions): Promise<RunningApp> {
   const db = openDatabase(options.dbPath);
   try {
     migrate(db);
-    const ctx: AppContext = {
+    const context: AppContext = {
       db,
       repos: createRepositories(db),
       now: options.now ?? (() => new Date().toISOString()),
       version: readVersion(),
       linkedinSessionPath: options.linkedinSessionPath,
     };
-    const server = createAppServer([...apiRoutes(ctx), ...pageRoutes(ctx)], options.logger, renderErrorPage);
+    const server = createAppServer([...apiRoutes(context), ...pageRoutes(context)], options.logger, renderErrorPage);
     const port = await listen(server, options.port);
 
     let closing: Promise<void> | undefined;
@@ -91,6 +91,6 @@ async function stop(server: Server, db: DatabaseSync, graceMs: number): Promise<
 }
 
 function readVersion(): string {
-  const pkg: unknown = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-  return z.object({ version: z.string() }).parse(pkg).version;
+  const packageJson: unknown = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  return z.object({ version: z.string() }).parse(packageJson).version;
 }

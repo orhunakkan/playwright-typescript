@@ -158,7 +158,7 @@ export function buildMatrix(cases: readonly TestCase[], generatedAt: string, k6:
   const details = REQUIREMENTS.map((requirement) => {
     const tests = byRequirement.get(requirement.id) ?? [];
     const lines = tests
-      .toSorted((a, b) => a.file.localeCompare(b.file) || a.name.localeCompare(b.name))
+      .toSorted((left, right) => left.file.localeCompare(right.file) || left.name.localeCompare(right.name))
       .map((test) => `- ${test.passed ? '✅' : '❌'} \`${test.file}\`: ${test.name.replaceAll('|', '\\|')}`);
     return [
       `<details><summary><b>${requirement.id}</b> ${requirement.title} (${String(tests.length)} tests)</summary>`,
@@ -198,6 +198,6 @@ if (import.meta.main) {
   const markdown = buildMatrix(cases, new Date().toISOString().slice(0, 10), k6);
   writeFileSync(new URL('../docs/traceability.md', import.meta.url), markdown);
   console.log(
-    `docs/traceability.md: ${String(cases.length)} tests, ${String(cases.filter((t) => !t.passed).length)} failing`,
+    `docs/traceability.md: ${String(cases.length)} tests, ${String(cases.filter((test) => !test.passed).length)} failing`,
   );
 }

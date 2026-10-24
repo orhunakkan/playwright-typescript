@@ -9,8 +9,8 @@ import type { AppContext } from './context.ts';
 import { toJobDetail, toJobSummary } from './views.ts';
 
 // The board's data (FR-07 to FR-10): list with tab/filters/sort, job detail, status and notes changes.
-export function jobRoutes(ctx: AppContext): Route[] {
-  const { db, repos } = ctx;
+export function jobRoutes(context: AppContext): Route[] {
+  const { db, repos } = context;
 
   function findJob(request: ApiRequest): JobRecord {
     const jobId = parseInput(IdParamSchema, request.params['id'], 'job ID');
@@ -54,7 +54,7 @@ export function jobRoutes(ctx: AppContext): Route[] {
 
         // Status and notes change together or not at all: an invalid transition also drops the notes.
         return transaction(db, () => {
-          if (changes.status !== undefined) changeJobStatus(db, repos, job.id, changes.status, ctx.now);
+          if (changes.status !== undefined) changeJobStatus(db, repos, job.id, changes.status, context.now);
           if (changes.notes !== undefined) repos.jobs.updateNotes(job.id, changes.notes);
           return ok(toJobDetail(repos.jobs.get(job.id) ?? job, repos));
         });

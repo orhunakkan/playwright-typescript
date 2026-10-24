@@ -5,12 +5,12 @@ import type { AppContext } from './context.ts';
 
 // GET /api/linkedin/session: whether the owner's saved LinkedIn login can still be used (DEC-032). It only reads the
 // file; it never contacts LinkedIn (NFR-03) and never returns cookie values (NFR-12).
-export function linkedinRoutes(ctx: AppContext): Route[] {
+export function linkedinRoutes(context: AppContext): Route[] {
   return [
     {
       method: 'GET',
       path: '/api/linkedin/session',
-      handler: () => ok(linkedInSessionStatus(ctx.linkedinSessionPath, ctx.now())),
+      handler: () => ok(linkedInSessionStatus(context.linkedinSessionPath, context.now())),
     },
   ];
 }

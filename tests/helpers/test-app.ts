@@ -78,7 +78,7 @@ export async function startTestApp(): Promise<TestApp> {
 
   function raw(options: { method?: string; path: string; headers?: Record<string, string>; body?: string }) {
     return new Promise<RawResponse>((resolve, reject) => {
-      const req = httpRequest(
+      const request = httpRequest(
         {
           host: '127.0.0.1',
           port: app.port,
@@ -86,20 +86,20 @@ export async function startTestApp(): Promise<TestApp> {
           path: options.path,
           headers: { Host: `127.0.0.1:${String(app.port)}`, ...options.headers },
         },
-        (res) => {
+        (response) => {
           const chunks: Buffer[] = [];
-          res.on('data', (chunk: Buffer) => chunks.push(chunk));
-          res.on('end', () => {
+          response.on('data', (chunk: Buffer) => chunks.push(chunk));
+          response.on('end', () => {
             resolve({
-              status: res.statusCode ?? 0,
-              headers: res.headers,
+              status: response.statusCode ?? 0,
+              headers: response.headers,
               text: Buffer.concat(chunks).toString('utf8'),
             });
           });
         },
       );
-      req.on('error', reject);
-      req.end(options.body);
+      request.on('error', reject);
+      request.end(options.body);
     });
   }
 

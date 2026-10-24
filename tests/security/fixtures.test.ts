@@ -35,7 +35,9 @@ describe('email fixtures are sanitized', () => {
       const addresses = text.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g) ?? [];
 
       expect(
-        addresses.filter((a) => !/^(?:jobalerts-noreply|jobs-noreply)@linkedin\.com$|^test@example\.com$/.test(a)),
+        addresses.filter(
+          (address) => !/^(?:jobalerts-noreply|jobs-noreply)@linkedin\.com$|^test@example\.com$/.test(address),
+        ),
       ).toEqual([]);
     });
   });

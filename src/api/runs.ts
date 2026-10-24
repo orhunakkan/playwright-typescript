@@ -15,8 +15,8 @@ import { toJobSummary, toRunSummary } from './views.ts';
 
 // The /find-jobs run lifecycle (PLAN.md §4.1 steps 1 and 3–7; FR-02, FR-05, FR-06, FR-11, FR-12):
 // where to resume, start a run, send emails, store scores, finish, and list past runs.
-export function runRoutes(ctx: AppContext): Route[] {
-  const { db, repos } = ctx;
+export function runRoutes(context: AppContext): Route[] {
+  const { db, repos } = context;
 
   function openRun(request: ApiRequest): RunRecord {
     const runId = parseInput(IdParamSchema, request.params['id'], 'run ID');
@@ -37,7 +37,7 @@ export function runRoutes(ctx: AppContext): Route[] {
       path: '/api/runs',
       handler: (request) => {
         parseInput(EmptyRequestSchema, request.body);
-        return ok({ runId: repos.runs.create(ctx.now()) }, 201);
+        return ok({ runId: repos.runs.create(context.now()) }, 201);
       },
     },
     {
@@ -46,7 +46,7 @@ export function runRoutes(ctx: AppContext): Route[] {
       handler: (request) => {
         const run = openRun(request);
         const { emails } = parseInput(IngestEmailsRequestSchema, request.body);
-        const { results, newJobIds } = ingestEmails(db, repos, run.id, emails, ctx.now);
+        const { results, newJobIds } = ingestEmails(db, repos, run.id, emails, context.now);
         const newJobs = newJobIds.flatMap((id) => {
           const job = repos.jobs.get(id);
           return job === null ? [] : [toJobSummary(job)];
@@ -72,7 +72,7 @@ export function runRoutes(ctx: AppContext): Route[] {
             });
           }
 
-          const scoredAt = ctx.now();
+          const scoredAt = context.now();
           for (const entry of scores) {
             repos.jobs.setScore(entry.jobId, { ...entry, rubricVersion, scoredAt });
           }
@@ -87,7 +87,7 @@ export function runRoutes(ctx: AppContext): Route[] {
       handler: (request) => {
         const run = openRun(request);
         parseInput(EmptyRequestSchema, request.body);
-        repos.runs.finish(run.id, ctx.now());
+        repos.runs.finish(run.id, context.now());
         const finished = repos.runs.get(run.id) ?? run;
         return ok(toRunSummary(finished, repos));
       },

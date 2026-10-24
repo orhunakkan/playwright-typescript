@@ -29,8 +29,8 @@ import { runsPage } from './pages/runs.ts';
 export const PAGE_SIZE = 50;
 const RECENT = 50;
 
-export function pageRoutes(ctx: AppContext): Route[] {
-  const { db, repos } = ctx;
+export function pageRoutes(context: AppContext): Route[] {
+  const { db, repos } = context;
 
   function page(title: string, nav: NavItem | null, body: SafeHtml): TextReply {
     return htmlReply(
@@ -38,7 +38,7 @@ export function pageRoutes(ctx: AppContext): Route[] {
         title,
         nav,
         lastRun: repos.runs.list(1)[0] ?? null,
-        linkedin: linkedInSessionStatus(ctx.linkedinSessionPath, ctx.now()),
+        linkedin: linkedInSessionStatus(context.linkedinSessionPath, context.now()),
         body,
       }),
     );
@@ -90,7 +90,7 @@ export function pageRoutes(ctx: AppContext): Route[] {
           total,
           counts,
           changed: query.changed === undefined ? null : repos.jobs.get(query.changed),
-          now: ctx.now(),
+          now: context.now(),
         });
         return page('Board', 'board', body);
       },
@@ -119,7 +119,7 @@ export function pageRoutes(ctx: AppContext): Route[] {
       handler: (request) => {
         const job = findJob(request);
         const form = parseInput(StatusFormSchema, request.body, 'form');
-        changeJobStatus(db, repos, job.id, form.status, ctx.now);
+        changeJobStatus(db, repos, job.id, form.status, context.now);
 
         const back = new URL(safeReturnPath(form.return, `/jobs/${String(job.id)}`), 'http://app.invalid');
         back.searchParams.delete('notes');

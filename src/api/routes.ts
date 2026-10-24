@@ -7,6 +7,12 @@ import { profileRoutes } from './profile.ts';
 import { runRoutes } from './runs.ts';
 
 // Every JSON API route of PLAN.md §6.1.
-export function apiRoutes(ctx: AppContext): Route[] {
-  return [...healthRoutes(ctx), ...profileRoutes(ctx), ...runRoutes(ctx), ...jobRoutes(ctx), ...linkedinRoutes(ctx)];
+export function apiRoutes(context: AppContext): Route[] {
+  return [
+    ...healthRoutes(context),
+    ...profileRoutes(context),
+    ...runRoutes(context),
+    ...jobRoutes(context),
+    ...linkedinRoutes(context),
+  ];
 }
