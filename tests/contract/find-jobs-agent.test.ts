@@ -80,7 +80,13 @@ describe('agent/find-jobs.md examples match the API schemas', () => {
 describe('agent/find-jobs.md calls only real API routes', () => {
   const db = openDatabase(':memory:');
   migrate(db);
-  const ctx: AppContext = { db, repos: createRepositories(db), now: () => '', version: 'test' };
+  const ctx: AppContext = {
+    db,
+    repos: createRepositories(db),
+    now: () => '',
+    version: 'test',
+    linkedinSessionPath: 'no-session.json',
+  };
   const match = createRouter(apiRoutes(ctx));
   const calls = curlCalls(procedure);
 

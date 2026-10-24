@@ -1,8 +1,10 @@
 import type { RunRecord } from '../db/repositories/runs.ts';
+import type { LinkedInSessionStatus } from '../linkedin/session.ts';
 import { formatDateTime } from './format.ts';
 import { html, raw, type SafeHtml } from './html.ts';
 
-// The HTML shell of every page (PLAN.md Phase 6): language, title, skip link, header with the last run, nav.
+// The HTML shell of every page (PLAN.md Phase 6): language, title, skip link, header with the last run and the
+// LinkedIn sign-in status (FR-14), nav.
 
 export type NavItem = 'board' | 'runs' | 'profile';
 
@@ -10,6 +12,7 @@ export interface LayoutOptions {
   title: string;
   nav: NavItem | null;
   lastRun?: RunRecord | null; // left out on error pages, where the database may be the problem
+  linkedin?: LinkedInSessionStatus; // left out on error pages too
   body: SafeHtml;
 }
 
@@ -43,6 +46,7 @@ export function layout(options: LayoutOptions): string {
               </ul>
             </nav>
             ${options.lastRun !== undefined && html`<p class="last-run">${lastRunLine(options.lastRun)}</p>`}
+            ${options.linkedin !== undefined && linkedinStatus(options.linkedin)}
           </div>
         </header>
         <main id="main" class="wrap" tabindex="-1">${options.body}</main>
@@ -58,4 +62,26 @@ function lastRunLine(run: RunRecord | null): SafeHtml {
   if (run === null) return html`No runs yet: run <code>/find-jobs</code> in Claude Code`;
   return html`Last run: <a href="/runs">${formatDateTime(run.startedAt)}</a> · ${run.jobsNew} new · ${run.jobsSeenAgain}
     seen again`;
+}
+
+const SIGN_IN = html`sign in with <code>node scripts/linkedin-login.ts</code>`;
+
+function linkedinStatus(session: LinkedInSessionStatus): SafeHtml {
+  return html`<p class="linkedin-status" data-status="${session.status}">${linkedinLine(session)}</p>`;
+}
+
+// The text carries the status; the coloured dot in app.css only repeats it.
+function linkedinLine(session: LinkedInSessionStatus): SafeHtml {
+  switch (session.status) {
+    case 'active': {
+      const checked = session.savedAt !== null && html` · checked ${formatDateTime(session.savedAt)}`;
+      return html`LinkedIn: <strong>signed in</strong>${checked}`;
+    }
+    case 'expired':
+      return html`LinkedIn: <strong>session expired</strong> · ${SIGN_IN}`;
+    case 'missing':
+      return html`LinkedIn: <strong>not signed in</strong> · ${SIGN_IN}`;
+    case 'invalid':
+      return html`LinkedIn: <strong>saved session unreadable</strong> · ${SIGN_IN}`;
+  }
 }

@@ -12,7 +12,12 @@ import { createRepositories } from '../src/db/repositories/index.ts';
 
 const OUT = new URL('../docs/screenshots/', import.meta.url);
 const dir = mkdtempSync(join(tmpdir(), 'jobboard-shots-'));
-const app = await startApp({ port: 0, dbPath: join(dir, 'shots.db'), logger: createLogger('warn') });
+const app = await startApp({
+  port: 0,
+  dbPath: join(dir, 'shots.db'),
+  linkedinSessionPath: join(dir, 'session.json'),
+  logger: createLogger('warn'),
+});
 
 try {
   seedDatabase(app.db, createRepositories(app.db), { count: 240, seed: 3, until: new Date().toISOString() });

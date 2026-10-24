@@ -83,6 +83,24 @@ curl -s -X PUT http://127.0.0.1:3000/api/profile \
 # 200 Profile; 400 validation_failed names every bad field
 ```
 
+## LinkedIn login
+
+### `GET /api/linkedin/session`
+
+The status of the owner's saved LinkedIn login (FR-14, DEC-032), written by `node scripts/linkedin-login.ts`. The app only reads the file, so the status is judged by the sign-in cookie's expiry and never by contacting LinkedIn. Cookie values are never returned (NFR-12).
+
+```bash
+curl -s http://127.0.0.1:3000/api/linkedin/session
+# 200 {"status":"active","savedAt":"2026-10-24T09:00:00.000Z","expiresAt":"2027-04-23T12:00:00.000Z"}
+```
+
+| `status`  | Meaning                                                                   |
+| --------- | ------------------------------------------------------------------------- |
+| `missing` | Nothing saved yet (`savedAt` and `expiresAt` are null)                    |
+| `invalid` | The file can't be used (not JSON, unknown format, no sign-in cookie)      |
+| `expired` | The sign-in cookie has expired: run the login script again                |
+| `active`  | Usable; `expiresAt` is null when the cookie lasts for the browser session |
+
 ## The `/find-jobs` run
 
 ### `GET /api/ingest/state`

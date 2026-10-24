@@ -31,6 +31,8 @@ export default defineConfig({
       PORT: String(PORT),
       DB_PATH: join(tmpdir(), 'agentic-job-board-e2e', `${String(Date.now())}.db`),
       LOG_LEVEL: 'warn',
+      // Never the owner's saved LinkedIn login (DEC-032).
+      LINKEDIN_SESSION_PATH: join(tmpdir(), 'agentic-job-board-e2e', 'no-linkedin-session.json'),
     },
   },
 });

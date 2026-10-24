@@ -9,12 +9,14 @@ import {
   JobDetailSchema,
   JobListResponseSchema,
   JobSummarySchema,
+  LinkedInSessionResponseSchema,
   RunListResponseSchema,
   RunSummarySchema,
   ScoresResponseSchema,
 } from '../../src/schemas/api.ts';
+import { createLinkedInSessionFile, saveLinkedInSession } from '../../src/linkedin/session.ts';
 import { ProfileSchema } from '../../src/schemas/profile.ts';
-import { fixtureEmail } from '../helpers/fixtures.ts';
+import { fakeLinkedInStorageState, fixtureEmail } from '../helpers/fixtures.ts';
 import { startTestApp, type ApiResponse, type TestApp } from '../helpers/test-app.ts';
 
 // Every response of PLAN.md §6.1 is checked against its Zod schema (DEC-009). The schemas are strict,
@@ -105,6 +107,15 @@ describe('API responses match their schemas', () => {
   it('FR-11: POST /api/runs/:id/finish and GET /api/runs', async () => {
     conforms(RunSummarySchema, await t.post(`/api/runs/${String(runId)}/finish`), 200);
     conforms(RunListResponseSchema, await t.get('/api/runs'), 200);
+  });
+
+  it('FR-14: GET /api/linkedin/session without and with a saved session', async () => {
+    conforms(LinkedInSessionResponseSchema, await t.get('/api/linkedin/session'), 200);
+    saveLinkedInSession(
+      t.linkedinSessionPath,
+      createLinkedInSessionFile(fakeLinkedInStorageState(), '2026-10-24T09:00:00.000Z'),
+    );
+    conforms(LinkedInSessionResponseSchema, await t.get('/api/linkedin/session'), 200);
   });
 
   it.each<[string, () => Promise<ApiResponse>, number]>([

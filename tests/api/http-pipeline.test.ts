@@ -168,6 +168,7 @@ describe('startApp', () => {
       const start = startApp({
         port: blocker.port,
         dbPath: join(dir, 'x.db'),
+        linkedinSessionPath: join(dir, 'session.json'),
         logger: createLogger('error', () => undefined),
       });
 

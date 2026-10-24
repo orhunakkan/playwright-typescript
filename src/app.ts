@@ -17,6 +17,7 @@ import { pageRoutes, renderErrorPage } from './ui/routes.ts';
 export interface StartOptions {
   port: number; // 0 picks a free port (tests)
   dbPath: string;
+  linkedinSessionPath: string;
   logger: Logger;
   now?: () => string;
 }
@@ -41,6 +42,7 @@ export async function startApp(options: StartOptions): Promise<RunningApp> {
       repos: createRepositories(db),
       now: options.now ?? (() => new Date().toISOString()),
       version: readVersion(),
+      linkedinSessionPath: options.linkedinSessionPath,
     };
     const server = createAppServer([...apiRoutes(ctx), ...pageRoutes(ctx)], options.logger, renderErrorPage);
     const port = await listen(server, options.port);

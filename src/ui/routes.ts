@@ -5,6 +5,7 @@ import { html as htmlReply, parseInput, queryObject, redirect, type TextReply } 
 import type { ApiRequest, Route } from '../http/router.ts';
 import { staticRoutes } from '../http/static.ts';
 import { changeJobStatus, JobNotFoundError } from '../jobs/status-service.ts';
+import { linkedInSessionStatus } from '../linkedin/session.ts';
 import { IdParamSchema } from '../schemas/api.ts';
 import {
   BoardQuerySchema,
@@ -32,7 +33,15 @@ export function pageRoutes(ctx: AppContext): Route[] {
   const { db, repos } = ctx;
 
   function page(title: string, nav: NavItem | null, body: SafeHtml): TextReply {
-    return htmlReply(layout({ title, nav, lastRun: repos.runs.list(1)[0] ?? null, body }));
+    return htmlReply(
+      layout({
+        title,
+        nav,
+        lastRun: repos.runs.list(1)[0] ?? null,
+        linkedin: linkedInSessionStatus(ctx.linkedinSessionPath, ctx.now()),
+        body,
+      }),
+    );
   }
 
   function findJob(request: ApiRequest): JobRecord {

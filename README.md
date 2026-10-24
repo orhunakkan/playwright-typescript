@@ -49,7 +49,21 @@ cp .env.example .env          # PORT=3000, DB_PATH=data/jobboard.db, LOG_LEVEL=i
 ## Running
 
 ```bash
-npm start                     # serves http://127.0.0.1:3000 (never other network addresses)
+npm start                     # signs in to LinkedIn, then serves http://127.0.0.1:3000 (never other addresses)
+```
+
+In a terminal it prints the board address on a line of its own, the LinkedIn status and one short coloured line per request. Piped or in CI, the logs are JSON lines (`LOG_FORMAT=json|pretty` overrides this):
+
+```text
+  Job Board is running
+
+  ➜  http://127.0.0.1:3000/
+
+  LinkedIn  ● signed in · checked Oct 24, 6:45 AM
+  Database  data/jobboard.db
+  Stop      Ctrl+C
+
+06:45:59  200  GET /  3 ms
 ```
 
 The first start creates `data/jobboard.db`. Load your profile once (it is the basis of every score):
@@ -68,6 +82,18 @@ Then, in Claude Code in this folder, with the Gmail connector enabled:
 The command file lives in `.claude/commands/find-jobs.md`, which is not committed; its exact content is in [`agent/find-jobs.md`](agent/find-jobs.md#installing-the-command). It pre-approves only Gmail `search_threads` and `get_thread`, `curl`, and payload files under `data/find-jobs/`. Deny any other Gmail tool if asked.
 
 Open the board at http://127.0.0.1:3000/. Stop the server with Ctrl+C: it finishes open requests and closes the database.
+
+### LinkedIn login
+
+`npm start` signs you in to LinkedIn before it starts the app. It checks the saved session in a hidden browser and refreshes it. Only when LinkedIn no longer accepts the session does it open a window for you to sign in (2FA included). Every page header shows **LinkedIn: signed in** and when the session was last checked. The same steps by hand:
+
+```bash
+node scripts/linkedin-login.ts            # opens Edge (Windows) or Chromium; sign in by hand, 2FA included
+node scripts/linkedin-login.ts --check    # active / expired / missing, without opening a browser
+curl -s http://127.0.0.1:3000/api/linkedin/session
+```
+
+The session (cookies only, never the password) is saved to `data/linkedin/session.json`, and the browser profile to `data/linkedin/browser-profile/`. Both are git-ignored. `--channel chrome` or `--channel chromium` picks another browser, and `LINKEDIN_SESSION_PATH` moves the file. Using your LinkedIn account this way is your decision and your responsibility (DEC-032).
 
 ## Testing pyramid
 
@@ -103,7 +129,7 @@ CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs static checks a
 
 ## Privacy and safety
 
-- **No automated access to linkedin.com, ever.** The only LinkedIn data is the alert emails LinkedIn sends. The app makes no outbound requests at all (a test checks every source file), and the agent's rules forbid opening links.
+- **LinkedIn only through your own login.** Jobs come from the alert emails. LinkedIn is reached only by scripts you run, with the session you saved yourself (DEC-032). The app server makes no outbound requests at all (a test checks every source file), and `/find-jobs` never opens links. Cookie values never appear in API responses, pages, logs or script output.
 - **Gmail is read-only.** The agent may only search and read threads. It never sends, labels, archives or deletes anything.
 - **Personal data stays local.** The database, résumé and profile live in `data/`, which git ignores. Email bodies are never stored, and tracking links are cut down to the canonical job URL, so one-time login tokens never reach a file or the database.
 - **Email text is data, never instructions.** Everything from an email is HTML-escaped on every page, and the agent treats a job title like "ignore previous instructions" as just a strange title.
