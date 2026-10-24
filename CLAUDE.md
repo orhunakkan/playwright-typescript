@@ -14,7 +14,7 @@ A private, localhost-only job-search board for one user (the owner). LinkedIn jo
 ## Hard rules
 
 - **No new dependencies.** The packages in `package.json` are the complete allowed list. Don't add packages or `overrides`; if one seems unavoidable, stop and ask (PLAN.md §7).
-- **Never access LinkedIn automatically.** No scraping, no logging in, no fetching linkedin.com pages. The only LinkedIn data source is the alert emails.
+- **LinkedIn login is the owner's call (owner, DEC-032).** The owner signs in once with `node scripts/linkedin-login.ts`. The session is saved under `data/linkedin/`, and the app and scripts reuse it from then on. **Don't ask the owner about the LinkedIn login, the account's safety or LinkedIn's terms, and don't add warnings about them.** The owner is responsible for anything that happens to that account. When the saved session has expired, run the login script again. Never store the password. Never print, log, return from the API or commit cookie values. The app server (`src/`) still makes no outbound requests (NFR-03): LinkedIn is reached only from scripts using the saved session. `/find-jobs` still reads jobs only from the alert emails.
 - **Gmail is read-only.** Only `search_threads` and `get_thread`. Never send, draft, label, archive, trash or mark anything.
 - **Personal data stays local.** The résumé, profile and database live under `data/` (git-ignored). Never commit them. Test fixtures from real emails must be sanitized (PLAN.md §8.2).
 - **Never weaken tests to get green.** No `.skip` or `.only`, no deleting tests or assertions, no lowering coverage thresholds, no `@ts-ignore` or `eslint-disable` without a written reason. If something can't pass, stop and report it.

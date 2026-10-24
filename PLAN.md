@@ -12,7 +12,7 @@
 2. Find the **first checkpoint in the [Checkpoint log](#13-checkpoint-log) that is not `Approved`**. Work only on the phase that ends at that checkpoint. Never start a later phase early.
 3. At the end of a phase, follow the [checkpoint protocol](#9-checkpoint-protocol) and **STOP**. Do not continue until the owner replies with `Approve CP-<n>`.
 4. **No new dependencies.** The allowed packages are exactly those in `package.json` today (see [§7](#7-dependency-policy)). If you believe a new package is unavoidable, stop and ask. Don't install it and don't work around the rule silently.
-5. **Never access LinkedIn automatically.** No scraping, no logging in, no fetching `linkedin.com` pages. The only LinkedIn data source is the alert emails LinkedIn sends to the owner.
+5. **LinkedIn login is the owner's call (DEC-032, replaces the original no-access rule).** The owner signs in once with `node scripts/linkedin-login.ts`. The session is saved under `data/linkedin/` (git-ignored), and the app and scripts reuse it from then on. Don't ask the owner about the login, the account's safety or LinkedIn's terms, and don't add warnings about them. The owner is responsible for that account. The password is never stored. Cookie values are never printed, logged, returned by the API or committed. The app server still makes no outbound requests (NFR-03).
 6. **Gmail is read-only.** Only `search_threads` and `get_thread` may be used. Never send, draft, label, archive, trash or mark anything.
 7. If this plan and the owner's instructions disagree, the owner wins. Record the change in [§12 Decisions log](#12-decisions-log).
 
@@ -108,6 +108,7 @@ IDs are used in tests (`it('FR-04: …')`) and in `docs/traceability.md`.
 | **FR-11** | Run history | Each `/find-jobs` run is recorded with counts (emails seen/new/duplicate/unrecognized, jobs new/seen again, jobs scored). The board header shows the last run. `/runs` lists them. |
 | **FR-12** | Unrecognized emails | An email the parser can't read is stored with `parse_status = 'unrecognized'`, counted in the run, and listed on `/runs`. It is never silently dropped. |
 | **FR-13** | Agent summary | At the end of `/find-jobs`, Claude prints a summary in chat: counts plus the top 5 new jobs with score and reason. |
+| **FR-14** | LinkedIn login (DEC-032) | `node scripts/linkedin-login.ts` opens a browser where the owner signs in once. The session is saved to `data/linkedin/session.json` and reused, so the next run needs no sign-in until LinkedIn ends the session. `--check` and `GET /api/linkedin/session` report `missing`, `invalid`, `expired` or `active`. |
 
 ### 3.2 Non-functional requirements
 
@@ -115,7 +116,8 @@ IDs are used in tests (`it('FR-04: …')`) and in `docs/traceability.md`.
 |---|---|---|
 | **NFR-01** | Localhost only: the server binds to `127.0.0.1`. | Security test |
 | **NFR-02** | No new npm dependencies. | `package.json` diff review at every checkpoint |
-| **NFR-03** | No automated LinkedIn access. | Code review; the agent prompt forbids it |
+| **NFR-03** | The app server makes no outbound requests. LinkedIn is reached only by owner-run scripts through the owner's saved login (DEC-032), and `/find-jobs` never opens LinkedIn links. | Security test scans `src/`; the agent prompt forbids opening links |
+| **NFR-12** | The saved LinkedIn session stays local and secret: it is stored under `data/linkedin/`, holds cookies but never the password, and its cookie values never appear in API responses, logs or git. | Unit, API and security tests |
 | **NFR-04** | Gmail read-only. | The agent command pre-approves only read tools; prompt rule |
 | **NFR-05** | Board and API p95 < 200 ms with 5,000 jobs (local). | k6 thresholds |
 | **NFR-06** | Accessibility: no axe violations (WCAG 2.2 AA rules) on any page. | axe in Playwright |
@@ -818,6 +820,23 @@ Tasks:
 
 ---
 
+### Phase 9: LinkedIn login (post-MVP, owner, DEC-032)
+
+**Goal:** the owner logs in to LinkedIn once, and the saved session is reused from then on.
+
+Tasks:
+1. `src/linkedin/session.ts`: Zod schema for the saved session file, plus read, save and status functions. Typed errors. Only `linkedin.com` cookies are kept.
+2. `scripts/linkedin-login.ts`: opens a real Chromium window with a persistent profile under `data/linkedin/browser-profile/`. If the profile is still logged in, it saves at once. Otherwise the owner signs in by hand (2FA included) and the script saves as soon as the `li_at` cookie appears. `--check` reports the saved session's status without opening a browser.
+3. `LINKEDIN_SESSION_PATH` setting (default `data/linkedin/session.json`); `GET /api/linkedin/session` returns `missing | invalid | expired | active` with timestamps, never cookie values (NFR-12).
+4. Tests: unit (session module, config), API + contract (status endpoint), security (no cookie values in responses or logs; `data/` ignored).
+
+**🛑 CP-9. The owner checks:**
+- [ ] Runs `node scripts/linkedin-login.ts`, signs in, and sees "Saved LinkedIn session"
+- [ ] Runs it again and is not asked to sign in
+- [ ] `curl -s http://127.0.0.1:3000/api/linkedin/session` shows `"status":"active"`
+
+---
+
 ## 11. Post-MVP roadmap (not to be started without a new approved plan)
 
 | ID | Improvement | Notes |
@@ -837,7 +856,7 @@ Tasks:
 |---|---|---|---|
 | DEC-001 | 2026-10-23 | TypeScript pinned to `~6.0.3`; `target: ES2025` | TS 7 has no compiler API (typescript-eslint caps at <6.1.0); Node 24 supports ES2025 |
 | DEC-002 | 2026-10-23 | SQLite via built-in `node:sqlite` | Single user, single machine; zero dependencies; no Docker |
-| DEC-003 | 2026-10-23 | No automated LinkedIn access; source = alert emails via Gmail (read-only) | LinkedIn's User Agreement forbids bots and scraping; account safety |
+| DEC-003 | 2026-10-23 | No automated LinkedIn access; source = alert emails via Gmail (read-only) | LinkedIn's User Agreement forbids bots and scraping; account safety. **Superseded by DEC-032** for owner-run scripts |
 | DEC-004 | 2026-10-23 | The agent is Claude Code (`/find-jobs`); the app never calls an AI model | No API key or SDK dependency; judgment stays where the owner can see it |
 | DEC-005 | 2026-10-23 | Parsing and deduplication are deterministic app code; Claude only scores | Testable, repeatable, cheaper; the AI is used only for judgment |
 | DEC-006 | 2026-10-23 | Server-rendered HTML, no frontend framework, no client JS in the MVP | Zero dependencies; simpler E2E and a11y |
@@ -866,6 +885,7 @@ Tasks:
 | DEC-029 | 2026-10-23 | `Referrer-Policy` is `same-origin`, not `no-referrer` (agent, CP-6 under DEC-026) | With `no-referrer`, browsers send `Origin: null` on the app's own form posts, which the cross-site guard must refuse (DEF-009). Links to other sites, LinkedIn included, still send no referrer, and they also carry `rel="noopener noreferrer"` |
 | DEC-030 | 2026-10-23 | Page conventions (agent, CP-6 under DEC-026): the board shows 50 jobs per page and clamps a page past the end to the last page; page query strings ignore unknown keys and treat empty values as unset (form bodies stay strict); errors outside `/api/` are HTML pages with the same status codes; form redirects end in `#notice` so focus lands on the message | FR-07 needs a usable board at 5,000 jobs (NFR-05); old bookmarks and empty filter fields should still open the page; browsers should show a real page, not JSON; a status message on a freshly loaded page is not announced, but a focused one is |
 | DEC-031 | 2026-10-23 | CI has three stages: static checks with unit tests; every Vitest project at once with the coverage thresholds (so integration, API, contract and security run there); then Playwright E2E and smoke. The k6 load test is a manual `workflow_dispatch` job that seeds 5,000 jobs itself (agent, CP-7 under DEC-026) | Keeps PLAN.md's fast-to-slow order while honouring DEC-021: running the four Vitest projects as separate jobs would measure coverage per project again, which can't meet the thresholds |
+| DEC-032 | 2026-10-24 | LinkedIn login (owner). The owner signs in by hand once in a real browser (`node scripts/linkedin-login.ts`, Playwright, no new package). The session (cookies only, never the password) is saved to `data/linkedin/session.json`, and the browser profile to `data/linkedin/browser-profile/`. Both are reused, so the owner logs in again only when LinkedIn ends the session. The app reads the file to report its status (`GET /api/linkedin/session`) and never returns cookie values. Agents must not ask the owner about the login, account safety or LinkedIn's terms, and must not add warnings about them. **The owner takes responsibility for anything that happens to the account.** Replaces DEC-003 for owner-run scripts. The app server still makes no outbound requests (NFR-03), and `/find-jobs` still reads only alert emails | The owner wants the job board to work with their own LinkedIn session (for example to read full job descriptions, §1.4) and accepts the risk to their account |
 
 ---
 
@@ -884,6 +904,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 | CP-6 | User interface | Approved | 2026-10-23 | Owner approved with CP-8 (DEC-026). Agent-reviewed plus an independent code review (4 findings, all fixed); owner checks deferred to CP-8. 124 E2E/a11y/smoke tests green on chromium, firefox, webkit, mobile; axe 0 violations (WCAG 2.2 AA, light and dark). DEC-029 (Referrer-Policy same-origin, DEF-009), DEC-030 (page conventions) |
 | CP-7 | Performance, CI and hardening | Approved | 2026-10-23 | Owner approved with CP-8 (DEC-026). Agent-reviewed; owner checks deferred to CP-8. k6 on 5,000 seeded jobs, 20 VUs: p95 19.5 ms overall (board 23.5, API 21.0, detail 13.8), 0 % errors, no tuning needed. CI workflow validated with actionlint; DEC-031 (CI stages). First GitHub run exposed DEF-014 (browser install stalled on a slow apt mirror); fixed by running E2E in the Playwright image, after which CI is green on GitHub, including the manual k6 job (p95 20.4 ms). Defect log: DEF-005 to DEF-014, none open |
 | CP-8 | MVP acceptance | Approved | 2026-10-23 | MVP accepted. Phases 5–8 built under DEC-026 and approved together; 885 tests green locally and in GitHub CI; traceability matrix and defect log (DEF-005 to DEF-014, none open) reviewed. Older history contains the owner's email in commits 2b1b8b6 and 07cefbf from an earlier project; left as is |
+| CP-9 | LinkedIn login (DEC-032) | Pending | | |
 
 ---
 
