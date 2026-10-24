@@ -5,5 +5,5 @@ import { styleText } from 'node:util';
 import { defaultLoginOptions, ensureLinkedInSession } from './linkedin-login.ts';
 
 console.log(styleText('dim', 'Checking the LinkedIn sign-in…'));
-await ensureLinkedInSession(defaultLoginOptions(), true);
+await ensureLinkedInSession(defaultLoginOptions(), { quiet: true });
 await import('../src/main.ts');

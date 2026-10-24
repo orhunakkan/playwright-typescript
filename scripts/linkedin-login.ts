@@ -75,7 +75,10 @@ if (import.meta.main) {
  * window only when LinkedIn no longer accepts it. Never throws, so whatever runs next (the app) always starts.
  * `quiet` leaves out the success line, for callers that show the status themselves.
  */
-export async function ensureLinkedInSession(options: LinkedInLoginOptions, quiet = false): Promise<void> {
+export async function ensureLinkedInSession(
+  options: LinkedInLoginOptions,
+  { quiet = false }: { quiet?: boolean } = {},
+): Promise<void> {
   if (currentStatus(options).status === 'active') {
     const verified = await verify(options);
     if (verified === 'signed-in') {
@@ -95,7 +98,7 @@ export async function ensureLinkedInSession(options: LinkedInLoginOptions, quiet
 
 /** Opens LinkedIn in a hidden browser with the saved profile; refreshes the saved session when it is accepted. */
 async function verify(options: LinkedInLoginOptions): Promise<'signed-in' | 'signed-out' | 'unreachable'> {
-  const context = await openBrowser(options, true);
+  const context = await openBrowser(options, { headless: true });
   if (context === null) return 'unreachable';
   try {
     const page = context.pages()[0] ?? (await context.newPage());
@@ -114,7 +117,7 @@ async function verify(options: LinkedInLoginOptions): Promise<'signed-in' | 'sig
 
 /** Opens a visible browser and waits for the owner to sign in. Returns whether a session was saved. */
 async function signIn(options: LinkedInLoginOptions): Promise<boolean> {
-  const context = await openBrowser(options, false);
+  const context = await openBrowser(options, { headless: false });
   if (context === null) return false;
   try {
     const page = context.pages()[0] ?? (await context.newPage());
@@ -145,7 +148,10 @@ async function signIn(options: LinkedInLoginOptions): Promise<boolean> {
   }
 }
 
-async function openBrowser(options: LinkedInLoginOptions, headless: boolean): Promise<BrowserContext | null> {
+async function openBrowser(
+  options: LinkedInLoginOptions,
+  { headless }: { headless: boolean },
+): Promise<BrowserContext | null> {
   try {
     return await chromium.launchPersistentContext(join(dirname(options.sessionPath), 'browser-profile'), {
       headless,
