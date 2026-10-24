@@ -15,27 +15,27 @@ import { startTestApp, type TestApp } from '../helpers/test-app.ts';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 
 describe('the saved LinkedIn session stays secret', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   beforeEach(async () => {
-    t = await startTestApp();
+    testApp = await startTestApp();
     saveLinkedInSession(
-      t.linkedinSessionPath,
+      testApp.linkedinSessionPath,
       createLinkedInSessionFile(fakeLinkedInStorageState(), '2026-10-23T09:00:00.000Z'),
     );
   });
   afterEach(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   it('NFR-12: no cookie value in the API response, any page or the logs', async () => {
     for (const path of ['/api/linkedin/session', '/', '/profile', '/runs', '/api/health']) {
-      expect((await t.get(path)).text).not.toContain(FAKE_LINKEDIN_COOKIE_VALUE);
+      expect((await testApp.get(path)).text).not.toContain(FAKE_LINKEDIN_COOKIE_VALUE);
     }
-    expect(t.logs.join('\n')).not.toContain(FAKE_LINKEDIN_COOKIE_VALUE);
+    expect(testApp.logs.join('\n')).not.toContain(FAKE_LINKEDIN_COOKIE_VALUE);
   });
 
   it('NFR-12: the status endpoint is read-only', async () => {
-    const response = await t.call('PUT', '/api/linkedin/session', {});
+    const response = await testApp.call('PUT', '/api/linkedin/session', {});
     expect(response.status).toBe(405);
   });
 });

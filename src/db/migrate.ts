@@ -27,7 +27,7 @@ export function loadMigrations(dir: URL = MIGRATIONS_DIR): Migration[] {
       if (version === undefined) throw new MigrationError(`migration file name must look like 001_name.sql: ${file}`);
       return { version: Number(version), name: file, sql: readFileSync(new URL(file, dir), 'utf8') };
     })
-    .sort((a, b) => a.version - b.version);
+    .sort((left, right) => left.version - right.version);
 
   for (const [index, migration] of migrations.entries()) {
     if (migration.version !== index + 1) {

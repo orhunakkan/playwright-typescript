@@ -25,20 +25,20 @@ function cardIds(page: string): number[] {
 }
 
 describe('the HTML pages', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   let runId: number;
   let jobs: JobSummary[];
 
   beforeEach(async () => {
-    t = await startTestApp();
-    ({ runId, jobs } = await seedBoard(t));
+    testApp = await startTestApp();
+    ({ runId, jobs } = await seedBoard(testApp));
     const scores = [
       ['3Pillar', 92, 'strong'],
       ['Cboe Global Markets', 88, 'strong'],
       ['Workiva', 70, 'possible'],
       ['Optum', 45, 'weak'],
     ] as const;
-    await t.post(`/api/runs/${String(runId)}/scores`, {
+    await testApp.post(`/api/runs/${String(runId)}/scores`, {
       rubricVersion: 'triage-v1',
       scores: scores.map(([company, score, label]) => ({
         jobId: jobAt(jobs, company).id,
@@ -49,13 +49,13 @@ describe('the HTML pages', () => {
     });
   });
   afterEach(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   const id = (company: string) => jobAt(jobs, company).id;
 
   async function page(path: string, status = 200): Promise<string> {
-    const response = await t.get(path);
+    const response = await testApp.get(path);
     expect(response.status, path).toBe(status);
     expect(response.headers.get('content-type')).toBe('text/html; charset=utf-8');
     return response.text;
@@ -104,9 +104,9 @@ describe('the HTML pages', () => {
     });
 
     it('FR-07: each tab lists only its statuses', async () => {
-      await t.form(`/jobs/${String(id('Workiva'))}/status`, { status: 'saved' });
-      await t.form(`/jobs/${String(id('Optum'))}/status`, { status: 'applied' });
-      await t.form(`/jobs/${String(id('Cboe Global Markets'))}/status`, { status: 'dismissed' });
+      await testApp.form(`/jobs/${String(id('Workiva'))}/status`, { status: 'saved' });
+      await testApp.form(`/jobs/${String(id('Optum'))}/status`, { status: 'applied' });
+      await testApp.form(`/jobs/${String(id('Cboe Global Markets'))}/status`, { status: 'dismissed' });
 
       expect(cardIds(await page('/?tab=saved'))).toEqual([id('Workiva')]);
       expect(cardIds(await page('/?tab=in-progress'))).toEqual([id('Optum')]);
@@ -116,7 +116,7 @@ describe('the HTML pages', () => {
     });
 
     it('FR-07: pages through long lists', async () => {
-      const response = await t.post(`/api/runs/${String(runId)}/emails`, {
+      const response = await testApp.post(`/api/runs/${String(runId)}/emails`, {
         emails: [
           {
             gmailMessageId: 'many',
@@ -125,8 +125,8 @@ describe('the HTML pages', () => {
             subject: 'many',
             plainText: `Your job alert for qa\nNew jobs match your preferences.\n\n${Array.from(
               { length: PAGE_SIZE },
-              (_, n) =>
-                `Job ${String(n)}\nCo\nRemote\nView job: https://www.linkedin.com/comm/jobs/view/${String(900 + n)}/\n`,
+              (_, index) =>
+                `Job ${String(index)}\nCo\nRemote\nView job: https://www.linkedin.com/comm/jobs/view/${String(900 + index)}/\n`,
             ).join('\n')}`,
           },
         ],
@@ -179,11 +179,14 @@ describe('the HTML pages', () => {
     it('FR-08: moves the job, records it, and redirects back to the board with a notice', async () => {
       const jobId = id('3Pillar');
 
-      const response = await t.form(`/jobs/${String(jobId)}/status`, { status: 'saved', return: '/?tab=new&q=x' });
+      const response = await testApp.form(`/jobs/${String(jobId)}/status`, {
+        status: 'saved',
+        return: '/?tab=new&q=x',
+      });
 
       expect(response.status).toBe(303);
       expect(response.headers.get('location')).toBe(`/?tab=new&q=x&changed=${String(jobId)}#notice`);
-      expect((await t.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({
+      expect((await testApp.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({
         status: 'saved',
         history: [{ toStatus: 'new' }, { fromStatus: 'new', toStatus: 'saved' }],
       });
@@ -197,7 +200,7 @@ describe('the HTML pages', () => {
     it('FR-08: without a return path, goes back to the job page with a notice', async () => {
       const jobId = id('Workiva');
 
-      const response = await t.form(`/jobs/${String(jobId)}/status`, { status: 'applied' });
+      const response = await testApp.form(`/jobs/${String(jobId)}/status`, { status: 'applied' });
 
       expect(response.headers.get('location')).toBe(`/jobs/${String(jobId)}?changed=${String(jobId)}#notice`);
       expect(await page(`/jobs/${String(jobId)}?changed=${String(jobId)}`)).toContain('Status changed to Applied.');
@@ -212,7 +215,7 @@ describe('the HTML pages', () => {
     ])('NFR-07: a return of %j (%s) falls back to the job page', async (target) => {
       const jobId = id('Optum');
 
-      const response = await t.form(`/jobs/${String(jobId)}/status`, { status: 'saved', return: target });
+      const response = await testApp.form(`/jobs/${String(jobId)}/status`, { status: 'saved', return: target });
 
       expect(response.headers.get('location')).toBe(`/jobs/${String(jobId)}?changed=${String(jobId)}#notice`);
     });
@@ -220,12 +223,12 @@ describe('the HTML pages', () => {
     it('FR-08: an invalid transition is a 409 page and changes nothing', async () => {
       const jobId = id('Optum');
 
-      const response = await t.form(`/jobs/${String(jobId)}/status`, { status: 'offer' });
+      const response = await testApp.form(`/jobs/${String(jobId)}/status`, { status: 'offer' });
 
       expect(response.status).toBe(409);
       expect(response.text).toContain('That can&#39;t be done');
       expect(response.text).toContain('A job can&#39;t move from new to offer');
-      expect((await t.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({ status: 'new' });
+      expect((await testApp.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({ status: 'new' });
     });
 
     it.each<[string, Record<string, string>]>([
@@ -233,14 +236,14 @@ describe('the HTML pages', () => {
       ['no status', {}],
       ['an extra field', { status: 'saved', admin: '1' }],
     ])('NFR-09: a status form with %s is a 400 page', async (_case, fields) => {
-      const response = await t.form(`/jobs/${String(id('Optum'))}/status`, fields);
+      const response = await testApp.form(`/jobs/${String(id('Optum'))}/status`, fields);
 
       expect(response.status).toBe(400);
       expect(response.text).toContain('The form is invalid');
     });
 
     it('NFR-09: a repeated form field is a 400 page', async () => {
-      const response = await t.raw({
+      const response = await testApp.raw({
         method: 'POST',
         path: `/jobs/${String(id('Optum'))}/status`,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -251,14 +254,14 @@ describe('the HTML pages', () => {
     });
 
     it('FR-08: an unknown job is a 404 page', async () => {
-      const response = await t.form('/jobs/99999/status', { status: 'saved' });
+      const response = await testApp.form('/jobs/99999/status', { status: 'saved' });
 
       expect(response.status).toBe(404);
       expect(response.text).toContain('Not found');
     });
 
     it('NFR-09: a page form only accepts a form post: JSON is 415', async () => {
-      const response = await t.call('POST', `/jobs/${String(id('Optum'))}/status`, { status: 'saved' });
+      const response = await testApp.call('POST', `/jobs/${String(id('Optum'))}/status`, { status: 'saved' });
 
       expect(response.status).toBe(415);
       expect(response.headers.get('content-type')).toBe('text/html; charset=utf-8');
@@ -266,10 +269,10 @@ describe('the HTML pages', () => {
     });
 
     it('NFR-09: the JSON API does not accept form posts: 415 as JSON', async () => {
-      const response = await t.form(`/api/jobs/${String(id('Optum'))}`, { status: 'saved' });
+      const response = await testApp.form(`/api/jobs/${String(id('Optum'))}`, { status: 'saved' });
 
       expect(response.status).toBe(405);
-      const created = await t.form('/api/runs', {});
+      const created = await testApp.form('/api/runs', {});
       expect(created.status).toBe(415);
       expect(JSON.parse(created.text)).toMatchObject({ error: { code: 'unsupported_media_type' } });
     });
@@ -302,7 +305,7 @@ describe('the HTML pages', () => {
     it('FR-08: a final status offers no change at all', async () => {
       const jobId = id('Optum');
       for (const status of ['applied', 'rejected']) {
-        await t.form(`/jobs/${String(jobId)}/status`, { status });
+        await testApp.form(`/jobs/${String(jobId)}/status`, { status });
       }
 
       const detail = await page(`/jobs/${String(jobId)}`);
@@ -319,11 +322,13 @@ describe('the HTML pages', () => {
     it('FR-09: saves notes and shows them again, line breaks intact', async () => {
       const jobId = id('3Pillar');
 
-      const response = await t.form(`/jobs/${String(jobId)}/notes`, { notes: '\r\nCall recruiter\r\n<b>Friday</b>' });
+      const response = await testApp.form(`/jobs/${String(jobId)}/notes`, {
+        notes: '\r\nCall recruiter\r\n<b>Friday</b>',
+      });
 
       expect(response.status).toBe(303);
       expect(response.headers.get('location')).toBe(`/jobs/${String(jobId)}?notes=saved#notice`);
-      expect((await t.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({
+      expect((await testApp.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({
         notes: '\nCall recruiter\n<b>Friday</b>',
       });
       const detail = await page(`/jobs/${String(jobId)}?notes=saved`);
@@ -337,19 +342,19 @@ describe('the HTML pages', () => {
     it('FR-09: notes of 5,000 characters are kept; 5,001 is a 400 page', async () => {
       const jobId = id('3Pillar');
 
-      expect((await t.form(`/jobs/${String(jobId)}/notes`, { notes: 'x'.repeat(5000) })).status).toBe(303);
-      expect((await t.form(`/jobs/${String(jobId)}/notes`, { notes: 'y'.repeat(5001) })).status).toBe(400);
-      expect((await t.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({ notes: 'x'.repeat(5000) });
+      expect((await testApp.form(`/jobs/${String(jobId)}/notes`, { notes: 'x'.repeat(5000) })).status).toBe(303);
+      expect((await testApp.form(`/jobs/${String(jobId)}/notes`, { notes: 'y'.repeat(5001) })).status).toBe(400);
+      expect((await testApp.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({ notes: 'x'.repeat(5000) });
     });
 
     it('FR-09: CRLF line breaks count once toward the limit', async () => {
-      const response = await t.form(`/jobs/${String(id('3Pillar'))}/notes`, { notes: 'ab\r\n'.repeat(1250) });
+      const response = await testApp.form(`/jobs/${String(id('3Pillar'))}/notes`, { notes: 'ab\r\n'.repeat(1250) });
 
       expect(response.status).toBe(303);
     });
 
     it.each(['/jobs/99999', '/jobs/abc', '/jobs/0'])('FR-10: %s is a 404 or 400 page', async (path) => {
-      const response = await t.get(path);
+      const response = await testApp.get(path);
 
       expect([400, 404]).toContain(response.status);
       expect(response.headers.get('content-type')).toBe('text/html; charset=utf-8');
@@ -358,7 +363,7 @@ describe('the HTML pages', () => {
 
   describe('runs and profile (FR-01, FR-11, FR-12)', () => {
     it('FR-11: lists every run with its counts, and the header shows the last one', async () => {
-      await t.post(`/api/runs/${String(runId)}/finish`);
+      await testApp.post(`/api/runs/${String(runId)}/finish`);
       const runs = await page('/runs');
 
       expect(runs).toContain('Every /find-jobs run, newest first');
@@ -374,7 +379,7 @@ describe('the HTML pages', () => {
     it('FR-12: lists unrecognized emails with their reason, and says when there are none', async () => {
       expect(await page('/runs')).toContain('None. Every email so far was read.');
 
-      await t.post(`/api/runs/${String(runId)}/emails`, {
+      await testApp.post(`/api/runs/${String(runId)}/emails`, {
         emails: [
           {
             gmailMessageId: 'odd',
@@ -396,7 +401,7 @@ describe('the HTML pages', () => {
     });
 
     it('FR-01: shows every profile field, read-only', async () => {
-      await t.call('PUT', '/api/profile', PROFILE);
+      await testApp.call('PUT', '/api/profile', PROFILE);
 
       const profile = await page('/profile');
 
@@ -418,7 +423,7 @@ describe('the HTML pages', () => {
     });
 
     it('FR-01: empty lists read "None"', async () => {
-      await t.call('PUT', '/api/profile', { ...PROFILE, secondarySkills: [], excludedCompanies: [] });
+      await testApp.call('PUT', '/api/profile', { ...PROFILE, secondarySkills: [], excludedCompanies: [] });
 
       expect((await page('/profile')).match(/<dd>None<\/dd>/g)).toHaveLength(2);
     });
@@ -426,8 +431,8 @@ describe('the HTML pages', () => {
 
   describe('static files and errors', () => {
     it('FR-07: serves the stylesheet and the icon with their types', async () => {
-      const css = await t.get('/static/app.css');
-      const icon = await t.get('/static/favicon.svg');
+      const css = await testApp.get('/static/app.css');
+      const icon = await testApp.get('/static/favicon.svg');
 
       expect(css.status).toBe(200);
       expect(css.headers.get('content-type')).toBe('text/css; charset=utf-8');
@@ -438,7 +443,7 @@ describe('the HTML pages', () => {
     it.each(['/static/nope.css', '/static/', '/static/app.css/x', '/nope'])(
       'NFR-09: %s is a 404 page',
       async (path) => {
-        const response = await t.get(path);
+        const response = await testApp.get(path);
 
         expect(response.status).toBe(404);
         expect(response.text).toContain('<h1>Not found</h1>');
@@ -446,7 +451,7 @@ describe('the HTML pages', () => {
     );
 
     it('NFR-09: a page with the wrong method is a 405 page that names the allowed method', async () => {
-      const response = await t.form('/runs', {});
+      const response = await testApp.form('/runs', {});
 
       expect(response.status).toBe(405);
       expect(response.headers.get('allow')).toBe('GET');
@@ -454,9 +459,9 @@ describe('the HTML pages', () => {
     });
 
     it('NFR-09: a page that fails is a 500 page without details', async () => {
-      t.app.db.close();
+      testApp.app.db.close();
 
-      const response = await t.get('/');
+      const response = await testApp.get('/');
 
       expect(response.status).toBe(500);
       expect(response.text).toContain('Something went wrong; see the server log');

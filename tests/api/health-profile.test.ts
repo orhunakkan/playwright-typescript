@@ -16,28 +16,30 @@ const PROFILE: Profile = {
   excludedCompanies: [],
 };
 
-const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as { version: string };
+const packageJson = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as {
+  version: string;
+};
 
 describe('GET /api/health', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   beforeEach(async () => {
-    t = await startTestApp();
+    testApp = await startTestApp();
   });
   afterEach(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   it('NFR-01: reports ok for the server and the database, with the app version', async () => {
-    const response = await t.get('/api/health');
+    const response = await testApp.get('/api/health');
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ status: 'ok', db: 'ok', version: pkg.version });
+    expect(response.body).toEqual({ status: 'ok', db: 'ok', version: packageJson.version });
   });
 
   it('NFR-01: reports 503 when the database is gone', async () => {
-    t.app.db.close();
+    testApp.app.db.close();
 
-    const response = await t.get('/api/health');
+    const response = await testApp.get('/api/health');
 
     expect(response.status).toBe(503);
     expect(response.body).toEqual({ error: { code: 'db_unavailable', message: 'The database is not available' } });
@@ -45,16 +47,16 @@ describe('GET /api/health', () => {
 });
 
 describe('/api/profile', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   beforeEach(async () => {
-    t = await startTestApp();
+    testApp = await startTestApp();
   });
   afterEach(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   it('FR-01: is 404 until a profile is loaded', async () => {
-    const response = await t.get('/api/profile');
+    const response = await testApp.get('/api/profile');
 
     expect(response.status).toBe(404);
     expect(response.body).toMatchObject({
@@ -63,8 +65,8 @@ describe('/api/profile', () => {
   });
 
   it('FR-01: PUT stores the profile and GET returns it', async () => {
-    const put = await t.call('PUT', '/api/profile', PROFILE);
-    const get = await t.get('/api/profile');
+    const put = await testApp.call('PUT', '/api/profile', PROFILE);
+    const get = await testApp.get('/api/profile');
 
     expect(put.status).toBe(200);
     expect(put.body).toEqual(PROFILE);
@@ -73,14 +75,14 @@ describe('/api/profile', () => {
   });
 
   it('FR-01: PUT replaces the whole profile', async () => {
-    await t.call('PUT', '/api/profile', PROFILE);
-    await t.call('PUT', '/api/profile', { ...PROFILE, yearsExperience: 10, dealBreakers: [] });
+    await testApp.call('PUT', '/api/profile', PROFILE);
+    await testApp.call('PUT', '/api/profile', { ...PROFILE, yearsExperience: 10, dealBreakers: [] });
 
-    expect((await t.get('/api/profile')).body).toEqual({ ...PROFILE, yearsExperience: 10, dealBreakers: [] });
+    expect((await testApp.get('/api/profile')).body).toEqual({ ...PROFILE, yearsExperience: 10, dealBreakers: [] });
   });
 
   it('NFR-09: an invalid profile is a 400 that names every bad field, and nothing is stored', async () => {
-    const response = await t.call('PUT', '/api/profile', { ...PROFILE, seniority: 'principal', coreSkills: [] });
+    const response = await testApp.call('PUT', '/api/profile', { ...PROFILE, seniority: 'principal', coreSkills: [] });
 
     expect(response.status).toBe(400);
     expect(response.body).toMatchObject({
@@ -93,11 +95,11 @@ describe('/api/profile', () => {
         ]) as unknown,
       },
     });
-    expect((await t.get('/api/profile')).status).toBe(404);
+    expect((await testApp.get('/api/profile')).status).toBe(404);
   });
 
   it('NFR-09: a profile with an unknown field is rejected', async () => {
-    const response = await t.call('PUT', '/api/profile', { ...PROFILE, remote: true });
+    const response = await testApp.call('PUT', '/api/profile', { ...PROFILE, remote: true });
 
     expect(response.status).toBe(400);
     expect(response.body).toMatchObject({

@@ -4,30 +4,30 @@ import { ingestEmails } from '../../../src/ingest/ingest-service.ts';
 import { createTestDatabase, fakeClock, fixtureEmail, type TestDatabase } from '../helpers/test-database.ts';
 
 describe('changeJobStatus', () => {
-  let test: TestDatabase;
+  let testDb: TestDatabase;
   let jobId: number;
   const clock = fakeClock('2026-10-24T09:00:00.000Z');
 
   beforeEach(() => {
-    test = createTestDatabase();
-    const runId = test.repos.runs.create('2026-10-23T12:00:00.000Z');
-    const { newJobIds } = ingestEmails(test.db, test.repos, runId, [fixtureEmail('digest-senior-qa.txt')]);
+    testDb = createTestDatabase();
+    const runId = testDb.repos.runs.create('2026-10-23T12:00:00.000Z');
+    const { newJobIds } = ingestEmails(testDb.db, testDb.repos, runId, [fixtureEmail('digest-senior-qa.txt')]);
     jobId = newJobIds[0] ?? 0;
   });
   afterEach(() => {
-    test.close();
+    testDb.close();
   });
 
   function change(to: Parameters<typeof changeJobStatus>[3], id = jobId) {
-    return changeJobStatus(test.db, test.repos, id, to, clock);
+    return changeJobStatus(testDb.db, testDb.repos, id, to, clock);
   }
 
   it('FR-08: a status change updates the job and writes history', () => {
     const updated = change('saved');
 
     expect(updated).toMatchObject({ id: jobId, status: 'saved' });
-    expect(test.repos.jobs.get(jobId)).toEqual(updated);
-    expect(test.repos.statusHistory.listForJob(jobId).slice(1)).toEqual([
+    expect(testDb.repos.jobs.get(jobId)).toEqual(updated);
+    expect(testDb.repos.statusHistory.listForJob(jobId).slice(1)).toEqual([
       { fromStatus: 'new', toStatus: 'saved', changedAt: updated.statusChangedAt },
     ]);
   });
@@ -35,13 +35,9 @@ describe('changeJobStatus', () => {
   it('FR-08: a job can go all the way to an offer, with every step in history', () => {
     for (const to of ['saved', 'applied', 'interviewing', 'offer'] as const) change(to);
 
-    expect(test.repos.statusHistory.listForJob(jobId).map((h) => `${String(h.fromStatus)}→${h.toStatus}`)).toEqual([
-      'null→new',
-      'new→saved',
-      'saved→applied',
-      'applied→interviewing',
-      'interviewing→offer',
-    ]);
+    expect(
+      testDb.repos.statusHistory.listForJob(jobId).map((change) => `${String(change.fromStatus)}→${change.toStatus}`),
+    ).toEqual(['null→new', 'new→saved', 'saved→applied', 'applied→interviewing', 'interviewing→offer']);
   });
 
   it('FR-08: a dismissed job can be restored to new', () => {
@@ -51,12 +47,12 @@ describe('changeJobStatus', () => {
   });
 
   it('FR-08: an invalid transition is refused and writes nothing', () => {
-    const before = test.repos.jobs.get(jobId);
+    const before = testDb.repos.jobs.get(jobId);
 
     expect(() => change('offer')).toThrow(InvalidTransitionError);
     expect(() => change('offer')).toThrow("a job can't move from new to offer");
-    expect(test.repos.jobs.get(jobId)).toEqual(before);
-    expect(test.repos.statusHistory.listForJob(jobId)).toHaveLength(1);
+    expect(testDb.repos.jobs.get(jobId)).toEqual(before);
+    expect(testDb.repos.statusHistory.listForJob(jobId)).toHaveLength(1);
   });
 
   it('FR-08: the error says which transition was refused', () => {
@@ -83,7 +79,7 @@ describe('changeJobStatus', () => {
   it('FR-08: without a clock, the change is stamped with the current time', () => {
     const before = new Date().toISOString();
 
-    const updated = changeJobStatus(test.db, test.repos, jobId, 'saved');
+    const updated = changeJobStatus(testDb.db, testDb.repos, jobId, 'saved');
 
     expect(updated.statusChangedAt >= before).toBe(true);
     expect(new Date(updated.statusChangedAt).toISOString()).toBe(updated.statusChangedAt);

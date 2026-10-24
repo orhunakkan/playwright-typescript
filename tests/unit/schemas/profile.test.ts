@@ -90,7 +90,7 @@ describe('ProfileSchema', () => {
     ['workAuthorization is blank', { workAuthorization: '' }],
     ['dealBreakers is null', { dealBreakers: null }],
     ['an excluded company is too long', { excludedCompanies: ['x'.repeat(201)] }],
-    ['a list has too many items', { coreSkills: Array.from({ length: 51 }, (_, i) => `skill ${String(i)}`) }],
+    ['a list has too many items', { coreSkills: Array.from({ length: 51 }, (_, index) => `skill ${String(index)}`) }],
   ])('FR-01: rejects a profile where %s', (_case, override) => {
     expect(ProfileSchema.safeParse({ ...validProfile(), ...override }).success).toBe(false);
   });

@@ -74,22 +74,22 @@ export default function (data: SetupData): void {
   group('board', () => {
     const response = http.get(`${BASE_URL}${pick(BOARD_PATHS)}`, { tags: { area: 'board', name: 'board' } });
     check(response, {
-      'board is 200': (r) => r.status === 200,
-      'board is HTML': (r) => String(r.headers['Content-Type']).startsWith('text/html'),
+      'board is 200': (result) => result.status === 200,
+      'board is HTML': (result) => String(result.headers['Content-Type']).startsWith('text/html'),
     });
   });
 
   group('api', () => {
     const response = http.get(`${BASE_URL}${pick(API_PATHS)}`, { tags: { area: 'api', name: 'api-jobs' } });
-    check(response, { 'api is 200': (r) => r.status === 200 });
+    check(response, { 'api is 200': (result) => result.status === 200 });
   });
 
   group('detail', () => {
     const id = pick(data.jobIds);
     const page = http.get(`${BASE_URL}/jobs/${String(id)}`, { tags: { area: 'detail', name: 'job-page' } });
     const api = http.get(`${BASE_URL}/api/jobs/${String(id)}`, { tags: { area: 'detail', name: 'api-job' } });
-    check(page, { 'job page is 200': (r) => r.status === 200 });
-    check(api, { 'job API is 200': (r) => r.status === 200 });
+    check(page, { 'job page is 200': (result) => result.status === 200 });
+    check(api, { 'job API is 200': (result) => result.status === 200 });
   });
 
   sleep(0.5 + Math.random());

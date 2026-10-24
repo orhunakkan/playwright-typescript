@@ -19,8 +19,8 @@ const NOW = '2026-10-24T12:00:00.000Z';
 
 describe('LinkedIn session file', () => {
   const dir = mkdtempSync(join(tmpdir(), 'linkedin-session-'));
-  let n = 0;
-  const freshPath = () => join(dir, String(++n), 'session.json');
+  let pathCount = 0;
+  const freshPath = () => join(dir, String(++pathCount), 'session.json');
   afterAll(() => {
     rmSync(dir, { recursive: true, force: true });
   });
@@ -145,9 +145,9 @@ describe('LinkedIn session file', () => {
 
 describe('LinkedIn session status', () => {
   const dir = mkdtempSync(join(tmpdir(), 'linkedin-status-'));
-  let n = 0;
+  let pathCount = 0;
   function saved(expires: number): string {
-    const path = join(dir, String(++n), 'session.json');
+    const path = join(dir, String(++pathCount), 'session.json');
     saveLinkedInSession(path, createLinkedInSessionFile(fakeLinkedInStorageState(expires), SAVED_AT));
     return path;
   }

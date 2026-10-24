@@ -4,13 +4,13 @@ import { ProfileSchema } from '../schemas/profile.ts';
 import type { AppContext } from './context.ts';
 
 // GET and PUT /api/profile: the candidate profile every score is based on (FR-01).
-export function profileRoutes(ctx: AppContext): Route[] {
+export function profileRoutes(context: AppContext): Route[] {
   return [
     {
       method: 'GET',
       path: '/api/profile',
       handler: () => {
-        const profile = ctx.repos.profile.get();
+        const profile = context.repos.profile.get();
         if (profile === null) {
           throw new HttpError(404, 'not_found', 'No profile yet: load data/profile.json with PUT /api/profile');
         }
@@ -22,7 +22,7 @@ export function profileRoutes(ctx: AppContext): Route[] {
       path: '/api/profile',
       handler: (request) => {
         const profile = parseInput(ProfileSchema, request.body, 'profile');
-        ctx.repos.profile.put(profile, ctx.now());
+        context.repos.profile.put(profile, context.now());
         return ok(profile);
       },
     },

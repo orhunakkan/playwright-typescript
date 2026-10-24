@@ -28,18 +28,18 @@ function canConnect(host: string, port: number): Promise<boolean> {
 }
 
 describe('HTTP security', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   beforeEach(async () => {
-    t = await startTestApp();
+    testApp = await startTestApp();
   });
   afterEach(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   describe('NFR-01: localhost only', () => {
     it('NFR-01: listens on 127.0.0.1 and nowhere else', async () => {
-      expect(t.app.server.address()).toMatchObject({ address: '127.0.0.1', family: 'IPv4' });
-      expect(await canConnect('127.0.0.1', t.port)).toBe(true);
+      expect(testApp.app.server.address()).toMatchObject({ address: '127.0.0.1', family: 'IPv4' });
+      expect(await canConnect('127.0.0.1', testApp.port)).toBe(true);
     });
 
     it('NFR-01: is unreachable on every other network address of this machine', async () => {
@@ -49,7 +49,7 @@ describe('HTTP security', () => {
 
       // A machine with no network adapter has nothing else to check; the bind address above still holds.
       for (const address of others) {
-        expect({ address, reachable: await canConnect(address, t.port) }).toEqual({ address, reachable: false });
+        expect({ address, reachable: await canConnect(address, testApp.port) }).toEqual({ address, reachable: false });
       }
     });
   });
@@ -63,14 +63,20 @@ describe('HTTP security', () => {
       'localhost.evil.example:PORT',
       '[::1]:PORT',
     ])('NFR-01: Host "%s" is refused with 421', async (host) => {
-      const response = await t.raw({ path: '/api/health', headers: { Host: host.replace('PORT', String(t.port)) } });
+      const response = await testApp.raw({
+        path: '/api/health',
+        headers: { Host: host.replace('PORT', String(testApp.port)) },
+      });
 
       expect(response.status).toBe(421);
       expect(JSON.parse(response.text)).toMatchObject({ error: { code: 'misdirected_request' } });
     });
 
     it.each(['127.0.0.1:PORT', 'localhost:PORT', 'LOCALHOST:PORT'])('NFR-01: Host "%s" is served', async (host) => {
-      const response = await t.raw({ path: '/api/health', headers: { Host: host.replace('PORT', String(t.port)) } });
+      const response = await testApp.raw({
+        path: '/api/health',
+        headers: { Host: host.replace('PORT', String(testApp.port)) },
+      });
 
       expect(response.status).toBe(200);
     });
@@ -86,10 +92,10 @@ describe('HTTP security', () => {
       ['Sec-Fetch-Site: same-site', { 'Sec-Fetch-Site': 'same-site' }],
     ])('NFR-01: a write with %s is refused with 403 and changes nothing', async (_case, headers) => {
       const withPort = Object.fromEntries(
-        Object.entries(headers).map(([name, value]) => [name, value.replace('PORT', String(t.port))]),
+        Object.entries(headers).map(([name, value]) => [name, value.replace('PORT', String(testApp.port))]),
       );
 
-      const response = await t.raw({
+      const response = await testApp.raw({
         method: 'POST',
         path: '/api/runs',
         headers: { ...JSON_HEADERS, ...withPort },
@@ -98,7 +104,7 @@ describe('HTTP security', () => {
 
       expect(response.status).toBe(403);
       expect(JSON.parse(response.text)).toMatchObject({ error: { code: 'cross_site_request' } });
-      expect(JSON.parse((await t.raw({ path: '/api/runs' })).text)).toEqual([]);
+      expect(JSON.parse((await testApp.raw({ path: '/api/runs' })).text)).toEqual([]);
     });
 
     it.each<[string, Record<string, string>]>([
@@ -109,10 +115,10 @@ describe('HTTP security', () => {
       ['Sec-Fetch-Site: none (typed in the address bar)', { 'Sec-Fetch-Site': 'none' }],
     ])('NFR-01: a write with %s is allowed', async (_case, headers) => {
       const withPort = Object.fromEntries(
-        Object.entries(headers).map(([name, value]) => [name, value.replace('PORT', String(t.port))]),
+        Object.entries(headers).map(([name, value]) => [name, value.replace('PORT', String(testApp.port))]),
       );
 
-      const response = await t.raw({
+      const response = await testApp.raw({
         method: 'POST',
         path: '/api/runs',
         headers: { ...JSON_HEADERS, ...withPort },
@@ -123,7 +129,7 @@ describe('HTTP security', () => {
     });
 
     it('NFR-01: a cross-site HTML form post cannot even reach the API: it is refused before the content type is checked', async () => {
-      const response = await t.raw({
+      const response = await testApp.raw({
         method: 'POST',
         path: '/api/runs',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', Origin: 'http://evil.example' },
@@ -142,7 +148,7 @@ describe('HTTP security', () => {
       ['a 400', { method: 'POST', path: '/api/runs', headers: JSON_HEADERS, body: '{' }],
       ['a 421', { path: '/api/health', headers: { Host: 'evil.example' } }],
     ])('NFR-07: %s carries every security header', async (_case, options) => {
-      const response = await t.raw(options);
+      const response = await testApp.raw(options);
 
       expect(response.headers).toMatchObject({
         'content-security-policy': expect.stringContaining("default-src 'self'") as unknown,
@@ -156,8 +162,8 @@ describe('HTTP security', () => {
 
   describe('hostile text from emails and users', () => {
     it('NFR-07: a <script> job title is only ever served as a JSON string, never as markup', async () => {
-      const { runId } = await seedBoard(t);
-      await t.post(`/api/runs/${String(runId)}/emails`, {
+      const { runId } = await seedBoard(testApp);
+      await testApp.post(`/api/runs/${String(runId)}/emails`, {
         emails: [
           {
             gmailMessageId: 'msgxss',
@@ -170,7 +176,7 @@ describe('HTTP security', () => {
         ],
       });
 
-      const response = await t.raw({ path: '/api/jobs?q=script' });
+      const response = await testApp.raw({ path: '/api/jobs?q=script' });
 
       expect(response.headers['content-type']).toBe('application/json; charset=utf-8');
       expect(response.headers['x-content-type-options']).toBe('nosniff');
@@ -182,29 +188,29 @@ describe('HTTP security', () => {
 
     it.each(["' OR 1=1 --", '"; DROP TABLE jobs; --', "%' UNION SELECT notes FROM jobs --", '\\', '%'])(
       'NFR-07: the search text %j is matched literally, never run as SQL',
-      async (q) => {
-        await seedBoard(t);
+      async (searchText) => {
+        await seedBoard(testApp);
 
-        const response = await t.get(`/api/jobs?q=${encodeURIComponent(q)}`);
+        const response = await testApp.get(`/api/jobs?q=${encodeURIComponent(searchText)}`);
 
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ items: [], total: 0 });
-        expect(JobListResponseSchema.parse((await t.get('/api/jobs')).body).total).toBe(18);
+        expect(JobListResponseSchema.parse((await testApp.get('/api/jobs')).body).total).toBe(18);
       },
     );
 
     it('NFR-07: "_" is a literal underscore, not a LIKE wildcard that matches every job', async () => {
-      await seedBoard(t);
+      await seedBoard(testApp);
 
-      const response = JobListResponseSchema.parse((await t.get('/api/jobs?q=_')).body);
+      const response = JobListResponseSchema.parse((await testApp.get('/api/jobs?q=_')).body);
 
       expect(response.total).toBe(1);
       expect(response.items[0]?.title).toContain('REQ_134');
     });
 
     it('NFR-07: tracking parameters and one-time tokens never reach the database or the API', async () => {
-      const { runId } = await seedBoard(t);
-      await t.post(`/api/runs/${String(runId)}/emails`, {
+      const { runId } = await seedBoard(testApp);
+      await testApp.post(`/api/runs/${String(runId)}/emails`, {
         emails: [
           {
             gmailMessageId: 'msgtoken',
@@ -218,9 +224,9 @@ describe('HTTP security', () => {
       });
 
       const stored = JSON.stringify(
-        ['emails', 'jobs', 'sightings'].map((table) => t.app.db.prepare(`SELECT * FROM ${table}`).all()),
+        ['emails', 'jobs', 'sightings'].map((table) => testApp.app.db.prepare(`SELECT * FROM ${table}`).all()),
       );
-      const served = (await t.get('/api/jobs?limit=100')).text;
+      const served = (await testApp.get('/api/jobs?limit=100')).text;
 
       for (const text of [stored, served]) {
         expect(text).not.toMatch(/ONE-TIME-SECRET|otpToken|midToken|trackingId/);
@@ -239,14 +245,14 @@ describe('HTTP security', () => {
       '/.env',
       '/package.json',
     ])('NFR-08: %s is 404, never a file', async (path) => {
-      const response = await t.raw({ path });
+      const response = await testApp.raw({ path });
 
       expect(response.status).toBe(404);
       expect(response.text).not.toMatch(/targetRoles|DB_PATH|"dependencies"/);
     });
 
     it('NFR-09: a declared body far over the limit is cut off without being read', async () => {
-      const result = await t
+      const result = await testApp
         .raw({
           method: 'POST',
           path: '/api/runs',
@@ -259,7 +265,7 @@ describe('HTTP security', () => {
         );
 
       expect(result).not.toBe(201);
-      expect((await t.get('/api/health')).status).toBe(200);
+      expect((await testApp.get('/api/health')).status).toBe(200);
     });
   });
 });

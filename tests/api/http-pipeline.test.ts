@@ -8,27 +8,27 @@ import { createLogger } from '../../src/logger.ts';
 import { startTestApp, type TestApp } from '../helpers/test-app.ts';
 
 describe('the HTTP pipeline', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   beforeEach(async () => {
-    t = await startTestApp();
+    testApp = await startTestApp();
   });
   afterEach(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   it('NFR-09: an unknown path is 404 with the standard error body', async () => {
-    const response = await t.get('/api/nope');
+    const response = await testApp.get('/api/nope');
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({ error: { code: 'not_found', message: 'There is nothing at this path' } });
   });
 
   it.each(['/api/health/', '/API/health', '/api//health'])('NFR-09: paths match exactly: %s is 404', async (path) => {
-    expect((await t.get(path)).status).toBe(404);
+    expect((await testApp.get(path)).status).toBe(404);
   });
 
   it('NFR-09: a known path with the wrong method is 405 and lists the allowed ones', async () => {
-    const response = await t.call('DELETE', '/api/profile');
+    const response = await testApp.call('DELETE', '/api/profile');
 
     expect(response.status).toBe(405);
     expect(response.headers.get('allow')).toBe('GET, PUT');
@@ -36,7 +36,7 @@ describe('the HTTP pipeline', () => {
   });
 
   it('NFR-09: a write without Content-Type: application/json is 415', async () => {
-    const response = await t.raw({
+    const response = await testApp.raw({
       method: 'POST',
       path: '/api/runs',
       headers: { 'Content-Type': 'text/plain' },
@@ -50,7 +50,7 @@ describe('the HTTP pipeline', () => {
   it.each(['application/json', 'application/json; charset=utf-8', 'Application/JSON'])(
     'NFR-09: Content-Type "%s" is accepted',
     async (contentType) => {
-      const response = await t.raw({
+      const response = await testApp.raw({
         method: 'POST',
         path: '/api/runs',
         headers: { 'Content-Type': contentType },
@@ -62,19 +62,19 @@ describe('the HTTP pipeline', () => {
   );
 
   it('NFR-09: a body over 1 MB is 413', async () => {
-    const response = await t.call('PUT', '/api/profile', `"${'x'.repeat(BODY_LIMIT_BYTES)}"`);
+    const response = await testApp.call('PUT', '/api/profile', `"${'x'.repeat(BODY_LIMIT_BYTES)}"`);
 
     expect(response.status).toBe(413);
     expect(response.body).toEqual({
       error: { code: 'payload_too_large', message: 'The request body must be at most 1 MB' },
     });
-    expect((await t.get('/api/health')).status).toBe(200);
+    expect((await testApp.get('/api/health')).status).toBe(200);
   });
 
   it('NFR-09: a body of exactly 1 MB is read', async () => {
     const body = `"${'x'.repeat(BODY_LIMIT_BYTES - 2)}"`;
 
-    const response = await t.call('PUT', '/api/profile', body);
+    const response = await testApp.call('PUT', '/api/profile', body);
 
     expect(response.status).toBe(400); // valid JSON, just not a profile
     expect(response.body).toMatchObject({ error: { code: 'validation_failed' } });
@@ -83,7 +83,7 @@ describe('the HTTP pipeline', () => {
   it.each(['{"emails": [', '', 'undefined', "{'single': 'quotes'}"])(
     'NFR-09: malformed JSON %j is a 400',
     async (body) => {
-      const response = await t.raw({
+      const response = await testApp.raw({
         method: 'POST',
         path: '/api/runs',
         headers: { 'Content-Type': 'application/json' },
@@ -98,9 +98,9 @@ describe('the HTTP pipeline', () => {
   );
 
   it('NFR-09: an unexpected failure is a 500 that hides the details and logs them', async () => {
-    t.app.db.close();
+    testApp.app.db.close();
 
-    const response = await t.get('/api/jobs');
+    const response = await testApp.get('/api/jobs');
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({
@@ -110,16 +110,16 @@ describe('the HTTP pipeline', () => {
       },
     });
     expect(response.text).not.toMatch(/stack|sqlite|database/i);
-    const logged = t.logs
+    const logged = testApp.logs
       .map((line) => JSON.parse(line) as Record<string, unknown>)
-      .find((l) => l['level'] === 'error');
+      .find((entry) => entry['level'] === 'error');
     expect(logged).toMatchObject({ msg: 'unhandled error', requestId: response.headers.get('x-request-id') });
     expect(JSON.stringify(logged)).toContain('stack');
   });
 
   it('NFR-09: every response carries a unique request ID', async () => {
-    const first = await t.get('/api/health');
-    const second = await t.get('/api/nope');
+    const first = await testApp.get('/api/health');
+    const second = await testApp.get('/api/nope');
 
     const ids = [first.headers.get('x-request-id'), second.headers.get('x-request-id')];
     expect(ids.every((id) => /^[0-9a-f-]{36}$/.test(id ?? ''))).toBe(true);
@@ -127,12 +127,12 @@ describe('the HTTP pipeline', () => {
   });
 
   it('NFR-09: every request is logged as one JSON line, without the query string', async () => {
-    t.logs.length = 0;
+    testApp.logs.length = 0;
 
-    const response = await t.get('/api/jobs?q=secret-search');
+    const response = await testApp.get('/api/jobs?q=secret-search');
 
-    expect(t.logs).toHaveLength(1);
-    expect(JSON.parse(t.logs[0] ?? '')).toEqual({
+    expect(testApp.logs).toHaveLength(1);
+    expect(JSON.parse(testApp.logs[0] ?? '')).toEqual({
       time: expect.any(String) as unknown,
       level: 'info',
       msg: 'request',
@@ -145,18 +145,18 @@ describe('the HTTP pipeline', () => {
   });
 
   it('NFR-09: responses are JSON and never cached', async () => {
-    const response = await t.get('/api/health');
+    const response = await testApp.get('/api/health');
 
     expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
     expect(response.headers.get('cache-control')).toBe('no-store');
   });
 
   it('NFR-01: close() stops the server and closes the database, and can be called twice', async () => {
-    await t.app.close(0);
-    await t.app.close(0);
+    await testApp.app.close(0);
+    await testApp.app.close(0);
 
-    expect(t.app.db.isOpen).toBe(false);
-    await expect(fetch(`${t.url}/api/health`)).rejects.toThrow();
+    expect(testApp.app.db.isOpen).toBe(false);
+    await expect(fetch(`${testApp.url}/api/health`)).rejects.toThrow();
   });
 });
 

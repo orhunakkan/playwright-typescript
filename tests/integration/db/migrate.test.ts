@@ -15,68 +15,68 @@ const EXPECTED_INDEXES = [
 ];
 
 describe('migrate', () => {
-  let test: TestDatabase;
+  let testDb: TestDatabase;
   afterEach(() => {
-    test.close();
+    testDb.close();
   });
 
   function names(type: 'table' | 'index'): string[] {
-    return test.db
+    return testDb.db
       .prepare("SELECT name FROM sqlite_master WHERE type = ? AND name NOT LIKE 'sqlite_%' ORDER BY name")
       .all(type)
       .map((row) => String(row['name']));
   }
 
   function migrationsDir(files: Record<string, string>): URL {
-    const dir = join(test.dir, 'migrations');
+    const dir = join(testDb.dir, 'migrations');
     mkdirSync(dir);
     for (const [name, sql] of Object.entries(files)) writeFileSync(join(dir, name), sql);
     return pathToFileURL(`${dir}/`);
   }
 
   it('FR-04: builds the whole schema from an empty database', () => {
-    test = createTestDatabase({ migrated: false });
+    testDb = createTestDatabase({ migrated: false });
 
-    const applied = migrate(test.db, loadMigrations(), () => '2026-10-23T12:00:00.000Z');
+    const applied = migrate(testDb.db, loadMigrations(), () => '2026-10-23T12:00:00.000Z');
 
     expect(applied).toEqual([1, 2]);
     expect(names('table')).toEqual(EXPECTED_TABLES);
     expect(names('index')).toEqual(EXPECTED_INDEXES);
-    expect(test.db.prepare('SELECT version, applied_at FROM schema_migrations').all()).toEqual([
+    expect(testDb.db.prepare('SELECT version, applied_at FROM schema_migrations').all()).toEqual([
       { version: 1, applied_at: '2026-10-23T12:00:00.000Z' },
       { version: 2, applied_at: '2026-10-23T12:00:00.000Z' },
     ]);
   });
 
   it('FR-04: upgrading a database built on 001 keeps its jobs, with no first run recorded', () => {
-    test = createTestDatabase({ migrated: false });
+    testDb = createTestDatabase({ migrated: false });
     const migrations = loadMigrations();
-    migrate(test.db, migrations.slice(0, 1));
-    test.db.exec(`INSERT INTO jobs (linkedin_job_id, title, company, location, url, status_changed_at,
+    migrate(testDb.db, migrations.slice(0, 1));
+    testDb.db.exec(`INSERT INTO jobs (linkedin_job_id, title, company, location, url, status_changed_at,
                                     first_seen_at, last_seen_at)
                   VALUES ('1', 'SDET', 'Example Co', 'Remote', 'https://www.linkedin.com/jobs/view/1/', 'x', 'x', 'x')`);
 
-    expect(migrate(test.db, migrations)).toEqual([2]);
-    expect(test.db.prepare('SELECT title, first_run_id FROM jobs').all()).toEqual([
+    expect(migrate(testDb.db, migrations)).toEqual([2]);
+    expect(testDb.db.prepare('SELECT title, first_run_id FROM jobs').all()).toEqual([
       { title: 'SDET', first_run_id: null },
     ]);
   });
 
   it('FR-05: running it again is a no-op', () => {
-    test = createTestDatabase();
+    testDb = createTestDatabase();
 
-    expect(migrate(test.db)).toEqual([]);
-    expect(appliedVersions(test.db)).toEqual([1, 2]);
+    expect(migrate(testDb.db)).toEqual([]);
+    expect(appliedVersions(testDb.db)).toEqual([1, 2]);
   });
 
   it('FR-05: an empty database has no applied versions', () => {
-    test = createTestDatabase({ migrated: false });
+    testDb = createTestDatabase({ migrated: false });
 
-    expect(appliedVersions(test.db)).toEqual([]);
+    expect(appliedVersions(testDb.db)).toEqual([]);
   });
 
   it('FR-05: applies only the versions that are missing, in order', () => {
-    test = createTestDatabase({ migrated: false });
+    testDb = createTestDatabase({ migrated: false });
     const dir = migrationsDir({
       '002_second.sql': 'CREATE TABLE b (x INTEGER);',
       '001_first.sql':
@@ -85,23 +85,23 @@ describe('migrate', () => {
     });
     const migrations = loadMigrations(dir);
 
-    expect(migrations.map((m) => m.name)).toEqual(['001_first.sql', '002_second.sql']);
-    expect(migrate(test.db, migrations.slice(0, 1))).toEqual([1]);
-    expect(migrate(test.db, migrations)).toEqual([2]);
-    expect(appliedVersions(test.db)).toEqual([1, 2]);
+    expect(migrations.map((migration) => migration.name)).toEqual(['001_first.sql', '002_second.sql']);
+    expect(migrate(testDb.db, migrations.slice(0, 1))).toEqual([1]);
+    expect(migrate(testDb.db, migrations)).toEqual([2]);
+    expect(appliedVersions(testDb.db)).toEqual([1, 2]);
   });
 
   it('FR-05: a failing migration leaves no trace', () => {
-    test = createTestDatabase({ migrated: false });
+    testDb = createTestDatabase({ migrated: false });
     const dir = migrationsDir({
       '001_first.sql':
         'CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL);',
       '002_broken.sql': 'CREATE TABLE half (x INTEGER); THIS IS NOT SQL;',
     });
 
-    expect(() => migrate(test.db, loadMigrations(dir))).toThrow();
+    expect(() => migrate(testDb.db, loadMigrations(dir))).toThrow();
 
-    expect(appliedVersions(test.db)).toEqual([1]);
+    expect(appliedVersions(testDb.db)).toEqual([1]);
     expect(names('table')).toEqual(['schema_migrations']);
   });
 
@@ -110,7 +110,7 @@ describe('migrate', () => {
     [{ '001_ok.sql': '', '003_gap.sql': '' }, 'without gaps; found 003_gap.sql'],
     [{ '001_a.sql': '', '001_b.sql': '' }, 'without gaps; found 001_b.sql'],
   ])('FR-05: rejects a bad set of migration files', (files, message) => {
-    test = createTestDatabase({ migrated: false });
+    testDb = createTestDatabase({ migrated: false });
     const dir = migrationsDir(files);
 
     expect(() => loadMigrations(dir)).toThrow(MigrationError);

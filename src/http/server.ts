@@ -44,28 +44,28 @@ export function createAppServer(
   errorPage: ErrorPage = plainErrorPage,
 ): Server {
   const match = createRouter(routes);
-  return createServer((req, res) => {
-    void handle(req, res, match, logger, errorPage);
+  return createServer((request, response) => {
+    void handle(request, response, match, logger, errorPage);
   });
 }
 
 async function handle(
-  req: IncomingMessage,
-  res: ServerResponse,
+  request: IncomingMessage,
+  response: ServerResponse,
   match: Match,
   logger: Logger,
   errorPage: ErrorPage,
 ): Promise<void> {
   const started = performance.now();
   const requestId = randomUUID();
-  const method = req.method ?? '';
+  const method = request.method ?? '';
   let path = '';
 
   let reply: Reply;
   try {
-    const url = new URL(req.url ?? '/', 'http://127.0.0.1');
+    const url = new URL(request.url ?? '/', 'http://127.0.0.1');
     path = url.pathname;
-    reply = await dispatch(req, method, url, match);
+    reply = await dispatch(request, method, url, match);
   } catch (error) {
     const failure = toFailure(error, logger, requestId);
     reply = isApiPath(path)
@@ -74,7 +74,7 @@ async function handle(
     if (failure.headers !== undefined) reply.headers = failure.headers;
   }
 
-  send(res, reply, requestId);
+  send(response, reply, requestId);
   logger.info('request', {
     requestId,
     method,
@@ -90,12 +90,12 @@ function isApiPath(path: string): boolean {
   return path === '/api' || path.startsWith('/api/');
 }
 
-async function dispatch(req: IncomingMessage, method: string, url: URL, match: Match): Promise<Reply> {
-  const port = req.socket.localPort ?? 0;
-  if (!isAllowedHost(req.headers.host, port)) {
+async function dispatch(request: IncomingMessage, method: string, url: URL, match: Match): Promise<Reply> {
+  const port = request.socket.localPort ?? 0;
+  if (!isAllowedHost(request.headers.host, port)) {
     throw new HttpError(421, 'misdirected_request', 'This server only answers to 127.0.0.1 or localhost on its port');
   }
-  if (isStateChanging(method) && isCrossSite(req.headers, port)) {
+  if (isStateChanging(method) && isCrossSite(request.headers, port)) {
     throw new HttpError(403, 'cross_site_request', 'Requests from other sites are not allowed');
   }
 
@@ -106,15 +106,15 @@ async function dispatch(req: IncomingMessage, method: string, url: URL, match: M
   let body: unknown;
   if (isStateChanging(method)) {
     if ((found.route.accepts ?? 'json') === 'json') {
-      if (!isJsonContentType(req.headers['content-type'])) {
+      if (!isJsonContentType(request.headers['content-type'])) {
         throw new HttpError(415, 'unsupported_media_type', 'Send the body as JSON with Content-Type: application/json');
       }
-      body = parseJson(await readBody(req));
+      body = parseJson(await readBody(request));
     } else {
-      if (!isFormContentType(req.headers['content-type'])) {
+      if (!isFormContentType(request.headers['content-type'])) {
         throw new HttpError(415, 'unsupported_media_type', 'Send the form as application/x-www-form-urlencoded');
       }
-      body = queryObject(new URLSearchParams((await readBody(req)).toString('utf8')), 'form');
+      body = queryObject(new URLSearchParams((await readBody(request)).toString('utf8')), 'form');
     }
   }
 
@@ -137,26 +137,26 @@ class MethodNotAllowed extends Error {
   }
 }
 
-function readBody(req: IncomingMessage): Promise<Buffer> {
+function readBody(request: IncomingMessage): Promise<Buffer> {
   const tooLarge = () => new HttpError(413, 'payload_too_large', 'The request body must be at most 1 MB');
-  if (Number(req.headers['content-length'] ?? 0) > DISCARD_LIMIT_BYTES) {
-    req.destroy();
+  if (Number(request.headers['content-length'] ?? 0) > DISCARD_LIMIT_BYTES) {
+    request.destroy();
     return Promise.reject(tooLarge());
   }
 
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
     let size = 0;
-    req.on('data', (chunk: Buffer) => {
+    request.on('data', (chunk: Buffer) => {
       size += chunk.length;
       if (size <= BODY_LIMIT_BYTES) chunks.push(chunk);
-      else if (size > DISCARD_LIMIT_BYTES) req.destroy();
+      else if (size > DISCARD_LIMIT_BYTES) request.destroy();
     });
-    req.on('end', () => {
+    request.on('end', () => {
       if (size > BODY_LIMIT_BYTES) reject(tooLarge());
       else resolve(Buffer.concat(chunks));
     });
-    req.on('error', reject);
+    request.on('error', reject);
   });
 }
 
@@ -208,12 +208,12 @@ function plainErrorPage(status: number, message: string): string {
   return `<!doctype html><title>Error ${String(status)}</title><p>${escaped}</p>`;
 }
 
-function send(res: ServerResponse, reply: Reply, requestId: string): void {
-  if (res.headersSent || res.destroyed) return;
+function send(response: ServerResponse, reply: Reply, requestId: string): void {
+  if (response.headersSent || response.destroyed) return;
 
   const [payload, contentType] =
     'text' in reply ? [reply.text, reply.contentType] : [JSON.stringify(reply.body), 'application/json; charset=utf-8'];
-  res.writeHead(reply.status, {
+  response.writeHead(reply.status, {
     ...SECURITY_HEADERS,
     'Content-Type': contentType,
     'Content-Length': Buffer.byteLength(payload),
@@ -221,5 +221,5 @@ function send(res: ServerResponse, reply: Reply, requestId: string): void {
     'X-Request-Id': requestId,
     ...reply.headers,
   });
-  res.end(payload);
+  response.end(payload);
 }

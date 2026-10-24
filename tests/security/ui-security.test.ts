@@ -10,13 +10,13 @@ const HOSTILE_TITLE = '<script>alert(1)</script>';
 const HOSTILE_COMPANY = '<img src=x onerror=alert(2)>';
 
 describe('HTML page security', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   let jobId: number;
 
   beforeEach(async () => {
-    t = await startTestApp();
-    const { runId } = await seedBoard(t);
-    const response = await t.post(`/api/runs/${String(runId)}/emails`, {
+    testApp = await startTestApp();
+    const { runId } = await seedBoard(testApp);
+    const response = await testApp.post(`/api/runs/${String(runId)}/emails`, {
       emails: [
         {
           gmailMessageId: 'msgxss',
@@ -36,12 +36,12 @@ describe('HTML page security', () => {
     });
     const [job] = IngestEmailsResponseSchema.parse(response.body).newJobs;
     jobId = job?.id ?? 0;
-    await t.post(`/api/runs/${String(runId)}/scores`, {
+    await testApp.post(`/api/runs/${String(runId)}/scores`, {
       rubricVersion: 'triage-v1',
       scores: [{ jobId, score: 80, label: 'strong', reason: '<iframe src=//evil.example>' }],
     });
-    await t.form(`/jobs/${String(jobId)}/notes`, { notes: '</textarea><script>alert(6)</script>' });
-    await t.call('PUT', '/api/profile', {
+    await testApp.form(`/jobs/${String(jobId)}/notes`, { notes: '</textarea><script>alert(6)</script>' });
+    await testApp.call('PUT', '/api/profile', {
       targetRoles: ['<script>alert(7)</script>'],
       seniority: 'senior',
       yearsExperience: 8,
@@ -54,7 +54,7 @@ describe('HTML page security', () => {
     });
   });
   afterEach(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   const pages = () => [
@@ -69,20 +69,20 @@ describe('HTML page security', () => {
 
   it('NFR-07: hostile text from emails, scores, notes and the profile is escaped on every page', async () => {
     for (const path of pages()) {
-      const { text } = await t.get(path);
+      const { text } = await testApp.get(path);
 
       // Escaped text may still read "onerror=" or "onmouseover"; it is only dangerous as real markup.
       expect(text, path).not.toMatch(/<script|<img|<svg|<iframe|<b>|<i>|<\/textarea><|<[^>]*\son[a-z]+=/i);
     }
 
-    expect((await t.get('/?q=script')).text).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
-    expect((await t.get(`/jobs/${String(jobId)}`)).text).toContain('&lt;/textarea&gt;&lt;script&gt;alert(6)');
-    expect((await t.get('/runs')).text).toContain('&lt;script&gt;alert(5)&lt;/script&gt;');
-    expect((await t.get('/profile')).text).toContain('&quot;&gt;&lt;script&gt;alert(8)');
+    expect((await testApp.get('/?q=script')).text).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+    expect((await testApp.get(`/jobs/${String(jobId)}`)).text).toContain('&lt;/textarea&gt;&lt;script&gt;alert(6)');
+    expect((await testApp.get('/runs')).text).toContain('&lt;script&gt;alert(5)&lt;/script&gt;');
+    expect((await testApp.get('/profile')).text).toContain('&quot;&gt;&lt;script&gt;alert(8)');
   });
 
   it('NFR-07: a hostile search term is escaped where the form shows it again', async () => {
-    const { text } = await t.get(`/?q=${encodeURIComponent('"><script>alert(9)</script>')}`);
+    const { text } = await testApp.get(`/?q=${encodeURIComponent('"><script>alert(9)</script>')}`);
 
     expect(text).toContain('value="&quot;&gt;&lt;script&gt;alert(9)&lt;/script&gt;"');
     expect(text).not.toContain('<script');
@@ -90,7 +90,7 @@ describe('HTML page security', () => {
 
   it('DEC-006: no page carries script, inline handlers or inline styles', async () => {
     for (const path of pages()) {
-      const { text } = await t.get(path);
+      const { text } = await testApp.get(path);
 
       expect(text, path).not.toMatch(/<script|<[^>]*\s(?:on[a-z]+|style)=/i);
     }
@@ -98,7 +98,7 @@ describe('HTML page security', () => {
 
   it('NFR-01: every page has the security headers, and the CSP allows no inline code', async () => {
     for (const path of pages()) {
-      const response = await t.raw({ path });
+      const response = await testApp.raw({ path });
 
       expect(response.headers, path).toMatchObject({
         'x-content-type-options': 'nosniff',
@@ -114,7 +114,7 @@ describe('HTML page security', () => {
 
   it('NFR-03: every LinkedIn link opens in a new tab without an opener or referrer', async () => {
     for (const path of ['/', `/jobs/${String(jobId)}`]) {
-      const links = (await t.get(path)).text.match(/<a [^>]*linkedin\.com[^>]*>/g) ?? [];
+      const links = (await testApp.get(path)).text.match(/<a [^>]*linkedin\.com[^>]*>/g) ?? [];
 
       expect(links.length, path).toBeGreaterThan(0);
       for (const link of links) {
@@ -129,13 +129,13 @@ describe('HTML page security', () => {
     ['Sec-Fetch-Site: cross-site', { 'Sec-Fetch-Site': 'cross-site', Origin: 'http://evil.example' }],
     ['an opaque "null" Origin', { Origin: 'null', 'Sec-Fetch-Site': 'cross-site' }],
   ])('NFR-01: a form post with %s is refused with 403 and changes nothing', async (_case, headers) => {
-    const status = await t.form(`/jobs/${String(jobId)}/status`, { status: 'dismissed' }, headers);
-    const notes = await t.form(`/jobs/${String(jobId)}/notes`, { notes: 'pwned' }, headers);
+    const status = await testApp.form(`/jobs/${String(jobId)}/status`, { status: 'dismissed' }, headers);
+    const notes = await testApp.form(`/jobs/${String(jobId)}/notes`, { notes: 'pwned' }, headers);
 
     expect(status.status).toBe(403);
     expect(notes.status).toBe(403);
     expect(status.text).toContain('Requests from other sites are not allowed');
-    expect((await t.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({
+    expect((await testApp.get(`/api/jobs/${String(jobId)}`)).body).toMatchObject({
       status: 'new',
       notes: '</textarea><script>alert(6)</script>',
     });
@@ -149,7 +149,7 @@ describe('HTML page security', () => {
     '/static/APP.CSS',
     '/public/app.css',
   ])('NFR-08: %s is 404, never a file', async (path) => {
-    const response = await t.raw({ path });
+    const response = await testApp.raw({ path });
 
     expect(response.status).toBe(404);
     expect(response.text).not.toMatch(/"dependencies"|startApp|DB_PATH|prefers-color-scheme/);

@@ -29,19 +29,19 @@ function conforms(schema: z.ZodType, response: ApiResponse, status: number): voi
 }
 
 describe('API responses match their schemas', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   let runId = 0;
   let jobId = 0;
 
   beforeAll(async () => {
-    t = await startTestApp();
+    testApp = await startTestApp();
   });
   afterAll(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   it('FR-01: GET /api/health', async () => {
-    conforms(HealthResponseSchema, await t.get('/api/health'), 200);
+    conforms(HealthResponseSchema, await testApp.get('/api/health'), 200);
   });
 
   it('FR-01: PUT and GET /api/profile', async () => {
@@ -56,31 +56,31 @@ describe('API responses match their schemas', () => {
       dealBreakers: [],
       excludedCompanies: [],
     };
-    conforms(ProfileSchema, await t.call('PUT', '/api/profile', profile), 200);
-    conforms(ProfileSchema, await t.get('/api/profile'), 200);
+    conforms(ProfileSchema, await testApp.call('PUT', '/api/profile', profile), 200);
+    conforms(ProfileSchema, await testApp.get('/api/profile'), 200);
   });
 
   it('FR-02: GET /api/ingest/state before and after ingest', async () => {
-    conforms(IngestStateResponseSchema, await t.get('/api/ingest/state'), 200);
+    conforms(IngestStateResponseSchema, await testApp.get('/api/ingest/state'), 200);
   });
 
   it('FR-11: POST /api/runs', async () => {
-    const response = await t.post('/api/runs');
+    const response = await testApp.post('/api/runs');
     conforms(CreateRunResponseSchema, response, 201);
     runId = CreateRunResponseSchema.parse(response.body).runId;
   });
 
   it('FR-02: POST /api/runs/:id/emails', async () => {
-    const response = await t.post(`/api/runs/${String(runId)}/emails`, {
+    const response = await testApp.post(`/api/runs/${String(runId)}/emails`, {
       emails: [fixtureEmail('digest-test-automation.txt', 'msg1'), fixtureEmail('recommendations.txt', 'msg2')],
     });
     conforms(IngestEmailsResponseSchema, response, 200);
     jobId = IngestEmailsResponseSchema.parse(response.body).newJobs[0]?.id ?? 0;
-    conforms(IngestStateResponseSchema, await t.get('/api/ingest/state'), 200);
+    conforms(IngestStateResponseSchema, await testApp.get('/api/ingest/state'), 200);
   });
 
   it('FR-06: POST /api/runs/:id/scores', async () => {
-    const response = await t.post(`/api/runs/${String(runId)}/scores`, {
+    const response = await testApp.post(`/api/runs/${String(runId)}/scores`, {
       rubricVersion: 'v1',
       scores: [{ jobId, score: 88, label: 'strong', reason: 'Senior automation role.' }],
     });
@@ -88,44 +88,44 @@ describe('API responses match their schemas', () => {
   });
 
   it('FR-07: GET /api/jobs with and without filters', async () => {
-    conforms(JobListResponseSchema, await t.get('/api/jobs'), 200);
-    conforms(JobListResponseSchema, await t.get('/api/jobs?tab=new&minScore=50&q=qa&sort=recent&limit=5'), 200);
+    conforms(JobListResponseSchema, await testApp.get('/api/jobs'), 200);
+    conforms(JobListResponseSchema, await testApp.get('/api/jobs?tab=new&minScore=50&q=qa&sort=recent&limit=5'), 200);
   });
 
   it('FR-10: GET /api/jobs/:id', async () => {
-    conforms(JobDetailSchema, await t.get(`/api/jobs/${String(jobId)}`), 200);
+    conforms(JobDetailSchema, await testApp.get(`/api/jobs/${String(jobId)}`), 200);
   });
 
   it('FR-08: PATCH /api/jobs/:id', async () => {
     conforms(
       JobDetailSchema,
-      await t.call('PATCH', `/api/jobs/${String(jobId)}`, { status: 'saved', notes: 'n' }),
+      await testApp.call('PATCH', `/api/jobs/${String(jobId)}`, { status: 'saved', notes: 'n' }),
       200,
     );
   });
 
   it('FR-11: POST /api/runs/:id/finish and GET /api/runs', async () => {
-    conforms(RunSummarySchema, await t.post(`/api/runs/${String(runId)}/finish`), 200);
-    conforms(RunListResponseSchema, await t.get('/api/runs'), 200);
+    conforms(RunSummarySchema, await testApp.post(`/api/runs/${String(runId)}/finish`), 200);
+    conforms(RunListResponseSchema, await testApp.get('/api/runs'), 200);
   });
 
   it('FR-14: GET /api/linkedin/session without and with a saved session', async () => {
-    conforms(LinkedInSessionResponseSchema, await t.get('/api/linkedin/session'), 200);
+    conforms(LinkedInSessionResponseSchema, await testApp.get('/api/linkedin/session'), 200);
     saveLinkedInSession(
-      t.linkedinSessionPath,
+      testApp.linkedinSessionPath,
       createLinkedInSessionFile(fakeLinkedInStorageState(), '2026-10-24T09:00:00.000Z'),
     );
-    conforms(LinkedInSessionResponseSchema, await t.get('/api/linkedin/session'), 200);
+    conforms(LinkedInSessionResponseSchema, await testApp.get('/api/linkedin/session'), 200);
   });
 
   it.each<[string, () => Promise<ApiResponse>, number]>([
-    ['400 validation', () => t.get('/api/jobs?tab=x'), 400],
-    ['400 invalid JSON', () => t.call('POST', '/api/runs', '{'), 400],
-    ['404 route', () => t.get('/api/nothing'), 404],
-    ['404 job', () => t.get('/api/jobs/999'), 404],
-    ['405', () => t.call('DELETE', '/api/jobs'), 405],
-    ['409 transition', () => t.call('PATCH', `/api/jobs/${String(jobId)}`, { status: 'offer' }), 409],
-    ['409 finished run', () => t.post(`/api/runs/${String(runId)}/finish`), 409],
+    ['400 validation', () => testApp.get('/api/jobs?tab=x'), 400],
+    ['400 invalid JSON', () => testApp.call('POST', '/api/runs', '{'), 400],
+    ['404 route', () => testApp.get('/api/nothing'), 404],
+    ['404 job', () => testApp.get('/api/jobs/999'), 404],
+    ['405', () => testApp.call('DELETE', '/api/jobs'), 405],
+    ['409 transition', () => testApp.call('PATCH', `/api/jobs/${String(jobId)}`, { status: 'offer' }), 409],
+    ['409 finished run', () => testApp.post(`/api/runs/${String(runId)}/finish`), 409],
   ])('NFR-09: the %s error matches the error envelope', async (_case, send, status) => {
     conforms(ErrorResponseSchema, await send(), status);
   });

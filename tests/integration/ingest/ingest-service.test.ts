@@ -42,20 +42,20 @@ const UNRECOGNIZED: IncomingEmail = {
 };
 
 describe('ingestEmails', () => {
-  let test: TestDatabase;
+  let testDb: TestDatabase;
   let runId: number;
   const clock = fakeClock();
 
   beforeEach(() => {
-    test = createTestDatabase();
-    runId = test.repos.runs.create('2026-10-23T12:00:00.000Z');
+    testDb = createTestDatabase();
+    runId = testDb.repos.runs.create('2026-10-23T12:00:00.000Z');
   });
   afterEach(() => {
-    test.close();
+    testDb.close();
   });
 
   function ingest(emails: IncomingEmail[], run = runId) {
-    return ingestEmails(test.db, test.repos, run, emails, clock);
+    return ingestEmails(testDb.db, testDb.repos, run, emails, clock);
   }
 
   it('FR-02: stores a parsed email with its jobs, sightings and history', () => {
@@ -63,8 +63,8 @@ describe('ingestEmails', () => {
 
     expect(result.results).toEqual([{ gmailMessageId: 'msg-1', outcome: 'new', jobsFound: 6 }]);
     expect(result.newJobIds).toHaveLength(6);
-    expect(countAll(test.db)).toEqual({ runs: 1, emails: 1, jobs: 6, sightings: 6, status_history: 6, profile: 0 });
-    expect(test.repos.emails.get('msg-1')).toMatchObject({
+    expect(countAll(testDb.db)).toEqual({ runs: 1, emails: 1, jobs: 6, sightings: 6, status_history: 6, profile: 0 });
+    expect(testDb.repos.emails.get('msg-1')).toMatchObject({
       runId,
       receivedAt: '2026-10-22T14:10:48.000Z',
       parseStatus: 'parsed',
@@ -74,7 +74,7 @@ describe('ingestEmails', () => {
     });
 
     const [firstId] = result.newJobIds;
-    expect(test.repos.jobs.get(firstId ?? 0)).toMatchObject({
+    expect(testDb.repos.jobs.get(firstId ?? 0)).toMatchObject({
       linkedinJobId: '4473592349',
       title: 'Senior QA Automation Test Engineer',
       company: 'Cboe Global Markets',
@@ -83,7 +83,7 @@ describe('ingestEmails', () => {
       firstSeenAt: '2026-10-22T14:10:48.000Z',
       lastSeenAt: '2026-10-22T14:10:48.000Z',
     });
-    expect(test.repos.statusHistory.listForJob(firstId ?? 0)).toEqual([
+    expect(testDb.repos.statusHistory.listForJob(firstId ?? 0)).toEqual([
       { fromStatus: null, toStatus: 'new', changedAt: expect.any(String) as unknown },
     ]);
   });
@@ -99,17 +99,17 @@ describe('ingestEmails', () => {
       newJobIds: [],
     });
     expect(storedData()).toEqual(before);
-    expect(test.repos.runs.get(runId)).toMatchObject({ emailsSeen: 2, emailsNew: 1, emailsDuplicate: 1, jobsNew: 6 });
+    expect(testDb.repos.runs.get(runId)).toMatchObject({ emailsSeen: 2, emailsNew: 1, emailsDuplicate: 1, jobsNew: 6 });
   });
 
   it('FR-05: a duplicate in a later run is still a duplicate', () => {
     ingest([fixtureEmail('recommendations.txt', 'msg-r')]);
-    const secondRun = test.repos.runs.create('2026-10-24T12:00:00.000Z');
+    const secondRun = testDb.repos.runs.create('2026-10-24T12:00:00.000Z');
 
     const again = ingest([fixtureEmail('recommendations.txt', 'msg-r')], secondRun);
 
     expect(again.results[0]?.outcome).toBe('duplicate');
-    expect(test.repos.runs.get(secondRun)).toMatchObject({
+    expect(testDb.repos.runs.get(secondRun)).toMatchObject({
       emailsSeen: 1,
       emailsDuplicate: 1,
       emailsNew: 0,
@@ -122,8 +122,8 @@ describe('ingestEmails', () => {
 
     const result = ingest([email, email]);
 
-    expect(result.results.map((r) => r.outcome)).toEqual(['new', 'duplicate']);
-    expect(countAll(test.db)).toMatchObject({ emails: 1, jobs: 1, sightings: 1 });
+    expect(result.results.map((emailResult) => emailResult.outcome)).toEqual(['new', 'duplicate']);
+    expect(countAll(testDb.db)).toMatchObject({ emails: 1, jobs: 1, sightings: 1 });
   });
 
   it('FR-04: the same job in two emails is one job with two sightings', () => {
@@ -132,16 +132,19 @@ describe('ingestEmails', () => {
 
     const result = ingest([later, earlier]);
 
-    expect(result.results.map((r) => r.outcome)).toEqual(['new', 'new']);
+    expect(result.results.map((emailResult) => emailResult.outcome)).toEqual(['new', 'new']);
     expect(result.newJobIds).toHaveLength(1);
     const jobId = result.newJobIds[0] ?? 0;
-    expect(countAll(test.db)).toMatchObject({ emails: 2, jobs: 1, sightings: 2, status_history: 1 });
-    expect(test.repos.jobs.get(jobId)).toMatchObject({
+    expect(countAll(testDb.db)).toMatchObject({ emails: 2, jobs: 1, sightings: 2, status_history: 1 });
+    expect(testDb.repos.jobs.get(jobId)).toMatchObject({
       seenCount: 2,
       firstSeenAt: '2026-10-21T08:00:00.000Z',
       lastSeenAt: '2026-10-23T08:00:00.000Z',
     });
-    expect(test.repos.sightings.listForJob(jobId).map((s) => s.gmailMessageId)).toEqual(['msg-earlier', 'msg-later']);
+    expect(testDb.repos.sightings.listForJob(jobId).map((sighting) => sighting.gmailMessageId)).toEqual([
+      'msg-earlier',
+      'msg-later',
+    ]);
   });
 
   it('FR-04: the board shows the newest email’s details, even when the older email is ingested last (DEC-023)', () => {
@@ -160,7 +163,7 @@ describe('ingestEmails', () => {
 
     const [jobId] = ingest([newerWithFlags, older]).newJobIds;
 
-    expect(test.repos.jobs.get(jobId ?? 0)).toMatchObject({
+    expect(testDb.repos.jobs.get(jobId ?? 0)).toMatchObject({
       activelyHiring: true,
       easyApply: true,
       seenCount: 2,
@@ -171,26 +174,26 @@ describe('ingestEmails', () => {
 
   it('FR-04: a job already on the board is never reset by a new sighting', () => {
     const [jobId] = ingest([oneJobEmail('msg-1', '2026-10-22T10:00:00Z')]).newJobIds;
-    test.repos.jobs.updateStatus(jobId ?? 0, 'applied', '2026-10-22T11:00:00.000Z');
+    testDb.repos.jobs.updateStatus(jobId ?? 0, 'applied', '2026-10-22T11:00:00.000Z');
 
     const result = ingest([oneJobEmail('msg-2', '2026-10-23T10:00:00Z')]);
 
     expect(result.newJobIds).toEqual([]);
-    expect(test.repos.jobs.get(jobId ?? 0)).toMatchObject({ status: 'applied', seenCount: 2 });
+    expect(testDb.repos.jobs.get(jobId ?? 0)).toMatchObject({ status: 'applied', seenCount: 2 });
   });
 
   it('FR-12: an unrecognized email is stored with its reason and counted, never dropped', () => {
     const result = ingest([UNRECOGNIZED]);
 
     expect(result.results).toEqual([{ gmailMessageId: 'msg-anniversary', outcome: 'unrecognized', jobsFound: 0 }]);
-    expect(test.repos.emails.get('msg-anniversary')).toMatchObject({
+    expect(testDb.repos.emails.get('msg-anniversary')).toMatchObject({
       parseStatus: 'unrecognized',
       unrecognizedReason: 'unknown email format',
       savedSearch: null,
       jobsFound: 0,
       subject: 'Happy work anniversary',
     });
-    expect(test.repos.runs.get(runId)).toMatchObject({ emailsSeen: 1, emailsUnrecognized: 1, emailsNew: 0 });
+    expect(testDb.repos.runs.get(runId)).toMatchObject({ emailsSeen: 1, emailsUnrecognized: 1, emailsNew: 0 });
     expect(ingest([UNRECOGNIZED]).results[0]?.outcome).toBe('duplicate');
   });
 
@@ -204,7 +207,7 @@ describe('ingestEmails', () => {
       UNRECOGNIZED,
     ]);
 
-    expect(test.repos.runs.get(runId)).toMatchObject({
+    expect(testDb.repos.runs.get(runId)).toMatchObject({
       emailsSeen: 5,
       emailsNew: 3,
       emailsDuplicate: 1,
@@ -218,7 +221,7 @@ describe('ingestEmails', () => {
   it('NFR-07: tracking parameters, tokens and email bodies never reach the database', () => {
     ingest([oneJobEmail('msg-1', '2026-10-22T10:00:00Z'), fixtureEmail('recommendations.txt', 'msg-2')]);
 
-    const stored = dumpAll(test.db);
+    const stored = dumpAll(testDb.db);
 
     expect(stored).not.toMatch(/SECRET-TOKEN|otpToken|trackingId|\?/);
     expect(stored).not.toContain('This email was intended for');
@@ -226,28 +229,28 @@ describe('ingestEmails', () => {
   });
 
   it('FR-05: a failure inside one email rolls that whole email back, and it can be sent again', () => {
-    test.db.exec(`CREATE TEMP TRIGGER fail_third_sighting BEFORE INSERT ON sightings
+    testDb.db.exec(`CREATE TEMP TRIGGER fail_third_sighting BEFORE INSERT ON sightings
                   WHEN (SELECT count(*) FROM sightings) >= 2
                   BEGIN SELECT RAISE(ABORT, 'injected failure'); END`);
 
     expect(() => ingest([fixtureEmail('digest-test-automation.txt', 'msg-1')])).toThrow('injected failure');
-    expect(countAll(test.db)).toEqual({ runs: 1, emails: 0, jobs: 0, sightings: 0, status_history: 0, profile: 0 });
-    expect(test.repos.runs.get(runId)).toMatchObject({ emailsSeen: 0, emailsNew: 0, jobsNew: 0 });
+    expect(countAll(testDb.db)).toEqual({ runs: 1, emails: 0, jobs: 0, sightings: 0, status_history: 0, profile: 0 });
+    expect(testDb.repos.runs.get(runId)).toMatchObject({ emailsSeen: 0, emailsNew: 0, jobsNew: 0 });
 
-    test.db.exec('DROP TRIGGER fail_third_sighting');
+    testDb.db.exec('DROP TRIGGER fail_third_sighting');
     expect(ingest([fixtureEmail('digest-test-automation.txt', 'msg-1')]).results[0]?.outcome).toBe('new');
   });
 
   it('FR-05: emails before a failing one in the same batch stay stored', () => {
-    test.db.exec(`CREATE TEMP TRIGGER fail_job_two BEFORE INSERT ON jobs WHEN NEW.linkedin_job_id = '2'
+    testDb.db.exec(`CREATE TEMP TRIGGER fail_job_two BEFORE INSERT ON jobs WHEN NEW.linkedin_job_id = '2'
                   BEGIN SELECT RAISE(ABORT, 'injected failure'); END`);
 
     expect(() =>
       ingest([oneJobEmail('msg-1', '2026-10-22T10:00:00Z', '1'), oneJobEmail('msg-2', '2026-10-22T11:00:00Z', '2')]),
     ).toThrow('injected failure');
 
-    expect(test.repos.emails.exists('msg-1')).toBe(true);
-    expect(test.repos.emails.exists('msg-2')).toBe(false);
+    expect(testDb.repos.emails.exists('msg-1')).toBe(true);
+    expect(testDb.repos.emails.exists('msg-2')).toBe(false);
   });
 
   it('FR-02: an invalid receivedAt rejects the whole batch before anything is stored', () => {
@@ -255,13 +258,13 @@ describe('ingestEmails', () => {
 
     expect(() => ingest(batch)).toThrow(InvalidEmailError);
     expect(() => ingest(batch)).toThrow('email msg-2 has an invalid receivedAt: yesterday');
-    expect(countAll(test.db)).toMatchObject({ emails: 0, jobs: 0 });
+    expect(countAll(testDb.db)).toMatchObject({ emails: 0, jobs: 0 });
   });
 
   it('FR-02: stores every receivedAt in one ISO-8601 UTC form', () => {
     ingest([oneJobEmail('msg-1', '2026-10-22T09:10:48-05:00')]);
 
-    expect(test.repos.emails.get('msg-1')?.receivedAt).toBe('2026-10-22T14:10:48.000Z');
+    expect(testDb.repos.emails.get('msg-1')?.receivedAt).toBe('2026-10-22T14:10:48.000Z');
   });
 
   it('FR-11: refuses an unknown run', () => {
@@ -270,10 +273,10 @@ describe('ingestEmails', () => {
   });
 
   it('FR-11: refuses a run that is already finished', () => {
-    test.repos.runs.finish(runId, '2026-10-23T12:30:00.000Z');
+    testDb.repos.runs.finish(runId, '2026-10-23T12:30:00.000Z');
 
     expect(() => ingest([UNRECOGNIZED])).toThrow(RunFinishedError);
-    expect(countAll(test.db).emails).toBe(0);
+    expect(countAll(testDb.db).emails).toBe(0);
   });
 
   it('FR-02: an empty batch does nothing', () => {
@@ -283,7 +286,7 @@ describe('ingestEmails', () => {
   // Everything an ingest may write except the run's own counters, which do count the duplicate.
   function storedData(): unknown {
     return ['emails', 'jobs', 'sightings', 'status_history'].map((table) =>
-      test.db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all(),
+      testDb.db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all(),
     );
   }
 });

@@ -13,23 +13,23 @@ const UNRECOGNIZED = {
 };
 
 describe('the /find-jobs run API', () => {
-  let t: TestApp;
+  let testApp: TestApp;
   beforeEach(async () => {
-    t = await startTestApp();
+    testApp = await startTestApp();
   });
   afterEach(async () => {
-    await t.close();
+    await testApp.close();
   });
 
   async function newRun(): Promise<number> {
-    const response = await t.post('/api/runs');
+    const response = await testApp.post('/api/runs');
     expect(response.status).toBe(201);
     return CreateRunResponseSchema.parse(response.body).runId;
   }
 
   describe('GET /api/ingest/state', () => {
     it('FR-02: is null before any email is stored', async () => {
-      const response = await t.get('/api/ingest/state');
+      const response = await testApp.get('/api/ingest/state');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ lastEmailReceivedAt: null });
@@ -37,7 +37,7 @@ describe('the /find-jobs run API', () => {
 
     it('FR-02: returns the newest receivedAt of any stored email, unrecognized ones included', async () => {
       const runId = await newRun();
-      await t.post(`/api/runs/${String(runId)}/emails`, {
+      await testApp.post(`/api/runs/${String(runId)}/emails`, {
         emails: [
           fixtureEmail('digest-senior-qa.txt', 'msg1'),
           UNRECOGNIZED,
@@ -45,7 +45,9 @@ describe('the /find-jobs run API', () => {
         ],
       });
 
-      expect((await t.get('/api/ingest/state')).body).toEqual({ lastEmailReceivedAt: '2026-10-23T09:00:00.000Z' });
+      expect((await testApp.get('/api/ingest/state')).body).toEqual({
+        lastEmailReceivedAt: '2026-10-23T09:00:00.000Z',
+      });
     });
   });
 
@@ -56,7 +58,7 @@ describe('the /find-jobs run API', () => {
     });
 
     it('NFR-09: the body must be an empty object', async () => {
-      const response = await t.post('/api/runs', { dryRun: true });
+      const response = await testApp.post('/api/runs', { dryRun: true });
 
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({ error: { code: 'validation_failed' } });
@@ -67,7 +69,7 @@ describe('the /find-jobs run API', () => {
     it('FR-02: stores new emails and returns the new jobs', async () => {
       const runId = await newRun();
 
-      const response = await t.post(`/api/runs/${String(runId)}/emails`, {
+      const response = await testApp.post(`/api/runs/${String(runId)}/emails`, {
         emails: [fixtureEmail('digest-test-automation.txt', 'msg1'), UNRECOGNIZED],
       });
 
@@ -96,9 +98,9 @@ describe('the /find-jobs run API', () => {
     it('FR-05: sending the same email again reports a duplicate and returns no new jobs', async () => {
       const runId = await newRun();
       const batch = { emails: [fixtureEmail('digest-senior-qa.txt', 'msg1')] };
-      await t.post(`/api/runs/${String(runId)}/emails`, batch);
+      await testApp.post(`/api/runs/${String(runId)}/emails`, batch);
 
-      const again = await t.post(`/api/runs/${String(runId)}/emails`, batch);
+      const again = await testApp.post(`/api/runs/${String(runId)}/emails`, batch);
 
       expect(again.body).toEqual({
         results: [{ gmailMessageId: 'msg1', outcome: 'duplicate', jobsFound: 0 }],
@@ -110,7 +112,9 @@ describe('the /find-jobs run API', () => {
       ['no emails', { emails: [] }, 'emails'],
       [
         'more than 50 emails',
-        { emails: Array.from({ length: 51 }, (_, i) => ({ ...UNRECOGNIZED, gmailMessageId: `m${String(i)}` })) },
+        {
+          emails: Array.from({ length: 51 }, (_, index) => ({ ...UNRECOGNIZED, gmailMessageId: `m${String(index)}` })),
+        },
         'emails',
       ],
       [
@@ -129,7 +133,7 @@ describe('the /find-jobs run API', () => {
     ])('NFR-09: rejects %s with a 400 that points at the problem', async (_case, body, path) => {
       const runId = await newRun();
 
-      const response = await t.post(`/api/runs/${String(runId)}/emails`, body);
+      const response = await testApp.post(`/api/runs/${String(runId)}/emails`, body);
 
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({
@@ -142,11 +146,11 @@ describe('the /find-jobs run API', () => {
 
     it('FR-11: an unknown run is 404 and a finished run is 409', async () => {
       const runId = await newRun();
-      await t.post(`/api/runs/${String(runId)}/finish`);
+      await testApp.post(`/api/runs/${String(runId)}/finish`);
       const batch = { emails: [UNRECOGNIZED] };
 
-      const unknown = await t.post('/api/runs/99/emails', batch);
-      const finished = await t.post(`/api/runs/${String(runId)}/emails`, batch);
+      const unknown = await testApp.post('/api/runs/99/emails', batch);
+      const finished = await testApp.post(`/api/runs/${String(runId)}/emails`, batch);
 
       expect(unknown.status).toBe(404);
       expect(unknown.body).toEqual({ error: { code: 'not_found', message: 'run 99 does not exist' } });
@@ -157,7 +161,7 @@ describe('the /find-jobs run API', () => {
     });
 
     it.each(['abc', '0', '-1', '1.5', '99999999999999999'])('NFR-09: run ID "%s" is a 400', async (id) => {
-      const response = await t.post(`/api/runs/${id}/emails`, { emails: [UNRECOGNIZED] });
+      const response = await testApp.post(`/api/runs/${id}/emails`, { emails: [UNRECOGNIZED] });
 
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({ error: { code: 'validation_failed', message: 'The run ID is invalid' } });
@@ -166,17 +170,17 @@ describe('the /find-jobs run API', () => {
 
   describe('POST /api/runs/:id/scores', () => {
     it('FR-06: stores scores with their label, reason and rubric version', async () => {
-      const { runId, jobs } = await seedBoard(t);
+      const { runId, jobs } = await seedBoard(testApp);
       const job = jobAt(jobs, '3Pillar');
 
-      const response = await t.post(`/api/runs/${String(runId)}/scores`, {
+      const response = await testApp.post(`/api/runs/${String(runId)}/scores`, {
         rubricVersion: 'v1',
         scores: [{ jobId: job.id, score: 92, label: 'strong', reason: 'Exact stack match, senior, US-wide.' }],
       });
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ stored: 1 });
-      expect((await t.get(`/api/jobs/${String(job.id)}`)).body).toMatchObject({
+      expect((await testApp.get(`/api/jobs/${String(job.id)}`)).body).toMatchObject({
         score: 92,
         scoreLabel: 'strong',
         scoreReason: 'Exact stack match, senior, US-wide.',
@@ -192,10 +196,13 @@ describe('the /find-jobs run API', () => {
       ['a reason over 200 characters', { reason: 'x'.repeat(201) }, 'scores.0.reason'],
       ['an empty reason', { reason: '   ' }, 'scores.0.reason'],
     ])('FR-06: rejects %s', async (_case, override, path) => {
-      const { runId, jobs } = await seedBoard(t);
+      const { runId, jobs } = await seedBoard(testApp);
       const score = { jobId: jobs[0]?.id, score: 60, label: 'possible', reason: 'ok', ...override };
 
-      const response = await t.post(`/api/runs/${String(runId)}/scores`, { rubricVersion: 'v1', scores: [score] });
+      const response = await testApp.post(`/api/runs/${String(runId)}/scores`, {
+        rubricVersion: 'v1',
+        scores: [score],
+      });
 
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({
@@ -207,10 +214,10 @@ describe('the /find-jobs run API', () => {
     });
 
     it('FR-06: scoring the same job twice in one request is rejected', async () => {
-      const { runId, jobs } = await seedBoard(t);
+      const { runId, jobs } = await seedBoard(testApp);
       const entry = { jobId: jobs[0]?.id, score: 60, label: 'possible', reason: 'ok' };
 
-      const response = await t.post(`/api/runs/${String(runId)}/scores`, {
+      const response = await testApp.post(`/api/runs/${String(runId)}/scores`, {
         rubricVersion: 'v1',
         scores: [entry, entry],
       });
@@ -220,10 +227,10 @@ describe('the /find-jobs run API', () => {
     });
 
     it('FR-06: one unknown job ID stores nothing at all, and names the bad IDs', async () => {
-      const { runId, jobs } = await seedBoard(t);
+      const { runId, jobs } = await seedBoard(testApp);
       const known = jobs[0]?.id ?? 0;
 
-      const response = await t.post(`/api/runs/${String(runId)}/scores`, {
+      const response = await testApp.post(`/api/runs/${String(runId)}/scores`, {
         rubricVersion: 'v1',
         scores: [
           { jobId: known, score: 90, label: 'strong', reason: 'ok' },
@@ -240,13 +247,13 @@ describe('the /find-jobs run API', () => {
           details: { jobIds: [9001, 9002] },
         },
       });
-      expect((await t.get(`/api/jobs/${String(known)}`)).body).toMatchObject({ score: null });
+      expect((await testApp.get(`/api/jobs/${String(known)}`)).body).toMatchObject({ score: null });
     });
   });
 
   describe('POST /api/runs/:id/finish and GET /api/runs', () => {
     it('FR-11, FR-13: finishing returns the counts and the top 5 new jobs by score', async () => {
-      const { runId, jobs } = await seedBoard(t);
+      const { runId, jobs } = await seedBoard(testApp);
       const scored = [
         ['Workiva', 70, 'possible'],
         ['3Pillar', 92, 'strong'],
@@ -255,7 +262,7 @@ describe('the /find-jobs run API', () => {
         ['Optum', 40, 'weak'],
         ['Milliman IntelliScript', 65, 'possible'],
       ] as const;
-      await t.post(`/api/runs/${String(runId)}/scores`, {
+      await testApp.post(`/api/runs/${String(runId)}/scores`, {
         rubricVersion: 'v1',
         scores: scored.map(([company, score, label]) => ({
           jobId: jobAt(jobs, company).id,
@@ -265,7 +272,7 @@ describe('the /find-jobs run API', () => {
         })),
       });
 
-      const response = await t.post(`/api/runs/${String(runId)}/finish`);
+      const response = await testApp.post(`/api/runs/${String(runId)}/finish`);
 
       expect(response.status).toBe(200);
       const summary = RunSummarySchema.parse(response.body);
@@ -291,19 +298,19 @@ describe('the /find-jobs run API', () => {
 
     it('FR-11: a run can be finished only once', async () => {
       const runId = await newRun();
-      await t.post(`/api/runs/${String(runId)}/finish`);
+      await testApp.post(`/api/runs/${String(runId)}/finish`);
 
-      const again = await t.post(`/api/runs/${String(runId)}/finish`);
+      const again = await testApp.post(`/api/runs/${String(runId)}/finish`);
 
       expect(again.status).toBe(409);
       expect(again.body).toMatchObject({ error: { code: 'run_finished' } });
     });
 
     it('FR-11: lists runs newest first, honouring limit', async () => {
-      for (let i = 0; i < 3; i += 1) await newRun();
+      for (let created = 0; created < 3; created += 1) await newRun();
 
-      const all = await t.get('/api/runs');
-      const two = await t.get('/api/runs?limit=2');
+      const all = await testApp.get('/api/runs');
+      const two = await testApp.get('/api/runs?limit=2');
 
       expect(all.status).toBe(200);
       expect((all.body as { id: number }[]).map((run) => run.id)).toEqual([3, 2, 1]);
@@ -313,7 +320,7 @@ describe('the /find-jobs run API', () => {
     it.each(['limit=0', 'limit=101', 'limit=ten', 'limit=1&limit=2', 'page=2'])(
       'NFR-09: GET /api/runs?%s is a 400',
       async (query) => {
-        const response = await t.get(`/api/runs?${query}`);
+        const response = await testApp.get(`/api/runs?${query}`);
 
         expect(response.status).toBe(400);
         expect(response.body).toMatchObject({ error: { code: 'validation_failed' } });

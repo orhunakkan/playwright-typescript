@@ -82,12 +82,12 @@ const COMPANY_A = ['Acme', 'Globex', 'Initech', 'Umbrella', 'Hooli', 'Vandelay',
 const COMPANY_B = ['Labs', 'Systems', 'Health', 'Financial', 'Software', 'Analytics', 'Robotics', 'Media'];
 const SEARCHES = ['sdet in United States', 'senior quality assurance engineer in United States', 'test automation'];
 
-function fakeJob(linkedinId: string, rand: () => number): FakeJob {
-  const pick = <T>(items: readonly T[]): T => items[Math.floor(rand() * items.length)] as T;
+function fakeJob(linkedinId: string, nextRandom: () => number): FakeJob {
+  const pick = <T>(items: readonly T[]): T => items[Math.floor(nextRandom() * items.length)] as T;
   const role = pick(ROLES);
   const stack = role.cap === undefined ? pick(STACKS) : { suffix: '', bonus: 0, reason: '' };
   const location = pick(LOCATIONS);
-  const noise = Math.round((rand() - 0.5) * 8);
+  const noise = Math.round((nextRandom() - 0.5) * 8);
   const raw = Math.min(100, Math.max(0, role.base + stack.bonus + location.adjust + noise));
   return {
     linkedinId,
@@ -120,10 +120,10 @@ function random(seed: number): () => number {
   let state = seed >>> 0;
   return () => {
     state = (state + 0x6d2b79f5) >>> 0;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    let bits = state;
+    bits = Math.imul(bits ^ (bits >>> 15), bits | 1);
+    bits ^= bits + Math.imul(bits ^ (bits >>> 7), bits | 61);
+    return ((bits ^ (bits >>> 14)) >>> 0) / 4294967296;
   };
 }
 
@@ -133,8 +133,8 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
     throw new SeedError(`the database already has ${String(existing)} jobs; seed only into a new database`);
   }
 
-  const rand = random(options.seed);
-  const pick = <T>(items: readonly T[]): T => items[Math.floor(rand() * items.length)] as T;
+  const nextRandom = random(options.seed);
+  const pick = <T>(items: readonly T[]): T => items[Math.floor(nextRandom() * items.length)] as T;
   const until = Date.parse(options.until);
   const emailCount = Math.ceil(options.count / NEW_PER_EMAIL);
   const runCount = Math.min(30, emailCount);
@@ -144,24 +144,24 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
 
   // 1. Emails, through the real ingest service: about one run per day, each with its share of the emails.
   const fakeJobs: FakeJob[] = [];
-  for (let e = 0; e < emailCount; e += 1) {
-    const run = Math.floor((e * runCount) / emailCount);
+  for (let emailIndex = 0; emailIndex < emailCount; emailIndex += 1) {
+    const run = Math.floor((emailIndex * runCount) / emailCount);
     const runId = (runIds[run] ??= repos.runs.create(tick()));
-    const receivedAt = new Date(until - ((emailCount - 1 - e) * 30 * DAY_MS) / emailCount).toISOString();
+    const receivedAt = new Date(until - ((emailCount - 1 - emailIndex) * 30 * DAY_MS) / emailCount).toISOString();
     clock = Math.max(clock, Date.parse(receivedAt));
 
     const blocks: string[] = [];
-    for (let n = 0; n < NEW_PER_EMAIL && fakeJobs.length < options.count; n += 1) {
-      const job = fakeJob(String(4_400_000_000 + fakeJobs.length), rand);
+    for (let slot = 0; slot < NEW_PER_EMAIL && fakeJobs.length < options.count; slot += 1) {
+      const job = fakeJob(String(4_400_000_000 + fakeJobs.length), nextRandom);
       fakeJobs.push(job);
-      blocks.push(block(job, rand));
+      blocks.push(block(job, nextRandom));
     }
     const earlier = fakeJobs.slice(0, fakeJobs.length - blocks.length);
-    for (let n = blocks.length; n < JOBS_PER_EMAIL && earlier.length > 0; n += 1) {
-      blocks.push(block(pick(earlier), rand));
+    for (let slot = blocks.length; slot < JOBS_PER_EMAIL && earlier.length > 0; slot += 1) {
+      blocks.push(block(pick(earlier), nextRandom));
     }
     const email: IncomingEmail = {
-      gmailMessageId: `seed${String(options.seed)}e${String(e)}`,
+      gmailMessageId: `seed${String(options.seed)}e${String(emailIndex)}`,
       receivedAt,
       sender: 'jobalerts-noreply@linkedin.com',
       subject: 'New jobs for your search',
@@ -188,7 +188,7 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
     });
     for (const job of jobs) {
       const fake = byLinkedinId.get(job.linkedinJobId);
-      if (fake !== undefined && rand() < 0.9) {
+      if (fake !== undefined && nextRandom() < 0.9) {
         repos.jobs.setScore(job.id, {
           score: fake.score,
           label: labelForScore(fake.score),
@@ -201,7 +201,7 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
       }
       const path = pick(PATHS);
       for (const status of path) changeJobStatus(db, repos, job.id, status, tick);
-      if (path.length > 0 && rand() < 0.5) repos.jobs.updateNotes(job.id, 'Seeded note: follow up next week.');
+      if (path.length > 0 && nextRandom() < 0.5) repos.jobs.updateNotes(job.id, 'Seeded note: follow up next week.');
       const status = path.at(-1) ?? 'new';
       byStatus[status] = (byStatus[status] ?? 0) + 1;
     }
@@ -212,13 +212,13 @@ export function seedDatabase(db: DatabaseSync, repos: Repositories, options: See
 }
 
 /** One job block; the two flags change from email to email, as LinkedIn's do. */
-function block(job: FakeJob, rand: () => number): string {
+function block(job: FakeJob, nextRandom: () => number): string {
   const lines = [
     job.title,
     job.company,
     job.location,
-    rand() < 0.3 ? 'This company is actively hiring' : '',
-    rand() < 0.4 ? 'Apply with resume & profile' : '',
+    nextRandom() < 0.3 ? 'This company is actively hiring' : '',
+    nextRandom() < 0.4 ? 'Apply with resume & profile' : '',
     `View job: https://www.linkedin.com/comm/jobs/view/${job.linkedinId}/`,
   ];
   return lines.filter((line) => line !== '').join('\n');
@@ -232,8 +232,8 @@ const ArgsSchema = z.object({
 
 function parseArgs(argv: readonly string[]): Record<string, string> {
   const args: Record<string, string> = {};
-  for (let i = 0; i < argv.length; i += 2) {
-    const [key, value] = [argv[i], argv[i + 1]];
+  for (let index = 0; index < argv.length; index += 2) {
+    const [key, value] = [argv[index], argv[index + 1]];
     if (key?.startsWith('--') !== true || value === undefined)
       throw new SeedError(`unexpected argument: ${String(key)}`);
     args[key.slice(2)] = value;

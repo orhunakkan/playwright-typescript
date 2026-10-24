@@ -16,14 +16,14 @@ const PackageSchema = z.object({
 });
 
 describe('dependencies (NFR-02)', () => {
-  const pkg = PackageSchema.parse(JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')));
+  const packageJson = PackageSchema.parse(JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')));
 
   it('NFR-02: the runtime dependency is zod only', () => {
-    expect(Object.keys(pkg.dependencies)).toEqual(['zod']);
+    expect(Object.keys(packageJson.dependencies)).toEqual(['zod']);
   });
 
   it('NFR-02: the dev dependencies are exactly the approved list', () => {
-    expect(Object.keys(pkg.devDependencies).sort()).toEqual(
+    expect(Object.keys(packageJson.devDependencies).sort()).toEqual(
       [
         'typescript',
         '@types/node',
@@ -39,11 +39,11 @@ describe('dependencies (NFR-02)', () => {
         '@types/k6',
       ].sort(),
     );
-    expect(pkg.devDependencies['typescript']).toBe('~6.0.3');
+    expect(packageJson.devDependencies['typescript']).toBe('~6.0.3');
   });
 
   it('NFR-02: package.json has no overrides', () => {
-    expect(pkg.overrides).toBeUndefined();
+    expect(packageJson.overrides).toBeUndefined();
   });
 });
 

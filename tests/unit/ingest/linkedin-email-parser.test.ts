@@ -49,7 +49,7 @@ function block(lines: string[], jobId = '1000000001'): string {
 }
 
 function digest(blocks: string[], header = 'Your job alert for qa engineer in United States'): AlertEmail {
-  const body = blocks.map((b) => `${b}\n\n${SEPARATOR}\n\n`).join('');
+  const body = blocks.map((block) => `${block}\n\n${SEPARATOR}\n\n`).join('');
   return {
     sender: 'jobalerts-noreply@linkedin.com',
     subject: 'Test alert',
