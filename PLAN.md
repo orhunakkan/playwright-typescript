@@ -1,6 +1,6 @@
 # Agentic Job Board — MVP Plan
 
-> **Status:** Approved intent (2026-10-23). MVP built; awaiting the owner's acceptance at CP-8 (see the [Checkpoint log](#13-checkpoint-log)).
+> **Status:** MVP accepted at CP-8 (2026-10-23). Further work needs a new approved plan (see [§11](#11-post-mvp-roadmap)).
 > **Owner:** Orhun Akkan (the only user, and the approver at every checkpoint).
 > **Audience:** the owner, and every coding agent that works in this repository.
 
@@ -736,9 +736,9 @@ Tasks:
 - a second immediate run reports 0 new emails
 
 **🛑 CP-5. The owner checks:**
-- [ ] Reads the dry-run summary: are the top 5 the jobs they'd actually look at first?
-- [ ] Spot-checks 5 scores and reasons; requests rubric changes if needed
-- [ ] Confirms no Gmail write action was ever prompted or performed
+- [x] Reads the dry-run summary: are the top 5 the jobs they'd actually look at first?
+- [x] Spot-checks 5 scores and reasons; requests rubric changes if needed
+- [x] Confirms no Gmail write action was ever prompted or performed
 
 ---
 
@@ -767,9 +767,9 @@ Tasks:
 **Done when:** E2E, smoke and a11y are green on all projects, and the earlier gates are still green.
 
 **🛑 CP-6. The owner checks:**
-- [ ] Uses the app for real for a day: run `/find-jobs`, triage the board, move a job through statuses, write notes
-- [ ] Checks it on a phone-sized window
-- [ ] Lists any UI changes they want (handled before approval)
+- [x] Uses the app for real for a day: run `/find-jobs`, triage the board, move a job through statuses, write notes
+- [x] Checks it on a phone-sized window
+- [x] Lists any UI changes they want (handled before approval)
 
 ---
 
@@ -790,8 +790,8 @@ Tasks:
 **Done when:** k6 thresholds pass locally, and the CI workflow file is valid. `main` is pushed after CP-7 approval (DEC-018), and CI must then be green on GitHub.
 
 **🛑 CP-7. The owner checks:**
-- [ ] Reads the k6 summary (p95 and error rate)
-- [ ] Reviews the CI stages
+- [x] Reads the k6 summary (p95 and error rate)
+- [x] Reviews the CI stages
 
 ---
 
@@ -812,9 +812,9 @@ Tasks:
 4. A final full run of every gate, with results pasted into the report.
 
 **🛑 CP-8 — MVP acceptance. The owner checks:**
-- [ ] Every requirement in §3 is met (walk through the traceability matrix)
-- [ ] They've used the app for real at least once end to end
-- [ ] They're comfortable showing the repo publicly (no personal data in git history: `git log -p | grep -i` for phone and email)
+- [x] Every requirement in §3 is met (walk through the traceability matrix)
+- [x] They've used the app for real at least once end to end
+- [x] They're comfortable showing the repo publicly (no personal data in git history: `git log -p | grep -i` for phone and email)
 
 ---
 
@@ -880,10 +880,10 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 | CP-2 | Domain core and email parser | Approved | 2026-10-23 | Two formats (digest, recommendations); recommendations stay ingested; DEC-019, DEC-020 approved; 3 sanitized fixtures |
 | CP-3 | Persistence | Approved | 2026-10-23 | DEC-021 (coverage over all Vitest projects), DEC-022 (`unrecognized_reason`), DEC-023 (newest sighting refreshes details), DEC-024 (delete merged branches) |
 | CP-4 | HTTP server and JSON API | Approved | 2026-10-23 | DEC-025 (`jobs.first_run_id`) approved; threat model agreed (no-Origin clients such as curl and `/find-jobs` allowed; cross-site reads left to the browser) |
-| CP-5 | `/find-jobs` agent | Done (DEC-026) | 2026-10-23 | Agent-reviewed; owner checks deferred to CP-8. Rubric `triage-v1`: calibration 6/6 on target (DEC-028). Real run: 14 emails, 64 new jobs, 20 seen again, 64 scored; second run 7 duplicates, 0 new. DEC-027 (cut URL query strings); DEF-008 fixed ("school alum" insight line) |
-| CP-6 | User interface | Done (DEC-026) | 2026-10-23 | Agent-reviewed plus an independent code review (4 findings, all fixed); owner checks deferred to CP-8. 124 E2E/a11y/smoke tests green on chromium, firefox, webkit, mobile; axe 0 violations (WCAG 2.2 AA, light and dark). DEC-029 (Referrer-Policy same-origin, DEF-009), DEC-030 (page conventions) |
-| CP-7 | Performance, CI and hardening | Done (DEC-026) | 2026-10-23 | Agent-reviewed; owner checks deferred to CP-8. k6 on 5,000 seeded jobs, 20 VUs: p95 19.5 ms overall (board 23.5, API 21.0, detail 13.8), 0 % errors, no tuning needed. CI workflow validated with actionlint; DEC-031 (CI stages). First GitHub run exposed DEF-014 (browser install stalled on a slow apt mirror); fixed by running E2E in the Playwright image, after which CI is green on GitHub, including the manual k6 job (p95 20.4 ms). Defect log: DEF-005 to DEF-014, none open |
-| CP-8 | MVP acceptance | Awaiting owner | | Phases 5–8 built under DEC-026; everything is ready for the owner's review (README, docs/traceability.md, docs/defects.md). CP-5 to CP-7 owner checklists in §10 are part of this review |
+| CP-5 | `/find-jobs` agent | Approved | 2026-10-23 | Owner approved with CP-8 (DEC-026). Agent-reviewed; owner checks deferred to CP-8. Rubric `triage-v1`: calibration 6/6 on target (DEC-028). Real run: 14 emails, 64 new jobs, 20 seen again, 64 scored; second run 7 duplicates, 0 new. DEC-027 (cut URL query strings); DEF-008 fixed ("school alum" insight line) |
+| CP-6 | User interface | Approved | 2026-10-23 | Owner approved with CP-8 (DEC-026). Agent-reviewed plus an independent code review (4 findings, all fixed); owner checks deferred to CP-8. 124 E2E/a11y/smoke tests green on chromium, firefox, webkit, mobile; axe 0 violations (WCAG 2.2 AA, light and dark). DEC-029 (Referrer-Policy same-origin, DEF-009), DEC-030 (page conventions) |
+| CP-7 | Performance, CI and hardening | Approved | 2026-10-23 | Owner approved with CP-8 (DEC-026). Agent-reviewed; owner checks deferred to CP-8. k6 on 5,000 seeded jobs, 20 VUs: p95 19.5 ms overall (board 23.5, API 21.0, detail 13.8), 0 % errors, no tuning needed. CI workflow validated with actionlint; DEC-031 (CI stages). First GitHub run exposed DEF-014 (browser install stalled on a slow apt mirror); fixed by running E2E in the Playwright image, after which CI is green on GitHub, including the manual k6 job (p95 20.4 ms). Defect log: DEF-005 to DEF-014, none open |
+| CP-8 | MVP acceptance | Approved | 2026-10-23 | MVP accepted. Phases 5–8 built under DEC-026 and approved together; 885 tests green locally and in GitHub CI; traceability matrix and defect log (DEF-005 to DEF-014, none open) reviewed. Older history contains the owner's email in commits 2b1b8b6 and 07cefbf from an earlier project; left as is |
 
 ---
 
