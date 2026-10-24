@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { LOG_LEVELS, type LogLevel } from './logger.ts';
+import { LOG_FORMATS, LOG_LEVELS, type LogFormat, type LogLevel } from './logger.ts';
 
 // App settings from the environment (PLAN.md Phase 4). `npm start` loads them from .env (see .env.example).
 
@@ -7,6 +7,8 @@ export interface Config {
   port: number;
   dbPath: string;
   logLevel: LogLevel;
+  /** null: pretty in a terminal, JSON lines otherwise (decided in main.ts). */
+  logFormat: LogFormat | null;
   /** The saved LinkedIn login (DEC-032), written by scripts/linkedin-login.ts. */
   linkedinSessionPath: string;
 }
@@ -30,6 +32,7 @@ const EnvSchema = z.object({
     .trim()
     .min(1, 'is required, for example data/jobboard.db'),
   LOG_LEVEL: z.enum(LOG_LEVELS).default('info'),
+  LOG_FORMAT: z.enum(LOG_FORMATS).optional(),
   LINKEDIN_SESSION_PATH: z.string().trim().min(1).default(DEFAULT_LINKEDIN_SESSION_PATH),
 });
 
@@ -38,6 +41,7 @@ export function loadConfig(env: Readonly<Record<string, string | undefined>>): C
     PORT: env['PORT'],
     DB_PATH: env['DB_PATH'],
     LOG_LEVEL: env['LOG_LEVEL'],
+    LOG_FORMAT: env['LOG_FORMAT'],
     LINKEDIN_SESSION_PATH: env['LINKEDIN_SESSION_PATH'],
   });
   if (!parsed.success) {
@@ -48,6 +52,7 @@ export function loadConfig(env: Readonly<Record<string, string | undefined>>): C
     port: parsed.data.PORT,
     dbPath: parsed.data.DB_PATH,
     logLevel: parsed.data.LOG_LEVEL,
+    logFormat: parsed.data.LOG_FORMAT ?? null,
     linkedinSessionPath: parsed.data.LINKEDIN_SESSION_PATH,
   };
 }

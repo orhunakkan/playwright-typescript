@@ -1,3 +1,4 @@
+import { stripVTControlCharacters } from 'node:util';
 import { describe, expect, it, vi } from 'vitest';
 import { createLogger, type LogLevel } from '../../src/logger.ts';
 
@@ -72,5 +73,60 @@ describe('createLogger', () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.[0]).toMatch(/^\{"time":"[^"]+","level":"info","msg":"hello"\}\n$/);
+  });
+});
+
+describe('createLogger, pretty format (DEC-034)', () => {
+  function pretty(level: LogLevel = 'debug') {
+    const lines: string[] = [];
+    const logger = createLogger(
+      level,
+      (line) => lines.push(stripVTControlCharacters(line)),
+      () => '2026-10-23T12:00:00.000Z',
+      'pretty',
+    );
+    return { logger, lines };
+  }
+  // The clock is local time, so only its shape is checked.
+  const CLOCK = /^\d\d:\d\d:\d\d {2}/;
+
+  it.each([200, 303, 404, 500])(
+    'NFR-10: a request with status %i is one short line: time, status, method, path, time taken',
+    (status) => {
+      const { logger, lines } = pretty();
+
+      logger.info('request', { requestId: 'r1', method: 'GET', path: '/jobs/12', status, ms: 4 });
+
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toMatch(CLOCK);
+      expect(lines[0]?.replace(CLOCK, '')).toBe(`${String(status)}  GET /jobs/12  4 ms`);
+    },
+  );
+
+  it('NFR-10: other entries show the level, the message and the fields as key=value', () => {
+    const { logger, lines } = pretty();
+
+    logger.warn('shutting down', { signal: 'SIGINT', count: 2 });
+
+    expect(lines[0]?.replace(CLOCK, '')).toBe('WARN   shutting down  signal=SIGINT  count=2');
+  });
+
+  it('NFR-10: an Error shows its name and message, then its stack', () => {
+    const { logger, lines } = pretty();
+
+    logger.error('unhandled error', { error: new TypeError('bad thing') });
+
+    const [first, ...stack] = (lines[0] ?? '').split('\n');
+    expect(first?.replace(CLOCK, '')).toBe('ERROR  unhandled error  error=TypeError: bad thing');
+    expect(stack.join('\n')).toContain('TypeError: bad thing');
+  });
+
+  it('NFR-10: the level threshold still applies', () => {
+    const { logger, lines } = pretty('warn');
+
+    logger.info('request', { method: 'GET', path: '/', status: 200, ms: 1 });
+    logger.debug('d');
+
+    expect(lines).toEqual([]);
   });
 });

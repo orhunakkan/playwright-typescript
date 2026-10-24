@@ -7,6 +7,7 @@ describe('loadConfig', () => {
       port: 3000,
       dbPath: 'data/jobboard.db',
       logLevel: 'warn',
+      logFormat: null,
       linkedinSessionPath: 'data/linkedin/session.json',
     });
   });
@@ -16,8 +17,14 @@ describe('loadConfig', () => {
       port: 3000,
       dbPath: 'x.db',
       logLevel: 'info',
+      logFormat: null,
       linkedinSessionPath: 'data/linkedin/session.json',
     });
+  });
+
+  it('NFR-10: LOG_FORMAT picks json or pretty logs', () => {
+    expect(loadConfig({ DB_PATH: 'x.db', LOG_FORMAT: 'pretty' })).toMatchObject({ logFormat: 'pretty' });
+    expect(loadConfig({ DB_PATH: 'x.db', LOG_FORMAT: 'json' })).toMatchObject({ logFormat: 'json' });
   });
 
   it('FR-14: LINKEDIN_SESSION_PATH sets where the saved LinkedIn login lives', () => {
@@ -42,6 +49,7 @@ describe('loadConfig', () => {
     ['a PORT above 65535', { DB_PATH: 'x', PORT: '65536' }, 'PORT:'],
     ['a negative PORT', { DB_PATH: 'x', PORT: '-1' }, 'PORT: must be a whole number'],
     ['an unknown LOG_LEVEL', { DB_PATH: 'x', LOG_LEVEL: 'verbose' }, 'LOG_LEVEL:'],
+    ['an unknown LOG_FORMAT', { DB_PATH: 'x', LOG_FORMAT: 'xml' }, 'LOG_FORMAT:'],
     ['an empty LINKEDIN_SESSION_PATH', { DB_PATH: 'x', LINKEDIN_SESSION_PATH: ' ' }, 'LINKEDIN_SESSION_PATH:'],
   ])('NFR-09: %s is a ConfigError that says what to fix', (_case, env, message) => {
     expect(() => loadConfig(env)).toThrow(ConfigError);

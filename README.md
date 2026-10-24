@@ -52,6 +52,20 @@ cp .env.example .env          # PORT=3000, DB_PATH=data/jobboard.db, LOG_LEVEL=i
 npm start                     # signs in to LinkedIn, then serves http://127.0.0.1:3000 (never other addresses)
 ```
 
+In a terminal it prints the board address on a line of its own, the LinkedIn status and one short coloured line per request. Piped or in CI, the logs are JSON lines (`LOG_FORMAT=json|pretty` overrides this):
+
+```text
+  Job Board is running
+
+  ➜  http://127.0.0.1:3000/
+
+  LinkedIn  ● signed in · checked Oct 24, 6:45 AM
+  Database  data/jobboard.db
+  Stop      Ctrl+C
+
+06:45:59  200  GET /  3 ms
+```
+
 The first start creates `data/jobboard.db`. Load your profile once (it is the basis of every score):
 
 ```bash

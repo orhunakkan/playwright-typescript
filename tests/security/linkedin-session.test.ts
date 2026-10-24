@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { stripVTControlCharacters } from 'node:util';
 import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createLinkedInSessionFile, saveLinkedInSession } from '../../src/linkedin/session.ts';
 import { FAKE_LINKEDIN_COOKIE_VALUE, fakeLinkedInStorageState } from '../helpers/fixtures.ts';
@@ -51,28 +52,27 @@ describe('scripts/linkedin-login.ts --check', () => {
       cwd: root,
       encoding: 'utf8',
     });
-    return { status: result.status, output: result.stdout + result.stderr };
+    return { status: result.status, output: stripVTControlCharacters(result.stdout + result.stderr) };
   }
 
   it('FR-14: reports a missing session and fails', () => {
     const { status, output } = check(join(dir, 'none.json'));
 
     expect(status).toBe(1);
-    expect(output).toContain('LinkedIn session: missing');
+    expect(output).toContain('LinkedIn: not signed in');
     expect(output).toContain('node scripts/linkedin-login.ts');
   });
 
   it('FR-14, NFR-12: reports an active session without printing its cookies', () => {
     const path = join(dir, 'session.json');
     // The script uses the real clock, so the cookie expires far in the future.
-    const expires = Date.parse('2099-01-01T00:00:00.000Z') / 1000;
+    const expires = Date.parse('2099-06-15T12:00:00.000Z') / 1000;
     saveLinkedInSession(path, createLinkedInSessionFile(fakeLinkedInStorageState(expires), '2026-10-23T09:00:00.000Z'));
     const { status, output } = check(path);
 
     expect(status).toBe(0);
-    expect(output).toContain(
-      'LinkedIn session: active (saved 2026-10-23T09:00:00.000Z, expires 2099-01-01T00:00:00.000Z)',
-    );
+    expect(output).toContain('✔ LinkedIn: signed in · saved Oct 23');
+    expect(output).toContain('expires Jun 15, 2099');
     expect(output).not.toContain(FAKE_LINKEDIN_COOKIE_VALUE);
   });
 });
