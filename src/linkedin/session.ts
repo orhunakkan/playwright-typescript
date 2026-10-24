@@ -13,6 +13,14 @@ export const LINKEDIN_AUTH_COOKIE = 'li_at';
 export const LINKEDIN_SESSION_STATES = ['missing', 'invalid', 'expired', 'active'] as const;
 export type LinkedInSessionState = (typeof LINKEDIN_SESSION_STATES)[number];
 
+/** How the page header, the start banner and the login script name each state, so they always say the same. */
+export const LINKEDIN_SESSION_LABELS: Record<LinkedInSessionState, string> = {
+  missing: 'not signed in',
+  invalid: 'saved session unreadable',
+  expired: 'session expired',
+  active: 'signed in',
+};
+
 export interface LinkedInSessionStatus {
   status: LinkedInSessionState;
   savedAt: string | null;

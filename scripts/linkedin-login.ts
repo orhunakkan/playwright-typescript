@@ -19,6 +19,7 @@ import { DEFAULT_LINKEDIN_SESSION_PATH } from '../src/config.ts';
 import {
   createLinkedInSessionFile,
   LINKEDIN_AUTH_COOKIE,
+  LINKEDIN_SESSION_LABELS,
   linkedInSessionStatus,
   saveLinkedInSession,
   type LinkedInSessionStatus,
@@ -74,7 +75,10 @@ if (import.meta.main) {
  * window only when LinkedIn no longer accepts it. Never throws, so whatever runs next (the app) always starts.
  * `quiet` leaves out the success line, for callers that show the status themselves.
  */
-export async function ensureLinkedInSession(options: LinkedInLoginOptions, quiet = false): Promise<void> {
+export async function ensureLinkedInSession(
+  options: LinkedInLoginOptions,
+  { quiet = false }: { quiet?: boolean } = {},
+): Promise<void> {
   if (currentStatus(options).status === 'active') {
     const verified = await verify(options);
     if (verified === 'signed-in') {
@@ -94,7 +98,7 @@ export async function ensureLinkedInSession(options: LinkedInLoginOptions, quiet
 
 /** Opens LinkedIn in a hidden browser with the saved profile; refreshes the saved session when it is accepted. */
 async function verify(options: LinkedInLoginOptions): Promise<'signed-in' | 'signed-out' | 'unreachable'> {
-  const context = await openBrowser(options, true);
+  const context = await openBrowser(options, { headless: true });
   if (context === null) return 'unreachable';
   try {
     const page = context.pages()[0] ?? (await context.newPage());
@@ -113,7 +117,7 @@ async function verify(options: LinkedInLoginOptions): Promise<'signed-in' | 'sig
 
 /** Opens a visible browser and waits for the owner to sign in. Returns whether a session was saved. */
 async function signIn(options: LinkedInLoginOptions): Promise<boolean> {
-  const context = await openBrowser(options, false);
+  const context = await openBrowser(options, { headless: false });
   if (context === null) return false;
   try {
     const page = context.pages()[0] ?? (await context.newPage());
@@ -144,7 +148,10 @@ async function signIn(options: LinkedInLoginOptions): Promise<boolean> {
   }
 }
 
-async function openBrowser(options: LinkedInLoginOptions, headless: boolean): Promise<BrowserContext | null> {
+async function openBrowser(
+  options: LinkedInLoginOptions,
+  { headless }: { headless: boolean },
+): Promise<BrowserContext | null> {
   try {
     return await chromium.launchPersistentContext(join(dirname(options.sessionPath), 'browser-profile'), {
       headless,
@@ -180,18 +187,19 @@ function warning(text: string): string {
 
 /** One coloured line: "✔ LinkedIn: signed in · saved … · expires …", or what is wrong and how to fix it. */
 export function describeLinkedInSession(status: LinkedInSessionStatus, sessionPath: string): string {
+  const label = `LinkedIn: ${LINKEDIN_SESSION_LABELS[status.status]}`;
   const fix = styleText('dim', ` · run node scripts/linkedin-login.ts`);
   switch (status.status) {
     case 'missing':
-      return `${styleText('yellow', '✘ LinkedIn: not signed in')} ${styleText('dim', `(no ${sessionPath})`)}${fix}`;
+      return `${styleText('yellow', `✘ ${label}`)} ${styleText('dim', `(no ${sessionPath})`)}${fix}`;
     case 'invalid':
-      return `${styleText('yellow', '✘ LinkedIn: saved session unreadable')} ${styleText('dim', `(${sessionPath})`)}${fix}`;
+      return `${styleText('yellow', `✘ ${label}`)} ${styleText('dim', `(${sessionPath})`)}${fix}`;
     case 'expired':
-      return `${styleText('yellow', `✘ LinkedIn: session expired ${formatDay(String(status.expiresAt))}`)}${fix}`;
+      return `${styleText('yellow', `✘ ${label} ${formatDay(String(status.expiresAt))}`)}${fix}`;
     case 'active': {
       const saved = status.savedAt === null ? '' : ` · saved ${formatDateTime(status.savedAt)}`;
       const expires = ` · expires ${status.expiresAt === null ? 'with the browser session' : formatDay(status.expiresAt)}`;
-      return `${styleText('green', '✔ LinkedIn: signed in')}${styleText('dim', saved + expires)}`;
+      return `${styleText('green', `✔ ${label}`)}${styleText('dim', saved + expires)}`;
     }
   }
 }

@@ -1,5 +1,5 @@
 import { styleText } from 'node:util';
-import type { LinkedInSessionStatus } from './linkedin/session.ts';
+import { LINKEDIN_SESSION_LABELS, type LinkedInSessionStatus } from './linkedin/session.ts';
 
 // What `npm start` prints in a terminal once the server is up (DEC-034): the board's address on a line of its own,
 // so it is easy to spot and click, then the LinkedIn sign-in and the database. JSON-log runs print no banner.
@@ -29,15 +29,10 @@ export function startupBanner(info: BannerInfo): string {
 }
 
 function linkedinText(session: LinkedInSessionStatus, formatTime: (iso: string) => string): string {
-  const signIn = `sign in with ${styleText('bold', 'node scripts/linkedin-login.ts')}`;
-  switch (session.status) {
-    case 'active':
-      return `${styleText('green', '● signed in')}${session.savedAt === null ? '' : styleText('dim', ` · checked ${formatTime(session.savedAt)}`)}`;
-    case 'expired':
-      return `${styleText('yellow', '● session expired')} · ${signIn}`;
-    case 'missing':
-      return `${styleText('yellow', '● not signed in')} · ${signIn}`;
-    case 'invalid':
-      return `${styleText('yellow', '● saved session unreadable')} · ${signIn}`;
+  const label = `● ${LINKEDIN_SESSION_LABELS[session.status]}`;
+  if (session.status !== 'active') {
+    return `${styleText('yellow', label)} · sign in with ${styleText('bold', 'node scripts/linkedin-login.ts')}`;
   }
+  const checked = session.savedAt === null ? '' : styleText('dim', ` · checked ${formatTime(session.savedAt)}`);
+  return `${styleText('green', label)}${checked}`;
 }
