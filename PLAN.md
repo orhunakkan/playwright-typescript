@@ -832,10 +832,10 @@ Tasks:
 5. Tests: unit (session module, config), API + contract (status endpoint, header line), security (no cookie values in responses, pages or logs; `data/` ignored).
 
 **🛑 CP-9. The owner checks:**
-- [ ] Runs `node scripts/linkedin-login.ts`, signs in, and sees "Saved LinkedIn session"
-- [ ] Runs it again and is not asked to sign in
-- [ ] `curl -s http://127.0.0.1:3000/api/linkedin/session` shows `"status":"active"`
-- [ ] `npm start` prints "LinkedIn session: active" without asking to sign in, and the board header shows "LinkedIn: signed in"
+- [x] Runs `node scripts/linkedin-login.ts`, signs in, and sees "Saved LinkedIn session"
+- [x] Runs it again and is not asked to sign in
+- [x] `curl -s http://127.0.0.1:3000/api/linkedin/session` shows `"status":"active"`
+- [x] `npm start` prints "LinkedIn session: active" without asking to sign in, and the board header shows "LinkedIn: signed in"
 
 ---
 
@@ -908,7 +908,7 @@ Agents update this table **only** after the owner's explicit `Approve CP-<n>`.
 | CP-6 | User interface | Approved | 2026-10-23 | Owner approved with CP-8 (DEC-026). Agent-reviewed plus an independent code review (4 findings, all fixed); owner checks deferred to CP-8. 124 E2E/a11y/smoke tests green on chromium, firefox, webkit, mobile; axe 0 violations (WCAG 2.2 AA, light and dark). DEC-029 (Referrer-Policy same-origin, DEF-009), DEC-030 (page conventions) |
 | CP-7 | Performance, CI and hardening | Approved | 2026-10-23 | Owner approved with CP-8 (DEC-026). Agent-reviewed; owner checks deferred to CP-8. k6 on 5,000 seeded jobs, 20 VUs: p95 19.5 ms overall (board 23.5, API 21.0, detail 13.8), 0 % errors, no tuning needed. CI workflow validated with actionlint; DEC-031 (CI stages). First GitHub run exposed DEF-014 (browser install stalled on a slow apt mirror); fixed by running E2E in the Playwright image, after which CI is green on GitHub, including the manual k6 job (p95 20.4 ms). Defect log: DEF-005 to DEF-014, none open |
 | CP-8 | MVP acceptance | Approved | 2026-10-23 | MVP accepted. Phases 5–8 built under DEC-026 and approved together; 885 tests green locally and in GitHub CI; traceability matrix and defect log (DEF-005 to DEF-014, none open) reviewed. Older history contains the owner's email in commits 2b1b8b6 and 07cefbf from an earlier project; left as is |
-| CP-9 | LinkedIn login (DEC-032) | Pending | | |
+| CP-9 | LinkedIn login (DEC-032) | Approved | 2026-10-24 | Owner signed in once; session saved to data/linkedin/ and reused (expires 2027-10-24). DEC-032 (owner-authorized login, no questions or warnings), DEC-033 (`npm start` verifies and refreshes the session, header shows the status), DEC-034 (readable coloured start output, JSON logs when piped). 950 tests green (826 Vitest, 124 Playwright); FR-14 and NFR-12 added to the traceability matrix |
 
 ---
 
